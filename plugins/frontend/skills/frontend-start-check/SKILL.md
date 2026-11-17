@@ -2,6 +2,9 @@
 name: frontend-start-check
 description: 프론트엔드 프로젝트의 작업 시작 전 공통 점검. 패키지 매니저·Node 버전·설치, 검사 기준선, 환경변수, 재사용할 것을 확인하고, 구현 중 지킬 것(frontend-design, modern-web-guidance)과 끝내기 전 할 것(브라우저 테스트)을 돌려준다. workflow 의 task-start 가 부른다.
 user-invocable: false
+version: "0.2.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # 프론트엔드 시작 점검
@@ -56,7 +59,7 @@ user-invocable: false
   - 프로젝트 CLAUDE.md 의 제품 원칙이 우선이다.
   - 승인받은 시안이 있으면 그 시안을 따른다.
   - 기존 화면이나 프로토타입을 **그대로 옮기는** 항목에는 부르지 않는다. 이 스킬은 자기 나름의 분위기를 고르기 때문이다.
-- **새 웹 기능이나 UI 패턴을 고를 때**(대화상자, 팝오버, 스크롤 연동, 레이아웃, 폼 검증 등) `modern-web-guidance` 스킬을 부르고 그 방식대로 찾아본다(`npx -y modern-web-guidance@latest search "<2~5 단어>"`).
+- **새 웹 기능이나 UI 패턴을 고를 때**(대화상자, 팝오버, 스크롤 연동, 레이아웃, 폼 검증 등) `modern-web-guidance` 스킬을 부르고 그 스킬이 안내하는 방식대로 찾아본다.
 
 ## 7. 끝내기 전 할 것 (돌려줄 내용): 브라우저 테스트
 

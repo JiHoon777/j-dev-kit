@@ -3,6 +3,9 @@ name: backlog-create
 description: 백로그 항목을 만든다. 사용자가 할 일을 백로그에 넣어 달라고 하거나, /backlog-create 로 부르거나, 나중에 하기로 한 일을 기록해 달라고 할 때 쓴다.
 argument-hint: '[만들 항목을 한두 문장으로]'
 allowed-tools: Bash(ls *), Bash(git status *), Bash(git branch --show-current)
+version: "0.2.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # backlog-create: 백로그 항목 만들기

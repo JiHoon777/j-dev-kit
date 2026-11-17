@@ -2,6 +2,9 @@
 name: server-end-check
 description: 백엔드 프로젝트의 작업 마무리 점검. 검사를 기준선과 비교하고, 모델 변경이 마이그레이션에 다 담겼는지, 위험한 DDL, API 의 깨지는 변경(oasdiff), 새 환경변수, 로그의 비밀값을 확인하고, 서버를 띄워 바뀐 엔드포인트를 직접 호출한다. API 가 바뀌었으면 api-reviewer 를 리뷰에 넣으라고 돌려준다. workflow 의 task-end 가 부른다.
 user-invocable: false
+version: "0.1.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # 서버 종료 점검
@@ -20,9 +23,9 @@ user-invocable: false
 
 | 도구 | 누락 확인 (모델은 바뀌었는데 마이그레이션이 없음) |
 | --- | --- |
-| Prisma | `npx prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code` → 2 면 실패. `npx prisma validate` |
-| Drizzle | `npx drizzle-kit generate` 후 `git status --porcelain <out 폴더>`에 새 파일이 생기면 실패(생긴 파일은 지우지 말고 보고한다). `npx drizzle-kit check` |
-| TypeORM | `npx typeorm migration:generate <임시경로> -d <DataSource>`가 파일을 만들면 실패(만든 임시 파일은 지운다) |
+| Prisma | `npx --no-install prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code` → 2 면 실패. `npx --no-install prisma validate` |
+| Drizzle | `npx --no-install drizzle-kit generate` 후 `git status --porcelain <out 폴더>`에 새 파일이 생기면 실패(생긴 파일은 지우지 말고 보고한다). `npx --no-install drizzle-kit check` |
+| TypeORM | `npx --no-install typeorm migration:generate <임시경로> -d <DataSource>`가 파일을 만들면 실패(만든 임시 파일은 지운다) |
 | Alembic | `alembic check` 실패면 실패 |
 | Django | `python manage.py makemigrations --check` 실패면 실패 |
 | Atlas | `atlas migrate validate`, `atlas migrate lint --dev-url <dev> --latest <새 파일 수>` |

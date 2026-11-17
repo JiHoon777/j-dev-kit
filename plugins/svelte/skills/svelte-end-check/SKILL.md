@@ -2,6 +2,9 @@
 name: svelte-end-check
 description: Svelte·SvelteKit 프로젝트의 작업 마무리 점검. 바뀐 .svelte 파일 전부를 svelte-autofixer 로 확인하고, sv check 를 기준선과 비교하고, 룬·SSR·load·form action·{@html} 같은 Svelte 전용 문제를 diff 에서 찾아 돌려준다. workflow 의 task-end 가 부른다.
 user-invocable: false
+version: "0.1.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # Svelte 종료 점검
@@ -20,7 +23,7 @@ user-invocable: false
 
 ## 2. svelte-autofixer
 
-바뀐 `.svelte`·`.svelte.ts`·`.svelte.js` 파일 **전부**를 `svelte-autofixer`로 돌린다(MCP 도구, 없으면 `npx -y @sveltejs/mcp svelte-autofixer <파일> --svelte-version 5`). 문제(issues)가 하나라도 남으면 실패, 제안(suggestions)은 근거에 적는다. 이 도구가 잡는 것: `$effect` 안 대입, `$derived`에 함수 넘기기, 룬 import, 스토어 대신 룬, `$app/stores` 대신 `$app/state`, `class:` 대신 clsx, 첨부(attachment) 제안 등.
+바뀐 `.svelte`·`.svelte.ts`·`.svelte.js` 파일 **전부**를 `svelte-autofixer`로 돌린다(MCP 도구, 없으면 `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`). 문제(issues)가 하나라도 남으면 실패, 제안(suggestions)은 근거에 적는다. 이 도구가 잡는 것: `$effect` 안 대입, `$derived`에 함수 넘기기, 룬 import, 스토어 대신 룬, `$app/stores` 대신 `$app/state`, `class:` 대신 clsx, 첨부(attachment) 제안 등.
 
 ## 3. diff 점검 (도구가 못 잡는 것)
 

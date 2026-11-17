@@ -3,6 +3,9 @@ name: task-end
 description: 작업 브랜치를 끝낸다. 켜진 스택 플러그인의 종료 점검을 돌리고, 리뷰 에이전트들을 동시에 돌려 결과를 모아 사용자에게 보여 주고, 고치고, 승인받아 기준 브랜치에 머지하고 백로그 항목을 done으로 옮긴다. 사용자가 /task-end 로 부를 때만 쓴다.
 disable-model-invocation: true
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git log *), Bash(git diff *)
+version: "0.2.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # task-end: 리뷰하고 머지하기

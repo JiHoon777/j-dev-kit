@@ -4,6 +4,9 @@ description: 백로그 항목 하나의 작업을 시작한다. 항목을 읽고
 argument-hint: '[백로그 번호 또는 이름 일부] (비우면 목록에서 고르기)'
 disable-model-invocation: true
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git log *), Bash(ls *)
+version: "0.2.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # task-start: 작업 시작

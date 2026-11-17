@@ -2,6 +2,9 @@
 name: server-start-check
 description: 백엔드 프로젝트의 작업 시작 전 점검. 언어·프레임워크·ORM 을 판별하고, 설치, 언어 서버(LSP) 연결, 환경변수, 로컬 의존 서비스, 마이그레이션 적용 상태, 검사 기준선, API 명세 위치를 확인해 돌려준다. workflow 의 task-start 가 부른다.
 user-invocable: false
+version: "0.1.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # 서버 시작 점검
@@ -59,14 +62,16 @@ user-invocable: false
 
 | 도구 | 적용 상태 | 모델과 마이그레이션 차이(누락) |
 | --- | --- | --- |
-| Prisma | `npx prisma migrate status` (적용 안 됨·어긋남이면 종료 코드 1) | `npx prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code` (차이 있으면 2). Prisma 7 은 `prisma.config.ts`의 데이터소스를 쓴다 |
-| Drizzle | 상태 명령이 없다. `drizzle.__drizzle_migrations` 테이블과 마이그레이션 폴더를 비교 | `npx drizzle-kit check`(히스토리 충돌만 본다). 누락은 `drizzle-kit generate` 후 출력 폴더에 새 파일이 생기는지로 본다(시작 점검에서는 돌리지 않는다) |
-| TypeORM | `npx typeorm migration:show -d <DataSource>` (`[ ]`가 적용 안 됨) | `migration:generate`는 변경이 없으면 종료 코드 1 (시작 점검에서는 돌리지 않는다) |
+| Prisma | `npx --no-install prisma migrate status` (적용 안 됨·어긋남이면 종료 코드 1) | `npx --no-install prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code` (차이 있으면 2). Prisma 7 은 `prisma.config.ts`의 데이터소스를 쓴다 |
+| Drizzle | 상태 명령이 없다. `drizzle.__drizzle_migrations` 테이블과 마이그레이션 폴더를 비교 | `npx --no-install drizzle-kit check`(히스토리 충돌만 본다). 누락은 `drizzle-kit generate` 후 출력 폴더에 새 파일이 생기는지로 본다(시작 점검에서는 돌리지 않는다) |
+| TypeORM | `npx --no-install typeorm migration:show -d <DataSource>` (`[ ]`가 적용 안 됨) | `migration:generate`는 변경이 없으면 종료 코드 1 (시작 점검에서는 돌리지 않는다) |
 | Alembic | `alembic current --check-heads`(1.17.1+), 이전 버전은 `alembic current`와 `alembic heads` 비교 | `alembic check` (1.9+) |
 | Django | `python manage.py migrate --check` | `python manage.py makemigrations --check` |
 | Atlas | `atlas migrate status --url <url> --dir <dir>` | `atlas migrate validate` |
 | Flyway | `flyway info` (pending 확인) | — |
 | Liquibase | `liquibase status --verbose` | — |
+
+`npx --no-install` 은 프로젝트에 설치된 도구만 쓰고 내려받지 않는다. 설치돼 있지 않으면 설치하지 말고 "도구 없음"으로 알린다.
 
 DB 에 닿는 명령은 **로컬·개발 DB 에만** 돌린다. 연결 주소가 운영으로 보이면 돌리지 않고 **중단**한다.
 

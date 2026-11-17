@@ -2,6 +2,9 @@
 name: supabase-end-check
 description: Supabase 프로젝트의 작업 마무리 점검. 스키마 변경이 전부 마이그레이션에 담겼는지, 처음부터 다시 적용해도 되는지, 마이그레이션 순서, 위험한 변경, RLS·뷰·함수 보안, 다른 사용자로 행이 보이는지, 타입 재생성, 키 노출을 확인해 돌려준다. workflow 의 task-end 가 부른다.
 user-invocable: false
+version: "0.2.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # Supabase 종료 점검

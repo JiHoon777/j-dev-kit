@@ -2,6 +2,9 @@
 name: frontend-end-check
 description: 프론트엔드 프로젝트의 작업 마무리 공통 점검. 검사를 기준선과 비교하고, diff 에서 남은 흔적·의존성·비밀값·접근성·상태 처리를 보고, Chrome DevTools 로 콘솔·네트워크·Lighthouse 를 확인하며, 고친 뒤 할 브라우저 테스트를 돌려준다. workflow 의 task-end 가 부른다.
 user-invocable: false
+version: "0.2.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # 프론트엔드 종료 점검

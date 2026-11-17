@@ -2,6 +2,9 @@
 name: react-end-check
 description: React·Next.js 프로젝트의 작업 마무리 점검. react-hooks 린트와 React Doctor 점수를 기준선과 비교하고, 훅·effect·key·서버/클라이언트 경계·dangerouslySetInnerHTML 같은 React 전용 문제를 diff 에서 찾아 돌려준다. workflow 의 task-end 가 부른다.
 user-invocable: false
+version: "0.1.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # React 종료 점검
@@ -20,7 +23,7 @@ user-invocable: false
 
 ## 2. React Doctor
 
-`npx -y react-doctor@latest --verbose --no-telemetry --scope changed`를 돌린다. 기준선 점수보다 떨어졌거나 바뀐 파일에서 새 지적이 나오면 실패. 기준선이 없으면 점수만 근거에 적는다. 돌릴 수 없으면 "React Doctor 없음"으로 건너뛴다.
+`npx -y react-doctor@0.9.22 --verbose --no-telemetry --scope changed`를 돌린다. 기준선 점수보다 떨어졌거나 바뀐 파일에서 새 지적이 나오면 실패. 기준선이 없으면 점수만 근거에 적는다. 돌릴 수 없으면 "React Doctor 없음"으로 건너뛴다.
 
 ## 3. diff 점검 (도구가 못 잡는 것)
 

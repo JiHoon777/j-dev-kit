@@ -2,6 +2,9 @@
 name: supabase-start-check
 description: Supabase 프로젝트의 작업 시작 전 점검. 로컬 스택 상태, 마이그레이션 적용 여부, 마이그레이션에 없는 스키마 변경(드리프트), 타입 파일 최신 여부를 확인하고 DB 린트·테스트 기준선과 플랜에 넣을 스키마·RLS 항목을 돌려준다. workflow 의 task-start 가 부른다.
 user-invocable: false
+version: "0.2.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # Supabase 시작 점검

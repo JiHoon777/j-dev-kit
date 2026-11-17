@@ -117,5 +117,6 @@ superpowers 는 세션을 시작할 때마다 "맞을 것 같으면 스킬을 �
 ## 알아 둘 것
 
 - `supabase` 플러그인은 공식 Supabase 플러그인을 `supabase@claude-plugins-official`로 가져온다. claude.ai 디렉터리에서 같은 플러그인을 다른 이름(예: `supabase@anthropic-plugin-directory`)으로 이미 켜 두었다면 둘 중 하나만 켠다. 같은 MCP 서버가 두 번 뜬다.
-- `react` 플러그인의 React Doctor 는 `npx`로 내려받아 돌리고 `--no-telemetry`를 붙인다. Vercel `react-best-practices` 스킬은 Claude 마켓플레이스가 없어서 `npx skills add vercel-labs/agent-skills`로 따로 설치한다(없어도 점검은 돈다).
+- `react` 플러그인의 React Doctor 는 `npx`로 내려받아 돌리고(버전 고정) `--no-telemetry`를 붙인다. Vercel `react-best-practices` 스킬은 Claude 마켓플레이스가 없어서 `npx -y skills@1.7.5 add vercel-labs/agent-skills`로 따로 설치한다(없어도 점검은 돈다).
+- **외부 CLI 는 버전을 고정한다.** 스킬이 `npx`로 내려받아 실행하는 도구(React Doctor, `@sveltejs/mcp`, `sv`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 올린 사람의 패키지가 오염돼도 바로 실행되지 않게 하려는 것이다. 올릴 때는 새 버전을 확인하고 숫자만 바꾼다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 프로젝트에 설치된 것만 쓴다.
 - Supabase MCP 는 실제 서비스 프로젝트에 연결하지 않는다. 연결해야 하면 읽기 전용으로, 프로젝트 하나로 범위를 좁힌다.

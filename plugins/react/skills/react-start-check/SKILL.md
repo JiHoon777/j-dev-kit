@@ -2,6 +2,9 @@
 name: react-start-check
 description: React·Next.js 프로젝트의 작업 시작 전 점검. React·Next 버전과 React Compiler, eslint-plugin-react-hooks 설정, Next 라우터 방식을 확인하고, React Doctor 점수 기준선과 구현 중 지킬 것(Vercel react-best-practices 등)을 돌려준다. workflow 의 task-start 가 부른다.
 user-invocable: false
+version: "0.1.0"
+metadata:
+  author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # React 시작 점검
@@ -36,11 +39,11 @@ user-invocable: false
 ## 3. 기준선
 
 - 프로젝트의 린트 명령 결과(react-hooks 규칙 위반 개수를 따로).
-- React Doctor: `npx -y react-doctor@latest --verbose --no-telemetry`의 점수(0~100)와 범주별 지적 수. 처음 돌릴 때 패키지를 내려받는다고 알린다. 실패하거나 거절하면 "React Doctor 없음"으로 건너뛴다.
+- React Doctor: `npx -y react-doctor@0.9.22 --verbose --no-telemetry`의 점수(0~100)와 범주별 지적 수. 처음 돌릴 때 패키지를 내려받는다고 알린다. 실패하거나 거절하면 "React Doctor 없음"으로 건너뛴다.
 
 ## 4. 구현 중 지킬 것 (돌려줄 내용)
 
-- `vercel-react-best-practices` 스킬이 설치돼 있으면 컴포넌트를 만들거나 고칠 때 부르고 그 규칙을 따른다(요청 폭포, 번들 크기, 서버 처리, 클라이언트 요청, 다시 그리기, 렌더링). 없으면 설치를 권할지 "물을 것"에 넣는다(`npx skills add vercel-labs/agent-skills`).
+- `vercel-react-best-practices` 스킬이 설치돼 있으면 컴포넌트를 만들거나 고칠 때 부르고 그 규칙을 따른다(요청 폭포, 번들 크기, 서버 처리, 클라이언트 요청, 다시 그리기, 렌더링). 없으면 설치를 권할지 "물을 것"에 넣는다(`npx -y skills@1.7.5 add vercel-labs/agent-skills`).
 - 훅은 컴포넌트·커스텀 훅 최상위에서만 부른다. 조건·반복 안에서 부르지 않는다.
 - 다른 상태에서 계산되는 값은 상태로 두지 않고 렌더링 중에 계산한다. `useEffect`로 상태를 맞추지 않는다.
 - `useEffect`에서 구독·타이머·이벤트를 만들면 정리 함수를 돌려준다. 요청은 경합을 막는다(취소 또는 무시 플래그).
@@ -63,7 +66,7 @@ user-invocable: false
 | 검사 | 명령 | 결과 |
 | --- | --- | --- |
 | 린트(react-hooks) | `pnpm lint` | 위반 0 |
-| React Doctor | `npx -y react-doctor@latest --verbose --no-telemetry` | 82점 |
+| React Doctor | `npx -y react-doctor@0.9.22 --verbose --no-telemetry` | 82점 |
 
 #### 물을 것
 - …
