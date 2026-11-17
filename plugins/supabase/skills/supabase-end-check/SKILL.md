@@ -19,6 +19,8 @@ Run SQL with `psql "<DB URL>" -c "<SQL>"` using the DB URL from `supabase status
 
 Decide by the same criteria as `supabase-start-check`. If not applicable, "not applicable: <reason>". If the local stack is off, ask whether to start it; if declined, skip items that need the DB as "local stack off".
 
+Decide the migration owner with the same rule as `supabase-start-check` (section "Migration owner"). **Items 1–4 run only when supabase owns migrations**; otherwise skip them with "skip: migrations owned by server plugin". Items 5 onward always run.
+
 New migrations = `git diff --name-only origin/<base branch>...HEAD -- supabase/migrations` plus uncommitted new files.
 
 ## 1. Are the migrations complete?
@@ -105,7 +107,7 @@ Only when the Supabase MCP is connected **read-only to a development project** a
 
 ## 10. Agents to add to the review
 
-If any of the following changed, return that `supabase:rls-reviewer` should be added to the review step of `/task end`. Pass along the evidence (changed files), the risky change locations found in item 4, and the policy list and other-user check results from item 5. This agent checks whether policies work as intended, abuse potential, handling of risky migrations, and policy performance.
+If any of the following changed, return that `supabase:rls-reviewer` should be added to the review step of `/task end`. Pass along the evidence (changed files), the risky change locations found in item 4 (only when supabase owns migrations; otherwise `server:api-reviewer` judges them), and the policy list and other-user check results from item 5. This agent checks whether policies work as intended, abuse potential, handling of risky migrations, and policy performance.
 
 - Files under `supabase/`
 - Code that calls Supabase (`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)
@@ -117,6 +119,7 @@ If any of the following changed, return that `supabase:rls-reviewer` should be a
 ### supabase end check
 | Item | Result | Evidence |
 | --- | --- | --- |
+| Migration owner | … | supabase (supabase/migrations) / server (prisma) |
 | Missing migrations | pass | no `db diff` output |
 | Apply from scratch | … | `db reset` exit 0 / not verified |
 | Order | … | new 20261117…, latest on base 20261110… |

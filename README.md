@@ -140,6 +140,7 @@ The `server` plugin detects the language and suggests installing the matching LS
 
 ## Good to know
 
+- **One owner for migrations.** If a server migration tool (Prisma, Drizzle, TypeORM, Alembic, Django, Atlas, Flyway, Liquibase, golang-migrate) is present, the `server` plugin owns migration checks, even on Supabase Postgres. Otherwise, if `supabase/migrations/` exists, the `supabase` plugin owns them. If both exist, the checks ask which one is the source of truth. The other plugin skips its migration items, so the same database is never checked twice.
 - `/task` runs only when typed (`disable-model-invocation: true`). Saying "put this in the backlog" does not trigger it; use `/task create …`. This prevents `start` from running on its own.
 - The `supabase` plugin pulls in the official Supabase plugin as `supabase@claude-plugins-official`. If you already enabled the same plugin under another name from the claude.ai directory (e.g. `supabase@anthropic-plugin-directory`), enable only one; otherwise the same MCP server starts twice.
 - **External CLIs are version-pinned.** Tools that skills download and run with `npx` (React Doctor, `@sveltejs/mcp`, `sv`, `skills`) are pinned to versions published more than two weeks ago. To upgrade, check the new version and change only the number. Project tools (Prisma, Drizzle, TypeORM) use `npx --no-install` so only the project's installed copy runs. `modern-web-guidance` is left to its plugin's skill, with no command written here.

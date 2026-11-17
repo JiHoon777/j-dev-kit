@@ -38,6 +38,16 @@ metadata:
 
   모노레포라면 이 항목이 어느 서비스를 건드리는지 정하고 그 디렉터리에서 작업한다. 분명하지 않으면 질문으로 돌려준다.
 
+### 마이그레이션 담당
+
+마이그레이션 점검은 플러그인 하나만 맡는다. `supabase`와 `server` 플러그인이 같은 규칙으로 정하므로, 어느 쪽이 먼저 돌아도 결과가 같다.
+
+1. 서버 마이그레이션 도구가 있다(`prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` 또는 `flyway.conf`, Liquibase changelog, golang-migrate 폴더) → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.
+2. 그렇지 않고 `supabase/migrations/`가 있다 → **supabase** 가 맡는다.
+3. 서버 도구도 있고 `supabase/migrations/`에 SQL 파일도 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
+
+담당을 보고서 표의 첫 줄에 적는다. 담당이 아닌 플러그인은 마이그레이션 항목을 "건너뜀: 마이그레이션은 <담당> 플러그인 담당"으로 건너뛴다.
+
 ## 1. 환경 변수와 로컬 서비스
 
 - `.env.example`의 키와 실제 `.env`의 키를 비교해 빠진 **이름**만 나열한다. 값은 절대 출력하지 않는다.
@@ -45,7 +55,7 @@ metadata:
 
 ## 2. 언어별 점검 (참고 파일에서)
 
-참고 파일의 설치, 런타임 버전, LSP, 마이그레이션 상태, 기준선 점검을 돌린다. 데이터베이스를 건드리는 명령은 **로컬이나 개발 데이터베이스에만** 돌린다. 연결이 운영 환경으로 보이면 돌리지 않고 **중단한다**.
+참고 파일의 설치, 런타임 버전, LSP, 마이그레이션 상태, 기준선 점검을 돌린다. **마이그레이션 상태 점검은 server 가 마이그레이션을 맡을 때만 돌린다.** 아니면 "건너뜀: 마이그레이션은 supabase 플러그인 담당"으로 건너뛴다. 데이터베이스를 건드리는 명령은 **로컬이나 개발 데이터베이스에만** 돌린다. 연결이 운영 환경으로 보이면 돌리지 않고 **중단한다**.
 
 `npx --no-install`은 프로젝트에 설치된 도구만 쓰고 절대 내려받지 않는다. 도구가 설치돼 있지 않으면 설치하지 말고 "도구 설치 안 됨"으로 보고한다.
 
@@ -70,6 +80,7 @@ OpenAPI 스펙 파일(`openapi.*`, `swagger.*`)이 있는지만 명령으로 확
 ### server start check
 | Item | Result | Evidence |
 | --- | --- | --- |
+| Migration owner | … | server (prisma) / supabase (supabase/migrations) |
 | Detection | pass | Node · NestJS, Prisma (references/node.md read) |
 | Environment variables | … | missing keys: … |
 | Local services | … | docker compose: db running |

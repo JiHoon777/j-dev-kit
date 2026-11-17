@@ -32,7 +32,7 @@ Sources: [OWASP API Security Top 10 2023](https://api-security.owasp.org/edition
 12. **Breaking changes:** Removed or renamed fields, changed types or defaults, new required request fields, changed status codes. Did the consumers change too?
 13. **Logs and errors:** Are passwords, tokens, sessions, keys, connection strings, personal data, and stack traces kept out of logs and error responses?
 14. **Tests:** Are there tests that fail if the changed behavior or authorization rules are broken?
-15. **Risky migrations:** For each risky DDL location you were given (drops, type changes, `not null` without a default, locking indexes, renames), assess whether data could be lost or things could break during deployment, and propose how to split it into stages and how to roll back.
+15. (Only when you were given risky DDL locations, which happens when the server plugin owns migrations.) **Risky migrations:** For each risky DDL location you were given (drops, type changes, `not null` without a default, locking indexes, renames), assess whether data could be lost or things could break during deployment, and propose how to split it into stages and how to roll back.
 16. **Spec comparison:** If there is no `oasdiff` result and you were given the base and new spec paths, compare the two specs directly to find the breaking changes in item 12.
 
 When possible, write a request that reproduces the problem (a `curl` example) and use it as evidence. Do not run it.

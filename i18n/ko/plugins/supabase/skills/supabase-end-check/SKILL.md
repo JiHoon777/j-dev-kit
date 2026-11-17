@@ -21,6 +21,8 @@ SQL 은 `supabase status`의 DB URL 로 `psql "<DB URL>" -c "<SQL>"`을 써서 �
 
 `supabase-start-check`와 같은 기준으로 정한다. 해당하지 않으면 "해당 없음: <이유>". 로컬 스택이 꺼져 있으면 켤지 묻는다. 거절하면 DB 가 필요한 항목은 "로컬 스택 꺼짐"으로 건너뛴다.
 
+마이그레이션 담당은 `supabase-start-check`와 같은 규칙("마이그레이션 담당" 절)으로 정한다. **1~4번은 supabase 가 마이그레이션을 맡을 때만 돌린다.** 아니면 "건너뜀: 마이그레이션은 server 플러그인 담당"으로 건너뛴다. 5번부터는 항상 돌린다.
+
 새 마이그레이션 = `git diff --name-only origin/<기준 브랜치>...HEAD -- supabase/migrations`, 그리고 커밋하지 않은 새 파일.
 
 ## 1. 마이그레이션이 다 있는가?
@@ -107,7 +109,7 @@ Supabase MCP 가 **개발 프로젝트에 읽기 전용으로** 연결돼 있고
 
 ## 10. 리뷰에 넣을 에이전트
 
-아래 중 하나라도 바뀌었으면 `/task end`의 리뷰 단계에 `supabase:rls-reviewer`를 넣어야 한다고 돌려준다. 근거(바뀐 파일), 4번 항목에서 찾은 위험한 변경 위치, 5번 항목의 정책 목록과 다른 사용자 확인 결과를 함께 넘긴다. 이 에이전트는 정책이 의도대로 동작하는지, 악용 가능성, 위험한 마이그레이션 처리, 정책 성능을 본다.
+아래 중 하나라도 바뀌었으면 `/task end`의 리뷰 단계에 `supabase:rls-reviewer`를 넣어야 한다고 돌려준다. 근거(바뀐 파일), 4번 항목에서 찾은 위험한 변경 위치(supabase 가 마이그레이션을 맡을 때만. 아니면 `server:api-reviewer`가 판단한다), 5번 항목의 정책 목록과 다른 사용자 확인 결과를 함께 넘긴다. 이 에이전트는 정책이 의도대로 동작하는지, 악용 가능성, 위험한 마이그레이션 처리, 정책 성능을 본다.
 
 - `supabase/` 아래 파일
 - Supabase 를 부르는 코드(`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)
@@ -119,6 +121,7 @@ Supabase MCP 가 **개발 프로젝트에 읽기 전용으로** 연결돼 있고
 ### supabase end check
 | Item | Result | Evidence |
 | --- | --- | --- |
+| Migration owner | … | supabase (supabase/migrations) / server (prisma) |
 | Missing migrations | pass | no `db diff` output |
 | Apply from scratch | … | `db reset` exit 0 / not verified |
 | Order | … | new 20261117…, latest on base 20261110… |

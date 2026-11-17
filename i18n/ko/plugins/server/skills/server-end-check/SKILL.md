@@ -33,7 +33,9 @@ metadata:
 
 `### Baseline`과 같은 명령을 다시 돌린다. 새로 생긴 실패 → 실패. 언어별 추가 검사는 참고 파일에 있다.
 
-## 2. 마이그레이션
+## 2. 마이그레이션 (server 가 마이그레이션을 맡을 때만)
+
+마이그레이션 담당은 `server-start-check`와 같은 규칙("마이그레이션 담당" 절)으로 정한다. supabase 가 맡으면 이 단계 전체를 "건너뜀: 마이그레이션은 supabase 플러그인 담당"으로 건너뛴다.
 
 - **빠진 마이그레이션:** 판별한 도구에 대해 참고 파일의 명령을 돌린다(모델은 바뀌었는데 마이그레이션을 만들지 않았음 → 실패).
 - **처음부터 다시 적용:** 로컬이나 개발 데이터베이스를 비우고 모든 마이그레이션을 다시 적용할지 **묻는다**(데이터가 사라진다). 승인하면 참고 파일의 reset 명령을 돌린다. 거절하면 → "검증 안 함".
@@ -57,7 +59,7 @@ metadata:
 
 ## 6. 리뷰에 넣을 에이전트
 
-서버 코드(라우트, 컨트롤러, 핸들러, 서비스, 인가 미들웨어, 데이터베이스 쿼리), API 스펙, 마이그레이션 중 바뀐 것이 있으면 `server:api-reviewer`를 돌려준다. 함께 넘길 것: 근거(바뀐 파일), 2단계의 위험한 DDL 위치, 3단계의 oasdiff 결과(또는 두 스펙 경로), 5단계의 호출 결과.
+서버 코드(라우트, 컨트롤러, 핸들러, 서비스, 인가 미들웨어, 데이터베이스 쿼리), API 스펙, 마이그레이션 중 바뀐 것이 있으면 `server:api-reviewer`를 돌려준다. 함께 넘길 것: 근거(바뀐 파일), 2단계의 위험한 DDL 위치(server 가 마이그레이션을 맡을 때만), 3단계의 oasdiff 결과(또는 두 스펙 경로), 5단계의 호출 결과.
 
 ## 돌려줄 형식
 
@@ -65,6 +67,7 @@ metadata:
 ### server end check
 | Item | Result | Evidence |
 | --- | --- | --- |
+| Migration owner | … | server (prisma) / supabase |
 | Checks (vs baseline) | … | 0 new failures |
 | Missing migration | … | `prisma migrate diff … --exit-code` 0 |
 | Apply from scratch | … | … / not verified |

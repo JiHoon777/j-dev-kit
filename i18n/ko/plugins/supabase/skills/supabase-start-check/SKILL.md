@@ -27,18 +27,30 @@ metadata:
 - `supabase/config.toml`도 없고 package.json 에 `@supabase/` 의존성도 없으면 → "해당 없음: Supabase 를 쓰는 흔적 없음".
 - `@supabase/` 의존성만 있고 `supabase/` 폴더가 없으면(원격 프로젝트만 쓰는 경우) → 1-4를 건너뛰고 5와 6만 한다. 근거에 "로컬 Supabase 없음, 스키마를 저장소에서 관리하지 않음"이라고 적는다.
 
+### 마이그레이션 담당
+
+마이그레이션 점검은 플러그인 하나만 맡는다. `supabase`와 `server` 플러그인이 같은 규칙으로 정하므로, 어느 쪽이 먼저 돌아도 결과가 같다.
+
+1. 서버 마이그레이션 도구가 있다(`prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` 또는 `flyway.conf`, Liquibase changelog, golang-migrate 폴더) → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.
+2. 그렇지 않고 `supabase/migrations/`가 있다 → **supabase** 가 맡는다.
+3. 서버 도구도 있고 `supabase/migrations/`에 SQL 파일도 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
+
+담당을 보고서 표의 첫 줄에 적는다. 담당이 아닌 플러그인은 마이그레이션 항목을 "건너뜀: 마이그레이션은 <담당> 플러그인 담당"으로 건너뛴다.
+
 ## 1. CLI 와 로컬 스택
 
 1. `supabase --version`. 없으면 실패로 하고 1-4를 건너뛴다(설치는 사용자가 한다).
 2. `supabase status`. 돌고 있지 않으면 `supabase start`를 돌릴지 **묻는다**(Docker 컨테이너 여러 개를 띄운다). 거절하면 2-4를 "로컬 스택 꺼짐"으로 건너뛴다.
 3. 출력에서 DB URL 을 적어 둔다(기본값 `postgresql://postgres:postgres@127.0.0.1:54322/postgres`). 아래 SQL 은 `psql "<DB URL>" -c "<SQL>"`로 돌린다. `psql`이 없으면 SQL 이 필요한 항목은 "psql 없음"으로 건너뛴다.
 
-## 2. 마이그레이션 상태
+## 2. 마이그레이션 상태 (supabase 가 마이그레이션을 맡을 때만)
 
 1. `supabase migration list --local`. `supabase/migrations/`에 있는 것 중 로컬 DB 에 적용되지 않은 것이 있으면 실패로 하고 `supabase migration up`을 제안한다.
 2. 원격 프로젝트가 연결돼 있으면(`supabase/.temp/project-ref`가 있으면) `supabase migration list --linked`도 확인한다. **원격에만 있고 저장소에는 없는 마이그레이션**이 있으면 중단한다: 누군가 저장소를 거치지 않고 원격에 적용한 것이다. 로그인이나 비밀번호를 요구하거나 네트워크를 쓸 수 없으면 "원격 확인 못 함"으로 건너뛴다.
 
-## 3. 드리프트
+## 3. 드리프트 (supabase 가 마이그레이션을 맡을 때만)
+
+server 가 맡으면 건너뛴다. `supabase db diff`가 서버 도구가 만든 테이블을 드리프트로 보고하기 때문이다.
 
 `supabase db diff`를 돌린다. 출력 SQL 이 비어 있지 않으면 **중단한다**: 로컬 DB 에 마이그레이션 파일로 저장되지 않은 스키마 변경이 있다(예: 대시보드에서 직접 바꿈). 출력 SQL 을 근거에 붙이고, 마이그레이션으로 남길지(`supabase db diff -f <이름>`) 버릴지(`supabase db reset`) 사용자가 정해야 한다고 돌려준다.
 
@@ -76,7 +88,7 @@ metadata:
 
 작업 설명(백로그 내용)을 읽고 작업이 스키마를 바꾸는지 판단한다. 바꾼다면 플랜에 아래를 넣어야 한다고 돌려준다.
 
-- **마이그레이션**: `supabase migration new <영어_이름>`으로 파일을 만들고 SQL 로 쓴다. 대시보드에서 바꾼 뒤 나중에 diff 로 뽑지 않는다.
+- **마이그레이션** (supabase 가 맡을 때. server 가 맡으면 server 플러그인이 그 도구의 규칙을 돌려준다): `supabase migration new <영어_이름>`으로 파일을 만들고 SQL 로 쓴다. 대시보드에서 바꾼 뒤 나중에 diff 로 뽑지 않는다.
 - **RLS**: 새 테이블마다 `alter table … enable row level security;`와 select, insert, update, delete 각각의 정책. 누가(anon, authenticated, 특정 역할) 어떤 행을 볼 수 있는지를 인수 조건의 권한 규칙에 맞춘다.
   - 정책 안의 `auth.uid()`는 `(select auth.uid())`로 감싼다(행마다 다시 계산되지 않게).
   - 정책 조건에 쓰는 컬럼(`user_id` 등)에 인덱스를 만든다.
@@ -91,7 +103,7 @@ metadata:
 ## 8. 구현 중 지킬 것 (돌려줄 것)
 
 - Supabase 코드(마이그레이션 SQL, 정책, RPC, 클라이언트 호출)를 쓸 때는 공식 Supabase 플러그인의 `supabase` 스킬을, SQL·인덱스·정책 성능이 걸리면 `supabase-postgres-best-practices` 스킬을 부르고 그 방식을 따른다. 플러그인을 쓸 수 없으면 그렇다고 말한다.
-- 스키마 변경은 `supabase migration new <이름>`으로 만든 파일에 SQL 로 쓴다. 대시보드에서 바꾸지 않는다.
+- supabase 가 마이그레이션을 맡으면 스키마 변경은 `supabase migration new <이름>`으로 만든 파일에 SQL 로 쓴다. server 가 맡으면 서버 도구를 쓴다(server 플러그인이 규칙을 돌려준다). 대시보드에서 바꾸지 않는다.
 - 정책과 RPC 는 테스트를 먼저 쓴다: `supabase/tests/`에 pgTAP 테스트가 있는 프로젝트면 거기에, 아니면 다른 사용자로 확인하는 SQL 을 `Implementation Notes`에 남긴다.
 - 실제 Supabase 프로젝트를 건드리는 명령(`db push`, `--linked`로 하는 변경, `functions deploy`, `secrets set`)은 돌리지 않는다. 필요하면 사용자에게 알린다.
 
@@ -101,6 +113,7 @@ metadata:
 ### supabase start check
 | Item | Result | Evidence |
 | --- | --- | --- |
+| Migration owner | … | supabase (supabase/migrations) / server (prisma) |
 | CLI and local stack | pass | supabase 2.x, status OK |
 | Local migrations | … | … |
 | Remote migrations | skip | not linked |

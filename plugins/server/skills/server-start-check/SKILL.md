@@ -36,6 +36,16 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 
   In a monorepo, decide which service this item touches and work in that directory. If unclear, return it as a question.
 
+### Migration owner
+
+Exactly one plugin owns the migration checks. The `supabase` and `server` plugins decide it with the same rule, so the result is the same whichever runs first:
+
+1. A server migration tool is present (`prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, Liquibase changelog, a golang-migrate folder) → **server** owns migrations, even if the database is Supabase Postgres.
+2. Otherwise, `supabase/migrations/` exists → **supabase** owns migrations.
+3. Both a server tool and SQL files in `supabase/migrations/` → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
+
+Record the owner as the first row of the report. The plugin that does not own migrations skips its migration items with "skip: migrations owned by <owner> plugin".
+
 ## 1. Environment variables and local services
 
 - Compare the keys in `.env.example` with those in the real `.env` and list only the missing **names**. Never print values.
@@ -43,7 +53,7 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 
 ## 2. Language checks (from the reference)
 
-Run the reference's install, runtime version, LSP, migration status, and baseline checks. Commands that touch a database run **only against a local or development database**. If the connection looks like production, do not run them; **stop**.
+Run the reference's install, runtime version, LSP, migration status, and baseline checks. **Run the migration status check only when server owns migrations**; otherwise skip it with "skip: migrations owned by supabase plugin". Commands that touch a database run **only against a local or development database**. If the connection looks like production, do not run them; **stop**.
 
 `npx --no-install` uses only tools installed in the project and never downloads. If a tool is not installed, do not install it; report "tool not installed".
 
@@ -68,6 +78,7 @@ Only check by command whether an OpenAPI spec file (`openapi.*`, `swagger.*`) ex
 ### server start check
 | Item | Result | Evidence |
 | --- | --- | --- |
+| Migration owner | … | server (prisma) / supabase (supabase/migrations) |
 | Detection | pass | Node · NestJS, Prisma (references/node.md read) |
 | Environment variables | … | missing keys: … |
 | Local services | … | docker compose: db running |

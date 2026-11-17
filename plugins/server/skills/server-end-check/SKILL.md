@@ -31,7 +31,9 @@ Judge each item as **pass · fail · skip (reason)** and return it in the format
 
 Run the same commands as `### Baseline` again. New failures → fail. Language-specific extras are in the reference.
 
-## 2. Migrations
+## 2. Migrations (only when server owns migrations)
+
+Decide the migration owner with the same rule as `server-start-check` (section "Migration owner"). If supabase owns migrations, skip this whole step with "skip: migrations owned by supabase plugin".
 
 - **Missing migration:** run the reference's command for the detected tool (the model changed but no migration was created → fail).
 - **Apply from scratch:** **ask** whether to empty the local or development database and re-apply every migration (data will be lost). If approved, run the reference's reset command. If declined → "not verified".
@@ -55,7 +57,7 @@ Start the server locally (with the test configuration if there is one) and send 
 
 ## 6. Agents to add to the review
 
-If server code (routes, controllers, handlers, services, authorization middleware, database queries), the API spec, or migrations changed, return `server:api-reviewer` with: the evidence (changed files), the risky DDL locations from step 2, the oasdiff result from step 3 (or both spec paths), and the call results from step 5.
+If server code (routes, controllers, handlers, services, authorization middleware, database queries), the API spec, or migrations changed, return `server:api-reviewer` with: the evidence (changed files), the risky DDL locations from step 2 (only when server owns migrations), the oasdiff result from step 3 (or both spec paths), and the call results from step 5.
 
 ## Return format
 
@@ -63,6 +65,7 @@ If server code (routes, controllers, handlers, services, authorization middlewar
 ### server end check
 | Item | Result | Evidence |
 | --- | --- | --- |
+| Migration owner | … | server (prisma) / supabase |
 | Checks (vs baseline) | … | 0 new failures |
 | Missing migration | … | `prisma migrate diff … --exit-code` 0 |
 | Apply from scratch | … | … / not verified |

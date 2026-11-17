@@ -25,18 +25,30 @@ Called by `/task start`. Judge each item as **pass · fail · skip (reason) · s
 - If there is no `supabase/config.toml` and no `@supabase/` dependency in package.json → "not applicable: no sign of Supabase use".
 - If there is only an `@supabase/` dependency and no `supabase/` folder (only a remote project is used) → skip 1-4 and do only 5 and 6. In the evidence, write "no local Supabase; schema is not managed in the repository".
 
+### Migration owner
+
+Exactly one plugin owns the migration checks. The `supabase` and `server` plugins decide it with the same rule, so the result is the same whichever runs first:
+
+1. A server migration tool is present (`prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, Liquibase changelog, a golang-migrate folder) → **server** owns migrations, even if the database is Supabase Postgres.
+2. Otherwise, `supabase/migrations/` exists → **supabase** owns migrations.
+3. Both a server tool and SQL files in `supabase/migrations/` → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
+
+Record the owner as the first row of the report. The plugin that does not own migrations skips its migration items with "skip: migrations owned by <owner> plugin".
+
 ## 1. CLI and local stack
 
 1. `supabase --version`. If it is missing, mark fail and skip 1-4 (the user does the install).
 2. `supabase status`. If it is not running, **ask** whether to run `supabase start` (it starts several Docker containers). If declined, skip 2-4 as "local stack off".
 3. Note the DB URL from the output (default `postgresql://postgres:postgres@127.0.0.1:54322/postgres`). Run the SQL below with `psql "<DB URL>" -c "<SQL>"`. If `psql` is missing, skip items that need SQL as "no psql".
 
-## 2. Migration status
+## 2. Migration status (only when supabase owns migrations)
 
 1. `supabase migration list --local`. If something in `supabase/migrations/` is not applied to the local DB, mark fail and suggest `supabase migration up`.
 2. If a remote project is linked (`supabase/.temp/project-ref` exists), also check `supabase migration list --linked`. If there is a **migration that exists only on the remote and not in the repository**, stop: someone applied it to the remote without going through the repository. If it asks for login or a password, or the network is unavailable, skip as "could not check remote".
 
-## 3. Drift
+## 3. Drift (only when supabase owns migrations)
+
+When server owns migrations, skip this: `supabase db diff` would report the server tool's tables as drift.
 
 Run `supabase db diff`. If the output SQL is not empty, **stop**: the local DB has schema changes that were not saved as migration files (for example, changed directly in the dashboard). Attach the output SQL to the evidence and return that the user must decide whether to keep it as a migration (`supabase db diff -f <name>`) or discard it (`supabase db reset`).
 
@@ -74,7 +86,7 @@ Do not search yourself for existing tables, policies, and functions related to t
 
 Read the task description (backlog details) and decide whether the work changes the schema. If it does, return that the plan should include the following.
 
-- **Migrations**: Create the file with `supabase migration new <english_name>` and write it in SQL. Do not change things in the dashboard and extract them with diff later.
+- **Migrations** (when supabase owns them; when server owns them, the server plugin returns its tool's rule): Create the file with `supabase migration new <english_name>` and write it in SQL. Do not change things in the dashboard and extract them with diff later.
 - **RLS**: For each new table, `alter table … enable row level security;` and a policy for each of select, insert, update, and delete. Match who (anon, authenticated, a specific role) can see which rows to the permission rules in the acceptance criteria.
   - In policies, wrap `auth.uid()` as `(select auth.uid())` (so it is not recomputed per row).
   - Create indexes on the columns used in policy conditions (`user_id`, etc.).
@@ -89,7 +101,7 @@ Read the task description (backlog details) and decide whether the work changes 
 ## 8. Rules during implementation (to return)
 
 - When writing Supabase code (migration SQL, policies, RPCs, client calls), call the `supabase` skill from the official Supabase plugin, and when SQL, index, or policy performance is involved, call the `supabase-postgres-best-practices` skill, and follow their approach. If the plugin is not available, say so.
-- Write schema changes in SQL in a file created with `supabase migration new <name>`. Do not change things in the dashboard.
+- When supabase owns migrations, write schema changes in SQL in a file created with `supabase migration new <name>`. When server owns them, use the server tool (the server plugin returns the rule). Do not change things in the dashboard.
 - Write tests first for policies and RPCs: in a project with pgTAP tests in `supabase/tests/`, put them there; otherwise leave SQL that checks as another user in `Implementation Notes`.
 - Do not run commands that touch a real Supabase project (`db push`, changes with `--linked`, `functions deploy`, `secrets set`). If needed, tell the user.
 
@@ -99,6 +111,7 @@ Read the task description (backlog details) and decide whether the work changes 
 ### supabase start check
 | Item | Result | Evidence |
 | --- | --- | --- |
+| Migration owner | … | supabase (supabase/migrations) / server (prisma) |
 | CLI and local stack | pass | supabase 2.x, status OK |
 | Local migrations | … | … |
 | Remote migrations | skip | not linked |

@@ -140,6 +140,7 @@ superpowers 는 세션을 시작할 때마다 "맞을 것 같으면 스킬을 �
 
 ## 알아 둘 것
 
+- **마이그레이션 담당은 하나.** 서버 마이그레이션 도구(Prisma, Drizzle, TypeORM, Alembic, Django, Atlas, Flyway, Liquibase, golang-migrate)가 있으면 데이터베이스가 Supabase 여도 `server` 플러그인이 마이그레이션 점검을 맡는다. 없고 `supabase/migrations/`가 있으면 `supabase` 플러그인이 맡는다. 둘 다 있으면 어느 쪽이 기준인지 묻는다. 담당이 아닌 쪽은 마이그레이션 항목을 건너뛰므로 같은 DB 를 두 번 검사하지 않는다.
 - `/task`는 직접 입력할 때만 실행된다(`disable-model-invocation: true`). "백로그에 넣어 줘"라고 말해도 저절로 실행되지 않으니 `/task create …`로 부른다. `start`가 저절로 실행되는 것을 막기 위해서다.
 - `supabase` 플러그인은 공식 Supabase 플러그인을 `supabase@claude-plugins-official`로 가져온다. claude.ai 디렉터리에서 같은 플러그인을 다른 이름(예: `supabase@anthropic-plugin-directory`)으로 이미 켜 두었다면 하나만 켠다. 같은 MCP 서버가 두 번 뜬다.
 - **외부 CLI 는 버전을 고정한다.** 스킬이 `npx`로 내려받아 실행하는 도구(React Doctor, `@sveltejs/mcp`, `sv`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 올릴 때는 새 버전을 확인하고 숫자만 바꾼다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 프로젝트에 설치된 것만 쓴다. `modern-web-guidance`는 플러그인 스킬에 맡기고 명령을 적지 않는다.
