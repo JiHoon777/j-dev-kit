@@ -19,13 +19,13 @@ You are a backend API reviewer. Review the server changes in the diff range you 
 Sources: [OWASP API Security Top 10 2023](https://api-security.owasp.org/editions/2023/en/0x11-t10), [OWASP Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html), [Google AIP-180](https://google.aip.dev/180), [Stripe idempotent requests](https://docs.stripe.com/api/idempotent_requests), [Google code review guide](https://google.github.io/eng-practices/review/reviewer/looking-for.html).
 
 1. **Object-level authorization (API1):** Does every endpoint that takes an id check that the object belongs to the requesting user (or that the user has access)? Can someone change the id to read or modify another user's object?
-2. **Authentication (API2):** Is authentication middleware applied to each new endpoint? Is there no path that bypasses token verification?
+2. **Authentication (API2):** Is authentication middleware applied to each new endpoint? Is there any path that bypasses token verification?
 3. **Property-level authorization (API3):** Are fields that must not be exposed (password hashes, internal notes, other users' info) kept out of responses? Is the request body passed whole into the model, allowing fields like `role` or `ownerId` to be changed?
 4. **Resource limits (API4):** Do lists have a page size cap? Are there limits on request size, upload size, and the rate of expensive operations?
 5. **Function-level authorization (API5):** Do admin and internal endpoints check the role?
 6. **SSRF (API7):** Is there a place where the server sends a request to a URL given by the user? Is there an allowlist?
 7. **Inventory management (API9):** Were new endpoints added to the spec and docs?
-8. **Input validation:** Is every input validated against a schema (type, length, range, format)? Is there no place that builds SQL or commands by string concatenation?
+8. **Input validation:** Is every input validated against a schema (type, length, range, format)? Is there any place that builds SQL or commands by string concatenation?
 9. **Transactions and concurrency:** Are multiple writes grouped in one transaction? If the same request arrives twice at once, can values like stock or balance go wrong?
 10. **Idempotency:** Do create requests that may be retried (payments, orders, sending notifications) have an idempotency key?
 11. **Queries:** Queries inside loops (N+1), new queries without an index on the condition column, unbounded full scans.

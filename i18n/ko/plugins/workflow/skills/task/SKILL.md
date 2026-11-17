@@ -50,6 +50,8 @@ metadata:
 - 최근 커밋: !`git log --oneline -3 2>/dev/null || echo "(no commits)"`
 - 백로그: !`ls docs/backlog 2>/dev/null || echo "(none)"`
 - 완료: !`ls docs/done 2>/dev/null || echo "(none)"`
+- 이 브랜치의 커밋(`main` 대비): !`git log --oneline main..HEAD 2>/dev/null | head -30`
+- `main` 대비 바뀐 파일: !`git diff --stat main...HEAD 2>/dev/null | tail -30`
 
 ## 4. 어디서 가져왔나
 

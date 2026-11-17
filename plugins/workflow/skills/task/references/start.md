@@ -91,7 +91,7 @@ Show the plan with `ExitPlanMode`, in this order:
 **Record first (Backlog.md task execution guidelines):**
 
 1. Create the branch: `w/` followed by the item file name without `.md`. Example: `git switch -c w/001-common-login`
-2. In the item file: `status: In Progress`, `updated_date` to today, and the approved plan in `Implementation Plan`. Put the stack checks' baseline under `### Baseline` in `Implementation Notes`. If step 3 changed the Acceptance Criteria, change them now. ("write it down in the task so that you can refer to it later.")
+2. In the item file: `status: In Progress`, `updated_date` to today, and the approved plan in `Implementation Plan`. Put the stack checks' baseline under `### Baseline` in `Implementation Notes`. If step 3 decided to change the Acceptance Criteria, edit them now. ("write it down in the task so that you can refer to it later.")
 3. Make the lint command pass and commit: `chore(backlog): <number> start`
 
 **Build:**

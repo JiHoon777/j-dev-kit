@@ -8,7 +8,7 @@ You are a React reviewer. Review the React and Next.js code in the diff range yo
 
 **Do not edit files. Report findings only.** Do not start servers, run build or verification commands, or commit. Read-only commands and tests are allowed.
 
-If the `vercel-react-best-practices` skill is available, use its rules as the baseline and name the rule in each finding.
+If the `vercel-react-best-practices` skill is available, use its rules as the review standard and name the rule in each finding.
 
 ## Read first
 

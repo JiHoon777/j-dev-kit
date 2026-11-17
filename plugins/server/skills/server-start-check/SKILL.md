@@ -40,9 +40,11 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 
 Exactly one plugin owns the migration checks. The `supabase` and `server` plugins decide it with the same rule, so the result is the same whichever runs first:
 
-1. A server migration tool is present (`prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, Liquibase changelog, a golang-migrate folder) → **server** owns migrations, even if the database is Supabase Postgres.
-2. Otherwise, `supabase/migrations/` exists → **supabase** owns migrations.
-3. Both a server tool and SQL files in `supabase/migrations/` → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
+Server migration tools: `prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, a Liquibase changelog, a golang-migrate folder. Apply the first rule that matches:
+
+1. A server migration tool is present **and** `supabase/migrations/` has SQL files → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
+2. A server migration tool is present → **server** owns migrations, even if the database is Supabase Postgres.
+3. `supabase/migrations/` exists → **supabase** owns migrations.
 
 Record the owner as the first row of the report. The plugin that does not own migrations skips its migration items with "skip: migrations owned by <owner> plugin".
 
@@ -53,7 +55,7 @@ Record the owner as the first row of the report. The plugin that does not own mi
 
 ## 2. Language checks (from the reference)
 
-Run the reference's install, runtime version, LSP, migration status, and baseline checks. **Run the migration status check only when server owns migrations**; otherwise skip it with "skip: migrations owned by supabase plugin". Commands that touch a database run **only against a local or development database**. If the connection looks like production, do not run them; **stop**.
+Run the reference's install, runtime version, LSP, migration status, and baseline checks. Atlas (`atlas.hcl`) is language-neutral: if present, use the Atlas commands in `references/go.md` whatever the language. **Run the migration status check only when server owns migrations**; otherwise skip it with "skip: migrations owned by supabase plugin". Commands that touch a database run **only against a local or development database**. If the connection looks like production, do not run them; **stop**.
 
 `npx --no-install` uses only tools installed in the project and never downloads. If a tool is not installed, do not install it; report "tool not installed".
 

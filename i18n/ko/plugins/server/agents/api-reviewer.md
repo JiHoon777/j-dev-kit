@@ -21,13 +21,13 @@ tools: Read, Grep, Glob, Bash
 출처: [OWASP API Security Top 10 2023](https://api-security.owasp.org/editions/2023/en/0x11-t10), [OWASP Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html), [Google AIP-180](https://google.aip.dev/180), [Stripe idempotent requests](https://docs.stripe.com/api/idempotent_requests), [Google code review guide](https://google.github.io/eng-practices/review/reviewer/looking-for.html).
 
 1. **객체 단위 인가 (API1):** id 를 받는 엔드포인트마다 그 객체가 요청한 사용자의 것인지(또는 사용자에게 접근 권한이 있는지) 확인하는가? id 를 바꿔서 다른 사용자의 객체를 읽거나 고칠 수 있는가?
-2. **인증 (API2):** 새 엔드포인트마다 인증 미들웨어가 붙어 있는가? 토큰 검증을 우회하는 경로가 없는가?
+2. **인증 (API2):** 새 엔드포인트마다 인증 미들웨어가 붙어 있는가? 토큰 검증을 우회하는 경로가 있는가?
 3. **속성 단위 인가 (API3):** 노출되면 안 되는 필드(비밀번호 해시, 내부 메모, 다른 사용자 정보)를 응답에서 빼는가? 요청 본문을 통째로 모델에 넘겨서 `role`이나 `ownerId` 같은 필드를 바꿀 수 있게 되는가?
 4. **자원 제한 (API4):** 목록에 페이지 크기 상한이 있는가? 요청 크기, 업로드 크기, 비싼 작업의 횟수에 제한이 있는가?
 5. **기능 단위 인가 (API5):** 관리자용·내부용 엔드포인트가 역할을 확인하는가?
 6. **SSRF (API7):** 사용자가 준 URL 로 서버가 요청을 보내는 곳이 있는가? 허용 목록이 있는가?
 7. **인벤토리 관리 (API9):** 새 엔드포인트를 스펙과 문서에 더했는가?
-8. **입력 검증:** 모든 입력을 스키마(타입, 길이, 범위, 형식)로 검증하는가? 문자열을 이어 붙여 SQL 이나 명령을 만드는 곳이 없는가?
+8. **입력 검증:** 모든 입력을 스키마(타입, 길이, 범위, 형식)로 검증하는가? 문자열을 이어 붙여 SQL 이나 명령을 만드는 곳이 있는가?
 9. **트랜잭션과 동시성:** 여러 쓰기를 한 트랜잭션으로 묶는가? 같은 요청이 동시에 두 번 오면 재고나 잔액 같은 값이 틀어질 수 있는가?
 10. **멱등성:** 재시도될 수 있는 생성 요청(결제, 주문, 알림 보내기)에 멱등성 키가 있는가?
 11. **쿼리:** 반복문 안의 쿼리(N+1), 조건 컬럼에 인덱스가 없는 새 쿼리, 제한 없는 전체 스캔.

@@ -19,7 +19,7 @@ Do not guess about APIs you do not know. If the official Svelte plugin's MCP too
 ## What to check
 
 1. **Runes:** Places that build a derived value by assigning to state inside `$effect` (should use `$derived`). Values that do not need to be `$state`. Places that mutate props (without `$bindable`).
-2. **`$effect` cleanup:** Places that create timers, subscriptions, or event listeners and do not return a cleanup function. Places that complicate something `$effect` could handle with `onMount` plus manual cleanup.
+2. **`$effect` cleanup:** Places that create timers, subscriptions, or event listeners and do not return a cleanup function. Places that use `onMount` plus manual cleanup for something `$effect` could handle more simply.
 3. **SSR:** Access to `window`, `document`, or `localStorage` in component top-level code or in a universal `load` (`+page.ts`, `+layout.ts`).
 4. **Secrets:** Imports of `$env/static/private` or `$env/dynamic/private` outside server files (`*.server.*`, `hooks.server.*`). Use of secret keys or internal URLs in a universal `load`.
 5. **load and form actions:** Validation failures handled with `throw` or a normal return instead of `fail(400, …)`. Redirects handled without `redirect()`. Places where `load` returns other users' data without an authorization check.

@@ -18,7 +18,7 @@ Check that the `gopls-lsp` plugin is enabled and `gopls` is on PATH. If not, it 
 | `atlas.hcl` | Atlas | `atlas migrate status --url <url> --dir <dir>` | `atlas migrate validate` |
 | `migrate` (golang-migrate) and a migrations folder | golang-migrate | `migrate -path <dir> -database <url> version` | — |
 
-Unapplied migrations → fail. Diverged or dirty state → **stop**.
+Unapplied migrations → fail (return a question about applying them). Diverged or dirty state → **stop**.
 
 ## 4. Baseline
 

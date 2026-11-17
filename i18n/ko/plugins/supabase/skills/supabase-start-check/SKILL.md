@@ -11,7 +11,7 @@ metadata:
 
 # Supabase 시작 점검
 
-`/task start`가 부른다. 각 항목을 **통과 · 실패 · 건너뜀(이유) · 중단**으로 판정하고, 결과를 맨 아래 형식으로 돌려준다. 고치는 것은 이 스킬의 일이 아니다.
+`/task start`가 부른다. 보고서는 프로젝트의 언어로 쓴다. 각 항목을 **통과 · 실패 · 건너뜀(이유) · 중단**으로 판정하고, 결과를 맨 아래 형식으로 돌려준다. 고치는 것은 이 스킬의 일이 아니다.
 
 | 부분 | 출처 |
 | --- | --- |
@@ -25,22 +25,24 @@ metadata:
 
 - CLAUDE.md 에 `stack:`이 있는데 supabase 가 없으면 → "해당 없음: 스택 설정에 없음".
 - `supabase/config.toml`도 없고 package.json 에 `@supabase/` 의존성도 없으면 → "해당 없음: Supabase 를 쓰는 흔적 없음".
-- `@supabase/` 의존성만 있고 `supabase/` 폴더가 없으면(원격 프로젝트만 쓰는 경우) → 1-4를 건너뛰고 5와 6만 한다. 근거에 "로컬 Supabase 없음, 스키마를 저장소에서 관리하지 않음"이라고 적는다.
+- `@supabase/` 의존성만 있고 `supabase/` 폴더가 없으면(원격 프로젝트만 쓰는 경우) → 1~4단계를 건너뛰고 5단계와 6단계만 한다. 근거에 "로컬 Supabase 없음, 스키마를 저장소에서 관리하지 않음"이라고 적는다.
 
 ### 마이그레이션 담당
 
 마이그레이션 점검은 플러그인 하나만 맡는다. `supabase`와 `server` 플러그인이 같은 규칙으로 정하므로, 어느 쪽이 먼저 돌아도 결과가 같다.
 
-1. 서버 마이그레이션 도구가 있다(`prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` 또는 `flyway.conf`, Liquibase changelog, golang-migrate 폴더) → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.
-2. 그렇지 않고 `supabase/migrations/`가 있다 → **supabase** 가 맡는다.
-3. 서버 도구도 있고 `supabase/migrations/`에 SQL 파일도 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
+서버 마이그레이션 도구: `prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` 또는 `flyway.conf`, Liquibase changelog, golang-migrate 폴더. 아래 규칙 중 처음 맞는 것을 적용한다.
+
+1. 서버 마이그레이션 도구가 있고 **동시에** `supabase/migrations/`에 SQL 파일이 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
+2. 서버 마이그레이션 도구가 있다 → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.
+3. `supabase/migrations/`가 있다 → **supabase** 가 맡는다.
 
 담당을 보고서 표의 첫 줄에 적는다. 담당이 아닌 플러그인은 마이그레이션 항목을 "건너뜀: 마이그레이션은 <담당> 플러그인 담당"으로 건너뛴다.
 
 ## 1. CLI 와 로컬 스택
 
-1. `supabase --version`. 없으면 실패로 하고 1-4를 건너뛴다(설치는 사용자가 한다).
-2. `supabase status`. 돌고 있지 않으면 `supabase start`를 돌릴지 **묻는다**(Docker 컨테이너 여러 개를 띄운다). 거절하면 2-4를 "로컬 스택 꺼짐"으로 건너뛴다.
+1. `supabase --version`. 없으면 실패로 하고 1~4단계를 건너뛴다(설치는 사용자가 한다).
+2. `supabase status`. 돌고 있지 않으면 `supabase start`를 돌릴지 **묻는다**(Docker 컨테이너 여러 개를 띄운다). 거절하면 2~4단계를 "로컬 스택 꺼짐"으로 건너뛴다.
 3. 출력에서 DB URL 을 적어 둔다(기본값 `postgresql://postgres:postgres@127.0.0.1:54322/postgres`). 아래 SQL 은 `psql "<DB URL>" -c "<SQL>"`로 돌린다. `psql`이 없으면 SQL 이 필요한 항목은 "psql 없음"으로 건너뛴다.
 
 ## 2. 마이그레이션 상태 (supabase 가 마이그레이션을 맡을 때만)
@@ -132,10 +134,13 @@ server 가 맡으면 건너뛴다. `supabase db diff`가 서버 도구가 만든
 - Schema change: yes → migration, RLS policies (…), indexes (…), type regeneration
 
 #### Exploration prompts
-- Related schema research: (prompt from item 6)
+- Related schema research: (prompt from step 6)
 
 #### Rules during implementation
-- (the applicable ones from item 8)
+- (the applicable ones from step 8)
+
+#### Questions to ask
+- (migration owner when both exist, outdated types, …)
 ```
 
 **중단**이 있으면 표 위에 `stop: <이유>`를 먼저 적는다.

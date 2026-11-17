@@ -48,6 +48,8 @@ The project's CLAUDE.md rules take precedence over this skill and over superpowe
 - Recent commits: !`git log --oneline -3 2>/dev/null || echo "(no commits)"`
 - Backlog: !`ls docs/backlog 2>/dev/null || echo "(none)"`
 - Done: !`ls docs/done 2>/dev/null || echo "(none)"`
+- Commits on this branch (vs `main`): !`git log --oneline main..HEAD 2>/dev/null | head -30`
+- Files changed vs `main`: !`git diff --stat main...HEAD 2>/dev/null | tail -30`
 
 ## 4. Where it comes from
 

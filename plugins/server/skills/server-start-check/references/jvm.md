@@ -18,7 +18,7 @@ Check that the `jdtls-lsp` (Java) or `kotlin-lsp` (Kotlin) plugin is enabled and
 | `flyway.conf` or `db/migration/` | Flyway | `flyway info` (look for pending) |
 | `liquibase.properties` or a changelog | Liquibase | `liquibase status --verbose` |
 
-Pending migrations → fail (return a question about applying them).
+Pending migrations → fail (return a question about applying them). Diverged history or failed migrations → **stop**.
 
 ## 4. Baseline
 

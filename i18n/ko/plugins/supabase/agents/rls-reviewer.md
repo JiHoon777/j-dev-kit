@@ -30,7 +30,7 @@ tools: Read, Grep, Glob, Bash
 7. **악용:** 계정을 계속 만들어 스팸을 보내거나 다른 사용자의 데이터를 긁어 갈 수 있는가? 요청 횟수 제한이 있는가? 한 번에 너무 많은 행을 읽을 수 있는가?
 8. **개인 정보:** 위치, 기기 정보, 사용자 식별자가 다른 사용자에게 보이는 컬럼에 들어가는가?
 9. **Realtime 과 스토리지:** Presence 와 Broadcast 채널에 권한이 있는가? 채널로 보내는 값에 개인 정보가 없는가? 새 버킷마다 `storage.objects` 정책이 있는가?
-10. **키:** 저장소, `.env.example`, 브라우저 코드에 비밀 키가 없는가? 새 방식 키(`sb_secret_`)와 `service_role` 문자열만 찾지 않는다. 예전 키는 `eyJ`로 시작하는 JWT 라서 단순 문자열 검색으로는 놓친다. `grep -rnE "sb_secret_|service_role|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .`로 찾고, `eyJ` 토큰이 나오면 가운데 부분을 디코드해 `role`이 `anon`인지 확인한다. 값 자체를 보고에 옮겨 적지 않는다.
+10. **키:** 저장소, `.env.example`, 브라우저 코드에 비밀 키가 있는가? 새 방식 키(`sb_secret_`)와 `service_role` 문자열만 찾지 않는다. 예전 키는 `eyJ`로 시작하는 JWT 라서 단순 문자열 검색으로는 놓친다. `grep -rnE "sb_secret_|service_role|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .`로 찾고, `eyJ` 토큰이 나오면 가운데 부분을 디코드해 `role`이 `anon`인지 확인한다. 값 자체를 보고에 옮겨 적지 않는다.
 11. **Edge Function:** 호출자를 확인하는가(JWT 검증)? 비밀 값을 응답과 로그에 내보내지 않는가?
 12. (위험한 변경 위치를 받았을 때만. supabase 플러그인이 마이그레이션을 맡을 때 받는다.) **위험한 마이그레이션:** 새 마이그레이션에 `drop table`, `drop column`, `truncate`, 조건 없는 `delete`나 `update`, 타입 변경(`alter column … type`), 기본값이나 백필 없이 기존 컬럼에 더한 `not null`, 큰 테이블에 `concurrently` 없이 하는 `create index`, 이름 바꾸기(그것을 쓰는 코드도 바뀌었는가?)가 있는가? 있으면 데이터를 보존하는 방법과 롤백 SQL 을 제안한다.
 13. **정책 성능:** 정책 안의 `auth.uid()`를 `(select auth.uid())`로 감쌌는가? 정책 조건 컬럼에 인덱스가 있는가?

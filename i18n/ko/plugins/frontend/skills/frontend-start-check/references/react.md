@@ -47,6 +47,7 @@ package.json에 `react`가 있을 때 `frontend-start-check`가 읽는다. 아�
 | React versions | pass | react 19.x, next 16.x (App Router, 'use client' 12 files) |
 | React Compiler | … | … |
 | react-hooks lint | … | recommended on / missing → question |
+| Data fetching | … | @tanstack/react-query in dependencies |
 ```
 
 기준선 줄: `| Lint (react-hooks) | pnpm lint | 0 violations |`, `| React Doctor | npx -y react-doctor@0.9.22 --verbose --no-telemetry | 82 |`

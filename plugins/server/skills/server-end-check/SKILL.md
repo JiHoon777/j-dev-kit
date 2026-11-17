@@ -35,7 +35,7 @@ Run the same commands as `### Baseline` again. New failures → fail. Language-s
 
 Decide the migration owner with the same rule as `server-start-check` (section "Migration owner"). If supabase owns migrations, skip this whole step with "skip: migrations owned by supabase plugin".
 
-- **Missing migration:** run the reference's command for the detected tool (the model changed but no migration was created → fail).
+- **Missing migration:** run the reference's command for the detected tool (Atlas, `atlas.hcl`, is language-neutral: if present, use the Atlas commands in `references/go.md` for any language) (the model changed but no migration was created → fail).
 - **Apply from scratch:** **ask** whether to empty the local or development database and re-apply every migration (data will be lost). If approved, run the reference's reset command. If declined → "not verified".
 - **Order:** check whether new migrations landed on the base branch during the work. Two heads (Alembic, Django) → fail (a merge migration is needed). With timestamped files, the new file must be later than the newest on the base branch.
 - **Risky DDL (locations only):** in the new migration files, `grep -niE "drop (table|column)|truncate|delete from|alter column|set not null|not null|create (unique )?index|rename"`, record `file:line` only, and mark **needs review**. How to handle them (preserving data, rolling back) is for `api-reviewer`.
@@ -48,7 +48,7 @@ Decide the migration owner with the same rule as `server-start-check` (section "
 
 ## 4. Environment variables
 
-- Check that every config key the added lines start reading (the read patterns are in the reference) is documented by name in `.env.example`. Missing → fail. Only names are compared; values are never read or printed.
+- Check that every config key newly read in added lines (the read patterns are in the reference) is documented by name in `.env.example`. Missing → fail. Only names are compared; values are never read or printed.
 - If a value file such as `.env` or `.env.local` is staged for commit → fail.
 
 ## 5. Actual calls

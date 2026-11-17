@@ -22,7 +22,9 @@
 
 추가된 줄에서 찾을 패턴: `@Value("${`, `System.getenv(`, `application*.yml` / `application*.properties`에서 `${ENV_VAR}`를 읽는 새 키.
 
-## 더할 행
+## 채울 줄
+
+보고서 표에서 맞는 줄을 채운다(같은 줄을 하나 더 만들지 않는다):
 
 ```markdown
 | Missing migration | … | `flyway validate` exit 0 |

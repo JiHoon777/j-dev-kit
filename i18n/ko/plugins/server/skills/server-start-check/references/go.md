@@ -20,7 +20,7 @@
 | `atlas.hcl` | Atlas | `atlas migrate status --url <url> --dir <디렉터리>` | `atlas migrate validate` |
 | `migrate` (golang-migrate)와 마이그레이션 폴더 | golang-migrate | `migrate -path <디렉터리> -database <url> version` | — |
 
-적용 안 된 마이그레이션 → 실패. 갈라졌거나 dirty 상태 → **중단**.
+적용 안 된 마이그레이션 → 실패(적용할지 질문으로 돌려준다). 갈라졌거나 dirty 상태 → **중단**.
 
 ## 4. 기준선
 

@@ -23,7 +23,9 @@ Read by `server-end-check`. Add these rows to that skill's report.
 
 Patterns on added lines: `os.environ[`, `os.environ.get(`, `os.getenv(`, pydantic `BaseSettings` fields, `env(` from django-environ.
 
-## Rows to add
+## Rows to fill
+
+Fill the matching rows of the main table (do not add a second row):
 
 ```markdown
 | Missing migration | … | `alembic check` exit 0 |

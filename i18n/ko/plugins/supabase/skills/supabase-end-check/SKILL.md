@@ -11,7 +11,7 @@ metadata:
 
 # Supabase 종료 점검
 
-`/task end`가 부른다. 각 항목을 **통과 · 실패 · 건너뜀(이유)** 중 하나로 판정하고, 결과를 맨 아래 형식으로 돌려준다. 실패가 있으면 `/task end`가 고친 뒤 이 스킬을 다시 부른다.
+`/task end`가 부른다. 보고서는 프로젝트의 언어로 쓴다. 각 항목을 **통과 · 실패 · 건너뜀(이유)** 중 하나로 판정하고, 결과를 맨 아래 형식으로 돌려준다. 실패가 있으면 `/task end`가 고친 뒤 이 스킬을 다시 부른다.
 
 이 스킬은 **CLI 와 SQL 을 돌리고 결과를 확인하는 것만** 한다. 마이그레이션과 정책을 읽고 판단하는 리뷰(정책이 의도대로 동작하는지, 위험한 변경을 어떻게 다룰지, 악용 가능성)는 직접 하지 않는다. `supabase:rls-reviewer` 에이전트에 넘긴다(10번 항목).
 
@@ -21,7 +21,7 @@ SQL 은 `supabase status`의 DB URL 로 `psql "<DB URL>" -c "<SQL>"`을 써서 �
 
 `supabase-start-check`와 같은 기준으로 정한다. 해당하지 않으면 "해당 없음: <이유>". 로컬 스택이 꺼져 있으면 켤지 묻는다. 거절하면 DB 가 필요한 항목은 "로컬 스택 꺼짐"으로 건너뛴다.
 
-마이그레이션 담당은 `supabase-start-check`와 같은 규칙("마이그레이션 담당" 절)으로 정한다. **1~4번은 supabase 가 마이그레이션을 맡을 때만 돌린다.** 아니면 "건너뜀: 마이그레이션은 server 플러그인 담당"으로 건너뛴다. 5번부터는 항상 돌린다.
+마이그레이션 담당은 `supabase-start-check`와 같은 규칙("마이그레이션 담당" 절)으로 정한다. **1~4단계는 supabase 가 마이그레이션을 맡을 때만 돌린다.** 아니면 "건너뜀: 마이그레이션은 server 플러그인 담당"으로 건너뛴다. 5단계부터는 항상 돌린다.
 
 새 마이그레이션 = `git diff --name-only origin/<기준 브랜치>...HEAD -- supabase/migrations`, 그리고 커밋하지 않은 새 파일.
 
@@ -83,17 +83,19 @@ grep -niE "drop (table|column)|truncate|delete from|alter column .* type|set not
 
 ## 6. 타입
 
-`supabase-start-check` 4번 항목과 같은 방법으로 임시 파일에 생성해 저장소의 타입 파일과 비교한다. 다르면 실패: 타입을 다시 생성해 커밋해야 한다.
+`supabase-start-check` 4단계와 같은 방법으로 임시 파일에 생성해 저장소의 타입 파일과 비교한다. 다르면 실패: 타입을 다시 생성해 커밋해야 한다.
 
 ## 7. 키와 시크릿
 
-명령으로 찾는다. 뭔가 나오면 실패. 값을 근거에 옮겨 적지 않는다.
+명령으로 찾는다. 값을 근거에 옮겨 적지 않는다.
 
 ```bash
 grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .
 ```
 
 `eyJ` 토큰이 나오면 가운데 부분을 디코드해 `role`이 `anon`인지 확인한다(anon 키는 공개돼도 된다).
+
+다음 중 하나라도 나오면 실패다(`role`이 `anon`인 `eyJ` 토큰은 괜찮다).
 
 - 클라이언트에서 쓰는 파일(브라우저 번들에 들어가는 코드)이나 공개 접두어가 붙은 환경 변수(`NEXT_PUBLIC_`, `VITE_` 등)에 `service_role`, `SERVICE_ROLE`, `sb_secret_`이 나온다.
 - JWT 모양의 문자열(`eyJ`로 시작하는 긴 문자열)이나 키가 코드, 마이그레이션, seed 에 박혀 있다.
@@ -109,7 +111,7 @@ Supabase MCP 가 **개발 프로젝트에 읽기 전용으로** 연결돼 있고
 
 ## 10. 리뷰에 넣을 에이전트
 
-아래 중 하나라도 바뀌었으면 `/task end`의 리뷰 단계에 `supabase:rls-reviewer`를 넣어야 한다고 돌려준다. 근거(바뀐 파일), 4번 항목에서 찾은 위험한 변경 위치(supabase 가 마이그레이션을 맡을 때만. 아니면 `server:api-reviewer`가 판단한다), 5번 항목의 정책 목록과 다른 사용자 확인 결과를 함께 넘긴다. 이 에이전트는 정책이 의도대로 동작하는지, 악용 가능성, 위험한 마이그레이션 처리, 정책 성능을 본다.
+아래 중 하나라도 바뀌었으면 `/task end`의 리뷰 단계에 `supabase:rls-reviewer`를 넣어야 한다고 돌려준다. 근거(바뀐 파일), 4단계에서 찾은 위험한 변경 위치(supabase 가 마이그레이션을 맡을 때만. 아니면 `server:api-reviewer`가 판단한다), 5단계의 정책 목록과 다른 사용자 확인 결과를 함께 넘긴다. 이 에이전트는 정책이 의도대로 동작하는지, 악용 가능성, 위험한 마이그레이션 처리, 정책 성능을 본다.
 
 - `supabase/` 아래 파일
 - Supabase 를 부르는 코드(`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)
@@ -142,7 +144,7 @@ Supabase MCP 가 **개발 프로젝트에 읽기 전용으로** 연결돼 있고
 - `supabase:rls-reviewer` — evidence: added supabase/migrations/2026…_orders.sql
 
 #### After fixes
-- If any migration was fixed, rerun the `db diff`, RLS, and types checks (items 1, 5, 6)
+- If any migration was fixed, rerun the `db diff`, RLS, and types checks (steps 1, 5, 6)
 - (If there are risky changes) confirm the backup and rollback plan with the user
 
 #### Later

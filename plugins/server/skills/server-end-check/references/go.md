@@ -22,7 +22,9 @@ Read by `server-end-check`. Add these rows to that skill's report.
 
 Patterns on added lines: `os.Getenv(`, `os.LookupEnv(`, the project's config library (for example `envconfig` struct tags).
 
-## Rows to add
+## Rows to fill
+
+Fill the matching rows of the main table (do not add a second row):
 
 ```markdown
 | govulncheck | … | 0 new vulnerabilities |

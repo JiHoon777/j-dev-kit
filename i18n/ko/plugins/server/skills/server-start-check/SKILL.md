@@ -42,9 +42,11 @@ metadata:
 
 마이그레이션 점검은 플러그인 하나만 맡는다. `supabase`와 `server` 플러그인이 같은 규칙으로 정하므로, 어느 쪽이 먼저 돌아도 결과가 같다.
 
-1. 서버 마이그레이션 도구가 있다(`prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` 또는 `flyway.conf`, Liquibase changelog, golang-migrate 폴더) → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.
-2. 그렇지 않고 `supabase/migrations/`가 있다 → **supabase** 가 맡는다.
-3. 서버 도구도 있고 `supabase/migrations/`에 SQL 파일도 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
+서버 마이그레이션 도구: `prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` 또는 `flyway.conf`, Liquibase changelog, golang-migrate 폴더. 아래 규칙 중 처음 맞는 것을 적용한다.
+
+1. 서버 마이그레이션 도구가 있고 **동시에** `supabase/migrations/`에 SQL 파일이 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
+2. 서버 마이그레이션 도구가 있다 → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.
+3. `supabase/migrations/`가 있다 → **supabase** 가 맡는다.
 
 담당을 보고서 표의 첫 줄에 적는다. 담당이 아닌 플러그인은 마이그레이션 항목을 "건너뜀: 마이그레이션은 <담당> 플러그인 담당"으로 건너뛴다.
 
@@ -55,7 +57,7 @@ metadata:
 
 ## 2. 언어별 점검 (참고 파일에서)
 
-참고 파일의 설치, 런타임 버전, LSP, 마이그레이션 상태, 기준선 점검을 돌린다. **마이그레이션 상태 점검은 server 가 마이그레이션을 맡을 때만 돌린다.** 아니면 "건너뜀: 마이그레이션은 supabase 플러그인 담당"으로 건너뛴다. 데이터베이스를 건드리는 명령은 **로컬이나 개발 데이터베이스에만** 돌린다. 연결이 운영 환경으로 보이면 돌리지 않고 **중단한다**.
+참고 파일의 설치, 런타임 버전, LSP, 마이그레이션 상태, 기준선 점검을 돌린다. Atlas(`atlas.hcl`)는 언어와 무관하다. 있으면 언어가 무엇이든 `references/go.md`의 Atlas 명령을 쓴다. **마이그레이션 상태 점검은 server 가 마이그레이션을 맡을 때만 돌린다.** 아니면 "건너뜀: 마이그레이션은 supabase 플러그인 담당"으로 건너뛴다. 데이터베이스를 건드리는 명령은 **로컬이나 개발 데이터베이스에만** 돌린다. 연결이 운영 환경으로 보이면 돌리지 않고 **중단한다**.
 
 `npx --no-install`은 프로젝트에 설치된 도구만 쓰고 절대 내려받지 않는다. 도구가 설치돼 있지 않으면 설치하지 말고 "도구 설치 안 됨"으로 보고한다.
 

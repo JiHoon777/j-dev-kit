@@ -22,7 +22,9 @@
 
 추가된 줄에서 찾을 패턴: `process.env.`, `import.meta.env.`, 프로젝트의 설정 스키마(예: `@nestjs/config` 키).
 
-## 더할 행
+## 채울 줄
+
+보고서 표에서 맞는 줄을 채운다(같은 줄을 하나 더 만들지 않는다):
 
 ```markdown
 | Missing migration | … | `prisma migrate diff … --exit-code` 0 |

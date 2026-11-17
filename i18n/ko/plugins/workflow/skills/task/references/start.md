@@ -93,7 +93,7 @@ Backlog.md: "Before mutating a task, read its current record and confirm its sta
 **먼저 기록한다 (Backlog.md task execution 지침):**
 
 1. 브랜치를 만든다: `w/` 뒤에 `.md`를 뺀 항목 파일 이름. 예: `git switch -c w/001-common-login`
-2. 항목 파일에서: `status: In Progress`, `updated_date`를 오늘로, 승인된 계획을 `Implementation Plan`에. 스택 점검의 기준선은 `Implementation Notes`의 `### Baseline` 아래에 넣는다. 3단계에서 Acceptance Criteria 가 바뀌었으면 지금 고친다. ("write it down in the task so that you can refer to it later.")
+2. 항목 파일에서: `status: In Progress`, `updated_date`를 오늘로, 승인된 계획을 `Implementation Plan`에. 스택 점검의 기준선은 `Implementation Notes`의 `### Baseline` 아래에 넣는다. 3단계에서 Acceptance Criteria 를 바꾸기로 했으면 지금 고친다. ("write it down in the task so that you can refer to it later.")
 3. 린트 명령을 통과시키고 커밋한다: `chore(backlog): <번호> start`
 
 **만든다:**

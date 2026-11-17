@@ -25,7 +25,9 @@
 
 추가된 줄에서 찾을 패턴: `os.environ[`, `os.environ.get(`, `os.getenv(`, pydantic `BaseSettings` 필드, django-environ 의 `env(`.
 
-## 더할 행
+## 채울 줄
+
+보고서 표에서 맞는 줄을 채운다(같은 줄을 하나 더 만들지 않는다):
 
 ```markdown
 | Missing migration | … | `alembic check` exit 0 |

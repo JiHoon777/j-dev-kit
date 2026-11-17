@@ -106,7 +106,7 @@ Show the item content to the user before writing the file. If you split it into 
 
 1. Write the file.
 2. If the project has a lint or format command, make sure it passes. If formatting fails, use the auto-fix command.
-3. Commit: `docs(backlog): <number> <title>`. Include only the item file (and the note line you deleted). If other changes are present, stage only those files.
+3. Commit: `docs(backlog): <number> <title>`. Include only the item file (and the note line you deleted). If other changes are present, stage only the item file and `docs/backlog/README.md`.
    - If left uncommitted, `/task start` stops at "uncommitted changes".
    - Do not push.
 4. Tell the user the file path and number, and that `/task start <number>` starts it.

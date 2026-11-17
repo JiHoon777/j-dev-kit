@@ -20,7 +20,9 @@ Read by `server-end-check`. Add these rows to that skill's report.
 
 Patterns on added lines: `process.env.`, `import.meta.env.`, the project's config schema (for example `@nestjs/config` keys).
 
-## Rows to add
+## Rows to fill
+
+Fill the matching rows of the main table (do not add a second row):
 
 ```markdown
 | Missing migration | … | `prisma migrate diff … --exit-code` 0 |

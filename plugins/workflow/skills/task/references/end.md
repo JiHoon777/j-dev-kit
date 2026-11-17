@@ -13,7 +13,7 @@ This mode chains proven workflows. Do not change how a source works.
 | 5 | Backlog.md agent guidelines (definition of done) |
 | 6 | `superpowers:finishing-a-development-branch` (invoked as is) |
 
-If the project's CLAUDE.md says PRs cannot be created in this environment or sets push rules, follow it. The "current state" in the skill uses `main`; if the base branch differs, look again with that branch (`git log --oneline <base>..HEAD`, `git diff --stat <base>...HEAD`).
+If the project's CLAUDE.md says PRs cannot be created in this environment or sets push rules, follow it. The skill's "current state" compares against `main`; if the base branch differs, check the branch's commits and changed files again with that branch (`git log --oneline <base>..HEAD`, `git diff --stat <base>...HEAD`).
 
 ## 1. Check that review can start
 
@@ -35,6 +35,7 @@ Read the item file. (If the item is already in `docs/done/`, steps up to 5 are d
 2. Each compares against `### Baseline` in the item's `Implementation Notes` and returns only **new failures** as failures. Put those failures in the findings list in step 3 with "stack check" as the source.
 3. Add each check's **agents to add to the review** (with their conditions and evidence) to step 2.
 4. Do each check's **after fixes** items (for example a browser test) in step 4.
+5. Put each check's **later** items (for example permission rules to capture as tests) in the `Final Summary`, or create new items for them with `/task create` after approval.
 
 ## 2. Run review agents in parallel (feature-dev phase 6)
 
@@ -51,7 +52,7 @@ Before launching, check once: if `git symbolic-ref refs/remotes/origin/HEAD` fai
 
 Check skills only run commands. Reviews that read the diff and judge it are not done directly in this conversation; all of them are done by the agents in this step.
 
-Put **all** of the following in the prompt for every agent (the three above and the stack review agents). Agents cannot see this conversation. For stack review agents, instead of item 1 (the skill to invoke), give the evidence the check skill passed along with it (changed files, locations found, tool results).
+Put **all** of the following in the prompt for every agent (the three above and the stack review agents). Agents cannot see this conversation. For stack review agents, instead of item 1 (the skill to invoke), give the evidence the check skill returned together with that agent (changed files, locations found, tool results).
 
 1. **Skill to invoke:** "Invoke the `<skill name>` skill with the Skill tool and review the way it does." Say that the other reviews are done by other agents.
    - `code-review`: the target is the current branch (`w/<name>`). Do not pass `--fix` or `--comment`. Give no effort level or `medium`. Never use `max` or `ultra`.

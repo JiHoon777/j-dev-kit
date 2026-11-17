@@ -9,7 +9,7 @@ metadata:
 
 # Supabase start check
 
-Called by `/task start`. Judge each item as **pass · fail · skip (reason) · stop** and return the result in the format at the bottom. Fixing things is not this skill's job.
+Called by `/task start`. Write the report in the project's language. Judge each item as **pass · fail · skip (reason) · stop** and return the result in the format at the bottom. Fixing things is not this skill's job.
 
 | Part | Source |
 | --- | --- |
@@ -23,22 +23,24 @@ Called by `/task start`. Judge each item as **pass · fail · skip (reason) · s
 
 - If CLAUDE.md has `stack:` and supabase is not in it → "not applicable: not in stack setting".
 - If there is no `supabase/config.toml` and no `@supabase/` dependency in package.json → "not applicable: no sign of Supabase use".
-- If there is only an `@supabase/` dependency and no `supabase/` folder (only a remote project is used) → skip 1-4 and do only 5 and 6. In the evidence, write "no local Supabase; schema is not managed in the repository".
+- If there is only an `@supabase/` dependency and no `supabase/` folder (only a remote project is used) → skip steps 1–4 and do only steps 5 and 6. In the evidence, write "no local Supabase; schema is not managed in the repository".
 
 ### Migration owner
 
 Exactly one plugin owns the migration checks. The `supabase` and `server` plugins decide it with the same rule, so the result is the same whichever runs first:
 
-1. A server migration tool is present (`prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, Liquibase changelog, a golang-migrate folder) → **server** owns migrations, even if the database is Supabase Postgres.
-2. Otherwise, `supabase/migrations/` exists → **supabase** owns migrations.
-3. Both a server tool and SQL files in `supabase/migrations/` → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
+Server migration tools: `prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, a Liquibase changelog, a golang-migrate folder. Apply the first rule that matches:
+
+1. A server migration tool is present **and** `supabase/migrations/` has SQL files → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
+2. A server migration tool is present → **server** owns migrations, even if the database is Supabase Postgres.
+3. `supabase/migrations/` exists → **supabase** owns migrations.
 
 Record the owner as the first row of the report. The plugin that does not own migrations skips its migration items with "skip: migrations owned by <owner> plugin".
 
 ## 1. CLI and local stack
 
-1. `supabase --version`. If it is missing, mark fail and skip 1-4 (the user does the install).
-2. `supabase status`. If it is not running, **ask** whether to run `supabase start` (it starts several Docker containers). If declined, skip 2-4 as "local stack off".
+1. `supabase --version`. If it is missing, mark fail and skip steps 1–4 (the user does the install).
+2. `supabase status`. If it is not running, **ask** whether to run `supabase start` (it starts several Docker containers). If declined, skip steps 2–4 as "local stack off".
 3. Note the DB URL from the output (default `postgresql://postgres:postgres@127.0.0.1:54322/postgres`). Run the SQL below with `psql "<DB URL>" -c "<SQL>"`. If `psql` is missing, skip items that need SQL as "no psql".
 
 ## 2. Migration status (only when supabase owns migrations)
@@ -130,10 +132,13 @@ Read the task description (backlog details) and decide whether the work changes 
 - Schema change: yes → migration, RLS policies (…), indexes (…), type regeneration
 
 #### Exploration prompts
-- Related schema research: (prompt from item 6)
+- Related schema research: (prompt from step 6)
 
 #### Rules during implementation
-- (the applicable ones from item 8)
+- (the applicable ones from step 8)
+
+#### Questions to ask
+- (migration owner when both exist, outdated types, …)
 ```
 
 If there is a **stop**, write `stop: <reason>` above the table first.

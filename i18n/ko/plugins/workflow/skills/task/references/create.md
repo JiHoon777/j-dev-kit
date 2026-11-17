@@ -108,7 +108,7 @@ Written when `/task end` finishes: what changed, what was fixed in review, and w
 
 1. 파일을 쓴다.
 2. 프로젝트에 린트나 포맷 명령이 있으면 통과하게 한다. 포맷이 실패하면 자동 수정 명령을 쓴다.
-3. 커밋: `docs(backlog): <번호> <제목>`. 항목 파일(과 지운 메모 줄)만 넣는다. 다른 변경이 있으면 그 파일들만 스테이징한다.
+3. 커밋: `docs(backlog): <번호> <제목>`. 항목 파일(과 지운 메모 줄)만 넣는다. 다른 변경이 있으면 항목 파일과 `docs/backlog/README.md`만 스테이징한다.
    - 커밋하지 않고 두면 `/task start`가 "커밋하지 않은 변경"에서 멈춘다.
    - 푸시하지 않는다.
 4. 사용자에게 파일 경로와 번호를 알리고, `/task start <번호>`로 시작한다고 말한다.

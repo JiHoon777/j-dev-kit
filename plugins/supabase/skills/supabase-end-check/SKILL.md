@@ -9,7 +9,7 @@ metadata:
 
 # Supabase end check
 
-Called by `/task end`. Judge each item as **pass · fail · skip (reason)** and return the result in the format at the bottom. On a fail, `/task end` fixes it and calls this skill again.
+Called by `/task end`. Write the report in the project's language. Judge each item as **pass · fail · skip (reason)** and return the result in the format at the bottom. On a fail, `/task end` fixes it and calls this skill again.
 
 This skill only **runs the CLI and SQL and checks the results**. Do not do the review that reads and judges migrations and policies yourself (whether policies work as intended, how to handle risky changes, abuse potential); hand it to the `supabase:rls-reviewer` agent (item 10).
 
@@ -19,7 +19,7 @@ Run SQL with `psql "<DB URL>" -c "<SQL>"` using the DB URL from `supabase status
 
 Decide by the same criteria as `supabase-start-check`. If not applicable, "not applicable: <reason>". If the local stack is off, ask whether to start it; if declined, skip items that need the DB as "local stack off".
 
-Decide the migration owner with the same rule as `supabase-start-check` (section "Migration owner"). **Items 1–4 run only when supabase owns migrations**; otherwise skip them with "skip: migrations owned by server plugin". Items 5 onward always run.
+Decide the migration owner with the same rule as `supabase-start-check` (section "Migration owner"). **Steps 1–4 run only when supabase owns migrations**; otherwise skip them with "skip: migrations owned by server plugin". Steps 5 onward always run.
 
 New migrations = `git diff --name-only origin/<base branch>...HEAD -- supabase/migrations` plus uncommitted new files.
 
@@ -81,17 +81,19 @@ grep -niE "drop (table|column)|truncate|delete from|alter column .* type|set not
 
 ## 6. Types
 
-Generate into a temp file the same way as `supabase-start-check` item 4 and compare with the types file in the repository. If they differ, fail: the types must be regenerated and committed.
+Generate into a temp file the same way as `supabase-start-check` step 4 and compare with the types file in the repository. If they differ, fail: the types must be regenerated and committed.
 
 ## 7. Keys and secrets
 
-Search with the command. If anything is found, fail. Do not copy the values into the evidence.
+Search with the command. Do not copy the values into the evidence.
 
 ```bash
 grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .
 ```
 
 If an `eyJ` token turns up, decode its middle part and check whether `role` is `anon` (the anon key may be public).
+
+Fail if any of the following is found (an `eyJ` token whose `role` is `anon` is allowed):
 
 - `service_role`, `SERVICE_ROLE`, or `sb_secret_` appears in files used on the client (code that goes into the browser bundle) or in environment variables with a public prefix (`NEXT_PUBLIC_`, `VITE_`, etc.).
 - JWT-shaped strings (long strings starting with `eyJ`) or keys are hardcoded in code, migrations, or seed.
@@ -107,7 +109,7 @@ Only when the Supabase MCP is connected **read-only to a development project** a
 
 ## 10. Agents to add to the review
 
-If any of the following changed, return that `supabase:rls-reviewer` should be added to the review step of `/task end`. Pass along the evidence (changed files), the risky change locations found in item 4 (only when supabase owns migrations; otherwise `server:api-reviewer` judges them), and the policy list and other-user check results from item 5. This agent checks whether policies work as intended, abuse potential, handling of risky migrations, and policy performance.
+If any of the following changed, return that `supabase:rls-reviewer` should be added to the review step of `/task end`. Pass along the evidence (changed files), the risky change locations found in step 4 (only when supabase owns migrations; otherwise `server:api-reviewer` judges them), and the policy list and other-user check results from step 5. This agent checks whether policies work as intended, abuse potential, handling of risky migrations, and policy performance.
 
 - Files under `supabase/`
 - Code that calls Supabase (`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)
@@ -140,7 +142,7 @@ If any of the following changed, return that `supabase:rls-reviewer` should be a
 - `supabase:rls-reviewer` — evidence: added supabase/migrations/2026…_orders.sql
 
 #### After fixes
-- If any migration was fixed, rerun the `db diff`, RLS, and types checks (items 1, 5, 6)
+- If any migration was fixed, rerun the `db diff`, RLS, and types checks (steps 1, 5, 6)
 - (If there are risky changes) confirm the backup and rollback plan with the user
 
 #### Later

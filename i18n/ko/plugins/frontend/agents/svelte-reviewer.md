@@ -21,7 +21,7 @@ tools: Read, Grep, Glob, Bash
 ## 확인할 것
 
 1. **룬:** `$effect` 안에서 state에 대입해 파생 값을 만드는 곳(`$derived`를 써야 한다). `$state`일 필요가 없는 값. props를 바꾸는 곳(`$bindable` 없이).
-2. **`$effect` 정리:** 타이머, 구독, 이벤트 리스너를 만들고 정리 함수를 반환하지 않는 곳. `$effect`로 처리할 수 있는 것을 `onMount`와 수동 정리로 복잡하게 만든 곳.
+2. **`$effect` 정리:** 타이머, 구독, 이벤트 리스너를 만들고 정리 함수를 반환하지 않는 곳. `$effect`로 더 간단히 처리할 수 있는 것을 `onMount`와 수동 정리로 처리한 곳.
 3. **SSR:** 컴포넌트 최상위 코드나 universal `load`(`+page.ts`, `+layout.ts`)에서 `window`, `document`, `localStorage`에 접근하는 곳.
 4. **시크릿:** 서버 파일(`*.server.*`, `hooks.server.*`) 밖에서 `$env/static/private`나 `$env/dynamic/private`를 import하는 곳. universal `load`에서 비밀 키나 내부 URL을 쓰는 곳.
 5. **load와 form action:** 검증 실패를 `fail(400, …)` 대신 `throw`나 일반 반환으로 처리한 곳. 리다이렉트를 `redirect()` 없이 처리한 곳. `load`가 권한 확인 없이 다른 사용자의 데이터를 반환하는 곳.

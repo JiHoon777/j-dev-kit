@@ -31,7 +31,7 @@ Run the same commands as `### Baseline` in the item's `Implementation Notes`.
 
 - A failure that is not in the baseline → fail. If the baseline failures are unchanged, it passes, but write "N existing failures unchanged" as evidence. Also note failures that disappeared.
 - Run the build. It catches problems that only show in the build, not on the dev server (`window`/`document` access during server rendering, static generation failures, environment variables missing at build time).
-- If `typescript-lsp` is enabled, diagnostics appeared while editing, but that does not replace the type check command. Run it.
+- If `typescript-lsp` is enabled, diagnostics may have appeared while editing, but they do not replace the type check command. Run it.
 
 ## 2. Leftover markers (counted by command)
 
@@ -49,7 +49,7 @@ Invoke the `chrome-devtools` skill, start the dev server, and for each changed s
 - `lighthouse_audit` accessibility score and findings. New findings on changed screens → fail; record the score as evidence.
 - If a screen became heavier (large lists, animation, images), record LCP, INP, and CLS from a performance trace (`performance_start_trace` → `performance_stop_trace`).
 
-If the tool is not available, skip this item with "no browser tool", but say that `/task end` must do the step 4 browser test another way.
+If the tool is not available, skip this item with "no browser tool", but say that `/task end` must do the browser test in step 4 below another way.
 
 ## 4. After fixes (to return): browser test
 

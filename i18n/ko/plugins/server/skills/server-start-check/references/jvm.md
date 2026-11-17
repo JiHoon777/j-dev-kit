@@ -20,7 +20,7 @@
 | `flyway.conf` 또는 `db/migration/` | Flyway | `flyway info` (pending 을 본다) |
 | `liquibase.properties` 또는 changelog | Liquibase | `liquibase status --verbose` |
 
-pending 마이그레이션 → 실패(적용할지 질문으로 돌려준다).
+pending 마이그레이션 → 실패(적용할지 질문으로 돌려준다). 이력이 갈라졌거나 실패한 마이그레이션이 있음 → **중단**.
 
 ## 4. 기준선
 

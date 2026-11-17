@@ -45,6 +45,7 @@ Read by `frontend-start-check` when `react` is in package.json. Add these rows, 
 | React versions | pass | react 19.x, next 16.x (App Router, 'use client' 12 files) |
 | React Compiler | … | … |
 | react-hooks lint | … | recommended on / missing → question |
+| Data fetching | … | @tanstack/react-query in dependencies |
 ```
 
 Baseline lines: `| Lint (react-hooks) | pnpm lint | 0 violations |`, `| React Doctor | npx -y react-doctor@0.9.22 --verbose --no-telemetry | 82 |`

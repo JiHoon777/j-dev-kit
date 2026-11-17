@@ -20,7 +20,9 @@ If the project uses Hibernate `ddl-auto` other than `validate` or `none` outside
 
 Patterns on added lines: `@Value("${`, `System.getenv(`, new keys in `application*.yml` / `application*.properties` that read `${ENV_VAR}`.
 
-## Rows to add
+## Rows to fill
+
+Fill the matching rows of the main table (do not add a second row):
 
 ```markdown
 | Missing migration | … | `flyway validate` exit 0 |
