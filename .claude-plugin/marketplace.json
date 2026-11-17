@@ -24,6 +24,7 @@
       "source": "./plugins/frontend",
       "description": "Frontend checks for /task start and /task end: common checks plus Svelte and React references picked by detecting the project, browser testing, and review agents ui-reviewer, svelte-reviewer, react-reviewer.",
       "dependencies": [
+        "workflow",
         "chrome-devtools-mcp@claude-plugins-official",
         "typescript-lsp@claude-plugins-official",
         "frontend-design@claude-plugins-official",
@@ -35,13 +36,17 @@
       "source": "./plugins/supabase",
       "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys) and the rls-reviewer agent.",
       "dependencies": [
+        "workflow",
         "supabase@claude-plugins-official"
       ]
     },
     {
       "name": "server",
       "source": "./plugins/server",
-      "description": "Backend checks for /task start and /task end: common checks plus Node, Python, Go, and Java/Kotlin references picked by detecting the project (install, LSP, migrations, API contract, real calls), and the api-reviewer agent."
+      "description": "Backend checks for /task start and /task end: common checks plus Node, Python, Go, and Java/Kotlin references picked by detecting the project (install, LSP, migrations, API contract, real calls), and the api-reviewer agent.",
+      "dependencies": [
+        "workflow"
+      ]
     }
   ]
 }

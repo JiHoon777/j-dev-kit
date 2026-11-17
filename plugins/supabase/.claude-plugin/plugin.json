@@ -6,6 +6,7 @@
     "name": "JiHoon777"
   },
   "dependencies": [
+    "workflow",
     "supabase@claude-plugins-official"
   ]
 }

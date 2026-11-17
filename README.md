@@ -9,9 +9,9 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 | Plugin | Skills · agents | Installed along with it |
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
-| `frontend` | `frontend-start-check`, `frontend-end-check` (references: svelte, react), agents `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer` | `supabase` (official: skills, MCP) |
-| `server` | `server-start-check`, `server-end-check` (references: node, python, go, jvm), agent `api-reviewer` | — |
+| `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), agents `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
+| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer` | `supabase` (official: skills, MCP) |
+| `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm), agent `api-reviewer` | — |
 
 ### File layout
 
@@ -83,10 +83,11 @@ Compared and not used: Compound Engineering (38 skills; replaces the whole flow)
 ```
 /plugin marketplace add JiHoon777/j-dev-kit
 /plugin marketplace add GoogleChrome/modern-web-guidance   # when using frontend
-/plugin install workflow@j-dev-kit
 /plugin install frontend@j-dev-kit
 /plugin install supabase@j-dev-kit
 ```
+
+Every stack plugin depends on `workflow`, so installing any of them also installs and enables `/task`.
 
 For Svelte projects the official Svelte plugin is recommended too (checks still run without it through a version-pinned CLI).
 

@@ -9,9 +9,9 @@ Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 
 | 플러그인 | 스킬 · 에이전트 | 같이 설치되는 것 |
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
-| `frontend` | `frontend-start-check`, `frontend-end-check` (references: svelte, react), 에이전트 `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | `supabase` (공식: 스킬, MCP) |
-| `server` | `server-start-check`, `server-end-check` (references: node, python, go, jvm), 에이전트 `api-reviewer` | — |
+| `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), 에이전트 `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
+| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | `supabase` (공식: 스킬, MCP) |
+| `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm), 에이전트 `api-reviewer` | — |
 
 ### 파일 구조
 
@@ -83,10 +83,11 @@ docs/done/001-….md ◄── 머지 ◄── 승인 ◄── 수정 ◄─�
 ```
 /plugin marketplace add JiHoon777/j-dev-kit
 /plugin marketplace add GoogleChrome/modern-web-guidance   # frontend 를 쓸 때
-/plugin install workflow@j-dev-kit
 /plugin install frontend@j-dev-kit
 /plugin install supabase@j-dev-kit
 ```
+
+스택 플러그인은 모두 `workflow`에 의존하므로, 어느 것을 설치해도 `/task`가 같이 설치되고 켜진다.
 
 Svelte 프로젝트면 공식 Svelte 플러그인도 권한다(없어도 점검은 버전 고정 CLI 로 돈다).
 
