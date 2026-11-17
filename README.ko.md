@@ -10,7 +10,7 @@ Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), 에이전트 `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | `supabase` (공식: 스킬, MCP) |
+| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | — (공식 Supabase 플러그인은 선택, 아래 참고) |
 | `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm), 에이전트 `api-reviewer` | — |
 
 ### 파일 구조
@@ -92,7 +92,7 @@ Claude Code 안에서 실행한다(터미널에서는 `claude plugin …`). 마�
 ```
 
 - 쓰는 스택만 설치한다. 스택 플러그인은 모두 `workflow`에 의존하므로, 어느 것을 설치해도 `/task`와 `superpowers`가 같이 설치되고 켜진다.
-- `anthropic-plugin-directory`(superpowers, frontend-design, typescript-lsp, supabase)는 Claude Code 에 기본으로 들어 있어서 따로 추가할 것이 없다.
+- `anthropic-plugin-directory`(superpowers, frontend-design, typescript-lsp)는 Claude Code 에 기본으로 들어 있어서 따로 추가할 것이 없다.
 - `/plugin install`은 기본이 사용자 범위(모든 프로젝트)다. 저장소 하나에서만 켜려면 `claude plugin install <이름>@j-dev-kit --scope project`를 쓴다(아래).
 
 Svelte 프로젝트면 공식 Svelte 플러그인도 권한다(없어도 점검은 버전 고정 CLI 로 돈다).
@@ -133,7 +133,6 @@ claude plugin install supabase@j-dev-kit --scope project
     "typescript-lsp@anthropic-plugin-directory": true,
     "chrome-devtools-mcp@chrome-devtools-plugins": true,
     "modern-web-guidance@googlechrome": true,
-    "supabase@anthropic-plugin-directory": true,
     "svelte@svelte": true
   }
 }
@@ -210,7 +209,7 @@ claude plugin update workflow@j-dev-kit --scope project    # 설치한 플러그
 
 - **마이그레이션 담당은 하나.** 서버 마이그레이션 도구(Prisma, Drizzle, TypeORM, Alembic, Django, Atlas, Flyway, Liquibase, golang-migrate)가 있으면 데이터베이스가 Supabase 여도 `server` 플러그인이 마이그레이션 점검을 맡는다. 없고 `supabase/migrations/`가 있으면 `supabase` 플러그인이 맡는다. 둘 다 있으면 어느 쪽이 기준인지 묻는다. 담당이 아닌 쪽은 마이그레이션 항목을 건너뛰므로 같은 DB 를 두 번 검사하지 않는다.
 - `/task`는 직접 입력할 때만 실행된다(`disable-model-invocation: true`). "백로그에 넣어 줘"라고 말해도 저절로 실행되지 않으니 `/task create …`로 부른다. `start`가 저절로 실행되는 것을 막기 위해서다.
-- 의존 플러그인은 Claude Code 에 실제로 있는 마켓플레이스를 가리킨다. Anthropic 플러그인(superpowers, frontend-design, typescript-lsp, supabase)은 기본으로 들어 있는 `anthropic-plugin-directory`에서, Chrome DevTools 는 Google 의 자체 마켓플레이스 `chrome-devtools-plugins`에서 가져온다. 같은 플러그인을 다른 마켓플레이스 이름(예: `supabase@claude-plugins-official`)으로 또 켜지 않는다. 같은 MCP 서버가 두 번 뜬다.
+- 의존 플러그인은 Claude Code 에 실제로 있는 마켓플레이스를 가리킨다. Anthropic 플러그인(superpowers, frontend-design, typescript-lsp)은 기본으로 들어 있는 `anthropic-plugin-directory`에서, Chrome DevTools 는 Google 의 자체 마켓플레이스 `chrome-devtools-plugins`에서 가져온다. 같은 플러그인을 다른 마켓플레이스 이름(예: `supabase@claude-plugins-official`)으로 또 켜지 않는다. 같은 MCP 서버가 두 번 뜬다.
 - **외부 CLI 는 버전을 고정한다.** 스킬이 `npx`로 내려받아 실행하는 도구(React Doctor, `@sveltejs/mcp`, `sv`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 올릴 때는 새 버전을 확인하고 숫자만 바꾼다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 프로젝트에 설치된 것만 쓴다. `modern-web-guidance`는 플러그인 스킬에 맡기고 명령을 적지 않는다.
 
 ### Supabase MCP (프로젝트별)
@@ -230,7 +229,7 @@ claude plugin update workflow@j-dev-kit --scope project    # 설치한 플러그
 
 `supabase` 점검과 `rls-reviewer`는 이 서버를 쓴다. 선언된 서버가 없으면 MCP 항목은 건너뛴다. 처음 쓸 때 서버 승인과 Supabase 로그인을 요청한다(`/mcp`).
 
-공식 Supabase 플러그인(스킬 때문에 의존성으로 같이 설치됨)도 자기 MCP 서버를 가져오는데, `read_only` 없이 연결되고 이를 바꾸는 옵션이 없다. 플러그인 서버는 주소로 같은 서버인지 판단하고 `?read_only=true`를 붙이면 다른 주소가 되므로, 프로젝트 `.mcp.json`으로 대체할 수도 없다. 프로젝트 `.claude/settings.json`의 deny 규칙으로 끈다. deny 된 도구는 Claude 의 도구 목록에서 빠지고, 공식 스킬도 프로젝트 서버를 쓰게 된다.
+공식 Supabase 플러그인(`supabase@anthropic-plugin-directory`)은 j-dev-kit 이 설치하지 않는다. 그 스킬(`supabase`, `supabase-postgres-best-practices`)이 필요한 프로젝트에서만 켠다. 켜 두면 점검이 그 스킬을 쓴다. 이 플러그인은 자기 MCP 서버도 가져오는데, `read_only` 없이 연결되고 이를 바꾸는 옵션이 없으며, 프로젝트 `.mcp.json`으로 대체할 수도 없다(플러그인 서버는 주소로 같은 서버인지 판단하고, `?read_only=true`를 붙이면 다른 주소가 된다). 켰다면 프로젝트 `.claude/settings.json`의 deny 규칙으로 그 서버를 끈다. deny 된 도구는 Claude 의 도구 목록에서 빠지고, 그 스킬도 `local_supabase`를 쓰게 된다.
 
 ```json
 {

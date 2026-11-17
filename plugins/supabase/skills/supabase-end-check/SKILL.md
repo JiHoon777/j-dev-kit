@@ -2,7 +2,7 @@
 name: supabase-end-check
 description: End-of-task check for Supabase projects. Uses the CLI and SQL to check for missing migrations, reapplying from scratch, ordering, RLS/view/function settings, whether rows are visible as another user, types, and key exposure. If Supabase changed, returns that the rls-reviewer agent should be added to the review. Called by `/task end` in the workflow plugin.
 user-invocable: false
-version: "0.5.0"
+version: "0.6.0"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
