@@ -10,7 +10,7 @@ Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), 에이전트 `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer`, 읽기 전용 MCP 서버 `supabase-readonly` | `supabase` (공식: 스킬, MCP) |
+| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | `supabase` (공식: 스킬, MCP) |
 | `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm), 에이전트 `api-reviewer` | — |
 
 ### 파일 구조
@@ -212,22 +212,41 @@ claude plugin update workflow@j-dev-kit --scope project    # 설치한 플러그
 - `/task`는 직접 입력할 때만 실행된다(`disable-model-invocation: true`). "백로그에 넣어 줘"라고 말해도 저절로 실행되지 않으니 `/task create …`로 부른다. `start`가 저절로 실행되는 것을 막기 위해서다.
 - 의존 플러그인은 Claude Code 에 실제로 있는 마켓플레이스를 가리킨다. Anthropic 플러그인(superpowers, frontend-design, typescript-lsp, supabase)은 기본으로 들어 있는 `anthropic-plugin-directory`에서, Chrome DevTools 는 Google 의 자체 마켓플레이스 `chrome-devtools-plugins`에서 가져온다. 같은 플러그인을 다른 마켓플레이스 이름(예: `supabase@claude-plugins-official`)으로 또 켜지 않는다. 같은 MCP 서버가 두 번 뜬다.
 - **외부 CLI 는 버전을 고정한다.** 스킬이 `npx`로 내려받아 실행하는 도구(React Doctor, `@sveltejs/mcp`, `sv`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 올릴 때는 새 버전을 확인하고 숫자만 바꾼다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 프로젝트에 설치된 것만 쓴다. `modern-web-guidance`는 플러그인 스킬에 맡기고 명령을 적지 않는다.
-- **Supabase MCP 는 읽기 전용이다.** `supabase` 플러그인이 자체 서버 `supabase-readonly`를 함께 설치하고, 이 서버는 `read_only=true`로 연결된다. 어느 프로젝트를 볼지는 프로젝트의 `.claude/.local/project.json`에 `{ "supabaseMcpUrl": "https://<ref>.supabase.co" }`로 정한다. 없으면 점검이 묻는다. 처음 쓸 때 Supabase 로그인을 요청한다(`/mcp`).
 
-### Supabase 쓰기 막기 (선택)
+### Supabase MCP (프로젝트별)
 
-점검은 읽기 전용 서버만 쓰지만, 실제 Supabase 프로젝트에 쓸 수 있는 길이 두 가지 더 있다.
+프로젝트마다 `.mcp.json`에 Supabase MCP 서버를 직접 연결한다. 읽기 전용, 프로젝트 하나로 한정한다(`<ref>`는 `https://xxxx.supabase.co`의 xxxx).
 
-- **공식 Supabase 플러그인의 MCP 서버.** 스킬 때문에 의존성으로 같이 설치되고, `read_only` 없이 연결된다. 프로젝트 `.mcp.json`으로 읽기 전용 주소를 덮어쓸 수도 없다. 플러그인 서버는 주소로 같은 서버인지 판단하는데, `?read_only=true`를 붙이면 다른 서버가 되기 때문이다.
-- **Supabase CLI 와 `psql`.** 원격 프로젝트에 로그인하거나 연결돼 있을 때.
+```json
+{
+  "mcpServers": {
+    "local_supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?read_only=true&project_ref=<ref>"
+    }
+  }
+}
+```
 
-걱정되면 프로젝트 `.claude/settings.json`에 deny 규칙을 넣는다. deny 는 allow 보다 우선한다. 아래 묶음은 공식 MCP 서버, 원격 프로젝트를 바꾸는 주요 CLI 명령, Supabase 호스트로의 `psql`을 막고, 로컬 작업(`supabase start`, `--linked` 없는 `supabase db reset`, `supabase migration list --local`, `127.0.0.1`로의 `psql`)은 그대로 둔다.
+`supabase` 점검과 `rls-reviewer`는 이 서버를 쓴다. 선언된 서버가 없으면 MCP 항목은 건너뛴다. 처음 쓸 때 서버 승인과 Supabase 로그인을 요청한다(`/mcp`).
+
+공식 Supabase 플러그인(스킬 때문에 의존성으로 같이 설치됨)도 자기 MCP 서버를 가져오는데, `read_only` 없이 연결되고 이를 바꾸는 옵션이 없다. 플러그인 서버는 주소로 같은 서버인지 판단하고 `?read_only=true`를 붙이면 다른 주소가 되므로, 프로젝트 `.mcp.json`으로 대체할 수도 없다. 프로젝트 `.claude/settings.json`의 deny 규칙으로 끈다. deny 된 도구는 Claude 의 도구 목록에서 빠지고, 공식 스킬도 프로젝트 서버를 쓰게 된다.
 
 ```json
 {
   "permissions": {
     "deny": [
-      "mcp__plugin_supabase_supabase__*",
+      "mcp__plugin_supabase_supabase__*"
+    ]
+  }
+}
+```
+
+### CLI 로 하는 Supabase 쓰기 막기 (선택)
+
+Supabase CLI 와 `psql`은 원격 프로젝트에 로그인하거나 연결돼 있으면 여전히 바꿀 수 있다. 이것도 막으려면 같은 `deny` 목록에 아래를 더한다. 로컬 작업(`supabase start`, `--linked` 없는 `supabase db reset`, `supabase migration list --local`, `127.0.0.1`로의 `psql`)은 그대로 된다.
+
+```json
       "Bash(supabase link*)",
       "Bash(supabase db push*)",
       "Bash(supabase db reset --linked*)",
@@ -246,10 +265,6 @@ claude plugin update workflow@j-dev-kit --scope project    # 설치한 플러그
       "Bash(supabase projects delete*)",
       "Bash(psql *supabase.co*)",
       "Bash(psql *supabase.com*)"
-    ]
-  }
-}
 ```
 
 설정으로 막을 수 없는 것: 앱 자체. 데이터를 저장하는 브라우저 테스트는 앱의 env 파일이 가리키는 프로젝트에 쓴다.
-

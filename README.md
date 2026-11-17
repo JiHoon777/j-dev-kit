@@ -10,7 +10,7 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), agents `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer`, read-only MCP server `supabase-readonly` | `supabase` (official: skills, MCP) |
+| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer` | `supabase` (official: skills, MCP) |
 | `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm), agent `api-reviewer` | — |
 
 ### File layout
@@ -212,22 +212,41 @@ Then **restart Claude Code**; a running session keeps the old skill text.
 - `/task` runs only when typed (`disable-model-invocation: true`). Saying "put this in the backlog" does not trigger it; use `/task create …`. This prevents `start` from running on its own.
 - Dependencies point to the marketplaces Claude Code actually has: Anthropic's plugins come from the built-in `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp, supabase), and Chrome DevTools from Google's own `chrome-devtools-plugins` marketplace. Do not also enable the same plugin from another marketplace (for example `supabase@claude-plugins-official`); the same MCP server would start twice.
 - **External CLIs are version-pinned.** Tools that skills download and run with `npx` (React Doctor, `@sveltejs/mcp`, `sv`, `skills`) are pinned to versions published more than two weeks ago. To upgrade, check the new version and change only the number. Project tools (Prisma, Drizzle, TypeORM) use `npx --no-install` so only the project's installed copy runs. `modern-web-guidance` is left to its plugin's skill, with no command written here.
-- **The Supabase MCP is read-only.** The `supabase` plugin bundles its own server, `supabase-readonly`, which connects with `read_only=true`. Which project it reads is set in the project's `.claude/.local/project.json` as `{ "supabaseMcpUrl": "https://<ref>.supabase.co" }`; the checks ask for it when it is missing. The first use asks you to sign in to Supabase (`/mcp`).
 
-### Blocking Supabase writes (optional)
+### Supabase MCP (per project)
 
-The checks only use the read-only server, but two other paths can still write to a real Supabase project:
+Each project connects its own Supabase MCP server in its `.mcp.json`, read-only and scoped to one project (`<ref>` is the xxxx in `https://xxxx.supabase.co`):
 
-- **The official Supabase plugin's MCP server.** It is installed as a dependency (for its skills) and connects without `read_only`. A project-level `.mcp.json` cannot override it with a read-only URL: plugin servers are matched by endpoint, and adding `?read_only=true` makes it a different server.
-- **The Supabase CLI and `psql`**, if they are logged in or linked to a remote project.
+```json
+{
+  "mcpServers": {
+    "local_supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com/mcp?read_only=true&project_ref=<ref>"
+    }
+  }
+}
+```
 
-If that is a concern, add deny rules to the project's `.claude/settings.json`. Deny rules take precedence over allow rules. This set blocks the official MCP server, the CLI commands that change a remote project, and `psql` to Supabase hosts, while local work (`supabase start`, `supabase db reset` without `--linked`, `supabase migration list --local`, `psql` to `127.0.0.1`) keeps working:
+The `supabase` checks and `rls-reviewer` use this server; if a project declares none, they skip the MCP items. The first use asks you to approve the server and sign in to Supabase (`/mcp`).
+
+The official Supabase plugin (installed as a dependency for its skills) also brings its own MCP server, which connects without `read_only` and has no option to change that. A project `.mcp.json` cannot replace it with a read-only URL, because plugin servers are matched by endpoint and `?read_only=true` makes a different endpoint. Turn it off with a deny rule in the project's `.claude/settings.json`; denied tools are removed from Claude's tool list, and the official skills then use the project's server:
 
 ```json
 {
   "permissions": {
     "deny": [
-      "mcp__plugin_supabase_supabase__*",
+      "mcp__plugin_supabase_supabase__*"
+    ]
+  }
+}
+```
+
+### Blocking Supabase writes from the CLI (optional)
+
+The Supabase CLI and `psql` can still change a remote project if they are logged in or linked. To block that too, add these to the same `deny` list. Local work (`supabase start`, `supabase db reset` without `--linked`, `supabase migration list --local`, `psql` to `127.0.0.1`) keeps working:
+
+```json
       "Bash(supabase link*)",
       "Bash(supabase db push*)",
       "Bash(supabase db reset --linked*)",
@@ -246,10 +265,6 @@ If that is a concern, add deny rules to the project's `.claude/settings.json`. D
       "Bash(supabase projects delete*)",
       "Bash(psql *supabase.co*)",
       "Bash(psql *supabase.com*)"
-    ]
-  }
-}
 ```
 
 Not covered by any setting: the app itself. A browser test that saves data writes to whatever project the app's own env file points to.
-
