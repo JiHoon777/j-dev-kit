@@ -2,7 +2,7 @@
 name: server-start-check
 description: Pre-work check for backend projects, called by the start mode of the workflow plugin's task skill. Detects the language, framework, and migration tool, then runs the common checks (environment variables, local services) and the language checks from the matching reference file (node.md, python.md, go.md, jvm.md), covering install, LSP, migration status, and baseline. Returns a baseline, an exploration prompt for the API and its consumers, questions, and rules during implementation.
 user-invocable: false
-version: "0.3.1"
+version: "0.3.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -40,7 +40,7 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 
 Exactly one plugin owns the migration checks. The `supabase` and `server` plugins decide it with the same rule, so the result is the same whichever runs first:
 
-Server migration tools: `prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, a Liquibase changelog, a golang-migrate folder. Apply the first rule that matches:
+Server migration tools: `prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django (`manage.py` plus app `*/migrations/`; `supabase/migrations/` does not count), `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, a Liquibase changelog, a golang-migrate folder. Apply the first rule that matches:
 
 1. A server migration tool is present **and** `supabase/migrations/` has SQL files → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
 2. A server migration tool is present → **server** owns migrations, even if the database is Supabase Postgres.

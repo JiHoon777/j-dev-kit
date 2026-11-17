@@ -1,7 +1,7 @@
 {
   "name": "supabase",
   "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys) and the rls-reviewer agent.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "author": {
     "name": "JiHoon777"
   },

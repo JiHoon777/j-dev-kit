@@ -2,7 +2,7 @@
 name: supabase-end-check
 description: Supabase 프로젝트의 작업 끝 점검. CLI 와 SQL 로 빠진 마이그레이션, 처음부터 다시 적용하기, 순서, RLS·뷰·함수 설정, 다른 사용자로 행이 보이는지, 타입, 키 노출을 확인한다. Supabase 쪽이 바뀌었으면 rls-reviewer 에이전트를 리뷰에 넣어야 한다고 돌려준다. workflow 플러그인의 `/task end`가 부른다.
 user-invocable: false
-version: "0.3.1"
+version: "0.3.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---

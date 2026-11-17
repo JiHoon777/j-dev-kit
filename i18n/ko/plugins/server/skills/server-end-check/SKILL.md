@@ -2,7 +2,7 @@
 name: server-end-check
 description: 백엔드 프로젝트의 마무리 점검으로, workflow 플러그인 task 스킬의 end 모드가 부른다. 언어와 마이그레이션 도구를 판별하고, 검사 결과를 기준선과 비교하고, 도구로 빠졌거나 순서가 어긋난 마이그레이션, 호환성을 깨는 API 변경(oasdiff), 문서에 없는 설정 키를 찾고, 로컬 서버에서 바뀐 엔드포인트를 호출해 본다. 언어별 명령은 맞는 참고 파일(node.md, python.md, go.md, jvm.md)에서 가져온다. 서버 코드가 바뀌었으면 리뷰에 넣을 api-reviewer 에이전트를 돌려준다.
 user-invocable: false
-version: "0.3.1"
+version: "0.3.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---

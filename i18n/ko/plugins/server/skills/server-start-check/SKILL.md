@@ -2,7 +2,7 @@
 name: server-start-check
 description: 백엔드 프로젝트의 작업 전 점검으로, workflow 플러그인 task 스킬의 start 모드가 부른다. 언어, 프레임워크, 마이그레이션 도구를 판별한 뒤 공통 점검(환경 변수, 로컬 서비스)과 맞는 참고 파일(node.md, python.md, go.md, jvm.md. 설치, LSP, 마이그레이션 상태, 기준선)의 언어별 점검을 돌린다. 기준선, API 와 그 사용처에 대한 탐색 지시문, 물을 것, 구현 중 지킬 것을 돌려준다.
 user-invocable: false
-version: "0.3.1"
+version: "0.3.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -42,7 +42,7 @@ metadata:
 
 마이그레이션 점검은 플러그인 하나만 맡는다. `supabase`와 `server` 플러그인이 같은 규칙으로 정하므로, 어느 쪽이 먼저 돌아도 결과가 같다.
 
-서버 마이그레이션 도구: `prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway `db/migration/` 또는 `flyway.conf`, Liquibase changelog, golang-migrate 폴더. 아래 규칙 중 처음 맞는 것을 적용한다.
+서버 마이그레이션 도구: `prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django(`manage.py`와 앱의 `*/migrations/`. `supabase/migrations/`는 해당하지 않는다), `atlas.hcl`, Flyway `db/migration/` 또는 `flyway.conf`, Liquibase changelog, golang-migrate 폴더. 아래 규칙 중 처음 맞는 것을 적용한다.
 
 1. 서버 마이그레이션 도구가 있고 **동시에** `supabase/migrations/`에 SQL 파일이 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
 2. 서버 마이그레이션 도구가 있다 → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.

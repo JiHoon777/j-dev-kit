@@ -2,7 +2,7 @@
 name: frontend-start-check
 description: 프론트엔드 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 프레임워크를 감지한 뒤 공통 점검(패키지 매니저, Node 버전, 설치, 기준선, 환경 변수)과 해당 reference 파일(svelte.md, react.md)의 프레임워크 점검을 실행한다. 기준선, 탐색에 넣을 지시문, 물을 것, 구현 중 지킬 것(frontend-design, modern-web-guidance, 프레임워크 규칙), 끝내기 전 할 브라우저 테스트를 돌려준다.
 user-invocable: false
-version: "0.3.1"
+version: "0.3.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -54,7 +54,7 @@ metadata:
 
 ## 3. 환경 변수
 
-- `.env.example`/`.env.sample`의 키를 실제 `.env`/`.env.local`의 키와 비교해 빠진 **이름**만 나열한다. 값은 절대 출력하지 않는다.
+- `.env.example`/`.env.sample`의 키를 실제 `.env`/`.env.local`의 키와 비교해 빠진 **이름**만 나열한다. 값은 절대 출력하지 않는다. 실제 env 파일이 하나도 없으면 실패가 아니라 건너뜀("로컬 env 파일 없음")이다. 예시 파일의 키를 물을 것으로 돌려준다("`.env`를 만들고 넣을 키: …").
 - 공개 접두사(`NEXT_PUBLIC_`, `VITE_`, `PUBLIC_`, `NUXT_PUBLIC_`, `REACT_APP_`)가 붙은 변수 이름에 `SECRET`, `PRIVATE`, `SERVICE_ROLE`, `TOKEN`, `PASSWORD`가 들어 있으면 → 실패. 브라우저 번들에 들어가 버린다.
 
 ## 4. 재사용 조사(탐색 에이전트에게 넘김)

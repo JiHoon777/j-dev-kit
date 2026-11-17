@@ -2,7 +2,7 @@
 name: frontend-start-check
 description: Pre-work check for frontend projects, called by the start mode of the workflow plugin's task skill. Detects the framework, then runs the common checks (package manager, Node version, install, baseline, environment variables) and the framework checks from the matching reference file (svelte.md, react.md). Returns a baseline, exploration prompts, questions, rules during implementation (frontend-design, modern-web-guidance, framework rules), and a browser test to do before finishing.
 user-invocable: false
-version: "0.3.1"
+version: "0.3.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -52,7 +52,7 @@ Record the state before the work. `/task end` compares against it to find only t
 
 ## 3. Environment variables
 
-- Compare the keys in `.env.example`/`.env.sample` with those in the real `.env`/`.env.local` and list only the **names** that are missing. Never print values.
+- Compare the keys in `.env.example`/`.env.sample` with those in the real `.env`/`.env.local` and list only the **names** that are missing. Never print values. If no real env file exists at all, this is skip ("no local env file"), not fail; list the keys from the example as a question ("create `.env` with: …").
 - If a variable with a public prefix (`NEXT_PUBLIC_`, `VITE_`, `PUBLIC_`, `NUXT_PUBLIC_`, `REACT_APP_`) has `SECRET`, `PRIVATE`, `SERVICE_ROLE`, `TOKEN`, or `PASSWORD` in its name → fail. It ends up in the browser bundle.
 
 ## 4. Reuse survey (handed to an exploration agent)
