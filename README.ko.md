@@ -179,11 +179,22 @@ superpowers 는 세션을 시작할 때마다 "맞을 것 같으면 스킬을 �
 
 ## 업데이트
 
-```
-/plugin marketplace update j-dev-kit
+업데이트는 **버전 단위**다. Claude Code 는 설치한 플러그인을 버전별 폴더(`~/.claude/plugins/cache/j-dev-kit/<플러그인>/<버전>/`)에 두고, `plugin.json`의 버전이 올라갔을 때만 바꾼다. 버전은 그대로이고 커밋만 새로 생기면 무시한다("already at the latest version").
+
+새 릴리스를 받으려면:
+
+```bash
+claude plugin marketplace update j-dev-kit
+claude plugin update workflow@j-dev-kit --scope project    # 설치한 플러그인마다, 설치할 때의 범위로 반복
 ```
 
-그다음 Claude Code 를 다시 시작하거나 `/reload-plugins`를 실행해야 새 스킬 내용이 읽힌다.
+그다음 **Claude Code 를 다시 시작한다.** 실행 중인 세션은 예전 스킬 내용을 그대로 쓴다.
+
+### 변경을 내보낼 때 (관리자)
+
+1. **파일이 바뀐 플러그인마다** `plugin.json`의 `version`을 올린다(그 플러그인 SKILL.md frontmatter 의 `version`도). 올리지 않으면 아무도 변경을 받지 못한다.
+2. `claude plugin validate .`와 `claude plugin validate plugins/<이름>`.
+3. 커밋하고 푸시한다.
 
 ## 문제 해결
 
@@ -193,6 +204,7 @@ superpowers 는 세션을 시작할 때마다 "맞을 것 같으면 스킬을 �
 | `claude plugin list`에 `Dependency "…" is not installed` | `enabledPlugins`에서 의존 플러그인이 지워졌다. 메시지의 명령으로 빠진 플러그인을 같은 `--scope`로 설치한다. |
 | `/task start`가 스택 점검을 하나도 안 돈다 | 이 프로젝트에서 스택 플러그인이 꺼져 있거나, 이 프로젝트에 해당하지 않는다고 판단했다(CLAUDE.md 의 `stack:`을 확인). |
 | superpowers 가 자기 brainstorming 이나 계획 파일을 시작한다 | 위의 superpowers 문단을 프로젝트 CLAUDE.md 에 넣는다. |
+| 푸시한 변경이 업데이트해도 안 보인다 | 플러그인 `version`을 올리지 않았거나 Claude Code 를 다시 시작하지 않았다(업데이트 절 참고). |
 
 ## 알아 둘 것
 

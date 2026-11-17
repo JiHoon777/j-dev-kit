@@ -179,11 +179,22 @@ The `server` plugin detects the language and suggests installing the matching LS
 
 ## Update
 
-```
-/plugin marketplace update j-dev-kit
+Updates are **by version**. Claude Code caches each installed plugin under its version (`~/.claude/plugins/cache/j-dev-kit/<plugin>/<version>/`) and only replaces it when the version in `plugin.json` goes up. A new commit with the same version is ignored ("already at the latest version").
+
+To pick up a new release:
+
+```bash
+claude plugin marketplace update j-dev-kit
+claude plugin update workflow@j-dev-kit --scope project    # repeat for each installed plugin, with the scope you installed it in
 ```
 
-Then restart Claude Code (or run `/reload-plugins`) so the new skill text is loaded.
+Then **restart Claude Code**; a running session keeps the old skill text.
+
+### Releasing a change (maintainer)
+
+1. Bump `version` in the `plugin.json` of **every plugin whose files changed** (and the `version` in those plugins' SKILL.md frontmatter). Without a bump, nobody receives the change.
+2. `claude plugin validate .` and `claude plugin validate plugins/<name>`.
+3. Commit and push.
 
 ## Troubleshooting
 
@@ -193,6 +204,7 @@ Then restart Claude Code (or run `/reload-plugins`) so the new skill text is loa
 | `Dependency "…" is not installed` in `claude plugin list` | A dependency was removed from `enabledPlugins`. Install the missing plugin with the command in the message (same `--scope`). |
 | `/task start` does not run any stack check | The stack plugin is not enabled in this project, or it reports "not applicable" for this project (check `stack:` in CLAUDE.md). |
 | superpowers starts its own brainstorming or plan files | Add the superpowers paragraph above to the project's CLAUDE.md. |
+| A pushed change does not show up after updating | The plugin's `version` was not bumped, or Claude Code was not restarted (see Update). |
 
 ## Good to know
 
