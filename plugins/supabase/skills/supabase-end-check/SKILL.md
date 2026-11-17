@@ -1,6 +1,6 @@
 ---
 name: supabase-end-check
-description: Supabase 프로젝트의 작업 마무리 점검. 스키마 변경이 전부 마이그레이션에 담겼는지, 처음부터 다시 적용해도 되는지, 마이그레이션 순서, 위험한 변경, RLS·뷰·함수 보안, 다른 사용자로 행이 보이는지, 타입 재생성, 키 노출을 확인해 돌려준다. workflow 의 task-end 가 부른다.
+description: Supabase 프로젝트의 작업 마무리 점검. CLI·SQL 로 마이그레이션 누락, 처음부터 다시 적용, 순서, RLS·뷰·함수 설정, 다른 사용자로 행이 보이는지, 타입, 키 노출을 확인한다. Supabase 가 바뀌었으면 rls-reviewer 에이전트를 리뷰에 넣으라고 돌려준다. workflow 의 task-end 가 부른다.
 user-invocable: false
 version: "0.2.0"
 metadata:
@@ -10,6 +10,8 @@ metadata:
 # Supabase 종료 점검
 
 `task-end` 가 부른다. 각 항목을 **통과 · 실패 · 건너뜀(이유)** 으로 판정하고 맨 아래 형식으로 돌려준다. 실패는 `task-end` 가 고친 뒤 이 스킬을 다시 부른다.
+
+이 스킬은 **CLI·SQL 을 돌려 결과를 확인하는 것**만 한다. 마이그레이션과 정책을 읽고 판단하는 리뷰(정책이 의도대로인지, 위험한 변경을 어떻게 다룰지, 악용 가능성)는 직접 하지 않고 `supabase:rls-reviewer` 에이전트에 넘긴다(10번).
 
 SQL 은 `supabase status` 의 DB URL 로 `psql "<DB URL>" -c "<SQL>"` 로 돌린다. `psql` 이 없으면 SQL 항목은 "psql 없음"으로 건너뛴다.
 
@@ -32,20 +34,25 @@ SQL 은 `supabase status` 의 DB URL 로 `psql "<DB URL>" -c "<SQL>"` 로 돌린
 
 `git ls-tree --name-only origin/<기준 브랜치> supabase/migrations/` 의 가장 늦은 타임스탬프보다 새 마이그레이션의 타임스탬프가 커야 통과. 작으면 실패: 작업 도중 기준 브랜치에 다른 마이그레이션이 들어왔다. 원격에는 순서대로 적용되므로 새 파일 이름의 타임스탬프를 지금 시각으로 바꾸라고 돌려준다.
 
-## 4. 위험한 변경
+## 4. 위험한 변경 (위치만 찾는다)
 
-새 마이그레이션에서 아래를 찾는다. 있으면 실패가 아니라 **확인 필요**로 표시하고, 데이터 보존 방법(백업, 단계적 변경)과 되돌리는 SQL 을 PR 설명에 쓰도록 돌려준다.
+새 마이그레이션에서 아래 키워드가 있는 줄을 찾아 `파일:줄`만 적는다. 있으면 **확인 필요**로 표시한다. 데이터 보존과 되돌리기를 어떻게 할지는 `rls-reviewer`가 판단한다.
 
-- `drop table`, `drop column`, `truncate`, 조건 없는 `delete from`·`update`
-- `alter column … type`(형 변환 중 데이터 손실·테이블 잠금)
-- 기존 컬럼에 `not null` 추가(기존 행에 null 이 있으면 실패한다) — 기본값이나 채우는 SQL 이 있는지
-- 큰 테이블의 `create index`(`concurrently` 가 아니면 쓰기 잠금)
-- 컬럼·테이블 이름 변경(쓰는 쪽 코드가 같이 바뀌었는지)
+```bash
+grep -niE "drop (table|column)|truncate|delete from|alter column .* type|set not null|not null|create (unique )?index|rename (to|column)" <새 마이그레이션 파일들>
+```
 
 ## 5. RLS 와 보안
 
 1. 시작 점검의 두 SQL(RLS 꺼진 테이블, 정책 없는 테이블)을 다시 돌린다. 기준선에 없던 테이블이 나오면 실패.
-2. 새 테이블마다 select·insert·update·delete 정책이 의도대로 있는지 `select * from pg_policies where tablename = '<테이블>';` 로 본다. update 정책에 `with check` 가 없으면 실패.
+2. 새 테이블의 정책 목록을 뽑아 근거에 붙인다(정책이 의도대로인지는 `rls-reviewer`가 본다). `with check` 없는 update 정책이 있으면 실패.
+   ```sql
+   select tablename, policyname, cmd, roles, qual, with_check from pg_policies
+   where schemaname = 'public' and tablename in (<새 테이블들>);
+
+   select tablename, policyname from pg_policies
+   where schemaname = 'public' and cmd = 'UPDATE' and with_check is null;
+   ```
 3. **다른 사용자로 확인한다.** 테스트 사용자 두 명(A, B)의 id 로, 수용 기준의 권한 규칙대로 보이는지 확인한다. 테스트 사용자가 없으면 seed 나 `auth.users` 에서 찾고, 없으면 만들지 묻는다.
    ```sql
    begin;
@@ -67,9 +74,8 @@ SQL 은 `supabase status` 의 DB URL 로 `psql "<DB URL>" -c "<SQL>"` 로 돌린
    where p.pronamespace = 'public'::regnamespace and p.prosecdef
      and coalesce(array_to_string(p.proconfig, ','), '') not like '%search_path=%';
    ```
-6. 정책에 `auth.uid()` 가 `(select auth.uid())` 로 감싸지지 않은 곳, 정책 조건 컬럼에 인덱스가 없는 곳은 실패가 아니라 근거에 적는다.
-7. `supabase db lint` 와 `supabase test db`(테스트가 있으면)를 기준선과 비교한다. 새 오류·새 실패가 있으면 실패.
-8. 새 권한 규칙을 pgTAP 테스트로 남기지 않았으면 "나중에"로 돌려준다.
+6. `supabase db lint` 와 `supabase test db`(테스트가 있으면)를 기준선과 비교한다. 새 오류·새 실패가 있으면 실패.
+7. 새 권한 규칙을 pgTAP 테스트로 남기지 않았으면 "나중에"로 돌려준다.
 
 ## 6. 타입
 
@@ -77,7 +83,13 @@ SQL 은 `supabase status` 의 DB URL 로 `psql "<DB URL>" -c "<SQL>"` 로 돌린
 
 ## 7. 키와 비밀값
 
-diff 와 클라이언트 코드에서 찾는다. 있으면 실패.
+명령으로 찾는다. 있으면 실패. 값은 근거에 옮겨 적지 않는다.
+
+```bash
+grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .
+```
+
+`eyJ` 토큰이 나오면 가운데 부분을 풀어 `role`이 `anon`인지 확인한다(anon 키는 공개돼도 된다).
 
 - `service_role`, `SERVICE_ROLE`, `sb_secret_` 가 클라이언트에서 쓰이는 파일(브라우저 번들에 들어가는 코드)이나 공개 접두어 환경변수(`NEXT_PUBLIC_`·`VITE_` 등)에 있음.
 - JWT 형태 문자열(`eyJ` 로 시작하는 긴 문자열)이나 키가 코드·마이그레이션·seed 에 직접 들어감.
@@ -93,7 +105,7 @@ Supabase MCP 가 **개발용 프로젝트에 읽기 전용으로** 연결돼 있
 
 ## 10. 리뷰에 넣을 에이전트
 
-아래 중 하나라도 바뀌었으면 `supabase:rls-reviewer`를 `task-end` 리뷰 단계에 넣으라고 돌려준다. 근거(바뀐 파일)를 같이 적는다.
+아래 중 하나라도 바뀌었으면 `supabase:rls-reviewer`를 `task-end` 리뷰 단계에 넣으라고 돌려준다. 근거(바뀐 파일), 4번에서 찾은 위험한 변경 위치, 5번의 정책 목록과 다른 사용자 확인 결과를 같이 넘긴다. 이 에이전트가 정책이 의도대로인지, 악용 가능성, 위험한 마이그레이션 처리, 정책 성능을 본다.
 
 - `supabase/` 아래 파일
 - Supabase 를 부르는 코드(`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)
@@ -108,7 +120,7 @@ Supabase MCP 가 **개발용 프로젝트에 읽기 전용으로** 연결돼 있
 | 마이그레이션 누락 | 통과 | `db diff` 출력 없음 |
 | 처음부터 적용 | … | `db reset` 종료 0 / 확인 못 함 |
 | 순서 | … | 새 20261117…, 기준 최신 20261110… |
-| 위험한 변경 | 확인 필요 | drop column orders.memo |
+| 위험한 변경 위치 | 확인 필요 | 2026…_orders.sql:4 drop column |
 | RLS·정책 | … | … |
 | 다른 사용자 확인 | … | A: 3행, A 로 B 행 조회: 0, anon: 0 |
 | 뷰·함수 | … | … |
@@ -116,7 +128,6 @@ Supabase MCP 가 **개발용 프로젝트에 읽기 전용으로** 연결돼 있
 | 타입 | … | … |
 | 키·비밀값 | … | … |
 | Edge Function | 건너뜀 | 변경 없음 |
-
 | 어드바이저 | 건너뜀 | MCP 연결 없음 |
 
 #### 실패 상세
@@ -126,7 +137,7 @@ Supabase MCP 가 **개발용 프로젝트에 읽기 전용으로** 연결돼 있
 - `supabase:rls-reviewer` — 근거: supabase/migrations/2026…_orders.sql 추가
 
 #### 고친 뒤 할 것
-- 고친 마이그레이션이 있으면 `db diff`·타입·RLS 확인(1, 5, 6) 다시
+- 고친 마이그레이션이 있으면 `db diff`·RLS·타입 확인(1, 5, 6번) 다시
 - (위험한 변경이 있으면) 백업·되돌리기 방법 사용자 확인
 
 #### 나중에

@@ -29,7 +29,9 @@ metadata:
 - `react`, `react-dom`, `next`(있으면)의 설치된 버전을 적는다.
 - **React Compiler:** `babel-plugin-react-compiler`가 있거나 Next 설정에 `reactCompiler`가 켜져 있으면 "컴파일러 사용"으로 적는다. 이때 새 코드에 `useMemo`·`useCallback`·`memo`를 습관적으로 넣지 않는다는 것을 "구현 중 지킬 것"에 넣는다.
 - **Next.js:** `app/`(App Router)인지 `pages/`(Pages Router)인지, 둘 다인지. App Router 면 서버 컴포넌트가 기본이고 `'use client'`가 어디에 있는지(파일 수와 대표 위치)를 적는다.
-- **데이터 요청 방식:** `@tanstack/react-query`·`swr`·서버 컴포넌트 fetch·서버 액션 중 무엇을 쓰는지 적는다. 새 코드는 같은 방식을 쓴다.
+- **데이터 요청 방식:** 의존성에 `@tanstack/react-query`·`swr`·`@apollo/client`가 있는지만 적는다. 실제로 어떤 방식을 어디서 쓰는지는 직접 찾지 않고 "탐색에 넣을 지시문"으로 돌려준다:
+
+  > 이 저장소의 React 코드에서 데이터를 어떻게 불러오고 바꾸는지 정리하라: 쿼리 라이브러리(react-query·swr 등)와 쿼리 키·API 클라이언트 위치, 서버 컴포넌트 fetch, 서버 액션, 라우트 핸들러. App Router 면 `'use client'` 경계가 어디에 있는지와 그 이유. 이 항목(<항목 경로>)과 비슷한 기존 기능 하나를 끝까지 따라가 보고, 꼭 읽어야 할 파일 5~10개를 돌려줘라. 파일을 고치지 마라.
 
 ## 2. eslint-plugin-react-hooks
 
@@ -67,6 +69,9 @@ metadata:
 | --- | --- | --- |
 | 린트(react-hooks) | `pnpm lint` | 위반 0 |
 | React Doctor | `npx -y react-doctor@0.9.22 --verbose --no-telemetry` | 82점 |
+
+#### 탐색에 넣을 지시문
+- 데이터 요청 방식: (1번 지시문)
 
 #### 물을 것
 - …

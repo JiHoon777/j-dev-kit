@@ -1,6 +1,6 @@
 ---
 name: rls-reviewer
-description: Supabase 마이그레이션과 DB 함수의 권한을 검토한다. supabase/migrations 아래 파일을 만들거나 고쳤을 때, 새 테이블·정책·RPC·Realtime 채널·스토리지 버킷을 추가했을 때, 브라우저에서 Supabase 를 부르는 코드가 바뀌었을 때 쓴다. 읽기만 하고 발견한 것을 보고한다.
+description: Supabase 마이그레이션과 DB 함수의 권한과 안전성을 검토한다. supabase/migrations 아래 파일을 만들거나 고쳤을 때, 새 테이블·정책·RPC·Realtime 채널·스토리지 버킷을 추가했을 때, 브라우저에서 Supabase 를 부르는 코드가 바뀌었을 때 쓴다. 읽기만 하고 발견한 것을 보고한다.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -30,6 +30,8 @@ tools: Read, Grep, Glob, Bash
 9. **Realtime·스토리지:** Presence·Broadcast 채널에 권한이 걸려 있는가. 채널로 보내는 값에 개인정보가 없는가. 새 버킷에 `storage.objects` 정책이 있는가.
 10. **키:** 비밀 키가 저장소, `.env.example`, 브라우저 코드에 없는가. 새 방식 키(`sb_secret_`)와 `service_role`이라는 글자뿐 아니라, 예전 방식 키는 `eyJ`로 시작하는 JWT라서 글자 검색에 안 걸린다. `grep -rnE "sb_secret_|service_role|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .`로 찾고, `eyJ` 토큰이 나오면 가운데 부분을 풀어 `role`이 `anon`인지 확인한다. 값 자체는 보고서에 옮겨 적지 않는다.
 11. **Edge Functions:** 호출자를 확인하는가(JWT 검증). 비밀 값을 응답이나 로그에 남기지 않는가.
+12. **위험한 마이그레이션:** 새 마이그레이션에 `drop table`·`drop column`·`truncate`, 조건 없는 `delete`·`update`, 형 변환(`alter column … type`), 기본값·채우기 없이 기존 열에 `not null` 추가, 큰 테이블의 `concurrently` 없는 `create index`, 이름 변경(쓰는 코드가 같이 바뀌었는가)이 있는가. 있으면 데이터 보존 방법과 되돌리는 SQL 을 제안한다.
+13. **정책 성능:** 정책의 `auth.uid()`를 `(select auth.uid())`로 감쌌는가. 정책 조건 열에 인덱스가 있는가.
 
 가능하면 정책을 실제로 뚫어 보는 SQL(다른 사용자인 척 하는 요청)을 적어서 근거로 삼는다. **로컬 Supabase 가 떠 있을 때만** 실행하고(`supabase status`의 로컬 DB URL), 실제 프로젝트에는 아무것도 실행하지 않는다.
 

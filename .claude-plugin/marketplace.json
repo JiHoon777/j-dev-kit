@@ -16,12 +16,14 @@
       "name": "workflow",
       "source": "./plugins/workflow",
       "description": "backlog-create → task-start → task-end. 켜진 스택 플러그인의 점검을 불러 쓴다.",
-      "dependencies": ["superpowers@claude-plugins-official"]
+      "dependencies": [
+        "superpowers@claude-plugins-official"
+      ]
     },
     {
       "name": "frontend",
       "source": "./plugins/frontend",
-      "description": "프론트엔드 공통 점검과 브라우저 테스트.",
+      "description": "프론트엔드 공통 점검, 브라우저 테스트, ui-reviewer 에이전트.",
       "dependencies": [
         "chrome-devtools-mcp@claude-plugins-official",
         "typescript-lsp@claude-plugins-official",
@@ -32,19 +34,23 @@
     {
       "name": "svelte",
       "source": "./plugins/svelte",
-      "description": "Svelte 5 / SvelteKit 점검 (svelte-autofixer, sv check).",
-      "dependencies": ["svelte@svelte"]
+      "description": "Svelte 5 / SvelteKit 점검(svelte-autofixer, sv check)과 svelte-reviewer 에이전트.",
+      "dependencies": [
+        "svelte@svelte"
+      ]
     },
     {
       "name": "react",
       "source": "./plugins/react",
-      "description": "React / Next.js 점검 (react-hooks 린트, React Doctor)."
+      "description": "React / Next.js 점검(react-hooks 린트, React Doctor)과 react-reviewer 에이전트."
     },
     {
       "name": "supabase",
       "source": "./plugins/supabase",
       "description": "Supabase 점검(마이그레이션·드리프트·RLS·타입)과 rls-reviewer 에이전트.",
-      "dependencies": ["supabase@claude-plugins-official"]
+      "dependencies": [
+        "supabase@claude-plugins-official"
+      ]
     },
     {
       "name": "server",

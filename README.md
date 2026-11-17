@@ -7,9 +7,9 @@ Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름(백로그 �
 | 플러그인 | 스킬 · 에이전트 | 같이 설치되는 것 |
 | --- | --- | --- |
 | `workflow` | `/backlog-create`, `/task-start`, `/task-end` | `superpowers` |
-| `frontend` | `frontend-start-check`, `frontend-end-check` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `svelte` | `svelte-start-check`, `svelte-end-check` | `svelte` (공식: MCP svelte-autofixer, 문서) |
-| `react` | `react-start-check`, `react-end-check` | — (eslint-plugin-react-hooks, React Doctor CLI 를 쓴다) |
+| `frontend` | `frontend-start-check`, `frontend-end-check`, 에이전트 `ui-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
+| `svelte` | `svelte-start-check`, `svelte-end-check`, 에이전트 `svelte-reviewer` | `svelte` (공식: MCP svelte-autofixer, 문서) |
+| `react` | `react-start-check`, `react-end-check`, 에이전트 `react-reviewer` | — (eslint-plugin-react-hooks, React Doctor CLI 를 쓴다) |
 | `supabase` | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | `supabase` (공식: 스킬, MCP) |
 | `server` | `server-start-check`, `server-end-check`, 에이전트 `api-reviewer` | — (언어별 LSP 는 아래 참고) |
 
@@ -18,8 +18,9 @@ Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름(백로그 �
 - `/task-start`는 쓸 수 있는 스킬 중 이름이 **`-start-check`**로 끝나는 것을 전부 부른다. `/task-end`는 **`-end-check`**로 끝나는 것을 전부 부른다.
 - 플러그인을 끄면 그 스킬이 목록에서 빠지므로 그 점검도 빠진다.
 - 각 점검 스킬은 프로젝트에 해당하지 않으면 "해당 없음"만 돌려준다. 예를 들어 frontend·svelte·react 를 다 켜 둬도 Svelte 프로젝트에서는 react 점검이 빠진다.
+- **점검 스킬은 명령만 돌린다.** 코드를 찾아 읽는 정보 취합은 `Explore` 에이전트 지시문으로, diff 를 읽고 판단하는 리뷰는 플러그인의 리뷰 에이전트로 돌려준다. `/task-start`·`/task-end`가 그 에이전트들을 기본 에이전트와 함께 동시에 띄운다. 메인 대화에서 직접 찾아다니거나 리뷰하지 않는다.
 - 점검 스킬이 돌려주는 것:
-  - 시작: 결과 표, **기준선**(작업 전 검사 결과), 플랜에 넣을 것, 물을 것, **구현 중 지킬 것**, **끝내기 전 할 것**
+  - 시작: 결과 표, **기준선**(작업 전 검사 결과), **탐색에 넣을 지시문**, 플랜에 넣을 것, 물을 것, **구현 중 지킬 것**, **끝내기 전 할 것**
   - 종료: 결과 표(기준선과 비교해 새로 생긴 실패만), **리뷰에 넣을 에이전트**, **고친 뒤 할 것**
 - 새 스택을 더하려면 `plugins/<스택>/skills/<스택>-start-check`, `<스택>-end-check`를 같은 형식으로 만들고 `marketplace.json`에 등록한다.
 
