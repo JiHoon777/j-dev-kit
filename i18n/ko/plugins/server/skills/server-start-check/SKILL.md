@@ -19,7 +19,7 @@ metadata:
 
 | 부분 | 출처 |
 | --- | --- |
-| 코드 진단 | Anthropic 공식 LSP 플러그인 (`typescript-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `kotlin-lsp` @claude-plugins-official) |
+| 코드 진단 | 기본으로 들어 있는 `anthropic-plugin-directory`의 Anthropic LSP 플러그인(`typescript-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`) |
 | 마이그레이션 상태 | 각 ORM 이나 도구의 공식 CLI (references 에 있음) |
 | 구현 중 지킬 것 | OWASP API Security Top 10 2023, OWASP Logging Cheat Sheet |
 

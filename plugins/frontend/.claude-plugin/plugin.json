@@ -7,9 +7,9 @@
   },
   "dependencies": [
     "workflow",
-    "chrome-devtools-mcp@claude-plugins-official",
-    "typescript-lsp@claude-plugins-official",
-    "frontend-design@claude-plugins-official",
+    "chrome-devtools-mcp@chrome-devtools-plugins",
+    "typescript-lsp@anthropic-plugin-directory",
+    "frontend-design@anthropic-plugin-directory",
     "modern-web-guidance@googlechrome"
   ]
 }

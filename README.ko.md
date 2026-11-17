@@ -83,6 +83,7 @@ docs/done/001-….md ◄── 머지 ◄── 승인 ◄── 수정 ◄─�
 ```
 /plugin marketplace add JiHoon777/j-dev-kit
 /plugin marketplace add GoogleChrome/modern-web-guidance   # frontend 를 쓸 때
+/plugin marketplace add ChromeDevTools/chrome-devtools-mcp  # frontend 를 쓸 때
 /plugin install frontend@j-dev-kit
 /plugin install supabase@j-dev-kit
 ```
@@ -105,6 +106,7 @@ Svelte 프로젝트면 공식 Svelte 플러그인도 권한다(없어도 점검�
   "extraKnownMarketplaces": {
     "j-dev-kit": { "source": { "source": "github", "repo": "JiHoon777/j-dev-kit" } },
     "googlechrome": { "source": { "source": "github", "repo": "GoogleChrome/modern-web-guidance" } },
+    "chrome-devtools-plugins": { "source": { "source": "github", "repo": "ChromeDevTools/chrome-devtools-mcp" } },
     "svelte": { "source": { "source": "github", "repo": "sveltejs/ai-tools" } }
   },
   "enabledPlugins": {
@@ -137,12 +139,12 @@ superpowers 는 세션을 시작할 때마다 "맞을 것 같으면 스킬을 �
 
 ### 서버 언어별 LSP (선택)
 
-`server` 플러그인은 언어를 판별해 해당 LSP 가 없으면 설치를 권한다. Anthropic 공식 마켓플레이스의 `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `kotlin-lsp`, `typescript-lsp`. 실행 파일(`pyright-langserver`, `gopls` 등)은 따로 설치해야 한다.
+`server` 플러그인은 언어를 판별해 해당 LSP 가 없으면 설치를 권한다. 기본으로 들어 있는 `anthropic-plugin-directory`의 `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `typescript-lsp`. 실행 파일(`pyright-langserver`, `gopls` 등)은 따로 설치해야 한다.
 
 ## 알아 둘 것
 
 - **마이그레이션 담당은 하나.** 서버 마이그레이션 도구(Prisma, Drizzle, TypeORM, Alembic, Django, Atlas, Flyway, Liquibase, golang-migrate)가 있으면 데이터베이스가 Supabase 여도 `server` 플러그인이 마이그레이션 점검을 맡는다. 없고 `supabase/migrations/`가 있으면 `supabase` 플러그인이 맡는다. 둘 다 있으면 어느 쪽이 기준인지 묻는다. 담당이 아닌 쪽은 마이그레이션 항목을 건너뛰므로 같은 DB 를 두 번 검사하지 않는다.
 - `/task`는 직접 입력할 때만 실행된다(`disable-model-invocation: true`). "백로그에 넣어 줘"라고 말해도 저절로 실행되지 않으니 `/task create …`로 부른다. `start`가 저절로 실행되는 것을 막기 위해서다.
-- `supabase` 플러그인은 공식 Supabase 플러그인을 `supabase@claude-plugins-official`로 가져온다. claude.ai 디렉터리에서 같은 플러그인을 다른 이름(예: `supabase@anthropic-plugin-directory`)으로 이미 켜 두었다면 하나만 켠다. 같은 MCP 서버가 두 번 뜬다.
+- 의존 플러그인은 Claude Code 에 실제로 있는 마켓플레이스를 가리킨다. Anthropic 플러그인(superpowers, frontend-design, typescript-lsp, supabase)은 기본으로 들어 있는 `anthropic-plugin-directory`에서, Chrome DevTools 는 Google 의 자체 마켓플레이스 `chrome-devtools-plugins`에서 가져온다. 같은 플러그인을 다른 마켓플레이스 이름(예: `supabase@claude-plugins-official`)으로 또 켜지 않는다. 같은 MCP 서버가 두 번 뜬다.
 - **외부 CLI 는 버전을 고정한다.** 스킬이 `npx`로 내려받아 실행하는 도구(React Doctor, `@sveltejs/mcp`, `sv`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 올릴 때는 새 버전을 확인하고 숫자만 바꾼다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 프로젝트에 설치된 것만 쓴다. `modern-web-guidance`는 플러그인 스킬에 맡기고 명령을 적지 않는다.
 - Supabase MCP 는 실제 서비스 프로젝트에 연결하지 않는다. 연결해야 하면 읽기 전용으로, 프로젝트 하나로 범위를 좁힌다.

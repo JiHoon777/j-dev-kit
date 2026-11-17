@@ -17,7 +17,7 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 
 | Part | Source |
 | --- | --- |
-| Code diagnostics | Anthropic's official LSP plugins (`typescript-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `kotlin-lsp` @claude-plugins-official) |
+| Code diagnostics | Anthropic's LSP plugins in the built-in `anthropic-plugin-directory` (`typescript-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`) |
 | Migration status | Each ORM or tool's official CLI (in the references) |
 | Rules during implementation | OWASP API Security Top 10 2023, OWASP Logging Cheat Sheet |
 

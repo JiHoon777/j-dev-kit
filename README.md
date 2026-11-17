@@ -83,6 +83,7 @@ Compared and not used: Compound Engineering (38 skills; replaces the whole flow)
 ```
 /plugin marketplace add JiHoon777/j-dev-kit
 /plugin marketplace add GoogleChrome/modern-web-guidance   # when using frontend
+/plugin marketplace add ChromeDevTools/chrome-devtools-mcp  # when using frontend
 /plugin install frontend@j-dev-kit
 /plugin install supabase@j-dev-kit
 ```
@@ -105,6 +106,7 @@ Put this in the project's `.claude/settings.json` so everyone who opens the repo
   "extraKnownMarketplaces": {
     "j-dev-kit": { "source": { "source": "github", "repo": "JiHoon777/j-dev-kit" } },
     "googlechrome": { "source": { "source": "github", "repo": "GoogleChrome/modern-web-guidance" } },
+    "chrome-devtools-plugins": { "source": { "source": "github", "repo": "ChromeDevTools/chrome-devtools-mcp" } },
     "svelte": { "source": { "source": "github", "repo": "sveltejs/ai-tools" } }
   },
   "enabledPlugins": {
@@ -137,12 +139,12 @@ superpowers injects "if a skill might apply, you must use it" at every session s
 
 ### LSP per server language (optional)
 
-The `server` plugin detects the language and suggests installing the matching LSP plugin when missing: `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `kotlin-lsp`, `typescript-lsp` from Anthropic's official marketplace. The executables (`pyright-langserver`, `gopls`, …) are installed separately.
+The `server` plugin detects the language and suggests installing the matching LSP plugin when missing: `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `typescript-lsp` from the built-in `anthropic-plugin-directory`. The executables (`pyright-langserver`, `gopls`, …) are installed separately.
 
 ## Good to know
 
 - **One owner for migrations.** If a server migration tool (Prisma, Drizzle, TypeORM, Alembic, Django, Atlas, Flyway, Liquibase, golang-migrate) is present, the `server` plugin owns migration checks, even on Supabase Postgres. Otherwise, if `supabase/migrations/` exists, the `supabase` plugin owns them. If both exist, the checks ask which one is the source of truth. The other plugin skips its migration items, so the same database is never checked twice.
 - `/task` runs only when typed (`disable-model-invocation: true`). Saying "put this in the backlog" does not trigger it; use `/task create …`. This prevents `start` from running on its own.
-- The `supabase` plugin pulls in the official Supabase plugin as `supabase@claude-plugins-official`. If you already enabled the same plugin under another name from the claude.ai directory (e.g. `supabase@anthropic-plugin-directory`), enable only one; otherwise the same MCP server starts twice.
+- Dependencies point to the marketplaces Claude Code actually has: Anthropic's plugins come from the built-in `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp, supabase), and Chrome DevTools from Google's own `chrome-devtools-plugins` marketplace. Do not also enable the same plugin from another marketplace (for example `supabase@claude-plugins-official`); the same MCP server would start twice.
 - **External CLIs are version-pinned.** Tools that skills download and run with `npx` (React Doctor, `@sveltejs/mcp`, `sv`, `skills`) are pinned to versions published more than two weeks ago. To upgrade, check the new version and change only the number. Project tools (Prisma, Drizzle, TypeORM) use `npx --no-install` so only the project's installed copy runs. `modern-web-guidance` is left to its plugin's skill, with no command written here.
 - Never connect the Supabase MCP to a production project. If you must, make it read-only and scope it to one project.

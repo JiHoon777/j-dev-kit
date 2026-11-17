@@ -7,8 +7,9 @@
     "description": "Personal Claude Code marketplace: one /task workflow plus stack check plugins (frontend, supabase, server)."
   },
   "allowCrossMarketplaceDependenciesOn": [
-    "claude-plugins-official",
-    "googlechrome"
+    "anthropic-plugin-directory",
+    "googlechrome",
+    "chrome-devtools-plugins"
   ],
   "plugins": [
     {
@@ -16,7 +17,7 @@
       "source": "./plugins/workflow",
       "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Chains Backlog.md, Anthropic feature-dev, and superpowers, and calls the *-start-check / *-end-check skills of enabled stack plugins.",
       "dependencies": [
-        "superpowers@claude-plugins-official"
+        "superpowers@anthropic-plugin-directory"
       ]
     },
     {
@@ -25,9 +26,9 @@
       "description": "Frontend checks for /task start and /task end: common checks plus Svelte and React references picked by detecting the project, browser testing, and review agents ui-reviewer, svelte-reviewer, react-reviewer.",
       "dependencies": [
         "workflow",
-        "chrome-devtools-mcp@claude-plugins-official",
-        "typescript-lsp@claude-plugins-official",
-        "frontend-design@claude-plugins-official",
+        "chrome-devtools-mcp@chrome-devtools-plugins",
+        "typescript-lsp@anthropic-plugin-directory",
+        "frontend-design@anthropic-plugin-directory",
         "modern-web-guidance@googlechrome"
       ]
     },
@@ -37,7 +38,7 @@
       "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys) and the rls-reviewer agent.",
       "dependencies": [
         "workflow",
-        "supabase@claude-plugins-official"
+        "supabase@anthropic-plugin-directory"
       ]
     },
     {

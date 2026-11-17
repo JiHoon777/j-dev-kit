@@ -6,6 +6,6 @@
     "name": "JiHoon777"
   },
   "dependencies": [
-    "superpowers@claude-plugins-official"
+    "superpowers@anthropic-plugin-directory"
   ]
 }
