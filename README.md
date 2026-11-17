@@ -10,7 +10,7 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), agents `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer` | `supabase` (official: skills, MCP) |
+| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer`, read-only MCP server `supabase-readonly` | `supabase` (official: skills, MCP) |
 | `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm), agent `api-reviewer` | — |
 
 ### File layout
@@ -135,9 +135,14 @@ The result looks like this (frontend + supabase + Svelte):
     "modern-web-guidance@googlechrome": true,
     "supabase@anthropic-plugin-directory": true,
     "svelte@svelte": true
+  },
+  "permissions": {
+    "deny": ["mcp__plugin_supabase_supabase__*"]
   }
 }
 ```
+
+The `permissions.deny` line blocks the official Supabase plugin's MCP server, which can write. Add it by hand; the install does not write it. The checks stop if that server is usable.
 
 **Do not delete the dependency entries** when tidying this file. A plugin whose dependency is not enabled does not load (`Dependency "workflow@j-dev-kit" is not installed`), and running the install again does not always restore every dependency.
 
@@ -212,4 +217,4 @@ Then **restart Claude Code**; a running session keeps the old skill text.
 - `/task` runs only when typed (`disable-model-invocation: true`). Saying "put this in the backlog" does not trigger it; use `/task create …`. This prevents `start` from running on its own.
 - Dependencies point to the marketplaces Claude Code actually has: Anthropic's plugins come from the built-in `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp, supabase), and Chrome DevTools from Google's own `chrome-devtools-plugins` marketplace. Do not also enable the same plugin from another marketplace (for example `supabase@claude-plugins-official`); the same MCP server would start twice.
 - **External CLIs are version-pinned.** Tools that skills download and run with `npx` (React Doctor, `@sveltejs/mcp`, `sv`, `skills`) are pinned to versions published more than two weeks ago. To upgrade, check the new version and change only the number. Project tools (Prisma, Drizzle, TypeORM) use `npx --no-install` so only the project's installed copy runs. `modern-web-guidance` is left to its plugin's skill, with no command written here.
-- Never connect the Supabase MCP to a production project. If you must, make it read-only and scope it to one project.
+- **The Supabase MCP is read-only.** The `supabase` plugin bundles its own server, `supabase-readonly`, which connects with `read_only=true` and only to the project ref you enter when enabling the plugin (`/config` to change it). Enter a development project, never production. The official plugin's writable server must be denied with `"permissions": { "deny": ["mcp__plugin_supabase_supabase__*"] }` in the project settings; `supabase-start-check` stops if it is not. The first use asks you to sign in to Supabase (`/mcp`).

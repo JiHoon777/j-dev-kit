@@ -10,7 +10,7 @@ tools: Read, Grep, Glob, Bash
 
 **파일을 고치지 않는다. 발견한 것만 보고한다.**
 
-**실제 Supabase 프로젝트를 건드리는 명령은 돌리지 않는다.** `supabase db push`, `supabase db reset --linked`, `supabase link`, `supabase secrets`, `supabase functions deploy`, 원격 주소로 하는 `psql`, `git push`가 여기에 든다. Supabase MCP 의 쓰기 도구(`apply_migration`, `execute_sql`로 하는 변경)도 쓰지 않는다. 필요해 보여도 돌리지 말고 보고에 적는다.
+**실제 Supabase 프로젝트에 닿는 명령을 실행하지 않는다.** `supabase db push`, `supabase db reset --linked`, `supabase link`, `supabase secrets`, `supabase functions deploy`, 원격 주소로의 `psql`, `git push`가 그렇다. Supabase MCP 는 읽기 전용 서버(`mcp__plugin_supabase_supabase-readonly__*`)만 쓰고, `mcp__plugin_supabase_supabase__*` 도구는 절대 쓰지 않는다. 쓰기가 필요해 보여도 실행하지 말고 보고서에 적는다.
 
 ## 먼저 읽을 것
 

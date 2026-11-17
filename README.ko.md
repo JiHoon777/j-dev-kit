@@ -10,7 +10,7 @@ Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), 에이전트 `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | `supabase` (공식: 스킬, MCP) |
+| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer`, 읽기 전용 MCP 서버 `supabase-readonly` | `supabase` (공식: 스킬, MCP) |
 | `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm), 에이전트 `api-reviewer` | — |
 
 ### 파일 구조
@@ -135,9 +135,14 @@ claude plugin install supabase@j-dev-kit --scope project
     "modern-web-guidance@googlechrome": true,
     "supabase@anthropic-plugin-directory": true,
     "svelte@svelte": true
+  },
+  "permissions": {
+    "deny": ["mcp__plugin_supabase_supabase__*"]
   }
 }
 ```
+
+`permissions.deny` 줄은 쓰기가 가능한 공식 Supabase 플러그인의 MCP 서버를 막는다. 설치가 적어 주지 않으므로 직접 넣는다. 이 서버를 쓸 수 있는 상태면 점검이 중단된다.
 
 이 파일을 정리할 때 **의존 플러그인 줄을 지우지 않는다.** 의존 플러그인이 꺼져 있으면 그 플러그인이 로드되지 않고(`Dependency "workflow@j-dev-kit" is not installed`), 설치를 다시 돌려도 의존 플러그인이 전부 돌아오지는 않는다.
 
@@ -212,4 +217,4 @@ claude plugin update workflow@j-dev-kit --scope project    # 설치한 플러그
 - `/task`는 직접 입력할 때만 실행된다(`disable-model-invocation: true`). "백로그에 넣어 줘"라고 말해도 저절로 실행되지 않으니 `/task create …`로 부른다. `start`가 저절로 실행되는 것을 막기 위해서다.
 - 의존 플러그인은 Claude Code 에 실제로 있는 마켓플레이스를 가리킨다. Anthropic 플러그인(superpowers, frontend-design, typescript-lsp, supabase)은 기본으로 들어 있는 `anthropic-plugin-directory`에서, Chrome DevTools 는 Google 의 자체 마켓플레이스 `chrome-devtools-plugins`에서 가져온다. 같은 플러그인을 다른 마켓플레이스 이름(예: `supabase@claude-plugins-official`)으로 또 켜지 않는다. 같은 MCP 서버가 두 번 뜬다.
 - **외부 CLI 는 버전을 고정한다.** 스킬이 `npx`로 내려받아 실행하는 도구(React Doctor, `@sveltejs/mcp`, `sv`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 올릴 때는 새 버전을 확인하고 숫자만 바꾼다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 프로젝트에 설치된 것만 쓴다. `modern-web-guidance`는 플러그인 스킬에 맡기고 명령을 적지 않는다.
-- Supabase MCP 는 실제 서비스 프로젝트에 연결하지 않는다. 연결해야 하면 읽기 전용으로, 프로젝트 하나로 범위를 좁힌다.
+- **Supabase MCP 는 읽기 전용이다.** `supabase` 플러그인이 자체 서버 `supabase-readonly`를 함께 설치한다. 이 서버는 `read_only=true`로, 플러그인을 켤 때 입력한 프로젝트 하나에만 연결된다(`/config`에서 바꾼다). 개발용 프로젝트를 넣고 실제 서비스 프로젝트는 넣지 않는다. 쓰기가 가능한 공식 플러그인의 서버는 프로젝트 설정의 `"permissions": { "deny": ["mcp__plugin_supabase_supabase__*"] }`로 막아야 하고, 막혀 있지 않으면 `supabase-start-check`가 중단한다. 처음 쓸 때 Supabase 로그인을 요청한다(`/mcp`).
