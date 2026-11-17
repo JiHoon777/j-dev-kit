@@ -1,0 +1,11 @@
+{
+  "name": "supabase",
+  "description": "Supabase 점검과 RLS 리뷰 에이전트. workflow 의 task-start·task-end 가 supabase-start-check·supabase-end-check 를 부르고, task-end 리뷰 단계에 rls-reviewer 를 넣는다. Supabase 공식 플러그인(스킬, MCP)을 함께 설치한다.",
+  "version": "0.2.0",
+  "author": {
+    "name": "JiHoon777"
+  },
+  "dependencies": [
+    "supabase@claude-plugins-official"
+  ]
+}

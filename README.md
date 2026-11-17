@@ -1,50 +1,121 @@
 # j-dev-kit
 
-Claude Code용 개인 스킬 마켓플레이스.
-
-## 설치
-
-```
-/plugin marketplace add JiHoon777/j-dev-kit
-/plugin install workflow@j-dev-kit
-```
+Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름(백로그 → 시작 → 리뷰·머지)은 하나로 두고, 스택마다 다른 점검은 스택 플러그인으로 나눴다. 켠 플러그인의 점검만 돈다. 여러 개를 같이 켜도 충돌하지 않는다.
 
 ## 구성
 
-| 플러그인 | 스킬 | 용도 |
-|---|---|---|
-| workflow | `backlog-create` | 요청을 질문으로 좁혀 수용 기준이 붙은 백로그 항목 하나로 만든다 |
-| workflow | `task-start` | 다음 항목을 추천·확인받고, 진행 중 표시, 브랜치 생성, 스택별 사전 점검, 플랜 |
-| workflow | `task-end` | 검증·리뷰, 수용 기준을 증거로 확인, 완료 처리, 승인 후 커밋·푸시·PR. 못 끝내면 인계 메모 |
+| 플러그인 | 스킬 · 에이전트 | 같이 설치되는 것 |
+| --- | --- | --- |
+| `workflow` | `/backlog-create`, `/task-start`, `/task-end` | `superpowers` |
+| `frontend` | `frontend-start-check`, `frontend-end-check` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
+| `svelte` | `svelte-start-check`, `svelte-end-check` | `svelte` (공식: MCP svelte-autofixer, 문서) |
+| `react` | `react-start-check`, `react-end-check` | — (eslint-plugin-react-hooks, React Doctor CLI 를 쓴다) |
+| `supabase` | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | `supabase` (공식: 스킬, MCP) |
+| `server` | `server-start-check`, `server-end-check`, 에이전트 `api-reviewer` | — (언어별 LSP 는 아래 참고) |
 
-## 프로젝트 쪽 설정
+### 스택 플러그인이 끼어드는 방식
 
-각 프로젝트 CLAUDE.md 에 필요한 것만 적는다. 없으면 스킬이 추정한다.
+- `/task-start`는 쓸 수 있는 스킬 중 이름이 **`-start-check`**로 끝나는 것을 전부 부른다. `/task-end`는 **`-end-check`**로 끝나는 것을 전부 부른다.
+- 플러그인을 끄면 그 스킬이 목록에서 빠지므로 그 점검도 빠진다.
+- 각 점검 스킬은 프로젝트에 해당하지 않으면 "해당 없음"만 돌려준다. 예를 들어 frontend·svelte·react 를 다 켜 둬도 Svelte 프로젝트에서는 react 점검이 빠진다.
+- 점검 스킬이 돌려주는 것:
+  - 시작: 결과 표, **기준선**(작업 전 검사 결과), 플랜에 넣을 것, 물을 것, **구현 중 지킬 것**, **끝내기 전 할 것**
+  - 종료: 결과 표(기준선과 비교해 새로 생긴 실패만), **리뷰에 넣을 에이전트**, **고친 뒤 할 것**
+- 새 스택을 더하려면 `plugins/<스택>/skills/<스택>-start-check`, `<스택>-end-check`를 같은 형식으로 만들고 `marketplace.json`에 등록한다.
+
+## 흐름
 
 ```
-stack: frontend, supabase     # 여러 개 가능. 없으면 폴더·의존성으로 추정
-backlog: docs/backlog.md      # 기본값
-worktree: true                # 쓰는 경우만
+/backlog-create ──► docs/backlog/001-….md ──/task-start──► 스택 시작 점검 ──► 플랜 모드(탐색·질문·설계) ──► 승인 ──► w/ 브랜치에서 구현
+                                                                                                                         │
+docs/done/001-….md ◄── 머지 ◄── 승인 ◄── 수정 ◄── 사용자 선택 ◄── 리뷰 에이전트 동시 실행 ◄── 스택 종료 점검 ◄── /task-end
 ```
 
-백로그는 저장소 안의 마크다운이다.
+### 어디서 가져왔나
+
+세 명령은 새로 지은 절차가 아니라 검증된 흐름을 이어 붙인 것이다. 출처의 방식을 바꾸지 않는다.
+
+| 단계 | 출처 | 방식 |
+| --- | --- | --- |
+| 항목 형식, 좋은 항목, 완료 기준 | [Backlog.md](https://github.com/MrLesk/Backlog.md) 에이전트 지침 | 형식과 규칙을 가져옴 |
+| `/backlog-create`에서 무엇을 왜 하는지 묻기 | `superpowers:brainstorming` | 그대로 호출 |
+| `/task-start` 탐색, 질문, 설계안 | Anthropic `feature-dev` 플러그인 Phase 2~4 | 구조를 그대로 옮김 |
+| `/task-start` 계획 승인 | Claude Code 플랜 모드, `feature-dev` Phase 5 | 그대로 |
+| `/task-start` 구현과 완료 확인 | `superpowers:test-driven-development`, `verification-before-completion` | 그대로 호출 |
+| 화면을 새로 만들거나 다시 디자인할 때 | Anthropic `frontend-design` | 그대로 호출 (frontend 플러그인) |
+| 브라우저 테스트 | Chrome DevTools 플러그인의 `chrome-devtools` 스킬 | 그대로 호출 (frontend 플러그인) |
+| Svelte 자동 교정과 문서 | Svelte 공식 플러그인 | 그대로 호출 (svelte 플러그인) |
+| `/task-end` 리뷰 | 내장 스킬 `code-review`, `security-review`, `simplify` + 스택 리뷰 에이전트 | 에이전트마다 하나씩 그대로 호출 |
+| `/task-end` 리뷰를 돌리고 모으는 방식, 보고 기준 | `feature-dev` Phase 6과 `code-reviewer` 지시문 (80점 컷만 없앰) | 구조와 지시문을 그대로 옮김 |
+| `/task-end` 지적 처리 | `superpowers:receiving-code-review` | 그대로 호출 |
+| `/task-end` 승인과 머지 | `superpowers:finishing-a-development-branch` | 그대로 호출 |
+| API 리뷰 기준 | OWASP API Security Top 10 2023, OWASP Logging Cheat Sheet, Google AIP-180 | 체크 항목으로 옮김 |
+
+비교해 보고 쓰지 않은 것: Compound Engineering(스킬 38개, 흐름 전체를 바꿈), superpowers 의 계획·실행 스킬(`writing-plans`, `executing-plans`, `subagent-driven-development`, `using-git-worktrees` — 이 흐름과 겹침), `vercel-plugin`(React 규칙만 필요한데 세션 훅·텔레메트리·배포 스킬이 같이 옴).
+
+## 설치
+
+마켓플레이스 추가:
 
 ```
-docs/backlog.md          한 줄에 한 항목 (Now / Backlog / Bugs / Inbox / Done)
-docs/backlog/<ID>.md     항목별 상세: 무엇을, 왜, 수용 기준, 범위 밖, 인계
+/plugin marketplace add JiHoon777/j-dev-kit
+/plugin marketplace add sveltejs/ai-tools                 # svelte 플러그인을 쓸 때
+/plugin marketplace add GoogleChrome/modern-web-guidance  # frontend 플러그인을 쓸 때
 ```
 
-## 설계 원칙
+필요한 것만 설치한다. 같이 설치되는 것(위 표)은 자동으로 따라온다.
 
-- **같은 일을 하는 스킬은 하나만 둔다.** frontend·supabase·server 가 모두 켜져 있어도 충돌하지 않도록, 스택별로 스킬을 복제하지 않고 스킬 안에서 스택 섹션으로 나눈다. 여러 스택이 섞인 프로젝트는 해당 섹션을 전부 적용한다.
-- **꼭 지켜야 할 점검은 SKILL.md 본문에 둔다.** 에이전트는 참고 문서를 자주 건너뛴다(Supabase 팀의 경험).
-- **단계는 전부 하고, 해당 없으면 이유를 남기고 건너뛴다.** 완료는 증거(실제로 돌린 테스트, 직접 본 결과)로 판단한다.
-- **결정은 사용자가 한다.** 다음 항목 선택, 백로그 쓰기, 커밋·푸시·PR 은 확인받은 뒤에 한다.
+```
+/plugin install workflow@j-dev-kit
+/plugin install frontend@j-dev-kit
+/plugin install svelte@j-dev-kit
+/plugin install supabase@j-dev-kit
+```
 
-## 참고한 것
+### 프로젝트에 고정하기
 
-- [jpablodrexler/backlog-kit](https://github.com/jpablodrexler/backlog-kit): 단계별 진행과 "해당 없으면 이유를 남기고 건너뛰기", 수용 기준 형식, 다음 항목은 사용자가 확정
-- [rave-altfred/claude-backlog-skill](https://github.com/rave-altfred/claude-backlog-skill): 한 줄 한 항목 백로그, 상태 표시, Now 섹션, 백로그 변경을 작업 커밋에 같이 넣기
-- [tc3oliver/skills](https://github.com/tc3oliver/skills) `backlog`: 증거 기반 완료, 진행 중 항목 이어 하기와 인계 메모, 정의가 덜 된 항목은 Inbox
-- [gringolito/backcraft](https://github.com/gringolito/backcraft): 질문으로 요구를 좁히기, 범위는 파일 목록이 아닌 의도로, 준비 안 된 항목 건너뛰기
-- [Anthropic Agent Skills best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices), [Supabase Agent Skills](https://supabase.com/blog/supabase-agent-skills)
+프로젝트의 `.claude/settings.json`에 적어 두면 저장소를 연 사람에게 같은 구성이 제안된다. 플러그인 자체는 각자 한 번 설치한다(`claude plugin install <이름>@<마켓> --scope project`).
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "j-dev-kit": { "source": { "source": "github", "repo": "JiHoon777/j-dev-kit" } },
+    "svelte": { "source": { "source": "github", "repo": "sveltejs/ai-tools" } },
+    "googlechrome": { "source": { "source": "github", "repo": "GoogleChrome/modern-web-guidance" } }
+  },
+  "enabledPlugins": {
+    "workflow@j-dev-kit": true,
+    "frontend@j-dev-kit": true,
+    "svelte@j-dev-kit": true,
+    "supabase@j-dev-kit": true
+  }
+}
+```
+
+### 프로젝트 CLAUDE.md 에 적을 것
+
+```markdown
+## 작업 설정
+- stack: frontend, svelte, supabase        # 없으면 점검 스킬이 파일로 추정
+- 기준 브랜치: main
+- 검증 명령: pnpm verify                     # 린트·타입·테스트·빌드를 한 번에
+- 린트 명령: pnpm lint
+
+## superpowers
+이 문서의 규칙이 우선이다. `/task-start`, `/task-end`, `/backlog-create`가 부르는 스킬
+(brainstorming, test-driven-development, verification-before-completion, receiving-code-review,
+finishing-a-development-branch)은 그대로 따르고, 그 밖의 계획·실행 스킬(writing-plans,
+executing-plans, subagent-driven-development, using-git-worktrees)은 이 흐름과 겹치므로 쓰지 않는다.
+```
+
+superpowers 는 세션을 시작할 때마다 "맞을 것 같으면 스킬을 반드시 쓰라"는 지시를 넣는다. 끄는 설정이 없어서, 위 문단으로 CLAUDE.md 가 우선이라고 적어 둬야 `/task-start`의 플랜 단계를 가로채지 않는다.
+
+### 서버 언어별 LSP (선택)
+
+`server` 플러그인은 언어를 판별해 해당 LSP 가 없으면 설치를 권한다. Anthropic 공식 마켓플레이스의 `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `kotlin-lsp`, `typescript-lsp`. 실행 파일(`pyright-langserver`, `gopls` 등)은 따로 설치해야 한다.
+
+## 알아 둘 것
+
+- `supabase` 플러그인은 공식 Supabase 플러그인을 `supabase@claude-plugins-official`로 가져온다. claude.ai 디렉터리에서 같은 플러그인을 다른 이름(예: `supabase@anthropic-plugin-directory`)으로 이미 켜 두었다면 둘 중 하나만 켠다. 같은 MCP 서버가 두 번 뜬다.
+- `react` 플러그인의 React Doctor 는 `npx`로 내려받아 돌리고 `--no-telemetry`를 붙인다. Vercel `react-best-practices` 스킬은 Claude 마켓플레이스가 없어서 `npx skills add vercel-labs/agent-skills`로 따로 설치한다(없어도 점검은 돈다).
+- Supabase MCP 는 실제 서비스 프로젝트에 연결하지 않는다. 연결해야 하면 읽기 전용으로, 프로젝트 하나로 범위를 좁힌다.

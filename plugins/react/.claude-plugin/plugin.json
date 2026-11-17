@@ -1,0 +1,8 @@
+{
+  "name": "react",
+  "description": "React / Next.js 점검. workflow 의 task-start·task-end 가 react-start-check·react-end-check 를 부른다. eslint-plugin-react-hooks, React Doctor, Vercel react-best-practices 를 쓴다.",
+  "version": "0.1.0",
+  "author": {
+    "name": "JiHoon777"
+  }
+}

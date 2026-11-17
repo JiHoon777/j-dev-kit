@@ -1,8 +1,11 @@
 {
   "name": "workflow",
-  "description": "작업 시작·종료·백로그 생성. 프로젝트 스택(frontend/supabase/server)에 맞춰 점검 항목이 달라진다.",
-  "version": "0.1.0",
+  "description": "작업 흐름: backlog-create(항목 만들기) → task-start(계획 승인·구현) → task-end(리뷰·머지). Backlog.md, Anthropic feature-dev, superpowers 를 이어 붙였다. 켜진 스택 플러그인의 *-start-check·*-end-check 를 불러 쓴다.",
+  "version": "0.2.0",
   "author": {
     "name": "JiHoon777"
-  }
+  },
+  "dependencies": [
+    "superpowers@claude-plugins-official"
+  ]
 }

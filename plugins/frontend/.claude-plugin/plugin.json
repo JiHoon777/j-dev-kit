@@ -1,0 +1,14 @@
+{
+  "name": "frontend",
+  "description": "프론트엔드 공통 점검(설치·기준선·환경변수·재사용·브라우저 테스트). workflow 의 task-start·task-end 가 frontend-start-check·frontend-end-check 를 부른다. 프레임워크별 점검은 svelte·react 플러그인.",
+  "version": "0.2.0",
+  "author": {
+    "name": "JiHoon777"
+  },
+  "dependencies": [
+    "chrome-devtools-mcp@claude-plugins-official",
+    "typescript-lsp@claude-plugins-official",
+    "frontend-design@claude-plugins-official",
+    "modern-web-guidance@googlechrome"
+  ]
+}
