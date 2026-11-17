@@ -10,7 +10,7 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), agents `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer` | — (the official Supabase plugin is optional, see below) |
+| `supabase` (+ `workflow`) | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer` | `supabase` (official: skills, MCP) |
 | `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm), agent `api-reviewer` | — |
 
 ### File layout
@@ -92,7 +92,7 @@ Run these inside Claude Code (or as `claude plugin …` in a terminal). Add the 
 ```
 
 - Install only the stacks you use. Every stack plugin depends on `workflow`, so installing any of them also installs and enables `/task` and `superpowers`.
-- `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp) is built into Claude Code; there is nothing to add for it.
+- `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp, supabase) is built into Claude Code; there is nothing to add for it.
 - `/plugin install` uses the user scope (every project) by default. To enable plugins for one repository only, use `claude plugin install <name>@j-dev-kit --scope project` (see below).
 
 For Svelte projects the official Svelte plugin is recommended too (checks still run without it through a version-pinned CLI).
@@ -133,6 +133,7 @@ The result looks like this (frontend + supabase + Svelte):
     "typescript-lsp@anthropic-plugin-directory": true,
     "chrome-devtools-mcp@chrome-devtools-plugins": true,
     "modern-web-guidance@googlechrome": true,
+    "supabase@anthropic-plugin-directory": true,
     "svelte@svelte": true
   }
 }
@@ -209,7 +210,7 @@ Then **restart Claude Code**; a running session keeps the old skill text.
 
 - **One owner for migrations.** If a server migration tool (Prisma, Drizzle, TypeORM, Alembic, Django, Atlas, Flyway, Liquibase, golang-migrate) is present, the `server` plugin owns migration checks, even on Supabase Postgres. Otherwise, if `supabase/migrations/` exists, the `supabase` plugin owns them. If both exist, the checks ask which one is the source of truth. The other plugin skips its migration items, so the same database is never checked twice.
 - `/task` runs only when typed (`disable-model-invocation: true`). Saying "put this in the backlog" does not trigger it; use `/task create …`. This prevents `start` from running on its own.
-- Dependencies point to the marketplaces Claude Code actually has: Anthropic's plugins come from the built-in `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp), and Chrome DevTools from Google's own `chrome-devtools-plugins` marketplace. Do not also enable the same plugin from another marketplace (for example `supabase@claude-plugins-official`); the same MCP server would start twice.
+- Dependencies point to the marketplaces Claude Code actually has: Anthropic's plugins come from the built-in `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp, supabase), and Chrome DevTools from Google's own `chrome-devtools-plugins` marketplace. Do not also enable the same plugin from another marketplace (for example `supabase@claude-plugins-official`); the same MCP server would start twice.
 - **External CLIs are version-pinned.** Tools that skills download and run with `npx` (React Doctor, `@sveltejs/mcp`, `sv`, `skills`) are pinned to versions published more than two weeks ago. To upgrade, check the new version and change only the number. Project tools (Prisma, Drizzle, TypeORM) use `npx --no-install` so only the project's installed copy runs. `modern-web-guidance` is left to its plugin's skill, with no command written here.
 
 ### Supabase MCP (per project)
@@ -229,7 +230,10 @@ Each project connects its own Supabase MCP server in its `.mcp.json`, read-only 
 
 The `supabase` checks and `rls-reviewer` use this server; if a project declares none, they skip the MCP items. The first use asks you to approve the server and sign in to Supabase (`/mcp`).
 
-The official Supabase plugin (`supabase@anthropic-plugin-directory`) is not installed by j-dev-kit. Enable it in a project only if you want its skills (`supabase`, `supabase-postgres-best-practices`); the checks use them when present. It also brings its own MCP server, which connects without `read_only` and has no option to change that, and a project `.mcp.json` cannot replace it (plugin servers are matched by endpoint, and `?read_only=true` makes a different endpoint). If you enable it, turn that server off with a deny rule in the project's `.claude/settings.json`; denied tools are removed from Claude's tool list, and its skills then use `local_supabase`:
+The official Supabase plugin is installed as a dependency for its skills (`supabase`, `supabase-postgres-best-practices`), and it also brings its own MCP server, which connects without `read_only` and has no option to change that. A project `.mcp.json` cannot replace it with a read-only URL, because plugin servers are matched by endpoint and `?read_only=true` makes a different endpoint. Keep the plugin and turn off only its MCP server; the skills then use `local_supabase`. Two ways, use either or both:
+
+- **`/mcp` → `plugin:supabase:supabase` → disable.** Claude Code stops connecting to it and stops asking you to sign in. The choice is saved per project in your own `~/.claude.json`, so each person does it once.
+- **A deny rule in the project's `.claude/settings.json`** (committed, applies to everyone). Its tools are removed from Claude's tool list; the server itself still shows in `/mcp`:
 
 ```json
 {

@@ -37,7 +37,8 @@
       "source": "./plugins/supabase",
       "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys) and the rls-reviewer agent. Uses the Supabase MCP server the project declares in its .mcp.json.",
       "dependencies": [
-        "workflow"
+        "workflow",
+        "supabase@anthropic-plugin-directory"
       ]
     },
     {
