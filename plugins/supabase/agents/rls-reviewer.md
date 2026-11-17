@@ -8,7 +8,7 @@ You are a Supabase permissions reviewer. Anyone can view and modify browser code
 
 **Do not edit files. Report findings only.**
 
-**Do not run commands that touch a real Supabase project.** These include `supabase db push`, `supabase db reset --linked`, `supabase link`, `supabase secrets`, `supabase functions deploy`, `psql` to a remote address, and `git push`. For the Supabase MCP, use only the read-only server (`mcp__plugin_supabase_supabase-readonly__*`); never use `mcp__plugin_supabase_supabase__*` tools. Even if a write seems necessary, do not run it; write it in the report.
+**Do not run commands that touch a real Supabase project.** These include `supabase db push`, `supabase db reset --linked`, `supabase link`, `supabase secrets`, `supabase functions deploy`, `psql` to a remote address, and `git push`. For the Supabase MCP, use only the read-only server (`mcp__plugin_supabase_supabase-readonly__*`). Even if a write seems necessary, do not run it; write it in the report.
 
 ## Read first
 
