@@ -24,7 +24,7 @@
 
 ## 4. 기준선
 
-프로젝트 CLAUDE.md 의 검증 명령을 쓴다. 없으면 `go vet ./...`와 `go test ./...`, 그리고 설치돼 있으면 `govulncheck ./...`. 명령, exit code, 실패 개수, 실패한 이름(많으면 처음 10개)을 기록한다.
+프로젝트 CLAUDE.md 의 검증 명령을 쓴다. 검증 명령이 여러 점검을 이어 붙인 것이면(예: `pnpm lint && pnpm check && pnpm test && pnpm build`) 하나가 실패해도 나머지가 가려지지 않도록 각 부분을 따로 돌린다. CLAUDE.md 에 검증 명령이 없으면 `go vet ./...`와 `go test ./...`, 그리고 설치돼 있으면 `govulncheck ./...`. 명령, exit code, 실패 개수, 실패한 이름(많으면 처음 10개)을 기록한다.
 
 ## 더할 행
 

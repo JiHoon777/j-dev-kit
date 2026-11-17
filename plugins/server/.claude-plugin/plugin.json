@@ -1,7 +1,7 @@
 {
   "name": "server",
   "description": "Backend checks for /task start and /task end: common checks plus Node, Python, Go, and Java/Kotlin references picked by detecting the project (install, LSP, migrations, API contract, real calls), and the api-reviewer agent.",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "author": {
     "name": "JiHoon777"
   },

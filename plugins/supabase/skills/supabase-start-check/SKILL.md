@@ -2,14 +2,14 @@
 name: supabase-start-check
 description: Pre-task check for Supabase projects. Checks local stack status, whether migrations are applied, schema changes not captured in migrations (drift), and whether the types file is up to date, then returns a DB lint and test baseline plus the schema and RLS items to add to the plan. Called by `/task start` in the workflow plugin.
 user-invocable: false
-version: "0.4.1"
+version: "0.4.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # Supabase start check
 
-Called by `/task start`. Write the report in the project's language. Judge each item as **pass · fail · skip (reason) · stop** and return the result in the format at the bottom. Fixing things is not this skill's job.
+Called by `/task start`. Write the report in the project's language. Rules in the project's CLAUDE.md take precedence over this skill. Judge each item as **pass · fail · skip (reason) · stop** and return the result in the format at the bottom. Fixing things is not this skill's job.
 
 | Part | Source |
 | --- | --- |
@@ -40,8 +40,8 @@ Record the owner as the first row of the report. The plugin that does not own mi
 
 ## 1. CLI and local stack
 
-1. `supabase --version`. If it is missing, mark fail and skip steps 1–4 (the user does the install).
-2. `supabase status`. If it is not running, **ask** whether to run `supabase start` (it starts several Docker containers). If declined, skip steps 2–4 as "local stack off".
+1. `supabase --version`. If it is missing, mark fail, skip steps 2–3, the generate-and-compare part of step 4, and the CLI and SQL parts of step 5, and return a question about installing it. Still do the file-only parts (step 4.1, finding `supabase/tests/`).
+2. `supabase status`. If it is not running, **ask** whether to run `supabase start` (it starts several Docker containers). If declined, or if Docker is not installed (then there is nothing to ask), skip the same parts as above as "local stack off".
 3. Note the DB URL from the output (default `postgresql://postgres:postgres@127.0.0.1:54322/postgres`). Run the SQL below with `psql "<DB URL>" -c "<SQL>"`. If `psql` is missing, skip items that need SQL as "no psql".
 
 ## 2. Migration status (only when supabase owns migrations)
@@ -98,7 +98,7 @@ Read the task description (backlog details) and decide whether the work changes 
 - **Functions**: `security definer` functions set `set search_path = ''` and qualify tables with the schema (`public.orders`).
 - **Storage**: For a new bucket, `storage.objects` policies.
 - Whether **type regeneration** and **seed** (`supabase/seed.sql`) data for the new tables are needed.
-- **Keys**: The client uses only the anon (publishable) key. Work that needs the service role (secret) key is done on the server or in an Edge Function.
+- **Keys**: The client uses only the anon (publishable) key. Work that needs the service role (secret) key is done on the server or in an Edge Function, unless the project's CLAUDE.md rules that out (then it is a question).
 - If an Edge Function in `supabase/functions/` is touched, how to check it locally (`supabase functions serve <name>`) and the names of the secrets it needs.
 
 ## 8. Rules during implementation (to return)

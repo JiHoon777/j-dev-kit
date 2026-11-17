@@ -2,7 +2,7 @@
 name: frontend-end-check
 description: 프론트엔드 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 프레임워크를 감지하고, 점검 결과를 기준선과 비교하고, 남은 디버그 표시를 세고, Chrome DevTools로 콘솔·네트워크·Lighthouse를 확인하고, 해당 reference 파일(svelte.md, react.md)의 프레임워크 도구를 실행한다. 리뷰에 넣을 에이전트(ui-reviewer, svelte-reviewer, react-reviewer)와 고친 뒤 할 브라우저 테스트를 돌려준다.
 user-invocable: false
-version: "0.3.2"
+version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---

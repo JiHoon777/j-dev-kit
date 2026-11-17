@@ -22,7 +22,7 @@ Unapplied migrations → fail (return a question about applying them). Diverged 
 
 ## 4. Baseline
 
-Use the verification command from the project's CLAUDE.md. Otherwise only what the config files set up: `ruff check`, `mypy`, `pytest`. Record command, exit code, failure count, and failing names (first 10 if many).
+Use the verification command from the project's CLAUDE.md. If the verification command chains several checks (for example `pnpm lint && pnpm check && pnpm test && pnpm build`), run each part separately, so a failure in one does not hide the others. If CLAUDE.md has no verification command, use only what the config files set up: `ruff check`, `mypy`, `pytest`. Record command, exit code, failure count, and failing names (first 10 if many).
 
 ## 5. Rules during implementation (to return)
 

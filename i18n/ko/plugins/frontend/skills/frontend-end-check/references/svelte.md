@@ -14,7 +14,7 @@ package.json `dependencies`나 `devDependencies`에 `svelte`가 있을 때 `fron
 
 ## 2. svelte-autofixer
 
-바뀐 `.svelte`, `.svelte.ts`, `.svelte.js` 파일을 **모두** `svelte-autofixer`에 돌린다(MCP 도구, 없으면 `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`). 남은 문제가 있으면 → 실패. 제안은 근거에 넣는다. 이것이 잡는 것: `$effect` 안의 대입, `$derived`에 함수 넘기기, 룬 import, 룬 대신 store, `$app/state` 대신 `$app/stores`, clsx 대신 `class:`, attachment 제안 등.
+바뀐 `.svelte`, `.svelte.ts`, `.svelte.js` 파일을 **모두** `svelte-autofixer`에 돌린다(MCP 도구, 없으면 `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`). 종료 코드가 아니라 출력된 결과로 판단한다(CLI는 결과를 출력한 뒤에도 0이 아닌 코드로 끝날 수 있다). 남은 문제가 있으면 → 실패. 제안은 근거에 넣는다. 이것이 잡는 것: `$effect` 안의 대입, `$derived`에 함수 넘기기, 룬 import, 룬 대신 store, `$app/state` 대신 `$app/stores`, clsx 대신 `class:`, attachment 제안 등.
 
 ## 3. 리뷰에 넣을 에이전트
 

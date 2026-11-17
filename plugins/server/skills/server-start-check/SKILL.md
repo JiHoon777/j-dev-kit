@@ -2,7 +2,7 @@
 name: server-start-check
 description: Pre-work check for backend projects, called by the start mode of the workflow plugin's task skill. Detects the language, framework, and migration tool, then runs the common checks (environment variables, local services) and the language checks from the matching reference file (node.md, python.md, go.md, jvm.md), covering install, LSP, migration status, and baseline. Returns a baseline, an exploration prompt for the API and its consumers, questions, and rules during implementation.
 user-invocable: false
-version: "0.3.2"
+version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---

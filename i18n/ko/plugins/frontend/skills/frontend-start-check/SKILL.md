@@ -2,7 +2,7 @@
 name: frontend-start-check
 description: 프론트엔드 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 프레임워크를 감지한 뒤 공통 점검(패키지 매니저, Node 버전, 설치, 기준선, 환경 변수)과 해당 reference 파일(svelte.md, react.md)의 프레임워크 점검을 실행한다. 기준선, 탐색에 넣을 지시문, 물을 것, 구현 중 지킬 것(frontend-design, modern-web-guidance, 프레임워크 규칙), 끝내기 전 할 브라우저 테스트를 돌려준다.
 user-invocable: false
-version: "0.3.2"
+version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -42,13 +42,14 @@ metadata:
 
 1. **패키지 매니저**는 lockfile로 정한다: `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lock`/`bun.lockb` → bun, `package-lock.json` → npm. 둘 이상이면 → 실패. package.json에 `packageManager`가 있으면 그 버전을 쓴다.
 2. **Node 버전**: `.nvmrc`, `.node-version`, `engines.node`를 `node -v`와 비교한다. 다르면 → 실패. 셋 다 없으면 → 건너뜀("Node 버전 고정 없음").
-3. lockfile을 바꾸지 않고 **설치**한다: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) 또는 `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. lockfile이 package.json과 맞지 않아 실패하면 → **중단**.
+3. 패키지 매니저 명령이 이 머신에 설치되어 있지 않으면 → 실패. 설치와 기준선을 건너뛰고 물을 것으로 돌려준다("<pm>을 설치할까?"). 버전을 짐작하지 않는다.
+4. lockfile을 바꾸지 않고 **설치**한다: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) 또는 `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. lockfile이 package.json과 맞지 않아 실패하면 → **중단**.
 
 ## 2. 기준선
 
 작업 전 상태를 기록한다. `/task end`가 이것과 비교해 이번 작업이 만든 실패만 찾는다.
 
-- 프로젝트 CLAUDE.md의 검증 명령을 쓴다. 없으면 package.json `scripts`에서 lint, 타입 체크, 테스트를 찾는다(테스트는 watch 모드로 시작하면 안 된다: `vitest run`, `CI=true jest`).
+- 프로젝트 CLAUDE.md의 검증 명령을 쓴다. 검증 명령이 여러 점검을 이어 붙인 것이면(예: `pnpm lint && pnpm check && pnpm test && pnpm build`) 하나가 실패해도 나머지가 가려지지 않도록 각 부분을 따로 돌린다. CLAUDE.md에 검증 명령이 없으면 package.json `scripts`에서 lint, 타입 체크, 테스트를 찾는다(테스트는 watch 모드로 시작하면 안 된다: `vitest run`, `CI=true jest`).
 - 각각: 명령, 종료 코드, 실패 수, 실패한 파일이나 테스트 이름(많으면 개수와 처음 10개).
 - 기존 실패는 **기준선**으로 기록한다. 사용자에게 알리되 작업을 막지는 않는다.
 

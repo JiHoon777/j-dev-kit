@@ -25,7 +25,7 @@ package.json `dependencies`나 `devDependencies`에 `svelte`가 있을 때 `fron
 ## 3. autofixer 사용 가능 여부
 
 - `svelte-autofixer`를 실행할 수 있는지 확인한다: Svelte 플러그인이 있으면 그 MCP 도구, 없으면 CLI `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`.
-- 둘 다 안 되면 → 실패(구현 중에 파일을 자동으로 점검할 수 없다). Svelte 플러그인이 설치되어 있지 않으면 설치를 제안한다(`/plugin marketplace add sveltejs/ai-tools`, 그다음 `/plugin install svelte@svelte`).
+- 결과를 출력하면 동작하는 것이다. 그 뒤 프로세스가 0이 아닌 코드로 끝나도 마찬가지다(CLI는 결과를 출력한 뒤 시간 초과로 끝날 수 있다). 둘 다 결과를 출력하지 않으면 → 실패(구현 중에 파일을 자동으로 점검할 수 없다). Svelte 플러그인이 설치되어 있지 않으면 설치를 제안한다(`/plugin marketplace add sveltejs/ai-tools`, 그다음 `/plugin install svelte@svelte`).
 
 ## 4. 탐색에 넣을 지시문(돌려줄 것)
 

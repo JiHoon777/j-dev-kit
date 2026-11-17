@@ -2,7 +2,7 @@
 name: frontend-end-check
 description: Wrap-up check for frontend projects, called by the end mode of the workflow plugin's task skill. Detects the framework, compares checks against the baseline, counts leftover debug markers, checks console, network, and Lighthouse with Chrome DevTools, and runs the framework tools from the matching reference file (svelte.md, react.md). Returns which review agents (ui-reviewer, svelte-reviewer, react-reviewer) to add and a browser test to do after fixes.
 user-invocable: false
-version: "0.3.2"
+version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---

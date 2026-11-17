@@ -2,7 +2,7 @@
 name: supabase-end-check
 description: Supabase 프로젝트의 작업 끝 점검. CLI 와 SQL 로 빠진 마이그레이션, 처음부터 다시 적용하기, 순서, RLS·뷰·함수 설정, 다른 사용자로 행이 보이는지, 타입, 키 노출을 확인한다. Supabase 쪽이 바뀌었으면 rls-reviewer 에이전트를 리뷰에 넣어야 한다고 돌려준다. workflow 플러그인의 `/task end`가 부른다.
 user-invocable: false
-version: "0.4.1"
+version: "0.4.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -11,7 +11,7 @@ metadata:
 
 # Supabase 종료 점검
 
-`/task end`가 부른다. 보고서는 프로젝트의 언어로 쓴다. 각 항목을 **통과 · 실패 · 건너뜀(이유)** 중 하나로 판정하고, 결과를 맨 아래 형식으로 돌려준다. 실패가 있으면 `/task end`가 고친 뒤 이 스킬을 다시 부른다.
+`/task end`가 부른다. 보고서는 프로젝트의 언어로 쓴다. 프로젝트 CLAUDE.md 의 규칙이 이 스킬보다 우선한다. 각 항목을 **통과 · 실패 · 건너뜀(이유)** 중 하나로 판정하고, 결과를 맨 아래 형식으로 돌려준다. 실패가 있으면 `/task end`가 고친 뒤 이 스킬을 다시 부른다.
 
 이 스킬은 **CLI 와 SQL 을 돌리고 결과를 확인하는 것만** 한다. 마이그레이션과 정책을 읽고 판단하는 리뷰(정책이 의도대로 동작하는지, 위험한 변경을 어떻게 다룰지, 악용 가능성)는 직접 하지 않는다. `supabase:rls-reviewer` 에이전트에 넘긴다(10번 항목).
 

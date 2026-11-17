@@ -2,7 +2,7 @@
 name: supabase-start-check
 description: Supabase 프로젝트의 작업 전 점검. 로컬 스택 상태, 마이그레이션 적용 여부, 마이그레이션에 담기지 않은 스키마 변경(드리프트), 타입 파일이 최신인지 확인하고, DB 린트와 테스트 기준선, 플랜에 넣을 스키마·RLS 항목을 돌려준다. workflow 플러그인의 `/task start`가 부른다.
 user-invocable: false
-version: "0.4.1"
+version: "0.4.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -11,7 +11,7 @@ metadata:
 
 # Supabase 시작 점검
 
-`/task start`가 부른다. 보고서는 프로젝트의 언어로 쓴다. 각 항목을 **통과 · 실패 · 건너뜀(이유) · 중단**으로 판정하고, 결과를 맨 아래 형식으로 돌려준다. 고치는 것은 이 스킬의 일이 아니다.
+`/task start`가 부른다. 보고서는 프로젝트의 언어로 쓴다. 프로젝트 CLAUDE.md 의 규칙이 이 스킬보다 우선한다. 각 항목을 **통과 · 실패 · 건너뜀(이유) · 중단**으로 판정하고, 결과를 맨 아래 형식으로 돌려준다. 고치는 것은 이 스킬의 일이 아니다.
 
 | 부분 | 출처 |
 | --- | --- |
@@ -42,8 +42,8 @@ metadata:
 
 ## 1. CLI 와 로컬 스택
 
-1. `supabase --version`. 없으면 실패로 하고 1~4단계를 건너뛴다(설치는 사용자가 한다).
-2. `supabase status`. 돌고 있지 않으면 `supabase start`를 돌릴지 **묻는다**(Docker 컨테이너 여러 개를 띄운다). 거절하면 2~4단계를 "로컬 스택 꺼짐"으로 건너뛴다.
+1. `supabase --version`. 없으면 실패로 하고, 2~3단계, 4단계의 생성·비교 부분, 5단계의 CLI 와 SQL 부분을 건너뛴 뒤 설치에 대해 물을 것으로 돌려준다. 파일만 보는 부분(4.1단계, `supabase/tests/` 찾기)은 그래도 한다.
+2. `supabase status`. 돌고 있지 않으면 `supabase start`를 돌릴지 **묻는다**(Docker 컨테이너 여러 개를 띄운다). 거절하거나 Docker 가 설치돼 있지 않으면(이때는 묻지 않는다) 위와 같은 부분을 "로컬 스택 꺼짐"으로 건너뛴다.
 3. 출력에서 DB URL 을 적어 둔다(기본값 `postgresql://postgres:postgres@127.0.0.1:54322/postgres`). 아래 SQL 은 `psql "<DB URL>" -c "<SQL>"`로 돌린다. `psql`이 없으면 SQL 이 필요한 항목은 "psql 없음"으로 건너뛴다.
 
 ## 2. 마이그레이션 상태 (supabase 가 마이그레이션을 맡을 때만)
@@ -100,7 +100,7 @@ server 가 맡으면 건너뛴다. `supabase db diff`가 서버 도구가 만든
 - **함수**: `security definer` 함수는 `set search_path = ''`를 두고 테이블에 스키마를 붙인다(`public.orders`).
 - **스토리지**: 새 버킷에는 `storage.objects` 정책.
 - 새 테이블에 대한 **타입 재생성**과 **seed**(`supabase/seed.sql`) 데이터가 필요한지.
-- **키**: 클라이언트는 anon(publishable) 키만 쓴다. service role(secret) 키가 필요한 일은 서버나 Edge Function 에서 한다.
+- **키**: 클라이언트는 anon(publishable) 키만 쓴다. service role(secret) 키가 필요한 일은 서버나 Edge Function 에서 한다. 단, 프로젝트 CLAUDE.md 가 그것을 막으면 물을 것으로 둔다.
 - `supabase/functions/`의 Edge Function 을 건드리면 로컬에서 확인하는 방법(`supabase functions serve <이름>`)과 필요한 시크릿 이름.
 
 ## 8. 구현 중 지킬 것 (돌려줄 것)

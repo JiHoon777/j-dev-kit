@@ -2,7 +2,7 @@
 name: frontend-start-check
 description: Pre-work check for frontend projects, called by the start mode of the workflow plugin's task skill. Detects the framework, then runs the common checks (package manager, Node version, install, baseline, environment variables) and the framework checks from the matching reference file (svelte.md, react.md). Returns a baseline, exploration prompts, questions, rules during implementation (frontend-design, modern-web-guidance, framework rules), and a browser test to do before finishing.
 user-invocable: false
-version: "0.3.2"
+version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -40,13 +40,14 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 
 1. **Package manager** from the lockfile: `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lock`/`bun.lockb` → bun, `package-lock.json` → npm. More than one → fail. If package.json has `packageManager`, use that version.
 2. **Node version**: compare `.nvmrc`, `.node-version`, or `engines.node` with `node -v`. Mismatch → fail. If none of them exists → skip ("no Node version pinned").
-3. **Install** without changing the lockfile: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) or `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. If it fails because the lockfile does not match package.json → **stop**.
+3. If the package manager's command is not installed on this machine → fail, skip the install and the baseline, and return a question ("install <pm>?"). Do not guess a version.
+4. **Install** without changing the lockfile: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) or `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. If it fails because the lockfile does not match package.json → **stop**.
 
 ## 2. Baseline
 
 Record the state before the work. `/task end` compares against it to find only the failures this work introduced.
 
-- Use the verification command from the project's CLAUDE.md. If there is none, find lint, type check, and test in package.json `scripts` (tests must not start in watch mode: `vitest run`, `CI=true jest`).
+- Use the verification command from the project's CLAUDE.md. If the verification command chains several checks (for example `pnpm lint && pnpm check && pnpm test && pnpm build`), run each part separately, so a failure in one does not hide the others. If CLAUDE.md has no verification command, find lint, type check, and test in package.json `scripts` (tests must not start in watch mode: `vitest run`, `CI=true jest`).
 - For each: command, exit code, failure count, names of failing files or tests (if many, the count and the first 10).
 - Existing failures are recorded as **baseline**; tell the user, but do not block the work.
 

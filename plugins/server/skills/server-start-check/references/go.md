@@ -22,7 +22,7 @@ Unapplied migrations → fail (return a question about applying them). Diverged 
 
 ## 4. Baseline
 
-Use the verification command from the project's CLAUDE.md. Otherwise `go vet ./...` and `go test ./...`, plus `govulncheck ./...` if it is installed. Record command, exit code, failure count, and failing names (first 10 if many).
+Use the verification command from the project's CLAUDE.md. If the verification command chains several checks (for example `pnpm lint && pnpm check && pnpm test && pnpm build`), run each part separately, so a failure in one does not hide the others. If CLAUDE.md has no verification command, use `go vet ./...` and `go test ./...`, plus `govulncheck ./...` if it is installed. Record command, exit code, failure count, and failing names (first 10 if many).
 
 ## Rows to add
 

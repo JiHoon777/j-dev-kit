@@ -23,7 +23,7 @@ Read by `frontend-start-check` when `svelte` is in package.json `dependencies` o
 ## 3. Autofixer availability
 
 - Check that `svelte-autofixer` can run: the MCP tool from the Svelte plugin if present, otherwise the CLI `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`.
-- If neither works → fail (files cannot be auto-checked during implementation). If the Svelte plugin is not installed, suggest installing it (`/plugin marketplace add sveltejs/ai-tools`, then `/plugin install svelte@svelte`).
+- If it prints a result, it works, even if the process then exits non-zero (the CLI can time out after printing). If neither prints a result → fail (files cannot be auto-checked during implementation). If the Svelte plugin is not installed, suggest installing it (`/plugin marketplace add sveltejs/ai-tools`, then `/plugin install svelte@svelte`).
 
 ## 4. Exploration prompt (to return)
 

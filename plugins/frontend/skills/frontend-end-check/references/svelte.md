@@ -12,7 +12,7 @@ Run the same command as `### Baseline`. New errors → fail. New warnings (inclu
 
 ## 2. svelte-autofixer
 
-Run **every** changed `.svelte`, `.svelte.ts`, and `.svelte.js` file through `svelte-autofixer` (the MCP tool, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`). Any remaining issue → fail; suggestions go into the evidence. What it catches: assignment inside `$effect`, passing a function to `$derived`, importing runes, stores instead of runes, `$app/stores` instead of `$app/state`, `class:` instead of clsx, attachment suggestions, and more.
+Run **every** changed `.svelte`, `.svelte.ts`, and `.svelte.js` file through `svelte-autofixer` (the MCP tool, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`). Judge by the printed result, not the exit code (the CLI can exit non-zero after printing). Any remaining issue → fail; suggestions go into the evidence. What it catches: assignment inside `$effect`, passing a function to `$derived`, importing runes, stores instead of runes, `$app/stores` instead of `$app/state`, `class:` instead of clsx, attachment suggestions, and more.
 
 ## 3. Agent to add to the review
 

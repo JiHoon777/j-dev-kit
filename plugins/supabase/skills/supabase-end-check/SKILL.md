@@ -2,14 +2,14 @@
 name: supabase-end-check
 description: End-of-task check for Supabase projects. Uses the CLI and SQL to check for missing migrations, reapplying from scratch, ordering, RLS/view/function settings, whether rows are visible as another user, types, and key exposure. If Supabase changed, returns that the rls-reviewer agent should be added to the review. Called by `/task end` in the workflow plugin.
 user-invocable: false
-version: "0.4.1"
+version: "0.4.2"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
 # Supabase end check
 
-Called by `/task end`. Write the report in the project's language. Judge each item as **pass · fail · skip (reason)** and return the result in the format at the bottom. On a fail, `/task end` fixes it and calls this skill again.
+Called by `/task end`. Write the report in the project's language. Rules in the project's CLAUDE.md take precedence over this skill. Judge each item as **pass · fail · skip (reason)** and return the result in the format at the bottom. On a fail, `/task end` fixes it and calls this skill again.
 
 This skill only **runs the CLI and SQL and checks the results**. Do not do the review that reads and judges migrations and policies yourself (whether policies work as intended, how to handle risky changes, abuse potential); hand it to the `supabase:rls-reviewer` agent (item 10).
 

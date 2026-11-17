@@ -2,7 +2,7 @@
 name: server-start-check
 description: 백엔드 프로젝트의 작업 전 점검으로, workflow 플러그인 task 스킬의 start 모드가 부른다. 언어, 프레임워크, 마이그레이션 도구를 판별한 뒤 공통 점검(환경 변수, 로컬 서비스)과 맞는 참고 파일(node.md, python.md, go.md, jvm.md. 설치, LSP, 마이그레이션 상태, 기준선)의 언어별 점검을 돌린다. 기준선, API 와 그 사용처에 대한 탐색 지시문, 물을 것, 구현 중 지킬 것을 돌려준다.
 user-invocable: false
-version: "0.3.2"
+version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---

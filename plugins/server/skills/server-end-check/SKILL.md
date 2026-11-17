@@ -2,7 +2,7 @@
 name: server-end-check
 description: Wrap-up check for backend projects, called by the end mode of the workflow plugin's task skill. Detects the language and migration tool, compares checks against the baseline, uses tools to find missing or misordered migrations, breaking API changes (oasdiff), and undocumented config keys, and calls the changed endpoints on a local server. Language commands come from the matching reference file (node.md, python.md, go.md, jvm.md). Returns the api-reviewer agent to add when server code changed.
 user-invocable: false
-version: "0.3.2"
+version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
