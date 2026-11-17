@@ -2,7 +2,7 @@
 name: supabase-end-check
 description: Supabase 프로젝트의 작업 끝 점검. CLI 와 SQL 로 빠진 마이그레이션, 처음부터 다시 적용하기, 순서, RLS·뷰·함수 설정, 다른 사용자로 행이 보이는지, 타입, 키 노출을 확인한다. Supabase 쪽이 바뀌었으면 rls-reviewer 에이전트를 리뷰에 넣어야 한다고 돌려준다. workflow 플러그인의 `/task end`가 부른다.
 user-invocable: false
-version: "0.4.2"
+version: "0.4.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -107,7 +107,7 @@ grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude
 
 ## 9. Advisors (선택)
 
-이 플러그인의 읽기 전용 MCP 서버(`mcp__plugin_supabase_supabase-readonly__*`)가 연결돼 있으면, 이번 변경을 적용한 환경의 프로젝트(그 환경 env 파일의 ref)에 `get_advisors`를 `security`, `performance`로 한 번씩 부른다. 새로 생긴 지적을 근거에 적는다. 연결이나 인증이 안 돼 있으면 "어드바이저 확인 안 함(이유)"으로 건너뛴다. `mcp__plugin_supabase_supabase__*` 도구는 절대 쓰지 않는다.
+이 플러그인의 읽기 전용 MCP 서버(`mcp__plugin_supabase_supabase-readonly__*`)가 연결돼 있으면, 이번 변경을 적용한 환경의 env 파일에 있는 `SUPABASE_MCP_URL`이 가리키는 프로젝트에 `get_advisors`를 `security`, `performance`로 한 번씩 부른다. 새로 생긴 지적을 근거에 적는다. 키가 없거나 연결·인증이 안 돼 있으면 "어드바이저 확인 안 함(이유)"으로 건너뛴다. `mcp__plugin_supabase_supabase__*` 도구는 절대 쓰지 않는다.
 
 ## 10. 리뷰에 넣을 에이전트
 
