@@ -1,20 +1,12 @@
 {
   "name": "supabase",
-  "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys), the rls-reviewer agent, and a read-only Supabase MCP server scoped to one development project.",
-  "version": "0.4.0",
+  "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys), the rls-reviewer agent, and a read-only Supabase MCP server that picks the project of the environment in use.",
+  "version": "0.4.1",
   "author": {
     "name": "JiHoon777"
   },
   "dependencies": [
     "workflow",
     "supabase@anthropic-plugin-directory"
-  ],
-  "userConfig": {
-    "project_ref": {
-      "type": "string",
-      "title": "Supabase project ref (development project)",
-      "description": "The xxxx in https://xxxx.supabase.co of the development project the read-only MCP may access. Never a production project.",
-      "required": true
-    }
-  }
+  ]
 }

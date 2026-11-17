@@ -2,7 +2,7 @@
 name: supabase-end-check
 description: End-of-task check for Supabase projects. Uses the CLI and SQL to check for missing migrations, reapplying from scratch, ordering, RLS/view/function settings, whether rows are visible as another user, types, and key exposure. If Supabase changed, returns that the rls-reviewer agent should be added to the review. Called by `/task end` in the workflow plugin.
 user-invocable: false
-version: "0.4.0"
+version: "0.4.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -105,7 +105,7 @@ If `supabase/functions/` changed, start it with `supabase functions serve <name>
 
 ## 9. Advisors (optional)
 
-If this plugin's read-only MCP server (`mcp__plugin_supabase_supabase-readonly__*`) is connected and this change has been applied to its development project, call `get_advisors` once each with `security` and `performance`. Record new findings in the evidence. If it is not connected or not authenticated, skip as "advisors not checked (reason)". Never use `mcp__plugin_supabase_supabase__*` tools.
+If this plugin's read-only MCP server (`mcp__plugin_supabase_supabase-readonly__*`) is connected, call `get_advisors` once each with `security` and `performance` on the project of the environment this change was applied to (ref from that environment's env file). Record new findings in the evidence. If it is not connected or not authenticated, skip as "advisors not checked (reason)". Never use `mcp__plugin_supabase_supabase__*` tools.
 
 ## 10. Agents to add to the review
 

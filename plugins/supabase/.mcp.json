@@ -2,7 +2,7 @@
   "mcpServers": {
     "supabase-readonly": {
       "type": "http",
-      "url": "https://mcp.supabase.com/mcp?read_only=true&project_ref=${user_config.project_ref}"
+      "url": "https://mcp.supabase.com/mcp?read_only=true"
     }
   }
 }
