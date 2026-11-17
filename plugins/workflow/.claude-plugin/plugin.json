@@ -1,0 +1,8 @@
+{
+  "name": "workflow",
+  "description": "작업 시작·종료·백로그 생성. 프로젝트 스택(frontend/supabase/server)에 맞춰 점검 항목이 달라진다.",
+  "version": "0.1.0",
+  "author": {
+    "name": "JiHoon777"
+  }
+}

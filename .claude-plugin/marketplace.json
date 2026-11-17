@@ -1,0 +1,16 @@
+{
+  "name": "j-dev-kit",
+  "owner": {
+    "name": "JiHoon777"
+  },
+  "metadata": {
+    "description": "작업 흐름(시작·종료·백로그)과 스택별 도구 스킬 모음"
+  },
+  "plugins": [
+    {
+      "name": "workflow",
+      "source": "./plugins/workflow",
+      "description": "작업 시작·종료·백로그 생성. 프로젝트 스택(frontend/supabase/server)에 맞춰 점검 항목이 달라진다."
+    }
+  ]
+}
