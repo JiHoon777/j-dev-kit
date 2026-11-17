@@ -213,3 +213,43 @@ claude plugin update workflow@j-dev-kit --scope project    # 설치한 플러그
 - 의존 플러그인은 Claude Code 에 실제로 있는 마켓플레이스를 가리킨다. Anthropic 플러그인(superpowers, frontend-design, typescript-lsp, supabase)은 기본으로 들어 있는 `anthropic-plugin-directory`에서, Chrome DevTools 는 Google 의 자체 마켓플레이스 `chrome-devtools-plugins`에서 가져온다. 같은 플러그인을 다른 마켓플레이스 이름(예: `supabase@claude-plugins-official`)으로 또 켜지 않는다. 같은 MCP 서버가 두 번 뜬다.
 - **외부 CLI 는 버전을 고정한다.** 스킬이 `npx`로 내려받아 실행하는 도구(React Doctor, `@sveltejs/mcp`, `sv`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 올릴 때는 새 버전을 확인하고 숫자만 바꾼다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 프로젝트에 설치된 것만 쓴다. `modern-web-guidance`는 플러그인 스킬에 맡기고 명령을 적지 않는다.
 - **Supabase MCP 는 읽기 전용이다.** `supabase` 플러그인이 자체 서버 `supabase-readonly`를 함께 설치하고, 이 서버는 `read_only=true`로 연결된다. 어느 프로젝트를 볼지는 프로젝트의 `.claude/.local/project.json`에 `{ "supabaseMcpUrl": "https://<ref>.supabase.co" }`로 정한다. 없으면 점검이 묻는다. 처음 쓸 때 Supabase 로그인을 요청한다(`/mcp`).
+
+### Supabase 쓰기 막기 (선택)
+
+점검은 읽기 전용 서버만 쓰지만, 실제 Supabase 프로젝트에 쓸 수 있는 길이 두 가지 더 있다.
+
+- **공식 Supabase 플러그인의 MCP 서버.** 스킬 때문에 의존성으로 같이 설치되고, `read_only` 없이 연결된다. 프로젝트 `.mcp.json`으로 읽기 전용 주소를 덮어쓸 수도 없다. 플러그인 서버는 주소로 같은 서버인지 판단하는데, `?read_only=true`를 붙이면 다른 서버가 되기 때문이다.
+- **Supabase CLI 와 `psql`.** 원격 프로젝트에 로그인하거나 연결돼 있을 때.
+
+걱정되면 프로젝트 `.claude/settings.json`에 deny 규칙을 넣는다. deny 는 allow 보다 우선한다. 아래 묶음은 공식 MCP 서버, 원격 프로젝트를 바꾸는 주요 CLI 명령, Supabase 호스트로의 `psql`을 막고, 로컬 작업(`supabase start`, `--linked` 없는 `supabase db reset`, `supabase migration list --local`, `127.0.0.1`로의 `psql`)은 그대로 둔다.
+
+```json
+{
+  "permissions": {
+    "deny": [
+      "mcp__plugin_supabase_supabase__*",
+      "Bash(supabase link*)",
+      "Bash(supabase db push*)",
+      "Bash(supabase db reset --linked*)",
+      "Bash(supabase db reset --db-url*)",
+      "Bash(supabase migration up --linked*)",
+      "Bash(supabase migration up --db-url*)",
+      "Bash(supabase migration repair*)",
+      "Bash(supabase config push*)",
+      "Bash(supabase functions deploy*)",
+      "Bash(supabase functions delete*)",
+      "Bash(supabase secrets*)",
+      "Bash(supabase storage rm*)",
+      "Bash(supabase storage mv*)",
+      "Bash(supabase storage cp*)",
+      "Bash(supabase branches delete*)",
+      "Bash(supabase projects delete*)",
+      "Bash(psql *supabase.co*)",
+      "Bash(psql *supabase.com*)"
+    ]
+  }
+}
+```
+
+설정으로 막을 수 없는 것: 앱 자체. 데이터를 저장하는 브라우저 테스트는 앱의 env 파일이 가리키는 프로젝트에 쓴다.
+

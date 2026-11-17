@@ -213,3 +213,43 @@ Then **restart Claude Code**; a running session keeps the old skill text.
 - Dependencies point to the marketplaces Claude Code actually has: Anthropic's plugins come from the built-in `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp, supabase), and Chrome DevTools from Google's own `chrome-devtools-plugins` marketplace. Do not also enable the same plugin from another marketplace (for example `supabase@claude-plugins-official`); the same MCP server would start twice.
 - **External CLIs are version-pinned.** Tools that skills download and run with `npx` (React Doctor, `@sveltejs/mcp`, `sv`, `skills`) are pinned to versions published more than two weeks ago. To upgrade, check the new version and change only the number. Project tools (Prisma, Drizzle, TypeORM) use `npx --no-install` so only the project's installed copy runs. `modern-web-guidance` is left to its plugin's skill, with no command written here.
 - **The Supabase MCP is read-only.** The `supabase` plugin bundles its own server, `supabase-readonly`, which connects with `read_only=true`. Which project it reads is set in the project's `.claude/.local/project.json` as `{ "supabaseMcpUrl": "https://<ref>.supabase.co" }`; the checks ask for it when it is missing. The first use asks you to sign in to Supabase (`/mcp`).
+
+### Blocking Supabase writes (optional)
+
+The checks only use the read-only server, but two other paths can still write to a real Supabase project:
+
+- **The official Supabase plugin's MCP server.** It is installed as a dependency (for its skills) and connects without `read_only`. A project-level `.mcp.json` cannot override it with a read-only URL: plugin servers are matched by endpoint, and adding `?read_only=true` makes it a different server.
+- **The Supabase CLI and `psql`**, if they are logged in or linked to a remote project.
+
+If that is a concern, add deny rules to the project's `.claude/settings.json`. Deny rules take precedence over allow rules. This set blocks the official MCP server, the CLI commands that change a remote project, and `psql` to Supabase hosts, while local work (`supabase start`, `supabase db reset` without `--linked`, `supabase migration list --local`, `psql` to `127.0.0.1`) keeps working:
+
+```json
+{
+  "permissions": {
+    "deny": [
+      "mcp__plugin_supabase_supabase__*",
+      "Bash(supabase link*)",
+      "Bash(supabase db push*)",
+      "Bash(supabase db reset --linked*)",
+      "Bash(supabase db reset --db-url*)",
+      "Bash(supabase migration up --linked*)",
+      "Bash(supabase migration up --db-url*)",
+      "Bash(supabase migration repair*)",
+      "Bash(supabase config push*)",
+      "Bash(supabase functions deploy*)",
+      "Bash(supabase functions delete*)",
+      "Bash(supabase secrets*)",
+      "Bash(supabase storage rm*)",
+      "Bash(supabase storage mv*)",
+      "Bash(supabase storage cp*)",
+      "Bash(supabase branches delete*)",
+      "Bash(supabase projects delete*)",
+      "Bash(psql *supabase.co*)",
+      "Bash(psql *supabase.com*)"
+    ]
+  }
+}
+```
+
+Not covered by any setting: the app itself. A browser test that saves data writes to whatever project the app's own env file points to.
+
