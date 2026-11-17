@@ -80,15 +80,20 @@ docs/done/001-….md ◄── 머지 ◄── 승인 ◄── 수정 ◄─�
 
 ## 설치
 
+Claude Code 안에서 실행한다(터미널에서는 `claude plugin …`). 마켓플레이스를 먼저 추가한다. 스택 플러그인의 의존 플러그인이 거기서 온다.
+
 ```
 /plugin marketplace add JiHoon777/j-dev-kit
-/plugin marketplace add GoogleChrome/modern-web-guidance   # frontend 를 쓸 때
-/plugin marketplace add ChromeDevTools/chrome-devtools-mcp  # frontend 를 쓸 때
+/plugin marketplace add GoogleChrome/modern-web-guidance   # frontend 에 필요
+/plugin marketplace add ChromeDevTools/chrome-devtools-mcp  # frontend 에 필요
 /plugin install frontend@j-dev-kit
 /plugin install supabase@j-dev-kit
+/plugin install server@j-dev-kit
 ```
 
-스택 플러그인은 모두 `workflow`에 의존하므로, 어느 것을 설치해도 `/task`가 같이 설치되고 켜진다.
+- 쓰는 스택만 설치한다. 스택 플러그인은 모두 `workflow`에 의존하므로, 어느 것을 설치해도 `/task`와 `superpowers`가 같이 설치되고 켜진다.
+- `anthropic-plugin-directory`(superpowers, frontend-design, typescript-lsp, supabase)는 Claude Code 에 기본으로 들어 있어서 따로 추가할 것이 없다.
+- `/plugin install`은 기본이 사용자 범위(모든 프로젝트)다. 저장소 하나에서만 켜려면 `claude plugin install <이름>@j-dev-kit --scope project`를 쓴다(아래).
 
 Svelte 프로젝트면 공식 Svelte 플러그인도 권한다(없어도 점검은 버전 고정 CLI 로 돈다).
 
@@ -99,24 +104,42 @@ Svelte 프로젝트면 공식 Svelte 플러그인도 권한다(없어도 점검�
 
 ### 프로젝트에 고정하기
 
-프로젝트의 `.claude/settings.json`에 적어 두면 저장소를 연 사람에게 같은 구성이 제안된다. 플러그인 자체는 각자 한 번 설치한다(`claude plugin install <이름>@<마켓> --scope project`).
+저장소에서 `--scope project`로 설치한다. Claude Code 가 마켓플레이스와 **의존 플러그인까지 포함한** 모든 플러그인을 `.claude/settings.json`에 적는다. 이 파일을 커밋하면 저장소를 연 사람에게 같은 구성이 제안되고, 각자 같은 명령으로 한 번 설치한다.
+
+```bash
+claude plugin marketplace add JiHoon777/j-dev-kit --scope project
+claude plugin marketplace add GoogleChrome/modern-web-guidance --scope project
+claude plugin marketplace add ChromeDevTools/chrome-devtools-mcp --scope project
+claude plugin install frontend@j-dev-kit --scope project
+claude plugin install supabase@j-dev-kit --scope project
+```
+
+결과는 이렇게 된다(frontend + supabase + Svelte):
 
 ```json
 {
   "extraKnownMarketplaces": {
     "j-dev-kit": { "source": { "source": "github", "repo": "JiHoon777/j-dev-kit" } },
-    "googlechrome": { "source": { "source": "github", "repo": "GoogleChrome/modern-web-guidance" } },
     "chrome-devtools-plugins": { "source": { "source": "github", "repo": "ChromeDevTools/chrome-devtools-mcp" } },
+    "googlechrome": { "source": { "source": "github", "repo": "GoogleChrome/modern-web-guidance" } },
     "svelte": { "source": { "source": "github", "repo": "sveltejs/ai-tools" } }
   },
   "enabledPlugins": {
-    "workflow@j-dev-kit": true,
     "frontend@j-dev-kit": true,
     "supabase@j-dev-kit": true,
+    "workflow@j-dev-kit": true,
+    "superpowers@anthropic-plugin-directory": true,
+    "frontend-design@anthropic-plugin-directory": true,
+    "typescript-lsp@anthropic-plugin-directory": true,
+    "chrome-devtools-mcp@chrome-devtools-plugins": true,
+    "modern-web-guidance@googlechrome": true,
+    "supabase@anthropic-plugin-directory": true,
     "svelte@svelte": true
   }
 }
 ```
+
+이 파일을 정리할 때 **의존 플러그인 줄을 지우지 않는다.** 의존 플러그인이 꺼져 있으면 그 플러그인이 로드되지 않고(`Dependency "workflow@j-dev-kit" is not installed`), 설치를 다시 돌려도 의존 플러그인이 전부 돌아오지는 않는다.
 
 ### 프로젝트 CLAUDE.md 에 적을 것
 
@@ -140,6 +163,36 @@ superpowers 는 세션을 시작할 때마다 "맞을 것 같으면 스킬을 �
 ### 서버 언어별 LSP (선택)
 
 `server` 플러그인은 언어를 판별해 해당 LSP 가 없으면 설치를 권한다. 기본으로 들어 있는 `anthropic-plugin-directory`의 `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `typescript-lsp`. 실행 파일(`pyright-langserver`, `gopls` 등)은 따로 설치해야 한다.
+
+## 사용법
+
+```
+/task create 이메일·비밀번호 로그인 화면 추가   # 승인받은 뒤 docs/backlog/001-….md 를 만든다
+/task start 001                                  # 플랜 모드에서 계획을 세우고, 승인 뒤 w/001-… 브랜치에서 구현한다
+/task end                                        # 리뷰하고, 고를 것을 고치고, 항목을 끝내고, 승인받아 머지한다
+```
+
+- **프로젝트에서 처음 `/task create`를 하면** `docs/backlog/`(README, `_template.md`)와 `docs/done/`을 만들자고 제안하고 라벨을 묻는다.
+- **`/task start`**는 커밋하지 않은 변경이나 다른 `w/` 브랜치가 있으면 먼저 멈춘다. 스택 시작 점검을 돌린 뒤, 플랜 모드에서 에이전트들로 코드를 동시에 탐색하고, 질문을 한꺼번에 묻고, 설계안 세 개와 추천을 보여 주고, 승인받은 뒤에 브랜치를 만든다. 구현은 메인 대화에서 테스트 먼저, 단계마다 커밋하며 한다.
+- **`/task end`**는 스택 종료 점검과 리뷰 에이전트들을 동시에 돌리고, 지적을 확신도와 함께 전부 보여 준 뒤 지적마다 지금 고칠지, 나중에 고칠지(새 백로그 항목), 그대로 둘지 묻는다. 고친 뒤 다시 테스트하고, 항목을 `docs/done/`으로 옮기고, 머지 방법을 고르게 한다. 요청하지 않으면 푸시하지 않는다.
+- **인자 없이** `/task`만 부르면 세 모드를 보여 주고 무엇을 할지 묻는다.
+
+## 업데이트
+
+```
+/plugin marketplace update j-dev-kit
+```
+
+그다음 Claude Code 를 다시 시작하거나 `/reload-plugins`를 실행해야 새 스킬 내용이 읽힌다.
+
+## 문제 해결
+
+| 증상 | 원인과 해결 |
+| --- | --- |
+| 설치 중 `Dependency "…" not found. Is the "…" marketplace added?` | 메시지에 나온 마켓플레이스를 추가하고(설치 절 참고) 다시 설치한다. |
+| `claude plugin list`에 `Dependency "…" is not installed` | `enabledPlugins`에서 의존 플러그인이 지워졌다. 메시지의 명령으로 빠진 플러그인을 같은 `--scope`로 설치한다. |
+| `/task start`가 스택 점검을 하나도 안 돈다 | 이 프로젝트에서 스택 플러그인이 꺼져 있거나, 이 프로젝트에 해당하지 않는다고 판단했다(CLAUDE.md 의 `stack:`을 확인). |
+| superpowers 가 자기 brainstorming 이나 계획 파일을 시작한다 | 위의 superpowers 문단을 프로젝트 CLAUDE.md 에 넣는다. |
 
 ## 알아 둘 것
 

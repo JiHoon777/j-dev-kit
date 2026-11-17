@@ -80,15 +80,20 @@ Compared and not used: Compound Engineering (38 skills; replaces the whole flow)
 
 ## Install
 
+Run these inside Claude Code (or as `claude plugin …` in a terminal). Add the marketplaces first; a stack plugin's dependencies come from them.
+
 ```
 /plugin marketplace add JiHoon777/j-dev-kit
-/plugin marketplace add GoogleChrome/modern-web-guidance   # when using frontend
-/plugin marketplace add ChromeDevTools/chrome-devtools-mcp  # when using frontend
+/plugin marketplace add GoogleChrome/modern-web-guidance   # needed by frontend
+/plugin marketplace add ChromeDevTools/chrome-devtools-mcp  # needed by frontend
 /plugin install frontend@j-dev-kit
 /plugin install supabase@j-dev-kit
+/plugin install server@j-dev-kit
 ```
 
-Every stack plugin depends on `workflow`, so installing any of them also installs and enables `/task`.
+- Install only the stacks you use. Every stack plugin depends on `workflow`, so installing any of them also installs and enables `/task` and `superpowers`.
+- `anthropic-plugin-directory` (superpowers, frontend-design, typescript-lsp, supabase) is built into Claude Code; there is nothing to add for it.
+- `/plugin install` uses the user scope (every project) by default. To enable plugins for one repository only, use `claude plugin install <name>@j-dev-kit --scope project` (see below).
 
 For Svelte projects the official Svelte plugin is recommended too (checks still run without it through a version-pinned CLI).
 
@@ -99,24 +104,42 @@ For Svelte projects the official Svelte plugin is recommended too (checks still 
 
 ### Pin it to a project
 
-Put this in the project's `.claude/settings.json` so everyone who opens the repository is offered the same setup. Each person still installs the plugins once (`claude plugin install <name>@<marketplace> --scope project`).
+Run the installs with `--scope project` in the repository. Claude Code writes the marketplaces and every plugin, **including dependencies**, into `.claude/settings.json`. Commit that file; anyone who opens the repository is offered the same setup and installs it once with the same commands.
+
+```bash
+claude plugin marketplace add JiHoon777/j-dev-kit --scope project
+claude plugin marketplace add GoogleChrome/modern-web-guidance --scope project
+claude plugin marketplace add ChromeDevTools/chrome-devtools-mcp --scope project
+claude plugin install frontend@j-dev-kit --scope project
+claude plugin install supabase@j-dev-kit --scope project
+```
+
+The result looks like this (frontend + supabase + Svelte):
 
 ```json
 {
   "extraKnownMarketplaces": {
     "j-dev-kit": { "source": { "source": "github", "repo": "JiHoon777/j-dev-kit" } },
-    "googlechrome": { "source": { "source": "github", "repo": "GoogleChrome/modern-web-guidance" } },
     "chrome-devtools-plugins": { "source": { "source": "github", "repo": "ChromeDevTools/chrome-devtools-mcp" } },
+    "googlechrome": { "source": { "source": "github", "repo": "GoogleChrome/modern-web-guidance" } },
     "svelte": { "source": { "source": "github", "repo": "sveltejs/ai-tools" } }
   },
   "enabledPlugins": {
-    "workflow@j-dev-kit": true,
     "frontend@j-dev-kit": true,
     "supabase@j-dev-kit": true,
+    "workflow@j-dev-kit": true,
+    "superpowers@anthropic-plugin-directory": true,
+    "frontend-design@anthropic-plugin-directory": true,
+    "typescript-lsp@anthropic-plugin-directory": true,
+    "chrome-devtools-mcp@chrome-devtools-plugins": true,
+    "modern-web-guidance@googlechrome": true,
+    "supabase@anthropic-plugin-directory": true,
     "svelte@svelte": true
   }
 }
 ```
+
+**Do not delete the dependency entries** when tidying this file. A plugin whose dependency is not enabled does not load (`Dependency "workflow@j-dev-kit" is not installed`), and running the install again does not always restore every dependency.
 
 ### What to put in the project's CLAUDE.md
 
@@ -140,6 +163,36 @@ superpowers injects "if a skill might apply, you must use it" at every session s
 ### LSP per server language (optional)
 
 The `server` plugin detects the language and suggests installing the matching LSP plugin when missing: `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `typescript-lsp` from the built-in `anthropic-plugin-directory`. The executables (`pyright-langserver`, `gopls`, …) are installed separately.
+
+## Usage
+
+```
+/task create Add a login screen with email and password   # writes docs/backlog/001-….md after you approve it
+/task start 001                                           # plans it in plan mode, then implements on w/001-…
+/task end                                                 # reviews, fixes what you pick, closes the item, merges after approval
+```
+
+- **First `/task create` in a project** proposes creating `docs/backlog/` (README, `_template.md`) and `docs/done/`, and asks for your labels.
+- **`/task start`** stops first if there are uncommitted changes or another `w/` branch. It runs the stack start checks, then in plan mode explores the code with parallel agents, asks its questions in one list, offers three design options with a recommendation, and waits for your approval before creating the branch. Implementation happens in the main conversation, test first, with a commit per step.
+- **`/task end`** runs the stack end checks and the review agents in parallel, shows every finding with a confidence score, and asks per finding: fix now, fix later (a new backlog item), or leave it. After fixes it re-tests, moves the item to `docs/done/`, and offers merge options. It never pushes unless you ask.
+- **With no argument,** `/task` shows the three modes and asks which one to run.
+
+## Update
+
+```
+/plugin marketplace update j-dev-kit
+```
+
+Then restart Claude Code (or run `/reload-plugins`) so the new skill text is loaded.
+
+## Troubleshooting
+
+| Symptom | Cause and fix |
+| --- | --- |
+| `Dependency "…" not found. Is the "…" marketplace added?` while installing | Add the marketplace named in the message (see Install), then install again. |
+| `Dependency "…" is not installed` in `claude plugin list` | A dependency was removed from `enabledPlugins`. Install the missing plugin with the command in the message (same `--scope`). |
+| `/task start` does not run any stack check | The stack plugin is not enabled in this project, or it reports "not applicable" for this project (check `stack:` in CLAUDE.md). |
+| superpowers starts its own brainstorming or plan files | Add the superpowers paragraph above to the project's CLAUDE.md. |
 
 ## Good to know
 
