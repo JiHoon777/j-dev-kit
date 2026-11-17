@@ -1,7 +1,7 @@
 {
   "name": "frontend",
-  "description": "프론트엔드 공통 점검(설치·기준선·환경변수·브라우저 도구)과 ui-reviewer 에이전트. workflow 의 task-start·task-end 가 frontend-start-check·frontend-end-check 를 부른다. 프레임워크별 점검은 svelte·react 플러그인.",
-  "version": "0.2.0",
+  "description": "Frontend checks for /task start and /task end: common checks plus Svelte and React references picked by detecting the project, browser testing, and review agents ui-reviewer, svelte-reviewer, react-reviewer.",
+  "version": "0.3.0",
   "author": {
     "name": "JiHoon777"
   },

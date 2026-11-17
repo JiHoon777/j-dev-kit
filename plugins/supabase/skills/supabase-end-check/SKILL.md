@@ -1,145 +1,145 @@
 ---
 name: supabase-end-check
-description: Supabase 프로젝트의 작업 마무리 점검. CLI·SQL 로 마이그레이션 누락, 처음부터 다시 적용, 순서, RLS·뷰·함수 설정, 다른 사용자로 행이 보이는지, 타입, 키 노출을 확인한다. Supabase 가 바뀌었으면 rls-reviewer 에이전트를 리뷰에 넣으라고 돌려준다. workflow 의 task-end 가 부른다.
+description: End-of-task check for Supabase projects. Uses the CLI and SQL to check for missing migrations, reapplying from scratch, ordering, RLS/view/function settings, whether rows are visible as another user, types, and key exposure. If Supabase changed, returns that the rls-reviewer agent should be added to the review. Called by `/task end` in the workflow plugin.
 user-invocable: false
-version: "0.2.0"
+version: "0.3.0"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
-# Supabase 종료 점검
+# Supabase end check
 
-`task-end` 가 부른다. 각 항목을 **통과 · 실패 · 건너뜀(이유)** 으로 판정하고 맨 아래 형식으로 돌려준다. 실패는 `task-end` 가 고친 뒤 이 스킬을 다시 부른다.
+Called by `/task end`. Judge each item as **pass · fail · skip (reason)** and return the result in the format at the bottom. On a fail, `/task end` fixes it and calls this skill again.
 
-이 스킬은 **CLI·SQL 을 돌려 결과를 확인하는 것**만 한다. 마이그레이션과 정책을 읽고 판단하는 리뷰(정책이 의도대로인지, 위험한 변경을 어떻게 다룰지, 악용 가능성)는 직접 하지 않고 `supabase:rls-reviewer` 에이전트에 넘긴다(10번).
+This skill only **runs the CLI and SQL and checks the results**. Do not do the review that reads and judges migrations and policies yourself (whether policies work as intended, how to handle risky changes, abuse potential); hand it to the `supabase:rls-reviewer` agent (item 10).
 
-SQL 은 `supabase status` 의 DB URL 로 `psql "<DB URL>" -c "<SQL>"` 로 돌린다. `psql` 이 없으면 SQL 항목은 "psql 없음"으로 건너뛴다.
+Run SQL with `psql "<DB URL>" -c "<SQL>"` using the DB URL from `supabase status`. If `psql` is missing, skip SQL items as "no psql".
 
-## 0. 해당 여부
+## 0. Applicability
 
-`supabase-start-check` 와 같은 기준으로 판단한다. 해당 없으면 "해당 없음: <이유>". 로컬 스택이 꺼져 있으면 켤지 묻고, 거절하면 DB 가 필요한 항목은 "로컬 스택 꺼짐"으로 건너뛴다.
+Decide by the same criteria as `supabase-start-check`. If not applicable, "not applicable: <reason>". If the local stack is off, ask whether to start it; if declined, skip items that need the DB as "local stack off".
 
-새 마이그레이션 = `git diff --name-only origin/<기준 브랜치>...HEAD -- supabase/migrations` 와 미커밋 새 파일.
+New migrations = `git diff --name-only origin/<base branch>...HEAD -- supabase/migrations` plus uncommitted new files.
 
-## 1. 마이그레이션이 전부인가
+## 1. Are the migrations complete?
 
-1. `supabase db diff`. 출력이 비어 있어야 통과. 남아 있으면 실패: 로컬 DB 에는 있는데 마이그레이션 파일에 없는 변경이다. 출력 SQL 을 근거에 붙인다.
-2. 스키마를 바꿨는데(diff 에 테이블·컬럼·정책·함수 변경이 보이는데) 새 마이그레이션이 없으면 실패.
+1. `supabase db diff`. Passes only if the output is empty. If anything remains, fail: the change is in the local DB but not in a migration file. Attach the output SQL to the evidence.
+2. If the schema changed (the diff shows table, column, policy, or function changes) but there is no new migration, fail.
 
-## 2. 처음부터 다시 적용
+## 2. Reapply from scratch
 
-`supabase db reset` 을 할지 **묻는다**(로컬 DB 데이터가 지워지고 마이그레이션과 seed 로 다시 만든다). 승인하면 돌리고, 에러 없이 끝나야 통과. 거절하면 "확인 못 함"으로 남긴다. 이 항목이 확인 못 함이면 PR 설명에 적도록 돌려준다.
+**Ask** whether to run `supabase db reset` (it wipes the local DB data and rebuilds it from migrations and seed). If approved, run it; it passes if it finishes without errors. If declined, leave it as "not verified". If this item is not verified, return that it should be noted in the PR description.
 
-## 3. 마이그레이션 순서
+## 3. Migration order
 
-`git ls-tree --name-only origin/<기준 브랜치> supabase/migrations/` 의 가장 늦은 타임스탬프보다 새 마이그레이션의 타임스탬프가 커야 통과. 작으면 실패: 작업 도중 기준 브랜치에 다른 마이그레이션이 들어왔다. 원격에는 순서대로 적용되므로 새 파일 이름의 타임스탬프를 지금 시각으로 바꾸라고 돌려준다.
+Passes if the timestamp of each new migration is later than the latest timestamp in `git ls-tree --name-only origin/<base branch> supabase/migrations/`. If earlier, fail: another migration landed on the base branch during the work. Migrations are applied to the remote in order, so return that the timestamp in the new file name should be changed to the current time.
 
-## 4. 위험한 변경 (위치만 찾는다)
+## 4. Risky changes (find locations only)
 
-새 마이그레이션에서 아래 키워드가 있는 줄을 찾아 `파일:줄`만 적는다. 있으면 **확인 필요**로 표시한다. 데이터 보존과 되돌리기를 어떻게 할지는 `rls-reviewer`가 판단한다.
+In the new migrations, find lines with the keywords below and record only `file:line`. If any exist, mark them **needs review**. `rls-reviewer` decides how to handle data preservation and rollback.
 
 ```bash
-grep -niE "drop (table|column)|truncate|delete from|alter column .* type|set not null|not null|create (unique )?index|rename (to|column)" <새 마이그레이션 파일들>
+grep -niE "drop (table|column)|truncate|delete from|alter column .* type|set not null|not null|create (unique )?index|rename (to|column)" <new migration files>
 ```
 
-## 5. RLS 와 보안
+## 5. RLS and security
 
-1. 시작 점검의 두 SQL(RLS 꺼진 테이블, 정책 없는 테이블)을 다시 돌린다. 기준선에 없던 테이블이 나오면 실패.
-2. 새 테이블의 정책 목록을 뽑아 근거에 붙인다(정책이 의도대로인지는 `rls-reviewer`가 본다). `with check` 없는 update 정책이 있으면 실패.
+1. Rerun the two SQL queries from the start check (tables with RLS off, tables without policies). If a table not in the baseline shows up, fail.
+2. Extract the policy list for new tables and attach it to the evidence (`rls-reviewer` checks whether the policies work as intended). If there is an update policy without `with check`, fail.
    ```sql
    select tablename, policyname, cmd, roles, qual, with_check from pg_policies
-   where schemaname = 'public' and tablename in (<새 테이블들>);
+   where schemaname = 'public' and tablename in (<new tables>);
 
    select tablename, policyname from pg_policies
    where schemaname = 'public' and cmd = 'UPDATE' and with_check is null;
    ```
-3. **다른 사용자로 확인한다.** 테스트 사용자 두 명(A, B)의 id 로, 수용 기준의 권한 규칙대로 보이는지 확인한다. 테스트 사용자가 없으면 seed 나 `auth.users` 에서 찾고, 없으면 만들지 묻는다.
+3. **Check as another user.** Using the ids of two test users (A, B), check that visibility matches the permission rules in the acceptance criteria. If there are no test users, look in seed or `auth.users`; if there are none, ask whether to create them.
    ```sql
    begin;
    set local role authenticated;
-   select set_config('request.jwt.claims', '{"sub":"<A 의 id>","role":"authenticated"}', true);
-   select count(*) from public.<테이블>;                      -- A 가 볼 수 있는 행만
-   select count(*) from public.<테이블> where user_id = '<B 의 id>';  -- 0 이어야 함(규칙에 따라)
+   select set_config('request.jwt.claims', '{"sub":"<id of A>","role":"authenticated"}', true);
+   select count(*) from public.<table>;                      -- only rows A can see
+   select count(*) from public.<table> where user_id = '<id of B>';  -- should be 0 (depending on the rules)
    rollback;
    ```
-   `anon` 으로도 같은 확인을 한다(`set local role anon;`). 결과 숫자를 근거에 적는다.
-4. **뷰**: 새 뷰가 `security_invoker` 없이 만들어졌으면 실패.
+   Do the same check as `anon` (`set local role anon;`). Record the resulting counts in the evidence.
+4. **Views**: If a new view was created without `security_invoker`, fail.
    ```sql
    select c.relname, c.reloptions from pg_class c
    where c.relkind = 'v' and c.relnamespace = 'public'::regnamespace;
    ```
-5. **함수**: `security definer` 인데 `search_path` 를 고정하지 않은 함수가 새로 생겼으면 실패.
+5. **Functions**: If a new `security definer` function does not pin `search_path`, fail.
    ```sql
    select p.proname from pg_proc p
    where p.pronamespace = 'public'::regnamespace and p.prosecdef
      and coalesce(array_to_string(p.proconfig, ','), '') not like '%search_path=%';
    ```
-6. `supabase db lint` 와 `supabase test db`(테스트가 있으면)를 기준선과 비교한다. 새 오류·새 실패가 있으면 실패.
-7. 새 권한 규칙을 pgTAP 테스트로 남기지 않았으면 "나중에"로 돌려준다.
+6. Compare `supabase db lint` and `supabase test db` (if there are tests) against the baseline. If there are new errors or new failures, fail.
+7. If the new permission rules were not captured as pgTAP tests, return them under "Later".
 
-## 6. 타입
+## 6. Types
 
-`supabase-start-check` 4와 같은 방법으로 임시 파일에 생성해 저장소의 타입 파일과 비교한다. 다르면 실패: 타입을 다시 생성해 커밋해야 한다.
+Generate into a temp file the same way as `supabase-start-check` item 4 and compare with the types file in the repository. If they differ, fail: the types must be regenerated and committed.
 
-## 7. 키와 비밀값
+## 7. Keys and secrets
 
-명령으로 찾는다. 있으면 실패. 값은 근거에 옮겨 적지 않는다.
+Search with the command. If anything is found, fail. Do not copy the values into the evidence.
 
 ```bash
 grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .
 ```
 
-`eyJ` 토큰이 나오면 가운데 부분을 풀어 `role`이 `anon`인지 확인한다(anon 키는 공개돼도 된다).
+If an `eyJ` token turns up, decode its middle part and check whether `role` is `anon` (the anon key may be public).
 
-- `service_role`, `SERVICE_ROLE`, `sb_secret_` 가 클라이언트에서 쓰이는 파일(브라우저 번들에 들어가는 코드)이나 공개 접두어 환경변수(`NEXT_PUBLIC_`·`VITE_` 등)에 있음.
-- JWT 형태 문자열(`eyJ` 로 시작하는 긴 문자열)이나 키가 코드·마이그레이션·seed 에 직접 들어감.
-- Edge Function 비밀값이 파일로 커밋됨(`supabase/functions/.env` 등). 비밀값은 `supabase secrets set` 으로 넣는다.
+- `service_role`, `SERVICE_ROLE`, or `sb_secret_` appears in files used on the client (code that goes into the browser bundle) or in environment variables with a public prefix (`NEXT_PUBLIC_`, `VITE_`, etc.).
+- JWT-shaped strings (long strings starting with `eyJ`) or keys are hardcoded in code, migrations, or seed.
+- Edge Function secrets are committed as files (`supabase/functions/.env`, etc.). Secrets are set with `supabase secrets set`.
 
 ## 8. Edge Function
 
-`supabase/functions/` 가 바뀌었으면 `supabase functions serve <이름>` 으로 띄우고 수용 기준의 요청을 curl 로 보내 상태 코드와 응답을 근거에 적는다. 인증이 필요한 함수는 Authorization 헤더 없이도 보내 401 이 나오는지 본다.
+If `supabase/functions/` changed, start it with `supabase functions serve <name>`, send the requests from the acceptance criteria with curl, and record the status codes and responses in the evidence. For functions that require auth, also send a request without the Authorization header and check that it returns 401.
 
-## 9. 어드바이저 (선택)
+## 9. Advisors (optional)
 
-Supabase MCP 가 **개발용 프로젝트에 읽기 전용으로** 연결돼 있고 이번 변경이 그 프로젝트에 적용돼 있을 때만 `get_advisors`를 `security`, `performance`로 한 번씩 부른다. 새로 생긴 지적을 근거에 적는다. 실제 서비스 프로젝트이거나 연결이 없으면 "어드바이저 확인 안 함(이유)"으로 건너뛴다.
+Only when the Supabase MCP is connected **read-only to a development project** and this change has been applied to that project, call `get_advisors` once each with `security` and `performance`. Record new findings in the evidence. If it is a real production project or there is no connection, skip as "advisors not checked (reason)".
 
-## 10. 리뷰에 넣을 에이전트
+## 10. Agents to add to the review
 
-아래 중 하나라도 바뀌었으면 `supabase:rls-reviewer`를 `task-end` 리뷰 단계에 넣으라고 돌려준다. 근거(바뀐 파일), 4번에서 찾은 위험한 변경 위치, 5번의 정책 목록과 다른 사용자 확인 결과를 같이 넘긴다. 이 에이전트가 정책이 의도대로인지, 악용 가능성, 위험한 마이그레이션 처리, 정책 성능을 본다.
+If any of the following changed, return that `supabase:rls-reviewer` should be added to the review step of `/task end`. Pass along the evidence (changed files), the risky change locations found in item 4, and the policy list and other-user check results from item 5. This agent checks whether policies work as intended, abuse potential, handling of risky migrations, and policy performance.
 
-- `supabase/` 아래 파일
-- Supabase 를 부르는 코드(`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)
-- 브라우저 저장소(`localStorage`)만 쓰는 변경은 해당하지 않는다.
+- Files under `supabase/`
+- Code that calls Supabase (`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)
+- Changes that only use browser storage (`localStorage`) do not count.
 
-## 돌려줄 형식
+## Return format
 
 ```markdown
-### supabase 종료 점검
-| 항목 | 결과 | 근거 |
+### supabase end check
+| Item | Result | Evidence |
 | --- | --- | --- |
-| 마이그레이션 누락 | 통과 | `db diff` 출력 없음 |
-| 처음부터 적용 | … | `db reset` 종료 0 / 확인 못 함 |
-| 순서 | … | 새 20261117…, 기준 최신 20261110… |
-| 위험한 변경 위치 | 확인 필요 | 2026…_orders.sql:4 drop column |
-| RLS·정책 | … | … |
-| 다른 사용자 확인 | … | A: 3행, A 로 B 행 조회: 0, anon: 0 |
-| 뷰·함수 | … | … |
-| 린트·DB 테스트 | … | 새 오류 0 |
-| 타입 | … | … |
-| 키·비밀값 | … | … |
-| Edge Function | 건너뜀 | 변경 없음 |
-| 어드바이저 | 건너뜀 | MCP 연결 없음 |
+| Missing migrations | pass | no `db diff` output |
+| Apply from scratch | … | `db reset` exit 0 / not verified |
+| Order | … | new 20261117…, latest on base 20261110… |
+| Risky change locations | needs review | 2026…_orders.sql:4 drop column |
+| RLS and policies | … | … |
+| Other-user check | … | A: 3 rows, B's rows queried as A: 0, anon: 0 |
+| Views and functions | … | … |
+| Lint and DB tests | … | 0 new errors |
+| Types | … | … |
+| Keys and secrets | … | … |
+| Edge Function | skip | no changes |
+| Advisors | skip | no MCP connection |
 
-#### 실패 상세
-- `파일:줄` 무엇이 문제인지, 고치는 법
+#### Failure details
+- `file:line` what the problem is, how to fix it
 
-#### 리뷰에 넣을 에이전트
-- `supabase:rls-reviewer` — 근거: supabase/migrations/2026…_orders.sql 추가
+#### Agents to add to the review
+- `supabase:rls-reviewer` — evidence: added supabase/migrations/2026…_orders.sql
 
-#### 고친 뒤 할 것
-- 고친 마이그레이션이 있으면 `db diff`·RLS·타입 확인(1, 5, 6번) 다시
-- (위험한 변경이 있으면) 백업·되돌리기 방법 사용자 확인
+#### After fixes
+- If any migration was fixed, rerun the `db diff`, RLS, and types checks (items 1, 5, 6)
+- (If there are risky changes) confirm the backup and rollback plan with the user
 
-#### 나중에
-- pgTAP 으로 남길 권한 규칙: …
+#### Later
+- Permission rules to capture in pgTAP: …
 ```

@@ -1,79 +1,88 @@
 ---
 name: frontend-end-check
-description: 프론트엔드 프로젝트의 작업 마무리 공통 점검. 검사를 기준선과 비교하고, 남은 디버그 흔적을 세고, Chrome DevTools 로 콘솔·네트워크·Lighthouse 를 확인한다. 화면 코드가 바뀌었으면 ui-reviewer 에이전트를 리뷰에 넣으라고, 고친 뒤 브라우저 테스트를 하라고 돌려준다. workflow 의 task-end 가 부른다.
+description: Wrap-up check for frontend projects, called by the end mode of the workflow plugin's task skill. Detects the framework, compares checks against the baseline, counts leftover debug markers, checks console, network, and Lighthouse with Chrome DevTools, and runs the framework tools from the matching reference file (svelte.md, react.md). Returns which review agents (ui-reviewer, svelte-reviewer, react-reviewer) to add and a browser test to do after fixes.
 user-invocable: false
-version: "0.2.0"
+version: "0.3.0"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
-# 프론트엔드 종료 점검
+# Frontend end check
 
-`task-end`가 부른다. 프레임워크와 상관없는 공통 점검이다. Svelte·React 전용 점검은 `svelte`·`react` 플러그인이 따로 한다.
+Called by `/task end`. Common frontend checks live here; framework-specific checks live in `references/`.
 
-이 스킬은 **명령과 도구를 돌려 결과를 비교하는 것**만 한다. diff 를 읽고 판단하는 리뷰는 직접 하지 않고 `frontend:ui-reviewer` 에이전트에 넘긴다(5번). `task-end`가 다른 리뷰 에이전트들과 함께 동시에 띄운다.
+**This skill only runs commands and tools and compares results.** Reviews that read the diff and judge it are not done here; they are handed to review agents (`frontend:ui-reviewer`, and the framework reviewers named in the references), which `/task end` launches in parallel with the other review agents.
 
-각 항목을 **통과 · 실패 · 건너뜀(이유)**으로 판정하고 맨 아래 형식으로 돌려준다. 실패는 `task-end`가 지적 목록에 넣고, 고친 뒤 이 스킬을 다시 부른다.
+Judge each item as **pass · fail · skip (reason)** and return it in the format at the end. `/task end` puts failures in the findings list and calls this skill again after fixes. Write the report in the project's language.
 
-## 0. 해당 여부
+## 0. Applicability and framework detection
 
-`frontend-start-check`와 같은 기준. 해당 없으면 "해당 없음: <이유>". 바뀐 파일 중 프론트 코드가 없으면 1만 하고 나머지는 "프론트 변경 없음"으로 건너뛴다.
+- Same criteria as `frontend-start-check`. If not applicable → "not applicable: <reason>". If no frontend code changed, do only step 1 and skip the rest with "no frontend changes".
+- **Detect the framework and read its reference.** For each match, **read the file in full with the Read tool and run its checks as well**:
 
-## 1. 검사 (기준선과 비교)
+  | Detected in package.json | Reference |
+  | --- | --- |
+  | `svelte` | `${CLAUDE_SKILL_DIR}/references/svelte.md` |
+  | `react` | `${CLAUDE_SKILL_DIR}/references/react.md` |
 
-항목 `Implementation Notes`의 `### 기준선`과 같은 명령을 다시 돌린다.
+## 1. Checks (compared with the baseline)
 
-- 기준선에 없던 실패가 생기면 실패. 기준선의 실패가 그대로면 통과로 보되 "기존 실패 N개 그대로"를 근거에 적는다. 없어진 실패도 적는다.
-- 빌드를 돌린다. 개발 서버에서는 안 보이고 빌드에서만 드러나는 문제(서버 렌더링 중 `window`·`document` 접근, 정적 생성 실패, 빌드 시점에 없는 환경변수)를 잡는다.
-- `typescript-lsp`가 켜져 있으면 편집 중에 진단이 나왔겠지만, 그것으로 대신하지 않는다. 타입 검사 명령을 돌린다.
+Run the same commands as `### Baseline` in the item's `Implementation Notes`.
 
-## 2. 남은 흔적 (명령으로 센다)
+- A failure that is not in the baseline → fail. If the baseline failures are unchanged, it passes, but write "N existing failures unchanged" as evidence. Also note failures that disappeared.
+- Run the build. It catches problems that only show in the build, not on the dev server (`window`/`document` access during server rendering, static generation failures, environment variables missing at build time).
+- If `typescript-lsp` is enabled, diagnostics appeared while editing, but that does not replace the type check command. Run it.
 
-`git diff <기준>...HEAD -U0`에서 **새로 추가된 줄**만 대상으로 센다. 판단 없이 개수와 위치만 적는다.
+## 2. Leftover markers (counted by command)
 
-- `console.log`·`debugger`·`.only(`·`.skip(` → 하나라도 있으면 실패.
-- `any`·`as any`·`@ts-ignore`·`@ts-expect-error`·`eslint-disable` → 개수와 위치를 적는다. 이유가 정당한지는 `ui-reviewer`가 본다.
-- `package.json` 의존성이 바뀌었는데 lockfile 이 안 바뀌었으면 실패.
+Count only **added lines** in `git diff <base>...HEAD -U0`. Only record counts and locations; deciding whether each is acceptable is the job of `ui-reviewer`.
 
-## 3. 브라우저 도구 점검
+- `console.log`, `debugger`, `.only(`, `.skip(` → fail if any.
+- `any`, `as any`, `@ts-ignore`, `@ts-expect-error`, `eslint-disable` → record count and locations. Whether the reason is valid is for `ui-reviewer`.
+- `package.json` dependencies changed but the lockfile did not → fail.
 
-`chrome-devtools` 스킬을 부르고, 개발 서버를 띄운 뒤 바뀐 화면마다:
+## 3. Browser tool checks
 
-- 콘솔 오류(`list_console_messages`)와 실패한 요청(`list_network_requests`의 4xx·5xx). 하나라도 있으면 실패. 일부러 없는 주소를 연 404 는 괜찮다.
-- `lighthouse_audit`의 접근성 점수와 지적. 바뀐 화면에서 새로 생긴 지적은 실패로, 점수는 근거에 적는다.
-- 화면이 무겁게 바뀌었으면(큰 목록, 애니메이션, 이미지) 성능 기록(`performance_start_trace` → `performance_stop_trace`)의 LCP·INP·CLS 를 근거에 적는다.
+Invoke the `chrome-devtools` skill, start the dev server, and for each changed screen:
 
-도구를 쓸 수 없으면 이 항목은 "브라우저 도구 없음"으로 건너뛰되, 4번의 브라우저 테스트는 `task-end`가 다른 방법으로 해야 한다고 돌려준다.
+- Console errors (`list_console_messages`) and failed requests (4xx/5xx in `list_network_requests`). Any → fail. A 404 from deliberately opening a missing URL is fine.
+- `lighthouse_audit` accessibility score and findings. New findings on changed screens → fail; record the score as evidence.
+- If a screen became heavier (large lists, animation, images), record LCP, INP, and CLS from a performance trace (`performance_start_trace` → `performance_stop_trace`).
 
-## 4. 고친 뒤 할 것 (돌려줄 내용): 브라우저 테스트
+If the tool is not available, skip this item with "no browser tool", but say that `/task end` must do the step 4 browser test another way.
 
-`frontend-start-check` 7번의 절차를 그대로 돌려준다. 추가로:
+## 4. After fixes (to return): browser test
 
-- 리뷰 지적을 고쳤으면 지적에 적힌 상황을 만들어 이제 괜찮은지 직접 재현한다.
-- 고친 것이 없어도 머지 전에 한 번 한다.
+Return the procedure from `frontend-start-check` step 7 as is. In addition:
 
-## 5. 리뷰에 넣을 에이전트
+- If review findings were fixed, recreate the situation each describes and confirm it is now fine.
+- Do it once before merging even if nothing was fixed.
 
-바뀐 파일에 화면 코드(컴포넌트, 페이지, 스타일, 클라이언트 로직)가 있으면 `frontend:ui-reviewer`를 돌려준다. 근거(바뀐 화면 파일 목록)를 같이 적는다. 이 에이전트가 사용자 입력 출력, 로딩·빈·에러 상태, 중복 요청, 접근성, 공개 환경변수, 의존성, 2번에서 센 흔적의 이유를 본다.
+## 5. Agents to add to the review
 
-## 돌려줄 형식
+If UI code (components, pages, styles, client logic) changed, return `frontend:ui-reviewer` with the evidence (list of changed UI files and the step 2 marker locations). This agent reviews output of user input, loading/empty/error states, duplicate requests, accessibility, public environment variables, dependencies, and the reasons for the markers counted in step 2. Also return the framework reviewers named in the references read in step 0.
+
+## Return format
 
 ```markdown
-### frontend 종료 점검
-| 항목 | 결과 | 근거 |
+### frontend end check
+| Item | Result | Evidence |
 | --- | --- | --- |
-| 검사(기준선 비교) | … | 새 실패 0 (기존 0) |
-| 빌드 | … | … |
-| 남은 흔적 | … | console.log 0, @ts-ignore 1 (src/a.ts:12) |
-| 콘솔·네트워크 | … | … |
-| Lighthouse 접근성 | … | 점수 …, 새 지적 … |
+| Checks (vs baseline) | … | 0 new failures (0 existing) |
+| Build | … | … |
+| Leftover markers | … | console.log 0, @ts-ignore 1 (src/a.ts:12) |
+| Console and network | … | … |
+| Lighthouse accessibility | … | score …, new findings … |
+| (framework rows from the reference) | … | … |
 
-#### 실패 상세
-- `파일:줄` 무엇이 문제인지, 고치는 법
+#### Failure details
+- `file:line` what the problem is, how to fix it
 
-#### 리뷰에 넣을 에이전트
-- `frontend:ui-reviewer` — 근거: 바뀐 화면 파일 …
+#### Agents to add to the review
+- `frontend:ui-reviewer` — evidence: changed UI files …
+- (framework reviewers from the reference)
 
-#### 고친 뒤 할 것
-- 브라우저 테스트: …
+#### After fixes
+- Browser test: …
+- (framework items from the reference)
 ```

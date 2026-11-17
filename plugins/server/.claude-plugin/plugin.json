@@ -1,7 +1,7 @@
 {
   "name": "server",
-  "description": "백엔드 점검과 API 리뷰 에이전트. workflow 의 task-start·task-end 가 server-start-check·server-end-check 를 부르고, task-end 리뷰 단계에 api-reviewer 를 넣는다. Node·Python·Go·Java 와 Prisma·Drizzle·TypeORM·Alembic·Django·Atlas·Flyway 마이그레이션을 다룬다.",
-  "version": "0.1.0",
+  "description": "Backend checks for /task start and /task end: common checks plus Node, Python, Go, and Java/Kotlin references picked by detecting the project (install, LSP, migrations, API contract, real calls), and the api-reviewer agent.",
+  "version": "0.3.0",
   "author": {
     "name": "JiHoon777"
   }

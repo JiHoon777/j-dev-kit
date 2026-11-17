@@ -1,7 +1,7 @@
 {
   "name": "workflow",
-  "description": "작업 흐름: backlog-create(항목 만들기) → task-start(계획 승인·구현) → task-end(리뷰·머지). Backlog.md, Anthropic feature-dev, superpowers 를 이어 붙였다. 켜진 스택 플러그인의 *-start-check·*-end-check 를 불러 쓴다.",
-  "version": "0.2.0",
+  "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Chains Backlog.md, Anthropic feature-dev, and superpowers, and calls the *-start-check / *-end-check skills of enabled stack plugins.",
+  "version": "0.3.0",
   "author": {
     "name": "JiHoon777"
   },

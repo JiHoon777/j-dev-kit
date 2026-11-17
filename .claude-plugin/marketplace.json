@@ -4,18 +4,17 @@
     "name": "JiHoon777"
   },
   "metadata": {
-    "description": "작업 흐름(백로그·시작·종료)과 스택별 점검 플러그인 모음"
+    "description": "Personal Claude Code marketplace: one /task workflow plus stack check plugins (frontend, supabase, server)."
   },
   "allowCrossMarketplaceDependenciesOn": [
     "claude-plugins-official",
-    "googlechrome",
-    "svelte"
+    "googlechrome"
   ],
   "plugins": [
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "backlog-create → task-start → task-end. 켜진 스택 플러그인의 점검을 불러 쓴다.",
+      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Chains Backlog.md, Anthropic feature-dev, and superpowers, and calls the *-start-check / *-end-check skills of enabled stack plugins.",
       "dependencies": [
         "superpowers@claude-plugins-official"
       ]
@@ -23,7 +22,7 @@
     {
       "name": "frontend",
       "source": "./plugins/frontend",
-      "description": "프론트엔드 공통 점검, 브라우저 테스트, ui-reviewer 에이전트.",
+      "description": "Frontend checks for /task start and /task end: common checks plus Svelte and React references picked by detecting the project, browser testing, and review agents ui-reviewer, svelte-reviewer, react-reviewer.",
       "dependencies": [
         "chrome-devtools-mcp@claude-plugins-official",
         "typescript-lsp@claude-plugins-official",
@@ -32,22 +31,9 @@
       ]
     },
     {
-      "name": "svelte",
-      "source": "./plugins/svelte",
-      "description": "Svelte 5 / SvelteKit 점검(svelte-autofixer, sv check)과 svelte-reviewer 에이전트.",
-      "dependencies": [
-        "svelte@svelte"
-      ]
-    },
-    {
-      "name": "react",
-      "source": "./plugins/react",
-      "description": "React / Next.js 점검(react-hooks 린트, React Doctor)과 react-reviewer 에이전트."
-    },
-    {
       "name": "supabase",
       "source": "./plugins/supabase",
-      "description": "Supabase 점검(마이그레이션·드리프트·RLS·타입)과 rls-reviewer 에이전트.",
+      "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys) and the rls-reviewer agent.",
       "dependencies": [
         "supabase@claude-plugins-official"
       ]
@@ -55,7 +41,7 @@
     {
       "name": "server",
       "source": "./plugins/server",
-      "description": "백엔드 점검(마이그레이션·API 계약·실제 호출)과 api-reviewer 에이전트."
+      "description": "Backend checks for /task start and /task end: common checks plus Node, Python, Go, and Java/Kotlin references picked by detecting the project (install, LSP, migrations, API contract, real calls), and the api-reviewer agent."
     }
   ]
 }
