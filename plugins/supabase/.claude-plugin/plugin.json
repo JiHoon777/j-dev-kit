@@ -1,7 +1,7 @@
 {
   "name": "supabase",
-  "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys), the rls-reviewer agent, and a read-only Supabase MCP server that reads the project set by SUPABASE_MCP_URL in the environment's env file.",
-  "version": "0.4.3",
+  "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys), the rls-reviewer agent, and a read-only Supabase MCP server that reads the project set by supabaseMcpUrl in .claude/.local/project.json.",
+  "version": "0.4.4",
   "author": {
     "name": "JiHoon777"
   },
