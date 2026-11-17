@@ -1,101 +1,103 @@
 # j-dev-kit
 
-Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 스킬 하나로 두고, 스택마다 다른 점검은 스택 플러그인으로 나눴다. 켠 플러그인의 점검만 돈다. 여러 개를 같이 켜도 충돌하지 않는다.
+**English** | [한국어](README.ko.md)
 
-## 구성
+A personal Claude Code plugin marketplace. The work loop is a single `/task` skill; checks that differ per stack live in stack plugins. Only the checks of enabled plugins run, and enabling several at once causes no conflicts.
 
-| 플러그인 | 스킬 · 에이전트 | 같이 설치되는 것 |
+## Contents
+
+| Plugin | Skills · agents | Installed along with it |
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
-| `frontend` | `frontend-start-check`, `frontend-end-check` (references: svelte, react), 에이전트 `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
-| `supabase` | `supabase-start-check`, `supabase-end-check`, 에이전트 `rls-reviewer` | `supabase` (공식: 스킬, MCP) |
-| `server` | `server-start-check`, `server-end-check` (references: node, python, go, jvm), 에이전트 `api-reviewer` | — |
+| `frontend` | `frontend-start-check`, `frontend-end-check` (references: svelte, react), agents `ui-reviewer`, `svelte-reviewer`, `react-reviewer` | `chrome-devtools-mcp`, `typescript-lsp`, `frontend-design`, `modern-web-guidance` |
+| `supabase` | `supabase-start-check`, `supabase-end-check`, agent `rls-reviewer` | `supabase` (official: skills, MCP) |
+| `server` | `server-start-check`, `server-end-check` (references: node, python, go, jvm), agent `api-reviewer` | — |
 
-### 파일 구조
+### File layout
 
-공식 스킬 구조(`SKILL.md` + 필요할 때만 읽는 `references/`)를 따른다.
+Follows the official skill layout (`SKILL.md` plus `references/` that are read only when needed).
 
 ```
 plugins/workflow/skills/task/
-  SKILL.md                 인자(create·start·end)를 보고 해당 reference 하나만 읽게 하는 안내
+  SKILL.md                 routes by argument (create · start · end) and reads only that reference
   references/create.md, start.md, end.md
 plugins/frontend/
   agents/                  ui-reviewer, svelte-reviewer, react-reviewer
-  skills/frontend-start-check/  SKILL.md(공통) + references/svelte.md, react.md
-  skills/frontend-end-check/    SKILL.md(공통) + references/svelte.md, react.md
+  skills/frontend-start-check/  SKILL.md (common) + references/svelte.md, react.md
+  skills/frontend-end-check/    SKILL.md (common) + references/svelte.md, react.md
 plugins/server/
   agents/api-reviewer.md
-  skills/server-start-check/    SKILL.md(공통) + references/node.md, python.md, go.md, jvm.md
-  skills/server-end-check/      (같은 구조)
+  skills/server-start-check/    SKILL.md (common) + references/node.md, python.md, go.md, jvm.md
+  skills/server-end-check/      (same layout)
 plugins/supabase/
   agents/rls-reviewer.md, skills/supabase-start-check, supabase-end-check
-i18n/ko/plugins/…          한국어 번역본 (Claude 는 읽지 않음)
+i18n/ko/plugins/…          Korean translations (Claude does not read them)
 ```
 
-- **원문은 영어, 번역본은 `i18n/ko/`.** 같은 경로 구조로 두고, 번역본 맨 위에 원문 링크를 단다. 원문을 고치면 번역본도 같이 고친다. 스킬이 사용자에게 하는 보고와 백로그 항목은 프로젝트 CLAUDE.md 가 정한 언어(없으면 대화 언어)로 쓴다.
-- **프레임워크·언어별 내용은 references 로.** 점검 스킬이 프로젝트를 판별해(package.json 의 `svelte`·`react`, `go.mod`, `pyproject.toml` 등) 해당 reference 만 **반드시 끝까지 읽고** 그 점검을 같이 돌린다. 여러 개에 해당하면 전부 읽는다.
+- **English is the source; translations live in `i18n/ko/`** with the same paths, each starting with a link to its source. When a source changes, update its translation too. Reports to the user and backlog items are written in the language the project's CLAUDE.md sets (otherwise the conversation's language).
+- **Framework- and language-specific content lives in references.** A check skill detects the project (`svelte`/`react` in package.json, `go.mod`, `pyproject.toml`, …), **reads the matching reference in full**, and runs its checks too. If several match, it reads all of them.
 
-### 스택 플러그인이 끼어드는 방식
+### How stack plugins plug in
 
-- `/task start`는 쓸 수 있는 스킬 중 이름이 **`-start-check`**로 끝나는 것을 전부 부른다. `/task end`는 **`-end-check`**로 끝나는 것을 전부 부른다.
-- 플러그인을 끄면 그 스킬이 목록에서 빠지므로 그 점검도 빠진다. 켜져 있어도 프로젝트에 해당하지 않으면 "해당 없음"만 돌려준다.
-- **점검 스킬은 명령만 돌린다.** 코드를 찾아 읽는 정보 취합은 `Explore` 에이전트 지시문으로, diff 를 읽고 판단하는 리뷰는 플러그인의 리뷰 에이전트로 돌려준다. `/task start`·`/task end`가 그 에이전트들을 기본 에이전트와 함께 동시에 띄운다. 메인 대화에서 직접 찾아다니거나 리뷰하지 않는다.
-- 점검 스킬이 돌려주는 것:
-  - 시작: 결과 표, **기준선**, **탐색에 넣을 지시문**, 플랜에 넣을 것, 물을 것, **구현 중 지킬 것**, **끝내기 전 할 것**
-  - 종료: 결과 표(기준선과 비교해 새로 생긴 실패만), **리뷰에 넣을 에이전트**, **고친 뒤 할 것**
-- 새 스택을 더하려면 `plugins/<스택>/skills/<스택>-start-check`, `<스택>-end-check`를 같은 형식으로 만들고 `marketplace.json`에 등록한다. 같은 스택 안의 갈래(프레임워크, 언어)는 플러그인을 나누지 않고 references 로 더한다.
+- `/task start` invokes every available skill whose name ends with **`-start-check`**; `/task end` invokes every one ending with **`-end-check`**.
+- Disabling a plugin removes its skills from the list, so its checks drop out. An enabled check that does not apply to the project returns only "not applicable".
+- **Check skills only run commands.** Gathering information by reading code is returned as `Explore` agent prompts, and reviews that judge the diff are handed to the plugin's review agents. `/task start` and `/task end` launch them together with the default agents in parallel. The main conversation never searches or reviews by itself.
+- What check skills return:
+  - Start: a result table, a **baseline**, **exploration prompts**, items to add to the plan, questions to ask, **rules during implementation**, and **things to do before finishing**
+  - End: a result table (only failures that are new compared with the baseline), **agents to add to the review**, and **things to do after fixes**
+- To add a stack, create `plugins/<stack>/skills/<stack>-start-check` and `<stack>-end-check` in the same format and register the plugin in `marketplace.json`. Variants within a stack (frameworks, languages) are added as references, not as separate plugins.
 
-## 흐름
+## Flow
 
 ```
-/task create ──► docs/backlog/001-….md ──/task start──► 스택 시작 점검 ──► 플랜 모드(탐색·질문·설계) ──► 승인 ──► w/ 브랜치에서 구현
-                                                                                                                       │
-docs/done/001-….md ◄── 머지 ◄── 승인 ◄── 수정 ◄── 사용자 선택 ◄── 리뷰 에이전트 동시 실행 ◄── 스택 종료 점검 ◄── /task end
+/task create ──► docs/backlog/001-….md ──/task start──► stack start checks ──► plan mode (explore · ask · design) ──► approval ──► implement on a w/ branch
+                                                                                                                                │
+docs/done/001-….md ◄── merge ◄── approval ◄── fixes ◄── user picks ◄── review agents in parallel ◄── stack end checks ◄── /task end
 ```
 
-### 어디서 가져왔나
+### Where it comes from
 
-새로 지은 절차가 아니라 검증된 흐름을 이어 붙인 것이다. 출처의 방식을 바꾸지 않는다.
+Not a newly invented procedure: proven workflows chained together. How each source works is not changed.
 
-| 단계 | 출처 | 방식 |
+| Step | Source | How |
 | --- | --- | --- |
-| 항목 형식, 좋은 항목, 완료 기준 | [Backlog.md](https://github.com/MrLesk/Backlog.md) 에이전트 지침 | 형식과 규칙을 가져옴 |
-| `/task create`에서 무엇을 왜 하는지 묻기 | `superpowers:brainstorming` | 그대로 호출 |
-| `/task start` 탐색, 질문, 설계안 | Anthropic `feature-dev` 플러그인 Phase 2~4 | 구조를 그대로 옮김 |
-| `/task start` 계획 승인 | Claude Code 플랜 모드, `feature-dev` Phase 5 | 그대로 |
-| `/task start` 구현과 완료 확인 | `superpowers:test-driven-development`, `verification-before-completion` | 그대로 호출 |
-| 화면을 새로 만들거나 다시 디자인할 때 | Anthropic `frontend-design` | 그대로 호출 (frontend) |
-| 브라우저 테스트 | Chrome DevTools 플러그인의 `chrome-devtools` 스킬 | 그대로 호출 (frontend) |
-| Svelte 자동 교정과 문서 | Svelte 공식 플러그인 (`svelte-autofixer`, 문서 MCP) | 있으면 그대로 호출, 없으면 버전 고정 CLI (frontend/svelte) |
-| React 규칙 | `eslint-plugin-react-hooks`, React Doctor, Vercel `react-best-practices` | 도구 실행·스킬 호출 (frontend/react) |
-| `/task end` 리뷰 | 내장 스킬 `code-review`, `security-review`, `simplify` + 스택 리뷰 에이전트 | 에이전트마다 하나씩 그대로 호출 |
-| `/task end` 리뷰를 돌리고 모으는 방식, 보고 기준 | `feature-dev` Phase 6과 `code-reviewer` 지시문 (80점 컷만 없앰) | 구조와 지시문을 그대로 옮김 |
-| `/task end` 지적 처리 | `superpowers:receiving-code-review` | 그대로 호출 |
-| `/task end` 승인과 머지 | `superpowers:finishing-a-development-branch` | 그대로 호출 |
-| API 리뷰 기준 | OWASP API Security Top 10 2023, OWASP Logging Cheat Sheet, Google AIP-180 | 체크 항목으로 옮김 |
+| Item format, good items, definition of done | [Backlog.md](https://github.com/MrLesk/Backlog.md) agent guidelines | Format and rules adopted |
+| Clarifying what and why in `/task create` | `superpowers:brainstorming` | Invoked as is |
+| Exploration, questions, design options in `/task start` | Anthropic `feature-dev` plugin, phases 2–4 | Structure carried over as is |
+| Plan approval in `/task start` | Claude Code plan mode, `feature-dev` phase 5 | As is |
+| Implementation and verification in `/task start` | `superpowers:test-driven-development`, `verification-before-completion` | Invoked as is |
+| Building or redesigning a screen | Anthropic `frontend-design` | Invoked as is (frontend) |
+| Browser testing | Chrome DevTools plugin's `chrome-devtools` skill | Invoked as is (frontend) |
+| Svelte autofix and docs | Official Svelte plugin (`svelte-autofixer`, docs MCP) | Invoked if installed, otherwise a version-pinned CLI (frontend/svelte) |
+| React rules | `eslint-plugin-react-hooks`, React Doctor, Vercel `react-best-practices` | Tools run, skill invoked (frontend/react) |
+| Review in `/task end` | Built-in skills `code-review`, `security-review`, `simplify` + stack review agents | One per agent, invoked as is |
+| How reviews run and are reported in `/task end` | `feature-dev` phase 6 and its `code-reviewer` prompt (only the 80-point cutoff removed) | Structure and prompt carried over as is |
+| Handling findings in `/task end` | `superpowers:receiving-code-review` | Invoked as is |
+| Approval and merge in `/task end` | `superpowers:finishing-a-development-branch` | Invoked as is |
+| API review criteria | OWASP API Security Top 10 2023, OWASP Logging Cheat Sheet, Google AIP-180 | Turned into check items |
 
-비교해 보고 쓰지 않은 것: Compound Engineering(스킬 38개, 흐름 전체를 바꿈), superpowers 의 계획·실행 스킬(`writing-plans`, `executing-plans`, `subagent-driven-development`, `using-git-worktrees` — 이 흐름과 겹침), `vercel-plugin`(React 규칙만 필요한데 세션 훅·텔레메트리·배포 스킬이 같이 옴).
+Compared and not used: Compound Engineering (38 skills; replaces the whole flow), superpowers' planning and execution skills (`writing-plans`, `executing-plans`, `subagent-driven-development`, `using-git-worktrees`; they overlap this flow), `vercel-plugin` (only the React rules were needed, but it brings session hooks, telemetry, and deployment skills).
 
-## 설치
+## Install
 
 ```
 /plugin marketplace add JiHoon777/j-dev-kit
-/plugin marketplace add GoogleChrome/modern-web-guidance   # frontend 를 쓸 때
+/plugin marketplace add GoogleChrome/modern-web-guidance   # when using frontend
 /plugin install workflow@j-dev-kit
 /plugin install frontend@j-dev-kit
 /plugin install supabase@j-dev-kit
 ```
 
-Svelte 프로젝트면 공식 Svelte 플러그인도 권한다(없어도 점검은 버전 고정 CLI 로 돈다).
+For Svelte projects the official Svelte plugin is recommended too (checks still run without it through a version-pinned CLI).
 
 ```
 /plugin marketplace add sveltejs/ai-tools
 /plugin install svelte@svelte
 ```
 
-### 프로젝트에 고정하기
+### Pin it to a project
 
-프로젝트의 `.claude/settings.json`에 적어 두면 저장소를 연 사람에게 같은 구성이 제안된다. 플러그인 자체는 각자 한 번 설치한다(`claude plugin install <이름>@<마켓> --scope project`).
+Put this in the project's `.claude/settings.json` so everyone who opens the repository is offered the same setup. Each person still installs the plugins once (`claude plugin install <name>@<marketplace> --scope project`).
 
 ```json
 {
@@ -113,32 +115,32 @@ Svelte 프로젝트면 공식 Svelte 플러그인도 권한다(없어도 점검�
 }
 ```
 
-### 프로젝트 CLAUDE.md 에 적을 것
+### What to put in the project's CLAUDE.md
 
 ```markdown
-## 작업 설정
-- stack: frontend, supabase                 # 없으면 점검 스킬이 파일로 추정
-- 기준 브랜치: main
-- 검증 명령: pnpm verify                     # 린트·타입·테스트·빌드를 한 번에
-- 린트 명령: pnpm lint
-- 문서 언어: 한국어                          # 백로그 항목·보고 언어
+## Work settings
+- stack: frontend, supabase                 # if missing, check skills infer it from files
+- Base branch: main
+- Verification command: pnpm verify         # lint, type check, tests, build in one go
+- Lint command: pnpm lint
+- Language: English                         # language for backlog items and reports
 
 ## superpowers
-이 문서의 규칙이 우선이다. `/task`가 부르는 스킬(brainstorming, test-driven-development,
-verification-before-completion, receiving-code-review, finishing-a-development-branch)은 그대로 따르고,
-그 밖의 계획·실행 스킬(writing-plans, executing-plans, subagent-driven-development, using-git-worktrees)은
-이 흐름과 겹치므로 쓰지 않는다.
+The rules in this document come first. Follow the skills that `/task` invokes (brainstorming,
+test-driven-development, verification-before-completion, receiving-code-review,
+finishing-a-development-branch) as they are. Do not use the other planning and execution skills
+(writing-plans, executing-plans, subagent-driven-development, using-git-worktrees); they overlap this flow.
 ```
 
-superpowers 는 세션을 시작할 때마다 "맞을 것 같으면 스킬을 반드시 쓰라"는 지시를 넣는다. 끄는 설정이 없어서, 위 문단으로 CLAUDE.md 가 우선이라고 적어 둬야 `/task start`의 플랜 단계를 가로채지 않는다.
+superpowers injects "if a skill might apply, you must use it" at every session start, and there is no switch to turn it off. Without the paragraph above saying CLAUDE.md comes first, it takes over the planning step of `/task start`.
 
-### 서버 언어별 LSP (선택)
+### LSP per server language (optional)
 
-`server` 플러그인은 언어를 판별해 해당 LSP 가 없으면 설치를 권한다. Anthropic 공식 마켓플레이스의 `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `kotlin-lsp`, `typescript-lsp`. 실행 파일(`pyright-langserver`, `gopls` 등)은 따로 설치해야 한다.
+The `server` plugin detects the language and suggests installing the matching LSP plugin when missing: `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `kotlin-lsp`, `typescript-lsp` from Anthropic's official marketplace. The executables (`pyright-langserver`, `gopls`, …) are installed separately.
 
-## 알아 둘 것
+## Good to know
 
-- `/task`는 직접 입력할 때만 실행된다(`disable-model-invocation: true`). "백로그에 넣어 줘"라고 말해도 저절로 실행되지 않으니 `/task create …`로 부른다. `start`가 저절로 실행되는 것을 막기 위해서다.
-- `supabase` 플러그인은 공식 Supabase 플러그인을 `supabase@claude-plugins-official`로 가져온다. claude.ai 디렉터리에서 같은 플러그인을 다른 이름(예: `supabase@anthropic-plugin-directory`)으로 이미 켜 두었다면 하나만 켠다. 같은 MCP 서버가 두 번 뜬다.
-- **외부 CLI 는 버전을 고정한다.** 스킬이 `npx`로 내려받아 실행하는 도구(React Doctor, `@sveltejs/mcp`, `sv`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 올릴 때는 새 버전을 확인하고 숫자만 바꾼다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 프로젝트에 설치된 것만 쓴다. `modern-web-guidance`는 플러그인 스킬에 맡기고 명령을 적지 않는다.
-- Supabase MCP 는 실제 서비스 프로젝트에 연결하지 않는다. 연결해야 하면 읽기 전용으로, 프로젝트 하나로 범위를 좁힌다.
+- `/task` runs only when typed (`disable-model-invocation: true`). Saying "put this in the backlog" does not trigger it; use `/task create …`. This prevents `start` from running on its own.
+- The `supabase` plugin pulls in the official Supabase plugin as `supabase@claude-plugins-official`. If you already enabled the same plugin under another name from the claude.ai directory (e.g. `supabase@anthropic-plugin-directory`), enable only one; otherwise the same MCP server starts twice.
+- **External CLIs are version-pinned.** Tools that skills download and run with `npx` (React Doctor, `@sveltejs/mcp`, `sv`, `skills`) are pinned to versions published more than two weeks ago. To upgrade, check the new version and change only the number. Project tools (Prisma, Drizzle, TypeORM) use `npx --no-install` so only the project's installed copy runs. `modern-web-guidance` is left to its plugin's skill, with no command written here.
+- Never connect the Supabase MCP to a production project. If you must, make it read-only and scope it to one project.
