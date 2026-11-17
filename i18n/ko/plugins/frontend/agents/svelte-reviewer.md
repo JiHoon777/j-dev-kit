@@ -15,7 +15,7 @@ tools: Read, Grep, Glob, Bash
 ## 먼저 읽을 것
 
 - 프로젝트 CLAUDE.md와 거기서 가리키는 구조·코드 규칙 문서
-- `svelte.config.js`(어댑터), `package.json`의 `svelte`와 `@sveltejs/kit` 버전
+- `svelte.config.js` 또는 `vite.config.*`(어댑터. SvelteKit 3은 Vite 설정에 둔다), `package.json`의 `svelte`와 `@sveltejs/kit` 버전
 - 전달받은 diff(`git diff <기준>...HEAD`)와 바뀐 파일 전체
 
 ## 확인할 것

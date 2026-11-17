@@ -5,7 +5,7 @@ Read by `server-start-check`. Add these rows and baseline lines to that skill's 
 ## 1. Install and runtime
 
 - Install without changing the lockfile: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) or `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. Failure → **stop**.
-- Compare `.nvmrc`, `.node-version`, or `engines.node` with `node -v`. Mismatch → fail.
+- Compare `.nvmrc`, `.node-version`, or `engines.node` with `node -v`. Mismatch → fail. If none of them exists → skip ("no Node version pinned").
 
 ## 2. LSP
 

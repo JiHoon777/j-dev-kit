@@ -2,7 +2,7 @@
 name: frontend-start-check
 description: 프론트엔드 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 프레임워크를 감지한 뒤 공통 점검(패키지 매니저, Node 버전, 설치, 기준선, 환경 변수)과 해당 reference 파일(svelte.md, react.md)의 프레임워크 점검을 실행한다. 기준선, 탐색에 넣을 지시문, 물을 것, 구현 중 지킬 것(frontend-design, modern-web-guidance, 프레임워크 규칙), 끝내기 전 할 브라우저 테스트를 돌려준다.
 user-invocable: false
-version: "0.3.0"
+version: "0.3.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -27,11 +27,11 @@ metadata:
 ## 0. 적용 여부와 프레임워크 감지
 
 - CLAUDE.md에 frontend가 빠진 `stack:` 줄이 있으면 → "해당 없음: stack 설정에 없음".
-- package.json dependencies에 react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro가 하나도 없으면 → "해당 없음: 프론트엔드 프레임워크 없음".
-- 모노레포(`pnpm-workspace.yaml`, package.json `workspaces`, `turbo.json`, `nx.json`)에서는 이 항목이 건드리는 앱이나 패키지를 정하고 그 디렉터리에서 작업한다. 분명하지 않으면 질문으로 돌려준다.
+- package.json `dependencies`나 `devDependencies`에 react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro가 하나도 없으면 → "해당 없음: 프론트엔드 프레임워크 없음". (Svelte와 SvelteKit은 보통 `devDependencies`에 있다.)
+- 모노레포(`packages:` 목록이 있는 `pnpm-workspace.yaml`, package.json `workspaces`, `turbo.json`, `nx.json`. pnpm 설정만 담은 `pnpm-workspace.yaml`은 모노레포가 아니다)에서는 이 항목이 건드리는 앱이나 패키지를 정하고 그 디렉터리에서 작업한다. 분명하지 않으면 질문으로 돌려준다.
 - **프레임워크를 감지하고 그 레퍼런스를 읽는다.** 맞는 것마다 **Read 도구로 파일 전체를 읽고 그 점검도 실행한다**:
 
-  | package.json에서 감지 | 레퍼런스 |
+  | package.json에서 감지(dependencies 또는 devDependencies) | 레퍼런스 |
   | --- | --- |
   | `svelte` | `${CLAUDE_SKILL_DIR}/references/svelte.md` |
   | `react` | `${CLAUDE_SKILL_DIR}/references/react.md` |
@@ -41,7 +41,7 @@ metadata:
 ## 1. 환경
 
 1. **패키지 매니저**는 lockfile로 정한다: `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lock`/`bun.lockb` → bun, `package-lock.json` → npm. 둘 이상이면 → 실패. package.json에 `packageManager`가 있으면 그 버전을 쓴다.
-2. **Node 버전**: `.nvmrc`, `.node-version`, `engines.node`를 `node -v`와 비교한다. 다르면 → 실패.
+2. **Node 버전**: `.nvmrc`, `.node-version`, `engines.node`를 `node -v`와 비교한다. 다르면 → 실패. 셋 다 없으면 → 건너뜀("Node 버전 고정 없음").
 3. lockfile을 바꾸지 않고 **설치**한다: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) 또는 `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. lockfile이 package.json과 맞지 않아 실패하면 → **중단**.
 
 ## 2. 기준선

@@ -2,7 +2,7 @@
 
 # Svelte 5 / SvelteKit: 마무리 점검
 
-package.json에 `svelte`가 있을 때 `frontend-end-check`가 읽는다. 아래 행, 에이전트, 고친 뒤 할 항목을 그 스킬의 보고서에 더한다.
+package.json `dependencies`나 `devDependencies`에 `svelte`가 있을 때 `frontend-end-check`가 읽는다. 아래 행, 에이전트, 고친 뒤 할 항목을 그 스킬의 보고서에 더한다.
 
 이 파일은 도구를 실행하고 결과를 비교하기만 한다. diff를 읽고 판단하는 리뷰(룬, SSR, 서버/클라이언트 경계, load와 form action, …)는 `frontend:svelte-reviewer` 에이전트에게 넘긴다(3단계).
 

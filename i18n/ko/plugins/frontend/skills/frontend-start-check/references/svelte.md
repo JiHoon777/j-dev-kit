@@ -2,7 +2,7 @@
 
 # Svelte 5 / SvelteKit: 시작 점검
 
-package.json에 `svelte`가 있을 때 `frontend-start-check`가 읽는다. 아래 행, 기준선 줄, 지시문, 규칙을 그 스킬의 보고서에 더한다.
+package.json `dependencies`나 `devDependencies`에 `svelte`가 있을 때 `frontend-start-check`가 읽는다. 아래 행, 기준선 줄, 지시문, 규칙을 그 스킬의 보고서에 더한다.
 
 | 부분 | 출처 |
 | --- | --- |
@@ -11,8 +11,8 @@ package.json에 `svelte`가 있을 때 `frontend-start-check`가 읽는다. 아�
 
 ## 1. 버전과 구조
 
-- 설치된 `svelte`와 `@sveltejs/kit` 버전을 기록한다(`node_modules/<패키지>/package.json`의 `version`). Svelte가 4 이하면 뒤의 규칙이 다르다는 것과 업그레이드는 이 항목의 범위 밖이라는 것을 말한다.
-- SvelteKit이면 어댑터(`svelte.config.js`의 `adapter-*`)를 기록한다. `adapter-static`이면 서버 코드(`+page.server.*`, `+server.*`, form action)를 쓸 수 없다는 것을 구현 중 지킬 것에 더한다.
+- 설치된 `svelte`와 `@sveltejs/kit` 버전을 기록한다(`node_modules/<패키지>/package.json`의 `version`, 공통 설치 단계 뒤에). `node_modules`가 없으면 대신 package.json의 버전 범위를 기록한다. Svelte가 4 이하면 뒤의 규칙이 다르다는 것과 업그레이드는 이 항목의 범위 밖이라는 것을 말한다.
+- SvelteKit이면 어댑터(`svelte.config.js`의 `adapter-*`, SvelteKit 3이면 `vite.config.*`의 것)를 기록한다. `adapter-static`이면 서버 코드(`+page.server.*`, `+server.*`, form action)를 쓸 수 없다는 것을 구현 중 지킬 것에 더한다.
 - 남아 있는 옛 패턴을 `grep`으로 센다. 실패는 아니다. 개수를 근거에 넣는다. 새 코드는 새 패턴을 쓴다.
   - `$app/stores` import → `$app/state` (`npx -y sv@1.2.0 migrate app-state`로 옮길 수 있다)
   - `export let`, `$:`, `on:click`, `<slot>` 같은 Svelte 4 문법이 있는 `.svelte` 파일
@@ -44,7 +44,7 @@ package.json에 `svelte`가 있을 때 `frontend-start-check`가 읽는다. 아�
 ## 더할 행
 
 ```markdown
-| Svelte versions | pass | svelte 5.x, @sveltejs/kit 2.x, adapter-static |
+| Svelte versions | pass | svelte 5.x, @sveltejs/kit 3.x, adapter-static (vite.config.ts) |
 | Old patterns | … | $app/stores 2, Svelte 4 syntax files 0 |
 | Autofixer | … | MCP tool / CLI |
 ```

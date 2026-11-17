@@ -2,7 +2,7 @@
 
 # React / Next.js: 시작 점검
 
-package.json에 `react`가 있을 때 `frontend-start-check`가 읽는다. 아래 행, 기준선 줄, 지시문, 질문, 규칙을 그 스킬의 보고서에 더한다.
+package.json `dependencies`나 `devDependencies`에 `react`가 있을 때 `frontend-start-check`가 읽는다. 아래 행, 기준선 줄, 지시문, 질문, 규칙을 그 스킬의 보고서에 더한다.
 
 | 부분 | 출처 |
 | --- | --- |

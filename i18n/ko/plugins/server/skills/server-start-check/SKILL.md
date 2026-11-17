@@ -2,7 +2,7 @@
 name: server-start-check
 description: 백엔드 프로젝트의 작업 전 점검으로, workflow 플러그인 task 스킬의 start 모드가 부른다. 언어, 프레임워크, 마이그레이션 도구를 판별한 뒤 공통 점검(환경 변수, 로컬 서비스)과 맞는 참고 파일(node.md, python.md, go.md, jvm.md. 설치, LSP, 마이그레이션 상태, 기준선)의 언어별 점검을 돌린다. 기준선, API 와 그 사용처에 대한 탐색 지시문, 물을 것, 구현 중 지킬 것을 돌려준다.
 user-invocable: false
-version: "0.3.0"
+version: "0.3.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -31,7 +31,7 @@ metadata:
 
   | 판별 근거 | 언어 | 참고 파일 |
   | --- | --- | --- |
-  | package.json 에 `express`, `@nestjs/core`, `fastify`, `hono`, `koa` 중 하나 | Node | `${CLAUDE_SKILL_DIR}/references/node.md` |
+  | package.json(dependencies 또는 devDependencies)에 `express`, `@nestjs/core`, `fastify`, `hono`, `koa` 중 하나 | Node | `${CLAUDE_SKILL_DIR}/references/node.md` |
   | `pyproject.toml`이나 `requirements*.txt`에 `fastapi`, `django`, `flask` 중 하나 | Python | `${CLAUDE_SKILL_DIR}/references/python.md` |
   | `go.mod` | Go | `${CLAUDE_SKILL_DIR}/references/go.md` |
   | `pom.xml`이나 `build.gradle*`에 `spring-boot` | Java/Kotlin | `${CLAUDE_SKILL_DIR}/references/jvm.md` |
@@ -46,7 +46,8 @@ metadata:
 
 1. 서버 마이그레이션 도구가 있고 **동시에** `supabase/migrations/`에 SQL 파일이 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
 2. 서버 마이그레이션 도구가 있다 → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.
-3. `supabase/migrations/`가 있다 → **supabase** 가 맡는다.
+3. `supabase/migrations/`가 있거나, 그것 없이 `supabase/config.toml`이 있다(아직 마이그레이션 없음) → **supabase** 가 맡는다. 첫 스키마 변경이 `supabase/migrations/`를 만든다.
+4. 위 어느 것에도 해당하지 않는다 → 이 저장소에는 마이그레이션이 없다. 마이그레이션 항목은 "해당 없음"이다.
 
 담당을 보고서 표의 첫 줄에 적는다. 담당이 아닌 플러그인은 마이그레이션 항목을 "건너뜀: 마이그레이션은 <담당> 플러그인 담당"으로 건너뛴다.
 

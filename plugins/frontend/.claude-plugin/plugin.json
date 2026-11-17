@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "description": "Frontend checks for /task start and /task end: common checks plus Svelte and React references picked by detecting the project, browser testing, and review agents ui-reviewer, svelte-reviewer, react-reviewer.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": {
     "name": "JiHoon777"
   },

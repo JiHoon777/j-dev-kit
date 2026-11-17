@@ -1,6 +1,6 @@
 # Svelte 5 / SvelteKit: end checks
 
-Read by `frontend-end-check` when `svelte` is in package.json. Add these rows, agents, and after-fix items to that skill's report.
+Read by `frontend-end-check` when `svelte` is in package.json `dependencies` or `devDependencies`. Add these rows, agents, and after-fix items to that skill's report.
 
 This file only runs tools and compares results. Reviews that read the diff and judge it (runes, SSR, server/client boundary, load and form actions, …) are handed to the `frontend:svelte-reviewer` agent (step 3).
 

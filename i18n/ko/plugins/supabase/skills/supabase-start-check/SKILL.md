@@ -2,7 +2,7 @@
 name: supabase-start-check
 description: Supabase 프로젝트의 작업 전 점검. 로컬 스택 상태, 마이그레이션 적용 여부, 마이그레이션에 담기지 않은 스키마 변경(드리프트), 타입 파일이 최신인지 확인하고, DB 린트와 테스트 기준선, 플랜에 넣을 스키마·RLS 항목을 돌려준다. workflow 플러그인의 `/task start`가 부른다.
 user-invocable: false
-version: "0.3.0"
+version: "0.3.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -24,8 +24,8 @@ metadata:
 ## 0. 해당 여부
 
 - CLAUDE.md 에 `stack:`이 있는데 supabase 가 없으면 → "해당 없음: 스택 설정에 없음".
-- `supabase/config.toml`도 없고 package.json 에 `@supabase/` 의존성도 없으면 → "해당 없음: Supabase 를 쓰는 흔적 없음".
-- `@supabase/` 의존성만 있고 `supabase/` 폴더가 없으면(원격 프로젝트만 쓰는 경우) → 1~4단계를 건너뛰고 5단계와 6단계만 한다. 근거에 "로컬 Supabase 없음, 스키마를 저장소에서 관리하지 않음"이라고 적는다.
+- `supabase/config.toml`도 없고 package.json `dependencies`나 `devDependencies`에 `@supabase/` 패키지도 없으면 → "해당 없음: Supabase 를 쓰는 흔적 없음".
+- `@supabase/` 의존성만 있고 `supabase/` 폴더가 없으면(원격 프로젝트만 쓰는 경우) → 1~5단계(로컬 데이터베이스가 필요하다)를 건너뛰고 6~8단계만 한다. 근거에 "로컬 Supabase 없음, 스키마를 저장소에서 관리하지 않음"이라고 적는다.
 
 ### 마이그레이션 담당
 
@@ -35,7 +35,8 @@ metadata:
 
 1. 서버 마이그레이션 도구가 있고 **동시에** `supabase/migrations/`에 SQL 파일이 있다 → 스키마를 두 곳에서 관리하고 있다. "어느 쪽이 기준인가?"를 물을 것으로 돌려주고, 답을 받기 전까지는 **server** 가 맡는 것으로 본다.
 2. 서버 마이그레이션 도구가 있다 → 데이터베이스가 Supabase Postgres 여도 **server** 가 맡는다.
-3. `supabase/migrations/`가 있다 → **supabase** 가 맡는다.
+3. `supabase/migrations/`가 있거나, 그것 없이 `supabase/config.toml`이 있다(아직 마이그레이션 없음) → **supabase** 가 맡는다. 첫 스키마 변경이 `supabase/migrations/`를 만든다.
+4. 위 어느 것에도 해당하지 않는다 → 이 저장소에는 마이그레이션이 없다. 마이그레이션 항목은 "해당 없음"이다.
 
 담당을 보고서 표의 첫 줄에 적는다. 담당이 아닌 플러그인은 마이그레이션 항목을 "건너뜀: 마이그레이션은 <담당> 플러그인 담당"으로 건너뛴다.
 
@@ -58,7 +59,7 @@ server 가 맡으면 건너뛴다. `supabase db diff`가 서버 도구가 만든
 
 ## 4. 타입 파일
 
-1. 프로젝트에서 생성된 타입 파일을 찾는다: package.json scripts 의 `supabase gen types` 줄, 또는 `Database` 타입을 내보내는 파일(`database.types.ts`, `supabase.ts`, `types/supabase.ts` 등).
+1. 프로젝트에서 생성된 타입 파일을 찾는다: package.json scripts 의 `supabase gen types` 줄, 또는 `Database` 타입을 내보내는 파일(`database.types.ts`, `supabase.ts`, `types/supabase.ts` 등). 없으면 → 건너뜀("생성된 타입 파일 없음")으로 하고, 첫 스키마 변경 전에 `supabase gen types`를 설정할지를 물을 것에 더한다.
 2. 같은 옵션으로 임시 파일에 생성한다: `supabase gen types typescript --local > <임시 경로>` (스키마 옵션 `--schema`를 쓰고 있으면 똑같이 쓴다).
 3. 기존 파일과 비교한다. 다르면 실패: 타입이 스키마보다 오래됐다. 작업 전에 갱신할지 플랜에서 묻도록 돌려준다. 여기서 기존 파일을 바꾸지 않는다.
 

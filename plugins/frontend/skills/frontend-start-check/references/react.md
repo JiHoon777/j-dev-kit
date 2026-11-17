@@ -1,6 +1,6 @@
 # React / Next.js: start checks
 
-Read by `frontend-start-check` when `react` is in package.json. Add these rows, baseline lines, prompts, questions, and rules to that skill's report.
+Read by `frontend-start-check` when `react` is in package.json `dependencies` or `devDependencies`. Add these rows, baseline lines, prompts, questions, and rules to that skill's report.
 
 | Part | Source |
 | --- | --- |

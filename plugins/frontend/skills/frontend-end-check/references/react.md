@@ -1,6 +1,6 @@
 # React / Next.js: end checks
 
-Read by `frontend-end-check` when `react` is in package.json. Add these rows, agents, and after-fix items to that skill's report.
+Read by `frontend-end-check` when `react` is in package.json `dependencies` or `devDependencies`. Add these rows, agents, and after-fix items to that skill's report.
 
 This file only runs tools and compares results. Reviews that read the diff and judge it (derived state, effects, keys, request waterfalls, Next boundaries, …) are handed to the `frontend:react-reviewer` agent (step 4).
 

@@ -2,7 +2,7 @@
 name: frontend-end-check
 description: Wrap-up check for frontend projects, called by the end mode of the workflow plugin's task skill. Detects the framework, compares checks against the baseline, counts leftover debug markers, checks console, network, and Lighthouse with Chrome DevTools, and runs the framework tools from the matching reference file (svelte.md, react.md). Returns which review agents (ui-reviewer, svelte-reviewer, react-reviewer) to add and a browser test to do after fixes.
 user-invocable: false
-version: "0.3.0"
+version: "0.3.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -20,7 +20,7 @@ Judge each item as **pass · fail · skip (reason)** and return it in the format
 - Same criteria as `frontend-start-check`. If not applicable → "not applicable: <reason>". If no frontend code changed, do only step 1 and skip the rest with "no frontend changes".
 - **Detect the framework and read its reference.** For each match, **read the file in full with the Read tool and run its checks as well**:
 
-  | Detected in package.json | Reference |
+  | Detected in package.json (dependencies or devDependencies) | Reference |
   | --- | --- |
   | `svelte` | `${CLAUDE_SKILL_DIR}/references/svelte.md` |
   | `react` | `${CLAUDE_SKILL_DIR}/references/react.md` |

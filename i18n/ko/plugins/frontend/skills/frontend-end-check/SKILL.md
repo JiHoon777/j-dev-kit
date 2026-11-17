@@ -2,7 +2,7 @@
 name: frontend-end-check
 description: 프론트엔드 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 프레임워크를 감지하고, 점검 결과를 기준선과 비교하고, 남은 디버그 표시를 세고, Chrome DevTools로 콘솔·네트워크·Lighthouse를 확인하고, 해당 reference 파일(svelte.md, react.md)의 프레임워크 도구를 실행한다. 리뷰에 넣을 에이전트(ui-reviewer, svelte-reviewer, react-reviewer)와 고친 뒤 할 브라우저 테스트를 돌려준다.
 user-invocable: false
-version: "0.3.0"
+version: "0.3.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -22,7 +22,7 @@ metadata:
 - `frontend-start-check`와 같은 기준이다. 해당 없으면 → "해당 없음: <이유>". 바뀐 프론트엔드 코드가 없으면 1단계만 하고 나머지는 "프론트엔드 변경 없음"으로 건너뛴다.
 - **프레임워크를 감지하고 그 레퍼런스를 읽는다.** 맞는 것마다 **Read 도구로 파일 전체를 읽고 그 점검도 실행한다**:
 
-  | package.json에서 감지 | 레퍼런스 |
+  | package.json에서 감지(dependencies 또는 devDependencies) | 레퍼런스 |
   | --- | --- |
   | `svelte` | `${CLAUDE_SKILL_DIR}/references/svelte.md` |
   | `react` | `${CLAUDE_SKILL_DIR}/references/react.md` |

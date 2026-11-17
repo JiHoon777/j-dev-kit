@@ -2,7 +2,7 @@
 name: supabase-start-check
 description: Pre-task check for Supabase projects. Checks local stack status, whether migrations are applied, schema changes not captured in migrations (drift), and whether the types file is up to date, then returns a DB lint and test baseline plus the schema and RLS items to add to the plan. Called by `/task start` in the workflow plugin.
 user-invocable: false
-version: "0.3.0"
+version: "0.3.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -22,8 +22,8 @@ Called by `/task start`. Write the report in the project's language. Judge each 
 ## 0. Applicability
 
 - If CLAUDE.md has `stack:` and supabase is not in it → "not applicable: not in stack setting".
-- If there is no `supabase/config.toml` and no `@supabase/` dependency in package.json → "not applicable: no sign of Supabase use".
-- If there is only an `@supabase/` dependency and no `supabase/` folder (only a remote project is used) → skip steps 1–4 and do only steps 5 and 6. In the evidence, write "no local Supabase; schema is not managed in the repository".
+- If there is no `supabase/config.toml` and no `@supabase/` package in package.json `dependencies` or `devDependencies` → "not applicable: no sign of Supabase use".
+- If there is only an `@supabase/` dependency and no `supabase/` folder (only a remote project is used) → skip steps 1–5 (they need a local database) and do only steps 6–8. In the evidence, write "no local Supabase; schema is not managed in the repository".
 
 ### Migration owner
 
@@ -33,7 +33,8 @@ Server migration tools: `prisma/schema.prisma`, `drizzle.config.*`, a TypeORM Da
 
 1. A server migration tool is present **and** `supabase/migrations/` has SQL files → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
 2. A server migration tool is present → **server** owns migrations, even if the database is Supabase Postgres.
-3. `supabase/migrations/` exists → **supabase** owns migrations.
+3. `supabase/migrations/` exists, or `supabase/config.toml` exists without it (no migrations yet) → **supabase** owns migrations. The first schema change creates `supabase/migrations/`.
+4. None of the above → no migrations in this repository; migration items are "not applicable".
 
 Record the owner as the first row of the report. The plugin that does not own migrations skips its migration items with "skip: migrations owned by <owner> plugin".
 
@@ -56,7 +57,7 @@ Run `supabase db diff`. If the output SQL is not empty, **stop**: the local DB h
 
 ## 4. Types file
 
-1. Find the project's generated types file: the `supabase gen types` line in package.json scripts, or a file that exports a `Database` type (`database.types.ts`, `supabase.ts`, `types/supabase.ts`, etc.).
+1. Find the project's generated types file: the `supabase gen types` line in package.json scripts, or a file that exports a `Database` type (`database.types.ts`, `supabase.ts`, `types/supabase.ts`, etc.). If there is none → skip ("no generated types file") and add to the questions whether to set up `supabase gen types` before the first schema change.
 2. Generate into a temp file with the same options: `supabase gen types typescript --local > <temp path>` (if the schema option `--schema` is used, use it the same way).
 3. Compare with the existing file. If they differ, fail: the types are older than the schema. Return it so the plan asks whether to update before the work. Do not change the existing file here.
 

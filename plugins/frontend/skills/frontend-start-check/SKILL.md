@@ -2,7 +2,7 @@
 name: frontend-start-check
 description: Pre-work check for frontend projects, called by the start mode of the workflow plugin's task skill. Detects the framework, then runs the common checks (package manager, Node version, install, baseline, environment variables) and the framework checks from the matching reference file (svelte.md, react.md). Returns a baseline, exploration prompts, questions, rules during implementation (frontend-design, modern-web-guidance, framework rules), and a browser test to do before finishing.
 user-invocable: false
-version: "0.3.0"
+version: "0.3.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -25,11 +25,11 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 ## 0. Applicability and framework detection
 
 - If CLAUDE.md has a `stack:` line without frontend → "not applicable: not in stack setting".
-- If none of react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro is in package.json dependencies → "not applicable: no frontend framework".
-- In a monorepo (`pnpm-workspace.yaml`, package.json `workspaces`, `turbo.json`, `nx.json`), decide which app or package this item touches and work in that directory. If unclear, return it as a question.
+- If none of react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro is in package.json `dependencies` or `devDependencies` → "not applicable: no frontend framework". (Svelte and SvelteKit are usually in `devDependencies`.)
+- In a monorepo (`pnpm-workspace.yaml` with a `packages:` list, package.json `workspaces`, `turbo.json`, `nx.json`; a `pnpm-workspace.yaml` that only holds pnpm settings is not a monorepo), decide which app or package this item touches and work in that directory. If unclear, return it as a question.
 - **Detect the framework and read its reference.** For each match, **read the file in full with the Read tool and run its checks as well**:
 
-  | Detected in package.json | Reference |
+  | Detected in package.json (dependencies or devDependencies) | Reference |
   | --- | --- |
   | `svelte` | `${CLAUDE_SKILL_DIR}/references/svelte.md` |
   | `react` | `${CLAUDE_SKILL_DIR}/references/react.md` |
@@ -39,7 +39,7 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 ## 1. Environment
 
 1. **Package manager** from the lockfile: `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lock`/`bun.lockb` → bun, `package-lock.json` → npm. More than one → fail. If package.json has `packageManager`, use that version.
-2. **Node version**: compare `.nvmrc`, `.node-version`, or `engines.node` with `node -v`. Mismatch → fail.
+2. **Node version**: compare `.nvmrc`, `.node-version`, or `engines.node` with `node -v`. Mismatch → fail. If none of them exists → skip ("no Node version pinned").
 3. **Install** without changing the lockfile: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) or `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. If it fails because the lockfile does not match package.json → **stop**.
 
 ## 2. Baseline

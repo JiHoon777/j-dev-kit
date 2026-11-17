@@ -2,7 +2,7 @@
 
 # React / Next.js: 마무리 점검
 
-package.json에 `react`가 있을 때 `frontend-end-check`가 읽는다. 아래 행, 에이전트, 고친 뒤 할 항목을 그 스킬의 보고서에 더한다.
+package.json `dependencies`나 `devDependencies`에 `react`가 있을 때 `frontend-end-check`가 읽는다. 아래 행, 에이전트, 고친 뒤 할 항목을 그 스킬의 보고서에 더한다.
 
 이 파일은 도구를 실행하고 결과를 비교하기만 한다. diff를 읽고 판단하는 리뷰(파생 state, effect, key, 요청 워터폴, Next 경계, …)는 `frontend:react-reviewer` 에이전트에게 넘긴다(4단계).
 

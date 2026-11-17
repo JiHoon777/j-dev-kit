@@ -1,6 +1,6 @@
 # Svelte 5 / SvelteKit: start checks
 
-Read by `frontend-start-check` when `svelte` is in package.json. Add these rows, baseline lines, prompts, and rules to that skill's report.
+Read by `frontend-start-check` when `svelte` is in package.json `dependencies` or `devDependencies`. Add these rows, baseline lines, prompts, and rules to that skill's report.
 
 | Part | Source |
 | --- | --- |
@@ -9,8 +9,8 @@ Read by `frontend-start-check` when `svelte` is in package.json. Add these rows,
 
 ## 1. Versions and structure
 
-- Record the installed versions of `svelte` and `@sveltejs/kit` (`version` in `node_modules/<package>/package.json`). If Svelte is 4 or older, say the later rules differ and that upgrading is outside this item's scope.
-- For SvelteKit, record the adapter (`adapter-*` in `svelte.config.js`). If it is `adapter-static`, add to the rules during implementation that server code (`+page.server.*`, `+server.*`, form actions) cannot be used.
+- Record the installed versions of `svelte` and `@sveltejs/kit` (`version` in `node_modules/<package>/package.json`, after the common install step). If `node_modules` is missing, record the version ranges from package.json instead. If Svelte is 4 or older, say the later rules differ and that upgrading is outside this item's scope.
+- For SvelteKit, record the adapter (`adapter-*` in `svelte.config.js`, or in `vite.config.*` with SvelteKit 3). If it is `adapter-static`, add to the rules during implementation that server code (`+page.server.*`, `+server.*`, form actions) cannot be used.
 - Count leftovers of old patterns with `grep`. They are not failures; put the counts in the evidence. New code uses the new patterns.
   - `$app/stores` imports → `$app/state` (`npx -y sv@1.2.0 migrate app-state` can move them)
   - `.svelte` files with Svelte 4 syntax such as `export let`, `$:`, `on:click`, `<slot>`
@@ -42,7 +42,7 @@ Read by `frontend-start-check` when `svelte` is in package.json. Add these rows,
 ## Rows to add
 
 ```markdown
-| Svelte versions | pass | svelte 5.x, @sveltejs/kit 2.x, adapter-static |
+| Svelte versions | pass | svelte 5.x, @sveltejs/kit 3.x, adapter-static (vite.config.ts) |
 | Old patterns | … | $app/stores 2, Svelte 4 syntax files 0 |
 | Autofixer | … | MCP tool / CLI |
 ```

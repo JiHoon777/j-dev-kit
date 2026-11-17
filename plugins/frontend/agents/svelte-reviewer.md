@@ -13,7 +13,7 @@ Do not guess about APIs you do not know. If the official Svelte plugin's MCP too
 ## Read first
 
 - The project CLAUDE.md and the structure and code-rule documents it points to
-- `svelte.config.js` (adapter), and the `svelte` and `@sveltejs/kit` versions in `package.json`
+- `svelte.config.js` or `vite.config.*` (adapter; SvelteKit 3 puts it in the Vite config), and the `svelte` and `@sveltejs/kit` versions in `package.json`
 - The diff you were given (`git diff <base>...HEAD`) and every changed file in full
 
 ## What to check

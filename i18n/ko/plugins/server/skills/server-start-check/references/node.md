@@ -7,7 +7,7 @@
 ## 1. 설치와 런타임
 
 - lockfile 을 바꾸지 않고 설치한다: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) 또는 `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. 실패 → **중단**.
-- `.nvmrc`, `.node-version`, `engines.node`를 `node -v`와 비교한다. 맞지 않음 → 실패.
+- `.nvmrc`, `.node-version`, `engines.node`를 `node -v`와 비교한다. 맞지 않음 → 실패. 셋 다 없음 → 건너뜀("Node 버전 고정 없음").
 
 ## 2. LSP
 

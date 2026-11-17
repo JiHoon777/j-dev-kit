@@ -2,7 +2,7 @@
 name: server-start-check
 description: Pre-work check for backend projects, called by the start mode of the workflow plugin's task skill. Detects the language, framework, and migration tool, then runs the common checks (environment variables, local services) and the language checks from the matching reference file (node.md, python.md, go.md, jvm.md), covering install, LSP, migration status, and baseline. Returns a baseline, an exploration prompt for the API and its consumers, questions, and rules during implementation.
 user-invocable: false
-version: "0.3.0"
+version: "0.3.1"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
@@ -29,7 +29,7 @@ Judge each item as **pass · fail · skip (reason) · stop** and return it in th
 
   | Detected | Language | Reference |
   | --- | --- | --- |
-  | package.json has `express`, `@nestjs/core`, `fastify`, `hono`, or `koa` | Node | `${CLAUDE_SKILL_DIR}/references/node.md` |
+  | package.json (dependencies or devDependencies) has `express`, `@nestjs/core`, `fastify`, `hono`, or `koa` | Node | `${CLAUDE_SKILL_DIR}/references/node.md` |
   | `pyproject.toml` or `requirements*.txt` has `fastapi`, `django`, or `flask` | Python | `${CLAUDE_SKILL_DIR}/references/python.md` |
   | `go.mod` | Go | `${CLAUDE_SKILL_DIR}/references/go.md` |
   | `pom.xml` or `build.gradle*` has `spring-boot` | Java/Kotlin | `${CLAUDE_SKILL_DIR}/references/jvm.md` |
@@ -44,7 +44,8 @@ Server migration tools: `prisma/schema.prisma`, `drizzle.config.*`, a TypeORM Da
 
 1. A server migration tool is present **and** `supabase/migrations/` has SQL files → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
 2. A server migration tool is present → **server** owns migrations, even if the database is Supabase Postgres.
-3. `supabase/migrations/` exists → **supabase** owns migrations.
+3. `supabase/migrations/` exists, or `supabase/config.toml` exists without it (no migrations yet) → **supabase** owns migrations. The first schema change creates `supabase/migrations/`.
+4. None of the above → no migrations in this repository; migration items are "not applicable".
 
 Record the owner as the first row of the report. The plugin that does not own migrations skips its migration items with "skip: migrations owned by <owner> plugin".
 
