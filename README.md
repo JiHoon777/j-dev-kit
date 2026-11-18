@@ -2,13 +2,14 @@
 
 **한국어** | [English](README.en.md)
 
-Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하나, 스택별 점검은 스택 플러그인으로 나눴다.
+Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하나, 스택별 점검은 스택 플러그인으로 나눴다. 아키텍처 설계·리뷰는 스택과 상관없는 `/arch`로 따로 쓴다.
 
 | 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` | Svelte·React 점검, 브라우저 확인, `frontend-reviewer` | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | 서버·Supabase 점검(마이그레이션, API 스펙, 키), `api-reviewer`, `supabase-reviewer` | `workflow` |
+| `architecture` | `/arch design`, `/arch review`, `architecture-reviewer`, `architecture-researcher` | 없음 |
 
 Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설치한다.
 
@@ -18,9 +19,10 @@ Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설
 claude plugin marketplace add JiHoon777/j-dev-kit --scope project
 claude plugin install frontend@j-dev-kit --scope project
 claude plugin install server@j-dev-kit --scope project
+claude plugin install architecture@j-dev-kit --scope project
 ```
 
-쓰는 스택만 설치한다. `.claude/settings.json`에 적힌 의존 플러그인 줄은 지우지 않는다.
+쓰는 스택만 설치한다. `architecture`는 어떤 프로젝트에나 따로 설치할 수 있다. `.claude/settings.json`에 적힌 의존 플러그인 줄은 지우지 않는다.
 
 프로젝트 CLAUDE.md 에 적는다.
 
@@ -59,12 +61,26 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 - **start:** 기준선(검증 명령 한 번), 스택 시작 점검, 크기에 맞춘 계획(작은 항목은 에이전트 없이), 테스트 먼저 구현, `simplify`로 정리, 검증.
 - **end:** 스택 종료 점검, 리뷰(`code-review` + 필요할 때 `security-review`·스택 리뷰어), 지적을 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 구분별로 묻기, 고치기, 검증, 머지. 푸시는 요청할 때만.
 
+### 아키텍처
+
+```
+/arch design 팀 일정 공유 웹앱 (새 프로젝트)   # 품질 목표 → 스택 서베이 → 구조 → 승인 → 개요 문서·ADR
+/arch design 결제 수단 추가 구조              # 기존 프로젝트: 기존 스택과 ADR 을 제약으로
+/arch review                                   # 시스템 지도 확인 → git 측정 → 리뷰 → 지적별로 ADR / 부채 / 그대로
+/arch review src/billing --research            # 경로 하나, 최신 구조 지침도 서베이
+```
+
+- 기준은 출처가 있는 것만 쓴다(ISO 25010 유지보수성, 정보 은닉·깊은 모듈, 결합도·응집도, 피트니스 함수, arc42 품질 목표 등). 코딩 에이전트에 대한 연구 근거가 있는 항목에만 그 근거를 덧붙인다.
+- 스택 추천은 항상 웹 서베이로 버전·지원 종료·유지보수 상태를 확인한다. 구조 지침 서베이는 `--research`일 때만.
+- 코드는 고치지 않는다. 쓰는 것은 `docs/architecture/`의 개요 문서, ADR, 리서치 파일뿐이고 쓰기 전에 묻는다.
+
 ## 구조
 
 ```
 plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
 plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md
 plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
+plugins/architecture/               skills/arch (SKILL.md + references/), agents/architecture-{reviewer,researcher}.md
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
 ```
 
@@ -91,3 +107,5 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 ## 출처
 
 [Backlog.md](https://github.com/MrLesk/Backlog.md) 항목 형식, [superpowers](https://github.com/obra/superpowers)(brainstorming, TDD, 완료 전 검증, 리뷰 받기, 브랜치 마무리), [spec-kit](https://github.com/github/spec-kit)(질문 최대 3개), [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin)(크기에 맞춘 계획), [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), Claude Code 내장 `code-review`·`security-review`·`simplify`, OWASP API Security Top 10, [supabase/agent-skills](https://github.com/supabase/agent-skills), Anthropic [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
+
+`architecture`: ISO/IEC 25010:2023, Parnas(정보 은닉), Ousterhout(깊은 모듈), *Building Evolutionary Architectures*(피트니스 함수), [arc42](https://arc42.org/), [MADR](https://adr.github.io/madr/), [Choose Boring Technology](https://mcfunley.com/choose-boring-technology), Azure Architecture Center·AWS Decision Guides, [endoflife.date](https://endoflife.date/)·[deps.dev](https://deps.dev/)·[OpenSSF Scorecard](https://scorecard.dev/). 아이디어를 빌린 스킬: [alexei-led/architect](https://github.com/alexei-led/architect)(지도 확인 후 판단, 증거 없으면 확인 못 함), [mattpocock/skills](https://github.com/mattpocock/skills) `improve-codebase-architecture`(핫스팟, 삭제 테스트), [mblode/agent-skills](https://github.com/mblode/agent-skills) `codebase-architecture`(새 에이전트로 레시피 따라 하기). 기준의 AI 근거 논문은 `criteria.md`에 링크.

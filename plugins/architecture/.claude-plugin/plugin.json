@@ -1,0 +1,8 @@
+{
+  "name": "architecture",
+  "description": "Stack-agnostic architecture design and review: /arch design (structure, stack recommendation from a live survey, ADRs) and /arch review (maintainability, fit and extensibility against established criteria). Writes an architecture overview and ADRs; never edits code.",
+  "version": "0.1.0",
+  "author": {
+    "name": "JiHoon777"
+  }
+}
