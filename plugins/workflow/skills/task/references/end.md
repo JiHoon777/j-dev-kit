@@ -31,7 +31,7 @@
 | --- | --- | --- |
 | general-purpose | 항상 | `code-review` 스킬을 부른다. 대상은 현재 브랜치. `--fix`, `--comment` 없이, 노력 수준은 주지 않는다 |
 | general-purpose | 인증·인가, 입력 처리, 비밀 값, 외부 호출, 파일·명령 실행이 바뀌었을 때 | `security-review` 스킬을 부른다. 띄우기 전에 `git symbolic-ref refs/remotes/origin/HEAD`가 실패하면 `git remote set-head origin -a` |
-| 스택 리뷰 에이전트 (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:rls-reviewer`) | 2단계가 돌려줬을 때 | 그 에이전트의 기준대로 |
+| 스택 리뷰 에이전트 (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | 2단계가 돌려줬을 때 | 그 에이전트의 기준대로 |
 
 에이전트는 이 대화를 볼 수 없으니 지시문에 넣는다:
 

@@ -1,7 +1,7 @@
 {
   "name": "workflow",
   "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins.",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "author": {
     "name": "JiHoon777"
   },

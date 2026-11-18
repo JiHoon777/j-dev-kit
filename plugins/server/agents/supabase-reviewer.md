@@ -1,5 +1,5 @@
 ---
-name: rls-reviewer
+name: supabase-reviewer
 description: Supabase 변경의 권한과 안전성을 리뷰한다. RLS 정책, DB 함수(RPC), 뷰, Realtime 채널, 스토리지 버킷, 마이그레이션, 그리고 브라우저에서 Supabase 를 부르는 코드가 바뀌었을 때 쓴다. 읽기만 하고 확인한 문제를 보고한다.
 tools: Read, Grep, Glob, Bash
 ---

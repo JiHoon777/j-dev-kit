@@ -1,6 +1,6 @@
 ---
 name: server-end-check
-description: 백엔드·Supabase 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 서버 코드나 Supabase 가 바뀌었을 때만 빠진 마이그레이션, 마이그레이션 순서, API 스펙 호환성(oasdiff), 문서에 없는 설정 키, Supabase 검사(db diff, advisors, 타입, 키)를 확인하고, 리뷰에 넣을 api-reviewer·rls-reviewer 를 돌려준다.
+description: 백엔드·Supabase 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 서버 코드나 Supabase 가 바뀌었을 때만 빠진 마이그레이션, 마이그레이션 순서, API 스펙 호환성(oasdiff), 문서에 없는 설정 키, Supabase 검사(db diff, advisors, 타입, 키)를 확인하고, 리뷰에 넣을 api-reviewer·supabase-reviewer 를 돌려준다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -8,7 +8,7 @@ metadata:
 
 # 서버 마무리 점검
 
-`/task end`가 부른다. 명령을 돌리고 결과만 돌려준다. 코드를 읽고 판단하는 리뷰는 `server:api-reviewer`, `server:rls-reviewer`가 한다. 보고는 프로젝트의 언어로.
+`/task end`가 부른다. 명령을 돌리고 결과만 돌려준다. 코드를 읽고 판단하는 리뷰는 `server:api-reviewer`, `server:supabase-reviewer`가 한다. 보고는 프로젝트의 언어로.
 
 ## 0. 해당 여부
 
@@ -56,7 +56,7 @@ OpenAPI 스펙이 있고 바뀌었을 때:
 ## 2. 리뷰에 넣을 에이전트
 
 - 서버 코드(라우트, 핸들러, 서비스, 인가, 쿼리), API 스펙, 서버 마이그레이션이 바뀌었으면 `server:api-reviewer`. 근거: 바뀐 파일, 새 마이그레이션 파일, oasdiff 결과(또는 두 스펙 경로).
-- 위 Supabase 범위가 바뀌었으면 `server:rls-reviewer`. 근거: 바뀐 파일, 새 마이그레이션 파일, advisors 지적, 로컬 스택이 도는지.
+- 위 Supabase 범위가 바뀌었으면 `server:supabase-reviewer`. 근거: 바뀐 파일, 새 마이그레이션 파일, advisors 지적, 로컬 스택이 도는지.
 
 ## 3. 고친 뒤 할 것
 

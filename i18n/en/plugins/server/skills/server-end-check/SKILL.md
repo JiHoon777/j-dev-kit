@@ -1,6 +1,6 @@
 ---
 name: server-end-check
-description: Wrap-up check for backend and Supabase projects. Called by the end mode of the workflow plugin's task skill. Only when server code or Supabase changed, checks missing migrations, migration order, API spec compatibility (oasdiff), config keys missing from docs, and Supabase checks (db diff, advisors, types, keys), and returns api-reviewer and rls-reviewer to add to the review.
+description: Wrap-up check for backend and Supabase projects. Called by the end mode of the workflow plugin's task skill. Only when server code or Supabase changed, checks missing migrations, migration order, API spec compatibility (oasdiff), config keys missing from docs, and Supabase checks (db diff, advisors, types, keys), and returns api-reviewer and supabase-reviewer to add to the review.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -10,7 +10,7 @@ metadata:
 
 # Server end check
 
-Called by `/task end`. Runs commands and returns only the results. Review that reads and judges code is done by `server:api-reviewer` and `server:rls-reviewer`. Report in the project's language.
+Called by `/task end`. Runs commands and returns only the results. Review that reads and judges code is done by `server:api-reviewer` and `server:supabase-reviewer`. Report in the project's language.
 
 ## 0. Applicability
 
@@ -58,7 +58,7 @@ Only when files under `supabase/` or code that calls Supabase (`.from(`, `.rpc(`
 ## 2. Agents to add to the review
 
 - If server code (routes, handlers, services, authorization, queries), the API spec, or server migrations changed, `server:api-reviewer`. Evidence: changed files, new migration files, the oasdiff result (or the two spec paths).
-- If the Supabase scope above changed, `server:rls-reviewer`. Evidence: changed files, new migration files, advisors findings, whether the local stack is running.
+- If the Supabase scope above changed, `server:supabase-reviewer`. Evidence: changed files, new migration files, advisors findings, whether the local stack is running.
 
 ## 3. After fixes
 

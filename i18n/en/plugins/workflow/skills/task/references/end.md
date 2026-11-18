@@ -33,7 +33,7 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 | --- | --- | --- |
 | general-purpose | Always | Calls the `code-review` skill. Target is the current branch. No `--fix`, no `--comment`, no effort level given |
 | general-purpose | When authentication/authorization, input handling, secrets, external calls, or file/command execution changed | Calls the `security-review` skill. Before launching, if `git symbolic-ref refs/remotes/origin/HEAD` fails, run `git remote set-head origin -a` |
-| Stack review agents (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:rls-reviewer`) | When step 2 returned them | By that agent's own criteria |
+| Stack review agents (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | When step 2 returned them | By that agent's own criteria |
 
 Agents cannot see this conversation, so put these in the instructions:
 

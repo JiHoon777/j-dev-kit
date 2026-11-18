@@ -31,7 +31,7 @@
     {
       "name": "server",
       "source": "./plugins/server",
-      "description": "Backend and Supabase checks for /task start and /task end (any server language and Supabase: migrations, API contract, RLS, keys) and the api-reviewer and rls-reviewer agents.",
+      "description": "Backend and Supabase checks for /task start and /task end (any server language and Supabase: migrations, API contract, RLS, keys) and the api-reviewer and supabase-reviewer agents.",
       "dependencies": [
         "workflow"
       ]
