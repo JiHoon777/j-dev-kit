@@ -14,7 +14,7 @@ There is one principle: **if you cannot say which failure a step prevents, leave
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), agent `frontend-reviewer` | `typescript-lsp`, `frontend-design` |
-| `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm, supabase), agents `api-reviewer`, `rls-reviewer` | — |
+| `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: supabase), agents `api-reviewer`, `rls-reviewer` | — |
 
 If you use Supabase (including calling it directly from the frontend), install `server`. Supabase checks and `rls-reviewer` turn on when `supabase/config.toml` or an `@supabase/` dependency is found.
 
@@ -32,7 +32,7 @@ plugins/frontend/
   skills/frontend-end-check/    SKILL.md + references/svelte.md
 plugins/server/
   agents/api-reviewer.md, rls-reviewer.md
-  skills/server-start-check/    SKILL.md + references/node.md, python.md, go.md, jvm.md, supabase.md
+  skills/server-start-check/    SKILL.md + references/supabase.md
   skills/server-end-check/      (same structure)
 i18n/en/…                  English translations (Claude does not read them)
 ```

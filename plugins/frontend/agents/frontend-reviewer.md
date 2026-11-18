@@ -29,7 +29,8 @@ tools: Read, Grep, Glob, Bash
 - `$effect` 안에서 state 에 대입해 만든 파생 값(`$derived`여야 한다), `$bindable` 없이 props 를 바꾸는 곳, 정리 함수 없는 `$effect`.
 - 컴포넌트 최상위나 universal `load`에서 `window`, `document`, `localStorage` 접근.
 - 서버 파일 밖에서 `$env/*/private` import. `load`가 권한 확인 없이 다른 사용자의 데이터를 돌려주는 곳. form action 실패에 `fail()`을 쓰지 않은 곳.
-- `adapter-static`인데 새로 만든 서버 파일·form action. 키 없는 `{#each}`(목록이 바뀌는 경우). 새 코드의 Svelte 4 문법.
+- `adapter-static`인데 새로 만든 서버 파일·form action. 키 없는 `{#each}`(목록이 바뀌는 경우).
+- 이번 diff 에서 추가된 줄에 Svelte 4 문법이 있으면 Svelte 5 문법으로 바꾸라고 지적한다(왼쪽이 옛 문법 → 오른쪽으로): `export let` → `$props()`, `$:` → `$derived`·`$effect`, `on:click` → `onclick`, `<slot>` → snippet(`{@render}`), `$app/stores` → `$app/state`. 기존 코드에 남은 옛 문법은 지적하지 않는다.
 
 ## 볼 것 (React / Next.js, 해당할 때)
 

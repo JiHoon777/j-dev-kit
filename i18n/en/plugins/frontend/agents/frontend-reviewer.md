@@ -31,7 +31,8 @@ Do not modify files. Do not start servers, run build or verification commands, o
 - Derived values made by assigning to state inside `$effect` (should be `$derived`), places that change props without `$bindable`, `$effect` without a cleanup function.
 - Access to `window`, `document`, `localStorage` at component top level or in a universal `load`.
 - `$env/*/private` imports outside server files. `load` returning another user's data without an authorization check. Form action failures not using `fail()`.
-- Newly created server files or form actions with `adapter-static`. `{#each}` without a key (when the list changes). Svelte 4 syntax in new code.
+- Newly created server files or form actions with `adapter-static`. `{#each}` without a key (when the list changes).
+- If lines added in this diff use Svelte 4 syntax, flag them to be rewritten in Svelte 5 syntax (old on the left → new on the right): `export let` → `$props()`, `$:` → `$derived`/`$effect`, `on:click` → `onclick`, `<slot>` → snippets (`{@render}`), `$app/stores` → `$app/state`. Do not flag old syntax left in existing code.
 
 ## What to check (React / Next.js, when applicable)
 

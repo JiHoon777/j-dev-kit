@@ -10,45 +10,73 @@ metadata:
 
 # Server end check
 
-Called by `/task end`. Runs commands and returns only the results. Reviews that read code and make judgments are done by `server:api-reviewer` and `server:rls-reviewer`. Report in the project's language.
+Called by `/task end`. Runs commands and returns only the results. Review that reads and judges code is done by `server:api-reviewer` and `server:rls-reviewer`. Report in the project's language.
 
 ## 0. Applicability
 
-- Detect with the same criteria as `server-start-check`, and decide the migration owner with the same rules. Read the matching references to the end with the Read tool (`node.md`, `python.md`, `go.md`, `jvm.md`, `supabase.md` in `${CLAUDE_SKILL_DIR}/references/`).
-- If `git diff --name-only <base>...HEAD` contains no server code, migrations, API specs, `supabase/`, or config files, return only "No server changes".
+- Detect with the same criteria as `server-start-check`, and decide the migration owner with the same rules. If Supabase is used, read `${CLAUDE_SKILL_DIR}/references/supabase.md` to the end with the Read tool.
+- If `git diff --name-only <base>...HEAD` has no server code, migrations, API spec, `supabase/`, or config files, return only "No server changes".
 
 ## 1. Checks (only when applicable)
 
-Run database commands only against local or development DBs. If it looks like production, do not run them and say so. Use only project tools that are installed (`npx --no-install`, etc.). If missing, record "tool not available".
+Run database commands only against a local or development DB. If it looks like production, do not run them and tell the user. Use only project tools that are installed (`npx --no-install` and so on). If missing, write "tool not installed".
 
-- **Missing migrations** (when schema-related code changed): the owning tool's command (reference).
-- **Migration order** (when there are new migrations): did new migrations land on the base branch while you were working? For timestamped files, the new file must be later than the newest file on `origin/<base>`. For tools with multiple heads, see the reference.
-- **API spec** (when there is an OpenAPI spec and it changed): if `oasdiff` is available, `oasdiff breaking --fail-on ERR <base spec> <new spec>` (the base spec is `git show origin/<base>:<path>`). Breaking changes are not a failure but evidence to pass to the reviewer. If not available, pass the two paths to the reviewer. If the spec is generated from code, run `git diff --exit-code <spec>` after generating; a difference is a failure.
-- **Config keys:** if an environment variable newly read in added lines (patterns in the reference) is not in `.env.example`, fail. Compare names only and do not read values. If a value file such as `.env` is committed, fail.
-- The checks in the reference.
+### Missing migrations and order
+
+A schema change must ship with a migration. If schema-related code changed, run the owning tool's check command; if it reports a difference, that is a failure. If there are new migrations, also check the order.
+
+| Tool | Missing migration | Order |
+| --- | --- | --- |
+| Prisma | `npx --no-install prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code` → exit code 2 is a failure (0 means no difference, 1 means error) | timestamp |
+| Drizzle | After `npx --no-install drizzle-kit generate`, a new file in `git status --porcelain <output folder>` is a failure (do not delete the generated file; report it) | timestamp |
+| TypeORM | If `npx --no-install typeorm migration:generate <temp path> -d <DataSource>` creates a file, failure (delete the temp file) | timestamp |
+| Alembic | `alembic check` fails → failure | `alembic heads` returns two or more lines → failure (merge revision needed) |
+| Django | `python manage.py makemigrations --check` fails → failure | the same command reports conflicting leaf nodes → failure (`makemigrations --merge`) |
+| Atlas | `atlas migrate validate` | timestamp |
+| golang-migrate | There is no check tool. See whether the schema change has a new up/down file pair | number |
+| Flyway / Liquibase | Check that the schema change has a new migration file or changeset, then `flyway validate` / `liquibase validate` | version number |
+| Supabase CLI | supabase.md | timestamp |
+
+**Order (timestamp, number):** if new migrations landed on the base branch while you worked, the new file's timestamp or number must come after the newest file on `origin/<base>`. Otherwise, failure.
+
+### API spec
+
+When an OpenAPI spec exists and changed:
+
+- If `oasdiff` is installed, `oasdiff breaking --fail-on ERR <base spec> <new spec>` (base spec from `git show origin/<base>:<path>`). A breaking change is not a failure but evidence to pass to the reviewer. If not installed, pass both paths to the reviewer.
+- If the spec is generated from code, run the generator, then `git diff --exit-code <spec>`. A difference is a failure.
+
+### Config keys
+
+- If an environment variable newly read in added lines is missing from `.env.example`, failure. Compare names only; never read values.
+- If a value file such as `.env` is committed, failure.
+
+### Supabase
+
+The checks in supabase.md.
 
 ## 2. Agents to add to the review
 
-- If server code (routes, handlers, services, authorization, queries), API specs, or server migrations changed, `server:api-reviewer`. Evidence: changed files, new migration files, oasdiff result (or the two spec paths).
+- If server code (routes, handlers, services, authorization, queries), the API spec, or server migrations changed, `server:api-reviewer`. Evidence: changed files, new migration files, the oasdiff result (or the two spec paths).
 - If supabase.md returns it, `server:rls-reviewer`.
 
-## 3. After fixing
+## 3. After fixes
 
-If you fixed migrations or specs, rerun the corresponding checks from step 1.
+If migrations or the spec were fixed, rerun the relevant step 1 checks.
 
 ## Return format
 
 ```markdown
 ### server end check
 Migration owner: prisma
-Checks: 1 failure (rest passed, skipped: oasdiff not available)
-- .env.example — missing new key STRIPE_WEBHOOK_SECRET
+Checks: 1 failure (others passed, skipped: oasdiff not installed)
+- .env.example — new key STRIPE_WEBHOOK_SECRET missing
 
 #### Agents to add to the review
 - `server:api-reviewer` — evidence: src/orders/*.ts, prisma/migrations/2026…/migration.sql
 
-#### After fixing
+#### After fixes
 - …
 ```
 
-If there are no failures, write a single line: "Checks: all passed".
+If there are no failures, write "Checks: all passed" on one line.

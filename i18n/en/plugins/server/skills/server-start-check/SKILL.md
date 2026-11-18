@@ -1,6 +1,6 @@
 ---
 name: server-start-check
-description: Pre-work check for backend and Supabase projects. Called by the start mode of the workflow plugin's task skill. Detects the language (Node, Python, Go, Java/Kotlin), Supabase usage, and the migration owner, and returns what to follow during implementation and what to put in the plan. Language- and Supabase-specific content is in references.
+description: Pre-work check for backend and Supabase projects. Called by the start mode of the workflow plugin's task skill. Detects server code (Node, Python, Go, Java/Kotlin), Supabase usage, and the migration owner, and returns what to follow during implementation and what to put in the plan. Supabase content is in references/supabase.md.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -14,15 +14,10 @@ Called by `/task start`. Does not edit anything. Returns only what fits this ite
 
 ## 0. Applicability and detection
 
-If CLAUDE.md has a `stack:` line without server, "Not applicable". Otherwise read every matching reference to the end with the Read tool. If none match, "Not applicable".
+If CLAUDE.md has a `stack:` line without server, "Not applicable". If none of the following exist, also "Not applicable".
 
-| Detection evidence | reference |
-| --- | --- |
-| `express`, `@nestjs/core`, `fastify`, `hono`, `koa` in package.json | `${CLAUDE_SKILL_DIR}/references/node.md` |
-| `fastapi`, `django`, `flask` in `pyproject.toml` or `requirements*.txt` | `${CLAUDE_SKILL_DIR}/references/python.md` |
-| `go.mod` | `${CLAUDE_SKILL_DIR}/references/go.md` |
-| `spring-boot` in `pom.xml` or `build.gradle*` | `${CLAUDE_SKILL_DIR}/references/jvm.md` |
-| `supabase/config.toml`, or an `@supabase/` package in package.json | `${CLAUDE_SKILL_DIR}/references/supabase.md` |
+- **Server code:** `express`, `@nestjs/core`, `fastify`, `hono`, `koa` in package.json / `fastapi`, `django`, `flask` in `pyproject.toml` or `requirements*.txt` / `go.mod` / `spring-boot` in `pom.xml` or `build.gradle*`
+- **Supabase:** `supabase/config.toml`, or an `@supabase/` package in package.json → read `${CLAUDE_SKILL_DIR}/references/supabase.md` to the end with the Read tool.
 
 In a monorepo, decide which service this item touches. If unclear, put it under questions.
 
@@ -44,11 +39,11 @@ Return only what applies to this item.
 - Schema changes only through the owning tool's migration files. Do not change the DB by hand.
 - Do not leave passwords, tokens, keys, or connection strings in logs or error responses.
 - Do not run commands that change the real (remote) database or a deployment environment. If needed, tell the user.
-- The rules in the reference.
+- If Supabase is used, the rules in supabase.md.
 
 ## 2. Put in the plan / ask
 
-- If the item changes the schema: create a migration with the owning tool (the command in the reference), regenerate types if needed.
+- If the item changes the schema: create a migration with the owning tool's generate command, regenerate types if needed.
 - If the item changes the API request or response format: whether the consumers of that API (frontend, other services) also change.
 - If there are two migration owners or the monorepo service is unclear, put it under questions.
 
@@ -56,7 +51,7 @@ Return only what applies to this item.
 
 ```markdown
 ### server start check
-Detected: Node · NestJS, Supabase (read references/node.md, supabase.md). Migration owner: prisma
+Detected: Node · NestJS, Supabase (read references/supabase.md). Migration owner: prisma
 
 #### Follow
 - …

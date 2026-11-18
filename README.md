@@ -12,7 +12,7 @@ Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), 에이전트 `frontend-reviewer` | `typescript-lsp`, `frontend-design` |
-| `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: node, python, go, jvm, supabase), 에이전트 `api-reviewer`, `rls-reviewer` | — |
+| `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: supabase), 에이전트 `api-reviewer`, `rls-reviewer` | — |
 
 Supabase 를 쓰면(프론트엔드에서 바로 부르는 경우도) `server`를 설치한다. `supabase/config.toml`이나 `@supabase/` 의존성을 보고 Supabase 점검과 `rls-reviewer`가 켜진다.
 
@@ -30,7 +30,7 @@ plugins/frontend/
   skills/frontend-end-check/    SKILL.md + references/svelte.md
 plugins/server/
   agents/api-reviewer.md, rls-reviewer.md
-  skills/server-start-check/    SKILL.md + references/node.md, python.md, go.md, jvm.md, supabase.md
+  skills/server-start-check/    SKILL.md + references/supabase.md
   skills/server-end-check/      (같은 구조)
 i18n/en/…                  영어 번역본 (Claude 는 읽지 않음)
 ```

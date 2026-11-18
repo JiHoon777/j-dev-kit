@@ -1,6 +1,6 @@
 ---
 name: server-start-check
-description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 언어(Node, Python, Go, Java/Kotlin)와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다. 언어·Supabase 별 내용은 references 에 있다.
+description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 서버 코드(Node, Python, Go, Java/Kotlin)와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다. Supabase 내용은 references/supabase.md 에 있다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -12,15 +12,10 @@ metadata:
 
 ## 0. 해당 여부와 판별
 
-CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아니면 맞는 reference 를 모두 Read 도구로 끝까지 읽는다. 하나도 맞지 않으면 "해당 없음".
+CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아래 중 하나도 없어도 "해당 없음".
 
-| 판별 근거 | reference |
-| --- | --- |
-| package.json 에 `express`, `@nestjs/core`, `fastify`, `hono`, `koa` | `${CLAUDE_SKILL_DIR}/references/node.md` |
-| `pyproject.toml`·`requirements*.txt`에 `fastapi`, `django`, `flask` | `${CLAUDE_SKILL_DIR}/references/python.md` |
-| `go.mod` | `${CLAUDE_SKILL_DIR}/references/go.md` |
-| `pom.xml`·`build.gradle*`에 `spring-boot` | `${CLAUDE_SKILL_DIR}/references/jvm.md` |
-| `supabase/config.toml`, 또는 package.json 에 `@supabase/` 패키지 | `${CLAUDE_SKILL_DIR}/references/supabase.md` |
+- **서버 코드:** package.json 에 `express`, `@nestjs/core`, `fastify`, `hono`, `koa` / `pyproject.toml`·`requirements*.txt`에 `fastapi`, `django`, `flask` / `go.mod` / `pom.xml`·`build.gradle*`에 `spring-boot`
+- **Supabase:** `supabase/config.toml`, 또는 package.json 에 `@supabase/` 패키지 → `${CLAUDE_SKILL_DIR}/references/supabase.md`를 Read 도구로 끝까지 읽는다.
 
 모노레포면 이 항목이 건드리는 서비스를 정한다. 분명하지 않으면 물을 것으로.
 
@@ -42,11 +37,11 @@ CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아�
 - 스키마 변경은 담당 도구의 마이그레이션 파일로만. DB 를 손으로 바꾸지 않는다.
 - 비밀번호, 토큰, 키, 연결 문자열을 로그와 오류 응답에 남기지 않는다.
 - 실제(원격) 데이터베이스나 배포 환경을 바꾸는 명령은 돌리지 않는다. 필요하면 사용자에게 알린다.
-- reference 의 규칙.
+- Supabase 를 쓰면 supabase.md 의 규칙.
 
 ## 2. 플랜에 넣을 것 / 물을 것
 
-- 항목이 스키마를 바꾸면: 담당 도구로 마이그레이션 만들기(reference 의 명령), 필요하면 타입 재생성.
+- 항목이 스키마를 바꾸면: 담당 도구의 생성 명령으로 마이그레이션 만들기, 필요하면 타입 재생성.
 - 항목이 API 요청·응답 형식을 바꾸면: 그 API 를 쓰는 쪽(프론트엔드, 다른 서비스)도 바꾸는지.
 - 마이그레이션 담당이 둘이거나 모노레포 서비스가 분명하지 않으면 물을 것으로.
 
@@ -54,7 +49,7 @@ CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아�
 
 ```markdown
 ### server start check
-감지: Node · NestJS, Supabase (references/node.md, supabase.md 읽음). 마이그레이션 담당: prisma
+감지: Node · NestJS, Supabase (references/supabase.md 읽음). 마이그레이션 담당: prisma
 
 #### 지킬 것
 - …
