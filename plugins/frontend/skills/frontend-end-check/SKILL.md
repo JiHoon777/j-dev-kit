@@ -12,9 +12,10 @@ metadata:
 
 ## 0. 해당 여부
 
-- `frontend-start-check`와 같은 기준. 해당하지 않으면 "해당 없음".
+- CLAUDE.md 에 frontend 가 빠진 `stack:` 줄이 있으면 "해당 없음".
 - `git diff --name-only <기준>...HEAD`에 프론트엔드 코드(컴포넌트, 페이지, 스타일, 클라이언트 로직, package.json)가 없으면 "프론트엔드 변경 없음"만 돌려준다.
-- package.json 에 `svelte`가 있으면 `${CLAUDE_SKILL_DIR}/references/svelte.md`를 Read 도구로 끝까지 읽는다. React 는 따로 돌릴 검사가 없다(훅 린트와 빌드는 검증 명령에 들어 있어야 한다).
+- 볼 package.json 은 바뀐 파일이 속한 앱·패키지의 것이다(모노레포면 루트가 아니다). 거기에 프런트엔드 프레임워크(react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro)가 없으면 "해당 없음".
+- 그 package.json 에 `svelte`가 있으면 `${CLAUDE_SKILL_DIR}/references/svelte.md`를 Read 도구로 끝까지 읽는다. React 는 따로 돌릴 검사가 없다(훅 린트와 빌드는 검증 명령에 들어 있어야 한다).
 
 ## 1. 검사
 
@@ -28,7 +29,12 @@ UI 코드가 바뀌었으면 `frontend:frontend-reviewer`. 근거로 바뀐 UI �
 
 ## 3. 고친 뒤 할 것
 
-리뷰 지적을 고쳐 UI 가 바뀌었으면, 고친 화면에 대해 `frontend-start-check`의 브라우저 확인을 한다. reference 가 더하는 것도.
+리뷰 지적을 고쳐 UI 가 바뀌었으면, 고친 화면을 브라우저에서 확인한다. reference 가 더하는 것도.
+
+- 도구: `chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저. 둘 다 없으면 멈추고 알린다.
+- 개발 서버를 띄운다(`.claude/launch.json`이 있으면 그것). 빌드에서만 보이는 변경은 빌드 후 미리보기.
+- 고친 지적이 말한 상황을 사용자처럼 재현해 문제가 사라졌는지 본다. 콘솔 오류와 실패한 요청(4xx/5xx)이 없어야 한다.
+- 뷰포트는 CLAUDE.md 에 정한 것, 없으면 데스크톱. 반응형 레이아웃을 고쳤으면 휴대폰(375×812)도.
 
 ## 돌려줄 형식
 

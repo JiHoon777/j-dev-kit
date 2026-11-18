@@ -8,7 +8,7 @@ package.json 에 `svelte`가 있을 때 `frontend-start-check`가 읽는다. 아
 
 - `.svelte`, `.svelte.ts`, `.svelte.js`를 만들거나 고칠 때 `svelte-code-writer` 스킬이 있으면 부른다.
 - 모르는 API 는 추측하지 않는다. Svelte MCP 의 `list-sections` → `get-documentation`으로 문서를 본다.
-- 고친 Svelte 파일은 `svelte-autofixer`로 확인한다: MCP 도구, 없으면 `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`. 종료 코드가 아니라 출력으로 판단하고, 남은 문제가 없을 때까지 고친다.
+- 고친 Svelte 파일은 `svelte-autofixer`로 확인한다: MCP 도구, 없으면 `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`. 종료 코드가 아니라 출력으로 판단하고, 이번에 쓴 코드에서 나온 문제는 없어질 때까지 고친다. 손대지 않은 기존 코드의 문제는 고치지 않고 알리기만 한다(항목 범위 밖이다).
 - 파생 값은 `$derived`. `$effect` 안에서 state 에 대입해 만들지 않는다.
 - 컴포넌트 최상위에서 `window`, `document`, `localStorage`를 쓰지 않는다. `onMount`, `$effect` 안이나 `browser` 확인 뒤에.
 - 다른 사람이 쓴 값을 `{@html}`로 넣지 않는다.

@@ -10,7 +10,7 @@ If the official Svelte plugin (`svelte@svelte`) is installed, use its skills and
 
 - When creating or modifying `.svelte`, `.svelte.ts`, `.svelte.js`, invoke the `svelte-code-writer` skill if available.
 - Do not guess APIs you don't know. Look up the docs with the Svelte MCP's `list-sections` → `get-documentation`.
-- Check modified Svelte files with `svelte-autofixer`: the MCP tool, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`. Judge by the output, not the exit code, and fix until no problems remain.
+- Check modified Svelte files with `svelte-autofixer`: the MCP tool, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`. Judge by the output, not the exit code, and fix problems reported in the code you wrote this time until they are gone. Do not fix problems in existing code you did not touch; only report them (they are outside the item's scope).
 - Derived values use `$derived`. Do not create them by assigning to state inside `$effect`.
 - Do not use `window`, `document`, `localStorage` at component top level. Use them inside `onMount`, `$effect`, or after a `browser` check.
 - Do not insert values written by other people with `{@html}`.

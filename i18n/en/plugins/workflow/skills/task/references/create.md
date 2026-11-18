@@ -77,7 +77,7 @@ Written by `/task end`: what changed, what was fixed in review, what was deferre
 | Dependencies | Only items with smaller numbers |
 | Implementation Plan | Leave empty |
 
-- Number: the largest number across `docs/backlog/` and `docs/done/` + 1, three digits.
+- Number: the largest number across `docs/backlog/` and `docs/done/` + 1, three digits. `README.md` and files starting with `_` are not items.
 - File name: `<number>-<label>-<short-english-name>.md`. `status: To Do`, dates set to today.
 - If the request came from a note, delete that line from `docs/backlog/README.md` after creating the item.
 
@@ -88,5 +88,5 @@ Show the content before writing. If asked for changes, make them and show it aga
 ## 4. Save
 
 1. Write the file, and if the project has a format command, run it until it passes.
-2. Commit only the item file (and the deleted note line): `docs(backlog): <number> <title>`. Do not push.
+2. Commit the item file and the deleted note line, plus any files newly created in step 0: `docs(backlog): <number> <title>`. Do not include other changes. If they are left behind, `/task start` stops at "There are uncommitted changes". Do not push.
 3. Report the path and number, and say to start with `/task start <number>`.

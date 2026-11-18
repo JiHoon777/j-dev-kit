@@ -13,7 +13,7 @@ metadata:
 ## 0. 해당 여부
 
 - `server-start-check`와 같은 기준으로 판별하고, 같은 규칙으로 마이그레이션 담당을 정한다.
-- `git diff --name-only <기준>...HEAD`에 서버 코드, 마이그레이션, API 스펙, `supabase/`, 설정 파일이 없으면 "서버 변경 없음"만 돌려준다.
+- `git diff --name-only <기준>...HEAD`에 서버 코드, 마이그레이션, API 스펙, `supabase/`, 설정 파일이 없고, 추가된 줄에 Supabase 를 부르는 코드(`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)도 없으면 "서버 변경 없음"만 돌려준다. 브라우저 코드에서 Supabase 를 부르는 변경도 이 점검의 대상이다.
 
 ## 1. 검사 (해당할 때만)
 
@@ -45,7 +45,13 @@ OpenAPI 스펙이 있고 바뀌었을 때:
 
 - **advisors:** `supabase db advisors`. 이 변경으로 새로 생긴 지적이 있으면 실패.
 - **타입**(생성된 타입 파일이 있을 때): 같은 옵션으로 임시 파일에 `supabase gen types typescript --local`을 만들어 비교. 다르면 실패(다시 생성해 커밋).
-- **키:** `grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .` 값은 옮겨 적지 않는다. `eyJ` 토큰은 가운데 부분을 디코드해 `role`이 `anon`이면 괜찮다. 클라이언트 코드나 공개 접두사 환경 변수에 비밀 키가 있거나, 코드·마이그레이션·seed 에 키가 박혀 있거나, `supabase/functions/.env` 같은 시크릿 파일이 커밋돼 있으면 실패.
+- **키:** 키 값이 대화에 들어오지 않게 파일 이름만 찾는다. 이번 변경에서 바뀐 줄에 패턴이 있는 파일만 본다.
+  ```bash
+  git diff --name-only -G'sb_secret_|eyJ[A-Za-z0-9_-]{20,}' <기준>...HEAD
+  git diff --name-only -G'service_role|SERVICE_ROLE' <기준>...HEAD -- . ':(exclude)*.sql'   # SQL 의 역할 이름은 키가 아니다
+  git ls-files | grep -E '(^|/)\.env($|\.)' | grep -vE '\.(example|sample)$'                  # 커밋된 값 파일
+  ```
+  나온 파일에 `eyJ` 토큰이 있으면 가운데 부분만 디코드해 `role`만 확인한다(`anon`이면 괜찮다). 토큰 전체를 출력하지 않는다. 클라이언트 코드나 공개 접두사 환경 변수에 비밀 키가 있거나, 코드·seed 에 키가 박혀 있거나, `.env` 같은 값 파일이 커밋돼 있으면 실패. 근거에는 파일 이름만 적는다.
 
 ## 2. 리뷰에 넣을 에이전트
 

@@ -65,17 +65,18 @@ Do not fix anything before getting an answer.
 - Call the `superpowers:receiving-code-review` skill and follow it (check findings against the code; for wrong findings, give the reason and do not apply them).
 - For fixes that change behavior, write a failing test first.
 - Do step 2's "To do after fixing" for the fixed parts (e.g. browser-check only the fixed screens). If a fix touched a stack check's area, call that `*-end-check` again.
-- For "later", get approval and create a new item with `/task create`.
+- For "later", read `${CLAUDE_SKILL_DIR}/references/create.md` and create a new item following its steps 2-4 (`/task` can only be invoked by the user, so do not call it with the Skill tool). The user already chose "later", so for step 3's approval, show only the item's content and get approval.
 - Write what was done and seen in `Implementation Notes` and commit.
 
 ## 6. Verify and close the item (Backlog.md definition of done)
 
 1. Run the verify command fresh once. If there are failures not in `### Baseline`, stop and say so.
-2. Close only when everything is in place. If anything is missing, stop and say so.
+2. Write the item's `Final Summary`: what changed, what was fixed in review, what was deferred (new item numbers).
+3. Close only when everything is in place. If anything is missing, stop and say so.
    - [ ] All Acceptance Criteria checked
    - [ ] All Definition of Done checked
-   - [ ] `Final Summary`: what changed, what was fixed in review, what was deferred (new item numbers)
-3. On the work branch:
+   - [ ] `Final Summary` written
+4. On the work branch:
 
 ```bash
 # after changing the item file's status to Done and updated_date to today
@@ -95,4 +96,4 @@ Call the `superpowers:finishing-a-development-branch` skill and follow it. This 
 - If the base branch has no upstream, skip `git pull`.
 - Push only when the user asks.
 
-When done, report: the merged commits, the moved item file, new items, and the remaining `To Do` items.
+When done, report: the merged commits, the moved item file, new items, and the remaining `To Do` items (`README.md` and files starting with `_` are not items).

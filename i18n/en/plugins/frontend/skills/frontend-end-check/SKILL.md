@@ -14,9 +14,10 @@ Called by `/task end`. Runs commands and returns only the results. The review th
 
 ## 0. Applicability
 
-- Same criteria as `frontend-start-check`. If not applicable, "Not applicable".
+- If CLAUDE.md has a `stack:` line without frontend, "Not applicable".
 - If `git diff --name-only <base>...HEAD` contains no frontend code (components, pages, styles, client logic, package.json), return only "No frontend changes".
-- If package.json has `svelte`, read `${CLAUDE_SKILL_DIR}/references/svelte.md` to the end with the Read tool. React has no separate checks to run (hook lint and build should be in the verification commands).
+- The package.json to look at is that of the app or package the changed files belong to (in a monorepo, not the root). If it has no frontend framework (react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro), "Not applicable".
+- If that package.json has `svelte`, read `${CLAUDE_SKILL_DIR}/references/svelte.md` to the end with the Read tool. React has no separate checks to run (hook lint and build should be in the verification commands).
 
 ## 1. Checks
 
@@ -30,7 +31,12 @@ If UI code changed, `frontend:frontend-reviewer`. Pass the list of changed UI fi
 
 ## 3. After fixes
 
-If fixing review findings changed the UI, do the browser check from `frontend-start-check` on the fixed screens. Also what the reference adds.
+If fixing review findings changed the UI, check the fixed screens in the browser. Also what the reference adds.
+
+- Tool: the `chrome-devtools` skill if available, otherwise the app's built-in browser. If neither is available, stop and say so.
+- Start the dev server (`.claude/launch.json` if present). For changes visible only in a build, preview after building.
+- Reproduce, as a user would, the situation the fixed finding described and see that the problem is gone. There must be no console errors and no failed requests (4xx/5xx).
+- Viewport: the one set in CLAUDE.md, otherwise desktop. If you fixed a responsive layout, also mobile (375×812).
 
 ## Return format
 

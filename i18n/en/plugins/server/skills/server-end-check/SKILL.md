@@ -15,7 +15,7 @@ Called by `/task end`. Runs commands and returns only the results. Review that r
 ## 0. Applicability
 
 - Detect with the same criteria as `server-start-check`, and decide the migration owner with the same rules.
-- If `git diff --name-only <base>...HEAD` has no server code, migrations, API spec, `supabase/`, or config files, return only "No server changes".
+- If `git diff --name-only <base>...HEAD` has no server code, migrations, API spec, `supabase/`, or config files, and no added line has code that calls Supabase (`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`) either, return only "No server changes". Changes that call Supabase from browser code are also in scope for this check.
 
 ## 1. Checks (only when applicable)
 
@@ -47,7 +47,13 @@ Only when files under `supabase/` or code that calls Supabase (`.from(`, `.rpc(`
 
 - **advisors:** `supabase db advisors`. A finding newly introduced by this change is a failure.
 - **Types** (when a generated types file exists): generate `supabase gen types typescript --local` into a temp file with the same options and compare. A difference is a failure (regenerate and commit).
-- **Keys:** `grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .` Do not copy values. For an `eyJ` token, decode the middle part; if `role` is `anon`, it is fine. Failure if a secret key appears in client code or a public-prefixed environment variable, a key is hardcoded in code, migrations, or seed, or a secret file such as `supabase/functions/.env` is committed.
+- **Keys:** find only file names, so key values never enter the conversation. Look only at files where lines changed in this change match the pattern.
+  ```bash
+  git diff --name-only -G'sb_secret_|eyJ[A-Za-z0-9_-]{20,}' <base>...HEAD
+  git diff --name-only -G'service_role|SERVICE_ROLE' <base>...HEAD -- . ':(exclude)*.sql'   # role names in SQL are not keys
+  git ls-files | grep -E '(^|/)\.env($|\.)' | grep -vE '\.(example|sample)$'                  # committed value files
+  ```
+  If a listed file has an `eyJ` token, decode only the middle part and check only `role` (`anon` is fine). Do not print the whole token. Failure if a secret key appears in client code or a public-prefixed environment variable, a key is hardcoded in code or seed, or a value file such as `.env` is committed. Write only file names as evidence.
 
 ## 2. Agents to add to the review
 

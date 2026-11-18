@@ -12,8 +12,9 @@ metadata:
 
 ## 0. 해당 여부
 
-- CLAUDE.md 에 frontend 가 빠진 `stack:` 줄이 있거나, package.json `dependencies`·`devDependencies`에 react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro 가 하나도 없으면 → "해당 없음"만 돌려준다.
-- 모노레포면 이 항목이 건드리는 앱을 정한다. 분명하지 않으면 물을 것으로.
+- CLAUDE.md 에 frontend 가 빠진 `stack:` 줄이 있으면 "해당 없음"만 돌려준다.
+- 볼 package.json 을 정한다. 모노레포(`pnpm-workspace.yaml`의 `packages:`, package.json `workspaces`, `turbo.json`, `nx.json`)면 루트가 아니라 이 항목이 건드리는 앱·패키지의 package.json 이다. 어느 것인지 분명하지 않으면 물을 것으로.
+- 그 package.json 의 `dependencies`·`devDependencies`에 react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro 가 하나도 없으면 "해당 없음"만 돌려준다.
 - 프레임워크를 감지하고 맞는 reference 를 Read 도구로 끝까지 읽는다. 여럿이면 모두.
 
   | package.json 에 | reference |

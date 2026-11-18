@@ -16,7 +16,7 @@ If any of these applies, stop and say so. Do not clean it up on your own.
 | There are uncommitted changes | Show them and ask what to do |
 | A `w/` branch already exists, or the current branch is not the base branch | Ask whether to continue, finish with `/task end`, or discard. If continuing, switch to that branch, read the item's `Implementation Plan`, and resume from step 5 |
 
-Finding the item: look up the argument in `docs/backlog/`. If there is no match or several, show the `To Do` items by number and title and let the user pick. Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
+Finding the item: look up the argument in `docs/backlog/` (`README.md` and files starting with `_` are not items). If there is no match or several, show the `To Do` items by number and title and let the user pick. Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
 
 ## 2. Baseline and stack checks
 
@@ -59,7 +59,7 @@ Before approval, do not edit files and do not create a branch.
 
 - Call the `superpowers:test-driven-development` skill and follow it.
 - Follow the stack checks' **Follow**.
-- Do only what is in the Acceptance Criteria. Do not polish or refactor surrounding code. If other work seems needed, say so, and if agreed, create it separately with `/task create`.
+- Do only what is in the Acceptance Criteria. Do not polish or refactor surrounding code. If other work seems needed, say so, and if agreed, create a separate item following steps 2-4 of `${CLAUDE_SKILL_DIR}/references/create.md`.
 - When one AC is done, verify it and check it off right away. Write what changed from the plan in `Implementation Notes`. If the scope grows, stop and ask.
 - Commit to the work branch at each meaningful step. Do not commit to the base branch and do not push.
 

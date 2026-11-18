@@ -8,7 +8,11 @@ If no `.svelte`, `.svelte.ts`, `.svelte.js` files changed, skip.
 
 ## Checks
 
-Run `svelte-autofixer` on each changed Svelte file (the MCP tool, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`). Judge by the output, not the exit code. If problems remain, fail. Type and accessibility warnings (`svelte-check`) are in the verification commands, so do not run them again here.
+Run `svelte-autofixer` on each changed Svelte file (the MCP tool, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`). Judge by the output, not the exit code.
+
+The autofixer looks at the whole file, so it also reports problems that existed before this change. For existing files, also run it on the base branch version (`git show <base>:<file>` into a temp file) and compare; count **only newly introduced `issues` as failures**. For new files, all reported `issues` are new. Write `suggestions` and pre-existing problems only as evidence.
+
+Type and accessibility warnings (`svelte-check`) are in the verification commands, so do not run them again here.
 
 ## After fixes
 

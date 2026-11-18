@@ -14,8 +14,9 @@ Called by `/task start`. Does not modify anything and runs almost no commands. R
 
 ## 0. Applicability
 
-- If CLAUDE.md has a `stack:` line without frontend, or package.json `dependencies`/`devDependencies` contain none of react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro → return only "Not applicable".
-- In a monorepo, determine which app this item touches. If unclear, make it a question to ask.
+- If CLAUDE.md has a `stack:` line without frontend, return only "Not applicable".
+- Decide which package.json to look at. In a monorepo (`packages:` in `pnpm-workspace.yaml`, package.json `workspaces`, `turbo.json`, `nx.json`), it is the package.json of the app or package this item touches, not the root. If it is unclear which one, make it a question to ask.
+- If that package.json's `dependencies`/`devDependencies` contain none of react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro, return only "Not applicable".
 - Detect the framework and read the matching reference to the end with the Read tool. If there are several, read all of them.
 
   | In package.json | reference |
