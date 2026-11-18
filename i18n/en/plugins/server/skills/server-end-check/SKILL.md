@@ -14,7 +14,7 @@ Called by `/task end`. Runs commands and returns only the results. Review that r
 
 ## 0. Applicability
 
-- Detect with the same criteria as `server-start-check`, and decide the migration owner with the same rules. If Supabase is used, read `${CLAUDE_SKILL_DIR}/references/supabase.md` to the end with the Read tool.
+- Detect with the same criteria as `server-start-check`, and decide the migration owner with the same rules.
 - If `git diff --name-only <base>...HEAD` has no server code, migrations, API spec, `supabase/`, or config files, return only "No server changes".
 
 ## 1. Checks (only when applicable)
@@ -35,7 +35,7 @@ A schema change must ship with a migration. If schema-related code changed, run 
 | Atlas | `atlas migrate validate` | timestamp |
 | golang-migrate | There is no check tool. See whether the schema change has a new up/down file pair | number |
 | Flyway / Liquibase | Check that the schema change has a new migration file or changeset, then `flyway validate` / `liquibase validate` | version number |
-| Supabase CLI | supabase.md | timestamp |
+| Supabase CLI | Passes only if `supabase db diff` output is empty. If it prints SQL, failure (a change in the local DB that is not in a migration file; use the output as evidence) | timestamp |
 
 **Order (timestamp, number):** if new migrations landed on the base branch while you worked, the new file's timestamp or number must come after the newest file on `origin/<base>`. Otherwise, failure.
 
@@ -53,12 +53,16 @@ When an OpenAPI spec exists and changed:
 
 ### Supabase
 
-The checks in supabase.md.
+Only when files under `supabase/` or code that calls Supabase (`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`) changed. Checks that need the DB run only while the local stack is running (`supabase status`; if it is off, ask whether to start it).
+
+- **advisors:** `supabase db advisors`. A finding newly introduced by this change is a failure.
+- **Types** (when a generated types file exists): generate `supabase gen types typescript --local` into a temp file with the same options and compare. A difference is a failure (regenerate and commit).
+- **Keys:** `grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .` Do not copy values. For an `eyJ` token, decode the middle part; if `role` is `anon`, it is fine. Failure if a secret key appears in client code or a public-prefixed environment variable, a key is hardcoded in code, migrations, or seed, or a secret file such as `supabase/functions/.env` is committed.
 
 ## 2. Agents to add to the review
 
 - If server code (routes, handlers, services, authorization, queries), the API spec, or server migrations changed, `server:api-reviewer`. Evidence: changed files, new migration files, the oasdiff result (or the two spec paths).
-- If supabase.md returns it, `server:rls-reviewer`.
+- If the Supabase scope above changed, `server:rls-reviewer`. Evidence: changed files, new migration files, advisors findings, whether the local stack is running.
 
 ## 3. After fixes
 

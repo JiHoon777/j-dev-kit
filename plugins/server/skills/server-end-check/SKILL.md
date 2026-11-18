@@ -12,7 +12,7 @@ metadata:
 
 ## 0. 해당 여부
 
-- `server-start-check`와 같은 기준으로 판별하고, 같은 규칙으로 마이그레이션 담당을 정한다. Supabase 를 쓰면 `${CLAUDE_SKILL_DIR}/references/supabase.md`를 Read 도구로 끝까지 읽는다.
+- `server-start-check`와 같은 기준으로 판별하고, 같은 규칙으로 마이그레이션 담당을 정한다.
 - `git diff --name-only <기준>...HEAD`에 서버 코드, 마이그레이션, API 스펙, `supabase/`, 설정 파일이 없으면 "서버 변경 없음"만 돌려준다.
 
 ## 1. 검사 (해당할 때만)
@@ -33,7 +33,7 @@ metadata:
 | Atlas | `atlas migrate validate` | 타임스탬프 |
 | golang-migrate | 확인 도구가 없다. 스키마 변경에 새 up/down 파일 쌍이 있는지 본다 | 번호 |
 | Flyway / Liquibase | 스키마 변경에 새 마이그레이션 파일·changeset 이 있는지 본 뒤 `flyway validate` / `liquibase validate` | 버전 번호 |
-| Supabase CLI | supabase.md | 타임스탬프 |
+| Supabase CLI | `supabase db diff` 출력이 비어 있어야 통과. SQL 이 나오면 실패(로컬 DB 에는 있지만 마이그레이션 파일에 없는 변경, 출력을 근거로) | 타임스탬프 |
 
 **순서(타임스탬프·번호):** 작업하는 동안 기준 브랜치에 새 마이그레이션이 들어왔으면, 새 파일의 타임스탬프·번호가 `origin/<기준>`의 가장 새 파일보다 뒤여야 한다. 아니면 실패.
 
@@ -51,12 +51,16 @@ OpenAPI 스펙이 있고 바뀌었을 때:
 
 ### Supabase
 
-supabase.md 의 검사.
+`supabase/` 아래나 Supabase 를 부르는 코드(`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)가 바뀌었을 때만. DB 가 필요한 검사는 로컬 스택이 돌 때만(`supabase status`, 꺼져 있으면 켤지 묻는다).
+
+- **advisors:** `supabase db advisors`. 이 변경으로 새로 생긴 지적이 있으면 실패.
+- **타입**(생성된 타입 파일이 있을 때): 같은 옵션으로 임시 파일에 `supabase gen types typescript --local`을 만들어 비교. 다르면 실패(다시 생성해 커밋).
+- **키:** `grep -rnE "sb_secret_|service_role|SERVICE_ROLE|eyJ[A-Za-z0-9_-]{20,}" --exclude-dir=node_modules --exclude-dir=build --exclude-dir=.next --exclude-dir=.svelte-kit .` 값은 옮겨 적지 않는다. `eyJ` 토큰은 가운데 부분을 디코드해 `role`이 `anon`이면 괜찮다. 클라이언트 코드나 공개 접두사 환경 변수에 비밀 키가 있거나, 코드·마이그레이션·seed 에 키가 박혀 있거나, `supabase/functions/.env` 같은 시크릿 파일이 커밋돼 있으면 실패.
 
 ## 2. 리뷰에 넣을 에이전트
 
 - 서버 코드(라우트, 핸들러, 서비스, 인가, 쿼리), API 스펙, 서버 마이그레이션이 바뀌었으면 `server:api-reviewer`. 근거: 바뀐 파일, 새 마이그레이션 파일, oasdiff 결과(또는 두 스펙 경로).
-- supabase.md 가 돌려주면 `server:rls-reviewer`.
+- 위 Supabase 범위가 바뀌었으면 `server:rls-reviewer`. 근거: 바뀐 파일, 새 마이그레이션 파일, advisors 지적, 로컬 스택이 도는지.
 
 ## 3. 고친 뒤 할 것
 

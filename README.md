@@ -12,7 +12,7 @@ Claude Code용 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), 에이전트 `frontend-reviewer` | `typescript-lsp`, `frontend-design` |
-| `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: supabase), 에이전트 `api-reviewer`, `rls-reviewer` | — |
+| `server` (+ `workflow`) | `server-start-check`, `server-end-check`, 에이전트 `api-reviewer`, `rls-reviewer` | — |
 
 Supabase 를 쓰면(프론트엔드에서 바로 부르는 경우도) `server`를 설치한다. `supabase/config.toml`이나 `@supabase/` 의존성을 보고 Supabase 점검과 `rls-reviewer`가 켜진다.
 
@@ -30,8 +30,8 @@ plugins/frontend/
   skills/frontend-end-check/    SKILL.md + references/svelte.md
 plugins/server/
   agents/api-reviewer.md, rls-reviewer.md
-  skills/server-start-check/    SKILL.md + references/supabase.md
-  skills/server-end-check/      (같은 구조)
+  skills/server-start-check/    SKILL.md
+  skills/server-end-check/      SKILL.md
 i18n/en/…                  영어 번역본 (Claude 는 읽지 않음)
 ```
 
@@ -106,7 +106,7 @@ Claude Code 안에서 실행한다(터미널에서는 `claude plugin …`).
 | Chrome DevTools | 브라우저 확인(없으면 앱 내장 브라우저) | `/plugin marketplace add ChromeDevTools/chrome-devtools-mcp`, `/plugin install chrome-devtools-mcp@chrome-devtools-plugins` |
 | `modern-web-guidance` | 새 웹 기능·UI 패턴 고르기 | `/plugin marketplace add GoogleChrome/modern-web-guidance`, `/plugin install modern-web-guidance@googlechrome` |
 | Vercel `react-best-practices` | React 컴포넌트 작성 | `npx -y skills@1.7.5 add vercel-labs/agent-skills` |
-| 공식 Supabase 플러그인 | Supabase 코드 작성 규칙 | `/plugin install supabase@anthropic-plugin-directory` (같이 오는 MCP 서버는 읽기 전용이 아니니 `/mcp`에서 끄는 것을 권한다) |
+| 공식 Supabase 플러그인 | Supabase·Postgres 작업 때 스스로 불리는 스킬(`supabase`, `supabase-postgres-best-practices`) | `/plugin install supabase@anthropic-plugin-directory` (같이 오는 MCP 서버는 읽기 전용이 아니니 `/mcp`에서 끄는 것을 권한다) |
 | 언어별 LSP | 코드 진단 | `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `typescript-lsp` (`anthropic-plugin-directory`, 실행 파일은 따로 설치) |
 
 React 프로젝트는 `eslint-plugin-react-hooks`의 `recommended`를 켜 두고 검증 명령에 린트를 넣어 두면 `/task`가 훅 규칙을 따로 검사하지 않아도 된다.

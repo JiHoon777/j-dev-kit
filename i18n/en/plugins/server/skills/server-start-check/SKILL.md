@@ -1,6 +1,6 @@
 ---
 name: server-start-check
-description: Pre-work check for backend and Supabase projects. Called by the start mode of the workflow plugin's task skill. Detects server code (Node, Python, Go, Java/Kotlin), Supabase usage, and the migration owner, and returns what to follow during implementation and what to put in the plan. Supabase content is in references/supabase.md.
+description: Pre-work check for backend and Supabase projects. Called by the start mode of the workflow plugin's task skill. Detects server code (Node, Python, Go, Java/Kotlin), Supabase usage, and the migration owner, and returns what to follow during implementation and what to put in the plan.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -17,7 +17,7 @@ Called by `/task start`. Does not edit anything. Returns only what fits this ite
 If CLAUDE.md has a `stack:` line without server, "Not applicable". If none of the following exist, also "Not applicable".
 
 - **Server code:** `express`, `@nestjs/core`, `fastify`, `hono`, `koa` in package.json / `fastapi`, `django`, `flask` in `pyproject.toml` or `requirements*.txt` / `go.mod` / `spring-boot` in `pom.xml` or `build.gradle*`
-- **Supabase:** `supabase/config.toml`, or an `@supabase/` package in package.json → read `${CLAUDE_SKILL_DIR}/references/supabase.md` to the end with the Read tool.
+- **Supabase:** `supabase/config.toml`, or an `@supabase/` package in package.json
 
 In a monorepo, decide which service this item touches. If unclear, put it under questions.
 
@@ -38,8 +38,7 @@ Return only what applies to this item.
 - Multiple writes in one transaction. Idempotency keys for create requests that can be retried (payments, orders).
 - Schema changes only through the owning tool's migration files. Do not change the DB by hand.
 - Do not leave passwords, tokens, keys, or connection strings in logs or error responses.
-- Do not run commands that change the real (remote) database or a deployment environment. If needed, tell the user.
-- If Supabase is used, the rules in supabase.md.
+- Do not run commands that change the real (remote) database or a deployment environment (`supabase db push`, `--linked` changes, and so on). If needed, tell the user.
 
 ## 2. Put in the plan / ask
 
@@ -51,7 +50,7 @@ Return only what applies to this item.
 
 ```markdown
 ### server start check
-Detected: Node · NestJS, Supabase (read references/supabase.md). Migration owner: prisma
+Detected: Node · NestJS, Supabase. Migration owner: prisma
 
 #### Follow
 - …

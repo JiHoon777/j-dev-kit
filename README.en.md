@@ -14,7 +14,7 @@ There is one principle: **if you cannot say which failure a step prevents, leave
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
 | `frontend` (+ `workflow`) | `frontend-start-check`, `frontend-end-check` (references: svelte, react), agent `frontend-reviewer` | `typescript-lsp`, `frontend-design` |
-| `server` (+ `workflow`) | `server-start-check`, `server-end-check` (references: supabase), agents `api-reviewer`, `rls-reviewer` | — |
+| `server` (+ `workflow`) | `server-start-check`, `server-end-check`, agents `api-reviewer`, `rls-reviewer` | — |
 
 If you use Supabase (including calling it directly from the frontend), install `server`. Supabase checks and `rls-reviewer` turn on when `supabase/config.toml` or an `@supabase/` dependency is found.
 
@@ -32,8 +32,8 @@ plugins/frontend/
   skills/frontend-end-check/    SKILL.md + references/svelte.md
 plugins/server/
   agents/api-reviewer.md, rls-reviewer.md
-  skills/server-start-check/    SKILL.md + references/supabase.md
-  skills/server-end-check/      (same structure)
+  skills/server-start-check/    SKILL.md
+  skills/server-end-check/      SKILL.md
 i18n/en/…                  English translations (Claude does not read them)
 ```
 
@@ -108,7 +108,7 @@ If installed, the skills call them; without them, the checks still run.
 | Chrome DevTools | Browser checks (otherwise the app's built-in browser) | `/plugin marketplace add ChromeDevTools/chrome-devtools-mcp`, `/plugin install chrome-devtools-mcp@chrome-devtools-plugins` |
 | `modern-web-guidance` | Choosing new web features and UI patterns | `/plugin marketplace add GoogleChrome/modern-web-guidance`, `/plugin install modern-web-guidance@googlechrome` |
 | Vercel `react-best-practices` | Writing React components | `npx -y skills@1.7.5 add vercel-labs/agent-skills` |
-| Official Supabase plugin | Rules for writing Supabase code | `/plugin install supabase@anthropic-plugin-directory` (the MCP server that comes with it is not read-only, so turning it off in `/mcp` is recommended) |
+| Official Supabase plugin | Skills that load themselves for Supabase and Postgres work (`supabase`, `supabase-postgres-best-practices`) | `/plugin install supabase@anthropic-plugin-directory` (the MCP server that comes with it is not read-only, so turning it off in `/mcp` is recommended) |
 | Per-language LSP | Code diagnostics | `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`, `typescript-lsp` (`anthropic-plugin-directory`; install the executables separately) |
 
 For React projects, if you enable `recommended` from `eslint-plugin-react-hooks` and include linting in the verify command, `/task` does not need to check hook rules separately.

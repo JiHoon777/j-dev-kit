@@ -1,6 +1,6 @@
 ---
 name: server-start-check
-description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 서버 코드(Node, Python, Go, Java/Kotlin)와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다. Supabase 내용은 references/supabase.md 에 있다.
+description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 서버 코드(Node, Python, Go, Java/Kotlin)와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -15,7 +15,7 @@ metadata:
 CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아래 중 하나도 없어도 "해당 없음".
 
 - **서버 코드:** package.json 에 `express`, `@nestjs/core`, `fastify`, `hono`, `koa` / `pyproject.toml`·`requirements*.txt`에 `fastapi`, `django`, `flask` / `go.mod` / `pom.xml`·`build.gradle*`에 `spring-boot`
-- **Supabase:** `supabase/config.toml`, 또는 package.json 에 `@supabase/` 패키지 → `${CLAUDE_SKILL_DIR}/references/supabase.md`를 Read 도구로 끝까지 읽는다.
+- **Supabase:** `supabase/config.toml`, 또는 package.json 에 `@supabase/` 패키지
 
 모노레포면 이 항목이 건드리는 서비스를 정한다. 분명하지 않으면 물을 것으로.
 
@@ -36,8 +36,7 @@ CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아�
 - 여러 쓰기는 한 트랜잭션으로. 재시도될 수 있는 생성 요청(결제, 주문)에는 멱등성 키.
 - 스키마 변경은 담당 도구의 마이그레이션 파일로만. DB 를 손으로 바꾸지 않는다.
 - 비밀번호, 토큰, 키, 연결 문자열을 로그와 오류 응답에 남기지 않는다.
-- 실제(원격) 데이터베이스나 배포 환경을 바꾸는 명령은 돌리지 않는다. 필요하면 사용자에게 알린다.
-- Supabase 를 쓰면 supabase.md 의 규칙.
+- 실제(원격) 데이터베이스나 배포 환경을 바꾸는 명령(`supabase db push`, `--linked` 변경 등)은 돌리지 않는다. 필요하면 사용자에게 알린다.
 
 ## 2. 플랜에 넣을 것 / 물을 것
 
@@ -49,7 +48,7 @@ CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아�
 
 ```markdown
 ### server start check
-감지: Node · NestJS, Supabase (references/supabase.md 읽음). 마이그레이션 담당: prisma
+감지: Node · NestJS, Supabase. 마이그레이션 담당: prisma
 
 #### 지킬 것
 - …
