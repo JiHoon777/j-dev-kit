@@ -19,25 +19,15 @@ Called by `/task end`. Runs commands and returns only the results. Review that r
 
 ## 1. Checks (only when applicable)
 
-Run database commands only against a local or development DB. If it looks like production, do not run them and tell the user. Use only project tools that are installed (`npx --no-install` and so on). If missing, write "tool not installed".
+Run database commands only against a local or development DB. If it looks like production, do not run them and tell the user. Use only project tools that are installed; do not download new ones. If missing, write "tool not installed".
 
 ### Missing migrations and order
 
-A schema change must ship with a migration. If schema-related code changed, run the owning tool's check command; if it reports a difference, that is a failure. If there are new migrations, also check the order.
+A schema change must ship with a migration. If schema-related code changed:
 
-| Tool | Missing migration | Order |
-| --- | --- | --- |
-| Prisma | `npx --no-install prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code` → exit code 2 is a failure (0 means no difference, 1 means error) | timestamp |
-| Drizzle | After `npx --no-install drizzle-kit generate`, a new file in `git status --porcelain <output folder>` is a failure (do not delete the generated file; report it) | timestamp |
-| TypeORM | If `npx --no-install typeorm migration:generate <temp path> -d <DataSource>` creates a file, failure (delete the temp file) | timestamp |
-| Alembic | `alembic check` fails → failure | `alembic heads` returns two or more lines → failure (merge revision needed) |
-| Django | `python manage.py makemigrations --check` fails → failure | the same command reports conflicting leaf nodes → failure (`makemigrations --merge`) |
-| Atlas | `atlas migrate validate` | timestamp |
-| golang-migrate | There is no check tool. See whether the schema change has a new up/down file pair | number |
-| Flyway / Liquibase | Check that the schema change has a new migration file or changeset, then `flyway validate` / `liquibase validate` | version number |
-| Supabase CLI | Passes only if `supabase db diff` output is empty. If it prints SQL, failure (a change in the local DB that is not in a migration file; use the output as evidence) | timestamp |
-
-**Order (timestamp, number):** if new migrations landed on the base branch while you worked, the new file's timestamp or number must come after the newest file on `origin/<base>`. Otherwise, failure.
+- **Missing migration:** use the check the project defines (CLAUDE.md, package.json or Makefile scripts). If there is none, use the owning tool's drift check command. For tools that compare against the DB, apply the migrations to the local DB first (otherwise a difference shows up even when nothing is missing). A reported difference is a failure. If there is no way to check, write "could not check" and pass it to the reviewer.
+- **If the Supabase CLI is the owner:** apply locally with `supabase migration up`, then `supabase db diff`. Passes only if the output is empty; if it prints SQL, failure (a change not in a migration file; use the output as evidence).
+- **Order:** if new migrations landed on the base branch while you worked, the new file's timestamp or number must come after the newest file on the base branch. Otherwise, failure.
 
 ### API spec
 

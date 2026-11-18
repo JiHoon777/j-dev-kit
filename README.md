@@ -200,8 +200,8 @@ claude plugin update workflow@j-dev-kit --scope project    # 설치한 플러그
 
 ## 알아 둘 것
 
-- **마이그레이션 담당은 하나.** 서버 마이그레이션 도구(Prisma, Drizzle, TypeORM, Alembic, Django, Atlas, Flyway, Liquibase, golang-migrate)가 있으면 DB 가 Supabase 여도 그 도구가 담당이다. 없고 `supabase/`가 있으면 Supabase CLI 가 담당이다. 둘 다 있으면 어느 쪽이 기준인지 묻는다.
-- **외부 CLI 는 버전을 고정한다.** `npx`로 내려받는 도구(`@sveltejs/mcp`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 프로젝트 도구(Prisma, Drizzle, TypeORM)는 `npx --no-install`로 설치된 것만 쓴다.
+- **마이그레이션 담당은 하나.** 서버 쪽 마이그레이션 도구(ORM·마이그레이션 도구)가 있으면 DB 가 Supabase 여도 그 도구가 담당이다. 없고 `supabase/`가 있으면 Supabase CLI 가 담당이다. 둘 다 있으면 어느 쪽이 기준인지 묻는다.
+- **외부 CLI 는 버전을 고정한다.** `npx`로 내려받는 도구(`@sveltejs/mcp`, `skills`)는 공개된 지 2주 넘은 버전으로 고정했다. 프로젝트 도구는 설치된 것만 쓴다. 마이그레이션 확인 명령은 프로젝트 CLAUDE.md 나 스크립트에 적어 두면 그것을 쓴다.
 
 ### Supabase MCP (선택)
 

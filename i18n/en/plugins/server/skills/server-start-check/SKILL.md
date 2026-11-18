@@ -1,6 +1,6 @@
 ---
 name: server-start-check
-description: Pre-work check for backend and Supabase projects. Called by the start mode of the workflow plugin's task skill. Detects server code (Node, Python, Go, Java/Kotlin), Supabase usage, and the migration owner, and returns what to follow during implementation and what to put in the plan.
+description: Pre-work check for backend and Supabase projects. Called by the start mode of the workflow plugin's task skill. Detects server code, Supabase usage, and the migration owner, and returns what to follow during implementation and what to put in the plan.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -16,7 +16,7 @@ Called by `/task start`. Does not edit anything. Returns only what fits this ite
 
 If CLAUDE.md has a `stack:` line without server, "Not applicable". If none of the following exist, also "Not applicable".
 
-- **Server code:** `express`, `@nestjs/core`, `fastify`, `hono`, `koa` in package.json / `fastapi`, `django`, `flask` in `pyproject.toml` or `requirements*.txt` / `go.mod` / `spring-boot` in `pom.xml` or `build.gradle*`
+- **Server code:** an HTTP server framework dependency or a server entry point (routes, handlers)
 - **Supabase:** `supabase/config.toml`, or an `@supabase/` package in package.json
 
 In a monorepo, decide which service this item touches. If unclear, put it under questions.
@@ -25,7 +25,7 @@ In a monorepo, decide which service this item touches. If unclear, put it under 
 
 Pick a single tool for schema changes. Use the first that matches.
 
-1. Both a server migration tool (`prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway, Liquibase, golang-migrate folder) and `supabase/migrations/` exist → put "Which one is the source of truth?" under questions. Until answered, the server tool.
+1. Both a server-side migration tool (an ORM or migration tool's config file or migration folder) and `supabase/migrations/` exist → put "Which one is the source of truth?" under questions. Until answered, the server tool.
 2. A server migration tool exists → the server tool (even if the DB is Supabase).
 3. A `supabase/` folder exists → Supabase CLI.
 4. None → no migrations.

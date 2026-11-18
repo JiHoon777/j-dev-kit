@@ -202,8 +202,8 @@ Then restart Claude Code.
 
 ## Good to know
 
-- **One migration owner.** If there is a server migration tool (Prisma, Drizzle, TypeORM, Alembic, Django, Atlas, Flyway, Liquibase, golang-migrate), that tool is the owner even if the DB is Supabase. If there is none and `supabase/` exists, the Supabase CLI is the owner. If both exist, it asks which one is the source of truth.
-- **External CLIs are version-pinned.** Tools downloaded with `npx` (`@sveltejs/mcp`, `skills`) are pinned to versions published more than 2 weeks ago. Project tools (Prisma, Drizzle, TypeORM) are used only if installed, via `npx --no-install`.
+- **One migration owner.** If there is a server-side migration tool (an ORM or migration tool), that tool is the owner even if the DB is Supabase. If there is none and `supabase/` exists, the Supabase CLI is the owner. If both exist, it asks which one is the source of truth.
+- **External CLIs are version-pinned.** Tools downloaded with `npx` (`@sveltejs/mcp`, `skills`) are pinned to versions published more than 2 weeks ago. Project tools are used only if installed. If the project CLAUDE.md or scripts name a migration check command, that one is used.
 
 ### Supabase MCP (optional)
 

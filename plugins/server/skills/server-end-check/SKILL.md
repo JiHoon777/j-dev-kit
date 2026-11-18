@@ -17,25 +17,15 @@ metadata:
 
 ## 1. 검사 (해당할 때만)
 
-데이터베이스 명령은 로컬·개발 DB 에만 돌린다. 운영으로 보이면 돌리지 않고 알린다. 프로젝트 도구는 설치된 것만 쓴다(`npx --no-install` 등). 없으면 "도구 없음"으로 적는다.
+데이터베이스 명령은 로컬·개발 DB 에만 돌린다. 운영으로 보이면 돌리지 않고 알린다. 프로젝트 도구는 설치된 것만 쓰고 새로 내려받지 않는다. 없으면 "도구 없음"으로 적는다.
 
 ### 빠진 마이그레이션과 순서
 
-스키마를 바꾸면 마이그레이션이 같이 있어야 한다. 스키마 관련 코드가 바뀌었으면 담당 도구의 확인 명령을 돌리고, 차이를 보고하면 실패다. 새 마이그레이션이 있으면 순서도 본다.
+스키마를 바꾸면 마이그레이션이 같이 있어야 한다. 스키마 관련 코드가 바뀌었으면:
 
-| 도구 | 빠진 마이그레이션 | 순서 |
-| --- | --- | --- |
-| Prisma | `npx --no-install prisma migrate diff --from-migrations prisma/migrations --to-schema prisma/schema.prisma --exit-code` → 종료 코드 2 면 실패(0 은 차이 없음, 1 은 오류) | 타임스탬프 |
-| Drizzle | `npx --no-install drizzle-kit generate` 뒤 `git status --porcelain <출력 폴더>`에 새 파일이 있으면 실패(생성된 파일은 지우지 말고 보고) | 타임스탬프 |
-| TypeORM | `npx --no-install typeorm migration:generate <임시 경로> -d <DataSource>`가 파일을 만들면 실패(임시 파일은 지운다) | 타임스탬프 |
-| Alembic | `alembic check` 실패 → 실패 | `alembic heads`가 두 줄 이상 → 실패(merge revision 필요) |
-| Django | `python manage.py makemigrations --check` 실패 → 실패 | 같은 명령이 conflicting leaf node 를 보고 → 실패(`makemigrations --merge`) |
-| Atlas | `atlas migrate validate` | 타임스탬프 |
-| golang-migrate | 확인 도구가 없다. 스키마 변경에 새 up/down 파일 쌍이 있는지 본다 | 번호 |
-| Flyway / Liquibase | 스키마 변경에 새 마이그레이션 파일·changeset 이 있는지 본 뒤 `flyway validate` / `liquibase validate` | 버전 번호 |
-| Supabase CLI | `supabase db diff` 출력이 비어 있어야 통과. SQL 이 나오면 실패(로컬 DB 에는 있지만 마이그레이션 파일에 없는 변경, 출력을 근거로) | 타임스탬프 |
-
-**순서(타임스탬프·번호):** 작업하는 동안 기준 브랜치에 새 마이그레이션이 들어왔으면, 새 파일의 타임스탬프·번호가 `origin/<기준>`의 가장 새 파일보다 뒤여야 한다. 아니면 실패.
+- **빠진 마이그레이션:** 프로젝트가 정한 확인 방법(CLAUDE.md, package.json·Makefile 스크립트)을 쓴다. 없으면 담당 도구의 드리프트 확인 명령을 쓴다. DB 와 비교하는 도구는 먼저 로컬 DB 에 마이그레이션을 적용한 뒤 돌린다(아니면 빠진 게 없어도 차이가 나온다). 차이를 보고하면 실패. 확인할 방법이 없으면 "확인 못 함"으로 적고 리뷰어에게 넘긴다.
+- **Supabase CLI 가 담당이면:** `supabase migration up`으로 로컬에 적용한 뒤 `supabase db diff`. 출력이 비어 있어야 통과, SQL 이 나오면 실패(마이그레이션 파일에 없는 변경, 출력을 근거로).
+- **순서:** 작업하는 동안 기준 브랜치에 새 마이그레이션이 들어왔으면, 새 파일의 타임스탬프·번호가 기준 브랜치의 가장 새 파일보다 뒤여야 한다. 아니면 실패.
 
 ### API 스펙
 

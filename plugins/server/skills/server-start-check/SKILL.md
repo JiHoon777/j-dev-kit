@@ -1,6 +1,6 @@
 ---
 name: server-start-check
-description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 서버 코드(Node, Python, Go, Java/Kotlin)와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다.
+description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 서버 코드와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -14,7 +14,7 @@ metadata:
 
 CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아래 중 하나도 없어도 "해당 없음".
 
-- **서버 코드:** package.json 에 `express`, `@nestjs/core`, `fastify`, `hono`, `koa` / `pyproject.toml`·`requirements*.txt`에 `fastapi`, `django`, `flask` / `go.mod` / `pom.xml`·`build.gradle*`에 `spring-boot`
+- **서버 코드:** HTTP 서버 프레임워크 의존성이나 서버 진입점(라우트·핸들러)
 - **Supabase:** `supabase/config.toml`, 또는 package.json 에 `@supabase/` 패키지
 
 모노레포면 이 항목이 건드리는 서비스를 정한다. 분명하지 않으면 물을 것으로.
@@ -23,7 +23,7 @@ CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아�
 
 스키마 변경을 어느 도구로 할지 하나로 정한다. 처음 맞는 것을 쓴다.
 
-1. 서버 마이그레이션 도구(`prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway, Liquibase, golang-migrate 폴더)와 `supabase/migrations/`가 둘 다 있다 → "어느 쪽이 기준인가?"를 물을 것으로. 답 전까지는 서버 도구.
+1. 서버 쪽 마이그레이션 도구(ORM·마이그레이션 도구의 설정 파일이나 마이그레이션 폴더)와 `supabase/migrations/`가 둘 다 있다 → "어느 쪽이 기준인가?"를 물을 것으로. 답 전까지는 서버 도구.
 2. 서버 마이그레이션 도구가 있다 → 서버 도구(DB 가 Supabase 여도).
 3. `supabase/` 폴더가 있다 → Supabase CLI.
 4. 없다 → 마이그레이션 없음.
