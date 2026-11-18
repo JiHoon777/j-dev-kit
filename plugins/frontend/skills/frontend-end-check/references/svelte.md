@@ -1,28 +1,13 @@
-# Svelte 5 / SvelteKit: end checks
+# Svelte 5 / SvelteKit: 마무리 점검
 
-Read by `frontend-end-check` when `svelte` is in package.json `dependencies` or `devDependencies`. Add these rows, agents, and after-fix items to that skill's report.
+package.json 에 `svelte`가 있을 때 `frontend-end-check`가 읽는다.
 
-This file only runs tools and compares results. Reviews that read the diff and judge it (runes, SSR, server/client boundary, load and form actions, …) are handed to the `frontend:svelte-reviewer` agent (step 3).
+바뀐 `.svelte`, `.svelte.ts`, `.svelte.js` 파일이 없으면 건너뛴다.
 
-If no `.svelte`, `.svelte.ts`, `.svelte.js`, or SvelteKit route file (`+page*`, `+layout*`, `+server*`, `hooks.*`) changed, do only step 1 and skip the rest with "no Svelte changes".
+## 검사
 
-## 1. sv check (compared with the baseline)
+바뀐 Svelte 파일마다 `svelte-autofixer`를 돌린다(MCP 도구, 없으면 `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`). 종료 코드가 아니라 출력으로 판단한다. 남은 문제가 있으면 실패. 타입·접근성 경고(`svelte-check`)는 검증 명령에 들어 있으니 여기서 다시 돌리지 않는다.
 
-Run the same command as `### Baseline`. New errors → fail. New warnings (including accessibility warnings) → fail; Svelte's accessibility warnings are real user problems. Unused CSS warnings go into the evidence only.
+## 고친 뒤 할 것
 
-## 2. svelte-autofixer
-
-Run **every** changed `.svelte`, `.svelte.ts`, and `.svelte.js` file through `svelte-autofixer` (the MCP tool, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`). Judge by the printed result, not the exit code (the CLI can exit non-zero after printing). Any remaining issue → fail; suggestions go into the evidence. What it catches: assignment inside `$effect`, passing a function to `$derived`, importing runes, stores instead of runes, `$app/stores` instead of `$app/state`, `class:` instead of clsx, attachment suggestions, and more.
-
-## 3. Agent to add to the review
-
-If any Svelte file above changed, return `frontend:svelte-reviewer` with the evidence (list of changed files and the suggestions left from step 2). This agent reviews rune usage, `$effect` cleanup, SSR, private environment variables, load and form actions, the adapter, `{@html}`, each keys, and old syntax.
-
-## Rows to add
-
-```markdown
-| sv check | … | 0 new errors, 0 new warnings (existing …) |
-| svelte-autofixer | … | N files, 0 issues left, suggestions … |
-```
-
-After fixes: run `svelte-autofixer` again on the fixed `.svelte` files.
+고친 Svelte 파일에 `svelte-autofixer`를 다시 돌린다.

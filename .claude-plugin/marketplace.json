@@ -4,18 +4,16 @@
     "name": "JiHoon777"
   },
   "metadata": {
-    "description": "Personal Claude Code marketplace: one /task workflow plus stack check plugins (frontend, supabase, server)."
+    "description": "Personal Claude Code marketplace: one /task workflow plus stack check plugins (frontend, server incl. Supabase)."
   },
   "allowCrossMarketplaceDependenciesOn": [
-    "anthropic-plugin-directory",
-    "googlechrome",
-    "chrome-devtools-plugins"
+    "anthropic-plugin-directory"
   ],
   "plugins": [
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Chains Backlog.md, Anthropic feature-dev, and superpowers, and calls the *-start-check / *-end-check skills of enabled stack plugins.",
+      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins.",
       "dependencies": [
         "superpowers@anthropic-plugin-directory"
       ]
@@ -23,28 +21,17 @@
     {
       "name": "frontend",
       "source": "./plugins/frontend",
-      "description": "Frontend checks for /task start and /task end: common checks plus Svelte and React references picked by detecting the project, browser testing, and review agents ui-reviewer, svelte-reviewer, react-reviewer.",
+      "description": "Frontend checks for /task start and /task end (Svelte and React references), browser verification, and the frontend-reviewer agent.",
       "dependencies": [
         "workflow",
-        "chrome-devtools-mcp@chrome-devtools-plugins",
         "typescript-lsp@anthropic-plugin-directory",
-        "frontend-design@anthropic-plugin-directory",
-        "modern-web-guidance@googlechrome"
-      ]
-    },
-    {
-      "name": "supabase",
-      "source": "./plugins/supabase",
-      "description": "Supabase checks for /task start and /task end (migrations, drift, RLS, types, keys) and the rls-reviewer agent. Uses the Supabase MCP server the project declares in its .mcp.json.",
-      "dependencies": [
-        "workflow",
-        "supabase@anthropic-plugin-directory"
+        "frontend-design@anthropic-plugin-directory"
       ]
     },
     {
       "name": "server",
       "source": "./plugins/server",
-      "description": "Backend checks for /task start and /task end: common checks plus Node, Python, Go, and Java/Kotlin references picked by detecting the project (install, LSP, migrations, API contract, real calls), and the api-reviewer agent.",
+      "description": "Backend and Supabase checks for /task start and /task end (Node, Python, Go, Java/Kotlin, Supabase references: migrations, API contract, RLS, keys) and the api-reviewer and rls-reviewer agents.",
       "dependencies": [
         "workflow"
       ]

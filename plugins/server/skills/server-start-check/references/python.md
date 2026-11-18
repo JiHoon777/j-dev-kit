@@ -1,39 +1,15 @@
-# Python (FastAPI, Django, Flask): start checks
+# Python (FastAPI, Django, Flask): 시작 점검
 
-Read by `server-start-check`. Add these rows and baseline lines to that skill's report.
+`server-start-check`가 읽는다.
 
-## 1. Install and runtime
+## 지킬 것
 
-- Install without changing the lockfile, inside the project's virtual environment: `uv sync --frozen` (uv.lock) / `poetry install --sync` (poetry.lock) / `pip install -r requirements.txt`. Failure → **stop**.
-- Compare `.python-version` or `requires-python` with `python --version`. Mismatch → fail.
+- 입력은 프로젝트의 스키마 계층(FastAPI 는 pydantic 모델, Django 는 form·serializer)으로 검증하고, 응답 모델을 선언해 내부 필드가 나가지 않게 한다.
+- 문자열 포매팅으로 SQL 을 만들지 않는다. ORM 이나 파라미터를 쓴다.
 
-## 2. LSP
+## 마이그레이션 만들기 (서버 도구가 담당일 때)
 
-Check that the `pyright-lsp` plugin is enabled and `pyright-langserver` is on PATH. If not, it is not a failure; return it as a question (the user installs it: `npm i -g pyright` or `pipx install pyright`).
-
-## 3. Migration status
-
-Unapplied migrations → fail (return a question about applying them). Diverged history (several heads) → **stop**.
-
-| Detected | Tool | Applied status | Model vs migrations (missing migration) |
-| --- | --- | --- | --- |
-| `alembic.ini` | Alembic | `alembic current --check-heads` (1.17.1+). Older: compare `alembic current` with `alembic heads` | `alembic check` (1.9+) |
-| `manage.py` + `*/migrations/` | Django | `python manage.py migrate --check` | `python manage.py makemigrations --check` |
-
-## 4. Baseline
-
-Use the verification command from the project's CLAUDE.md. If the verification command chains several checks (for example `pnpm lint && pnpm check && pnpm test && pnpm build`), run each part separately, so a failure in one does not hide the others. If CLAUDE.md has no verification command, use only what the config files set up: `ruff check`, `mypy`, `pytest`. Record command, exit code, failure count, and failing names (first 10 if many).
-
-## 5. Rules during implementation (to return)
-
-- Validate input with the project's schema layer (pydantic models in FastAPI, forms or serializers in Django) and declare response models so internal fields are not returned.
-- Django: never build SQL with string formatting; use the ORM or parameters.
-
-## Rows to add
-
-```markdown
-| Install | … | uv sync --frozen |
-| Python version | … | … |
-| LSP | … | pyright-lsp missing → question |
-| Migration status | … | `alembic current --check-heads` exit 0 |
-```
+| 도구 | 명령 |
+| --- | --- |
+| Alembic | `alembic revision --autogenerate -m "<이름>"` 뒤 생성된 파일을 확인 |
+| Django | `python manage.py makemigrations` |

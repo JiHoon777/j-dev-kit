@@ -1,39 +1,16 @@
-# Java / Kotlin (Spring Boot): start checks
+# Java / Kotlin (Spring Boot): 시작 점검
 
-Read by `server-start-check`. Add these rows and baseline lines to that skill's report.
+`server-start-check`가 읽는다.
 
-## 1. Install and runtime
+## 지킬 것
 
-- Resolve dependencies with the wrapper: `./gradlew dependencies` or `./mvnw -q dependency:resolve`. Failure → **stop**.
-- Compare the toolchain in the build file with `java -version`. Mismatch → fail.
+- 요청 본문은 Bean Validation(`@Valid`와 제약)으로 검증하고, 엔티티 대신 DTO 를 주고받는다.
+- 인가는 메서드 보안(`@PreAuthorize` 또는 프로젝트의 같은 방식).
+- 테스트 밖에서 Hibernate `ddl-auto`로 스키마를 바꾸지 않는다.
 
-## 2. LSP
+## 마이그레이션 만들기 (서버 도구가 담당일 때)
 
-Check that the `jdtls-lsp` (Java) or `kotlin-lsp` (Kotlin) plugin is enabled and its executable is on PATH. If not, it is not a failure; return it as a question.
-
-## 3. Migration status
-
-| Detected | Tool | Applied status |
-| --- | --- | --- |
-| `flyway.conf` or `db/migration/` | Flyway | `flyway info` (look for pending) |
-| `liquibase.properties` or a changelog | Liquibase | `liquibase status --verbose` |
-
-Pending migrations → fail (return a question about applying them). Diverged history or failed migrations → **stop**.
-
-## 4. Baseline
-
-Use the verification command from the project's CLAUDE.md. If the verification command chains several checks (for example `pnpm lint && pnpm check && pnpm test && pnpm build`), run each part separately, so a failure in one does not hide the others. If CLAUDE.md has no verification command, use `./gradlew check` or `./mvnw -q verify`. Record command, exit code, failure count, and failing names (first 10 if many).
-
-## 5. Rules during implementation (to return)
-
-- Validate request bodies with Bean Validation (`@Valid` and constraints) and use DTOs instead of exposing entities.
-- Use method security (`@PreAuthorize` or the project's equivalent) for authorization.
-
-## Rows to add
-
-```markdown
-| Dependencies | … | ./gradlew dependencies |
-| Java version | … | … |
-| LSP | … | jdtls-lsp enabled |
-| Migration status | … | `flyway info`: 0 pending |
-```
+| 도구 | 방법 |
+| --- | --- |
+| Flyway | `db/migration/` 에 다음 버전 `V<n>__<이름>.sql` |
+| Liquibase | changelog 에 새 changeset |

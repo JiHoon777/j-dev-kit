@@ -1,149 +1,96 @@
-# task end: review and merge
+# task end: 리뷰하고 머지하기
 
-Have agents review the current work branch's changes, fix what the user decides, and finish the way the user chooses.
+작업 브랜치의 변경을 리뷰하고, 사용자가 정한 것을 고치고, 항목을 닫고, 사용자가 고른 방식으로 마무리한다.
 
-This mode chains proven workflows. Do not change how a source works.
+프로젝트 CLAUDE.md 에 PR·푸시 규칙이 있으면 따른다. "현재 상태"는 `main`과 비교한 것이다. 기준 브랜치가 다르면 `git log --oneline <기준>..HEAD`, `git diff --stat <기준>...HEAD`로 다시 본다.
 
-| Step | Source |
+## 1. 시작할 수 있는지
+
+하나라도 해당하면 멈추고 알린다.
+
+| 확인 | 해당하면 |
 | --- | --- |
-| 1-2 | `*-end-check` skills of enabled stack plugins (invoked as is) |
-| 2 | Built-in skills `code-review`, `security-review`, `simplify` (one per agent, invoked as is), and stack review agents |
-| 2–3 | Anthropic `feature-dev` plugin phase 6 and its `code-reviewer` prompt (run in parallel, score confidence, consolidate, present, ask) |
-| 4 | `superpowers:receiving-code-review` (invoked as is) |
-| 5 | Backlog.md agent guidelines (definition of done) |
-| 6 | `superpowers:finishing-a-development-branch` (invoked as is) |
+| 브랜치가 `w/`로 시작하지 않는다 | 어느 브랜치인지 묻는다 |
+| 브랜치 이름과 맞는 항목 파일이 없다 | 어느 항목인지 묻는다 |
+| 커밋하지 않은 변경이 있다 | 커밋할지 버릴지 묻는다. 스스로 버리지 않는다 |
+| `<기준>...HEAD`에 변경이 없다 | 리뷰할 것이 없다고 말한다 |
 
-If the project's CLAUDE.md says PRs cannot be created in this environment or sets push rules, follow it. The skill's "current state" compares against `main`; if the base branch differs, check the branch's commits and changed files again with that branch (`git log --oneline <base>..HEAD`, `git diff --stat <base>...HEAD`).
+항목 파일을 읽는다. 이미 `docs/done/`에 있으면 6단계부터 한다.
 
-## 1. Check that review can start
+## 2. 스택 점검
 
-If any of these applies, **stop and tell the user.**
+쓸 수 있는 스킬 중 이름이 `-end-check`로 끝나는 것을 전부 Skill 도구로 부른다(예: `server:server-end-check`). 각 점검은 변경이 그 영역을 건드렸을 때만 검사 도구를 돌리고 돌려준다:
 
-| Check | If it applies |
-| --- | --- |
-| The branch does not start with `w/` | Not a work branch to review. Ask which branch |
-| No item file matching the branch name in `docs/backlog/` or `docs/done/` | Ask which item |
-| There are uncommitted changes (including untracked files) | Ask whether to commit or discard. Never discard on your own |
-| `<base>...HEAD` has no changes | Say there is nothing to review |
-| The verification command fails | Show the failure and ask whether to fix, commit, and continue |
+- **실패:** 4단계의 지적 목록에 🔴 로 넣는다.
+- **리뷰에 넣을 에이전트:** 3단계에 더한다(근거와 함께).
+- **고친 뒤 할 것:** 5단계에서 한다.
 
-Read the item file. (If the item is already in `docs/done/`, steps up to 5 are done. Resume from step 6.)
+## 3. 리뷰 (에이전트, 한 메시지에서 동시에)
 
-### 1-2. Stack end checks
-
-1. In the list of available skills, find **every skill whose name ends with `-end-check`** and invoke each with the Skill tool (for example `supabase:supabase-end-check`). If there are none, write "no stack plugin enabled".
-2. Each compares against `### Baseline` in the item's `Implementation Notes` and returns only **new failures** as failures. Put those failures in the findings list in step 3 with "stack check" as the source.
-3. Add each check's **agents to add to the review** (with their conditions and evidence) to step 2.
-4. Do each check's **after fixes** items (for example a browser test) in step 4.
-5. Put each check's **later** items (for example permission rules to capture as tests) in the `Final Summary`, or create new items for them with `/task create` after approval.
-
-## 2. Run review agents in parallel (feature-dev phase 6)
-
-"Launch 3 code-reviewer agents in parallel with different focuses" — launch them all **in a single message**. **Each agent actually invokes one review skill.** Do not just give them different names with the same prompt.
-
-| Agent | When | Invokes (Skill tool) |
+| 에이전트 | 언제 | 하는 일 |
 | --- | --- | --- |
-| Correctness (general-purpose) | Always | `code-review` — without the fix option (`--fix`) |
-| Security (general-purpose) | Always | `security-review` |
-| Simplification (general-purpose) | Always | `simplify` — find only, skip the fixing step |
-| Stack review agents (`frontend:ui-reviewer`, `frontend:svelte-reviewer`, `frontend:react-reviewer`, `supabase:rls-reviewer`, `server:api-reviewer`, …) | When a stack check in 1-2 returned it | (as the agent defines) |
+| general-purpose | 항상 | `code-review` 스킬을 부른다. 대상은 현재 브랜치. `--fix`, `--comment` 없이, 노력 수준은 주지 않는다 |
+| general-purpose | 인증·인가, 입력 처리, 비밀 값, 외부 호출, 파일·명령 실행이 바뀌었을 때 | `security-review` 스킬을 부른다. 띄우기 전에 `git symbolic-ref refs/remotes/origin/HEAD`가 실패하면 `git remote set-head origin -a` |
+| 스택 리뷰 에이전트 (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:rls-reviewer`) | 2단계가 돌려줬을 때 | 그 에이전트의 기준대로 |
 
-Before launching, check once: if `git symbolic-ref refs/remotes/origin/HEAD` fails, run `git remote set-head origin -a`. `security-review` finds changes by comparing against `origin/HEAD`.
+에이전트는 이 대화를 볼 수 없으니 지시문에 넣는다:
 
-Check skills only run commands. Reviews that read the diff and judge it are not done directly in this conversation; all of them are done by the agents in this step.
+1. 범위: `git diff <기준>...HEAD`, 항목 파일 경로, CLAUDE.md. 스택 리뷰 에이전트에게는 점검이 함께 돌려준 근거도.
+2. 읽기만 한다: 파일을 고치지 않고, 커밋하지 않고, 서버를 띄우지 않고, 빌드·검증 명령을 돌리지 않는다.
+3. 보고: 확인한 문제만, `file:line — 문제 — 고칠 방법`. 확신이 낮은 것은 보고하지 않는다. 점수는 쓰지 않는다.
+4. 스킬을 부를 수 없으면 대신 지어내지 말고 그렇다고 보고한다.
 
-Put **all** of the following in the prompt for every agent (the three above and the stack review agents). Agents cannot see this conversation. For stack review agents, instead of item 1 (the skill to invoke), give the evidence the check skill returned together with that agent (changed files, locations found, tool results).
+## 4. 보여 주고 묻기
 
-1. **Skill to invoke:** "Invoke the `<skill name>` skill with the Skill tool and review the way it does." Say that the other reviews are done by other agents.
-   - `code-review`: the target is the current branch (`w/<name>`). Do not pass `--fix` or `--comment`. Give no effort level or `medium`. Never use `max` or `ultra`.
-   - `simplify`: this skill normally fixes what it finds right away. **Do not fix; report findings only.**
-2. **Read only:** do not edit or create files, do not commit, do not start servers, and do not run build or verification commands (several agents would write to the same folder at once). Tests and read-only commands are fine.
-3. **Scope:** write out `git diff <base>...HEAD` and the list of changed files. If the skill cannot find the scope, it uses this one.
-4. **Criteria:** the path of the item file, `CLAUDE.md`, and the paths of related documents.
-5. **Report:** report findings in the format of the **reviewer prompt** below. Score each finding's confidence (0–100) and report **all of them, including low ones**. Each needs `file:line`, what the problem is, and how to fix it. Write the report in the project's language.
-6. **If the skill cannot be invoked,** do not substitute something made up; report "could not invoke the skill". Then tell the user.
+모두 돌아온 뒤, 중복을 합치고 직접 코드에서 확인해 틀린 지적은 뺀다. 이 변경 전부터 있던 문제는 "기존 문제 N건"으로 개수만 적는다. 점수는 보여 주지 않는다.
 
-### Reviewer prompt (feature-dev `code-reviewer` original)
+```markdown
+🔴 꼭 고칠 것 — 확인된 버그, 보안 문제, 데이터 손실, AC 위반, 스택 점검 실패
+- src/a.ts:12 — 문제 — 고칠 방법 (code-review)
 
-Attach the prompt below as is to every agent. The skill decides **what to look at and how**; this prompt decides **what to report** (confidence criteria and format).
+🟡 고려 — 실제 문제지만 머지를 막지는 않음
+- …
 
-**What was changed from the original:** the original drops everything under confidence 80 ("Only report issues with confidence ≥ 80"). That hides even a 75 ("very likely a real issue that will be hit in practice"). Here, **nothing is cut; every issue is reported with its score**, because the user chooses in step 3. Only that sentence and the two places in the output description that depend on it were changed.
-
-> You are an expert code reviewer. Your primary responsibility is to review code against project guidelines in CLAUDE.md with high precision to minimize false positives.
->
-> **Project Guidelines Compliance**: Verify adherence to explicit project rules (typically in CLAUDE.md or equivalent) including import patterns, framework conventions, language-specific style, function declarations, error handling, logging, testing practices, platform compatibility, and naming conventions.
->
-> **Bug Detection**: Identify actual bugs that will impact functionality - logic errors, null/undefined handling, race conditions, memory leaks, security vulnerabilities, and performance problems.
->
-> **Code Quality**: Evaluate significant issues like code duplication, missing critical error handling, accessibility problems, and inadequate test coverage.
->
-> **Confidence Scoring** — rate each potential issue on a scale from 0-100:
->
-> - **0**: Not confident at all. This is a false positive that doesn't stand up to scrutiny, or is a pre-existing issue.
-> - **25**: Somewhat confident. This might be a real issue, but may also be a false positive. If stylistic, it wasn't explicitly called out in project guidelines.
-> - **50**: Moderately confident. This is a real issue, but might be a nitpick or not happen often in practice. Not very important relative to the rest of the changes.
-> - **75**: Highly confident. Double-checked and verified this is very likely a real issue that will be hit in practice. The existing approach is insufficient. Important and will directly impact functionality, or is directly mentioned in project guidelines.
-> - **100**: Absolutely certain. Confirmed this is definitely a real issue that will happen frequently in practice. The evidence directly confirms this.
->
-> **Report every issue you found, each with its confidence score. Do not drop low-confidence issues** — the person reading decides what to do with them. Do not pad the list either: an issue you scored 0 is not an issue.
->
-> **Output**: Start by clearly stating what you're reviewing. For each issue, provide: clear description with confidence score; file path and line number; specific project guideline reference or bug explanation; concrete fix suggestion. Group issues by severity (Critical vs Important) and list them from highest confidence to lowest. If you found no issues, confirm the code meets standards with a brief summary.
-
-## 3. Consolidate, present, and ask (feature-dev phase 6)
-
-Do this after every agent has reported.
-
-1. "Consolidate findings and identify highest severity issues that you recommend fixing" — merge duplicates and decide what you recommend fixing. Include the stack check failures from 1-2.
-2. "**Present findings to user and ask what they want to do** (fix now, fix later, or proceed as-is)" — show a table with, for each finding, which review it came from, `file:line`, what the problem is, the confidence, and the recommended handling, and ask. List **highest confidence first** and do not leave out low ones. Before fixing a low-confidence finding, verify it in the code yourself.
-   - **Fix now**
-   - **Fix later** → with approval, create a new item (`To Do`) following `/task create`
-   - **Proceed as-is**
-3. If an agent suggests changing permission settings, `CLAUDE.md`, or `.claude/` settings, do not change them; pass them to the user as suggestions.
-
-**Do not fix anything before getting the answer.**
-
-## 4. Fix what was decided
-
-- Invoke the `superpowers:receiving-code-review` skill and follow it as is. (Do not trust a finding blindly; verify it in the code. Do not apply a wrong finding; give the reason. Fix one at a time and verify each.)
-- For fixes that change behavior, write a failing test first, following `superpowers:test-driven-development`.
-- When all fixes are done, run the verification command.
-- **Then always do the "after fixes" items the stack checks returned in 1-2** (for example a browser test), even if the fix looks unrelated. For each fixed finding, reproduce the situation it described and confirm the problem is gone. If the tool is not available, do not skip it: stop and tell the user.
-- Even if nothing was fixed (everything was "proceed as-is"), do the "after fixes" items once before merging.
-- If a fix touches what a stack check covers, invoke that `*-end-check` again.
-- Write what you tested and saw in the item's `Implementation Notes`.
-- Commit to the work branch.
-
-## 5. Close the item (Backlog.md definition of done)
-
-"A task is **Done** only when **ALL** of the following are complete" — if any is missing, stop and tell the user. "NEVER mark a task as Done without completing ALL items above."
-
-- [ ] All Acceptance Criteria are ticked
-- [ ] All Definition of Done lines are ticked
-- [ ] `Final Summary` is written: what changed, what was fixed in review, what was deferred (new item numbers)
-
-When everything is done, on the work branch:
-
-```bash
-# in the item file: set status: Done and updated_date to today, then
-git mv docs/backlog/<file> docs/done/<file>
-git add -A docs/
-<verification command>                         # fix here if it fails
-git commit -m "docs(backlog): <number> done"
-git status --short                             # must be empty
+⚪ 사소함 4건 (보려면 말씀해 주세요)
 ```
 
-Committing after only `git mv` leaves out the edits you just made. Always run `git add -A docs/`.
+묻는 것은 한 번: "🔴 는 지금 고칩니다. 🟡 는 지금 / 나중(새 항목) / 그대로 중 어떻게 할까요?" 사용자가 원하면 하나씩 정한다. 에이전트가 권한, CLAUDE.md, `.claude/` 설정을 바꾸자고 하면 바꾸지 않고 제안으로 전한다.
 
-## 6. Finish
+답을 받기 전에는 아무것도 고치지 않는다.
 
-Invoke the `superpowers:finishing-a-development-branch` skill and follow it as is. It runs the tests, presents the options, and **waits for the user's answer** before acting. That is the approval before merging.
+## 5. 고치기
 
-Tell the skill about this repository:
+- `superpowers:receiving-code-review` 스킬을 부르고 따른다(지적을 코드에서 확인하고, 틀린 지적은 이유를 대고 적용하지 않는다).
+- 동작을 바꾸는 수정은 실패하는 테스트를 먼저 쓴다.
+- 2단계의 "고친 뒤 할 것"을 고친 부분에 대해 한다(예: 고친 화면만 브라우저 확인). 수정이 스택 점검 영역을 건드렸으면 그 `*-end-check`를 다시 부른다.
+- "나중"은 승인을 받아 `/task create`로 새 항목을 만든다.
+- 한 것과 본 것을 `Implementation Notes`에 적고 커밋한다.
 
-- The test command is this project's verification command; the base branch is the one in the project settings.
-- If no worktree was used, there is no worktree to remove.
-- If PRs cannot be created in this environment (stated in CLAUDE.md, or `gh auth status` fails), still present the options, but say so.
-- If the base branch has no upstream (`git rev-parse --abbrev-ref <base>@{upstream}` fails), skip `git pull`.
-- After merging, push only when the user asks separately.
+## 6. 검증하고 항목 닫기 (Backlog.md definition of done)
 
-When done, report: the merged commit, the moved item file, any new items, and the `To Do` items left in `docs/backlog/`.
+1. 검증 명령을 새로 한 번 돌린다. `### Baseline`에 없던 실패가 있으면 멈추고 알린다.
+2. 모두 갖춰야 닫는다. 하나라도 빠지면 멈추고 알린다.
+   - [ ] Acceptance Criteria 모두 체크
+   - [ ] Definition of Done 모두 체크
+   - [ ] `Final Summary`: 바뀐 것, 리뷰에서 고친 것, 미룬 것(새 항목 번호)
+3. 작업 브랜치에서:
+
+```bash
+# 항목 파일의 status: Done, updated_date 를 오늘로 바꾼 뒤
+git mv docs/backlog/<파일> docs/done/<파일>
+git add -A docs/
+git commit -m "docs(backlog): <번호> done"
+git status --short   # 비어 있어야 한다
+```
+
+## 7. 마무리
+
+`superpowers:finishing-a-development-branch` 스킬을 부르고 따른다. 이 스킬은 선택지를 보여 주고 사용자의 답을 기다린다. 그것이 머지 승인이다. 스킬에 알려 준다:
+
+- 검증 명령은 6단계에서 방금 통과했다. 기준 브랜치는 프로젝트 설정의 것이다.
+- 워크트리를 쓰지 않았으면 지울 워크트리가 없다.
+- PR 을 만들 수 없으면(CLAUDE.md 에 그렇게 적혀 있거나 `gh auth status`가 실패하면) 그렇다고 말한다.
+- 기준 브랜치에 upstream 이 없으면 `git pull`을 건너뛴다.
+- 푸시는 사용자가 요청할 때만.
+
+끝나면 보고한다: 머지된 커밋, 옮긴 항목 파일, 새 항목, 남은 `To Do` 항목.

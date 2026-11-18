@@ -1,34 +1,16 @@
-# Go: start checks
+# Go: 시작 점검
 
-Read by `server-start-check`. Add these rows and baseline lines to that skill's report.
+`server-start-check`가 읽는다.
 
-## 1. Install and runtime
+## 지킬 것
 
-- `go mod download`. Failure → **stop**.
-- Compare the `go` line in `go.mod` with `go version`. Older toolchain → fail.
+- 요청 본문은 핸들러 경계에서 검증한다(프로젝트의 validator, 없으면 명시적 검사).
+- `context.Context`를 요청에서 DB 호출까지 넘기고, 오류는 감싸서(`fmt.Errorf("…: %w", err)`) 돌려준다.
+- SQL 은 파라미터로만 만든다.
 
-## 2. LSP
+## 마이그레이션 만들기 (서버 도구가 담당일 때)
 
-Check that the `gopls-lsp` plugin is enabled and `gopls` is on PATH. If not, it is not a failure; return it as a question (the user installs it: `go install golang.org/x/tools/gopls@latest`).
-
-## 3. Migration status
-
-| Detected | Tool | Applied status | Model vs migrations |
-| --- | --- | --- | --- |
-| `atlas.hcl` | Atlas | `atlas migrate status --url <url> --dir <dir>` | `atlas migrate validate` |
-| `migrate` (golang-migrate) and a migrations folder | golang-migrate | `migrate -path <dir> -database <url> version` | — |
-
-Unapplied migrations → fail (return a question about applying them). Diverged or dirty state → **stop**.
-
-## 4. Baseline
-
-Use the verification command from the project's CLAUDE.md. If the verification command chains several checks (for example `pnpm lint && pnpm check && pnpm test && pnpm build`), run each part separately, so a failure in one does not hide the others. If CLAUDE.md has no verification command, use `go vet ./...` and `go test ./...`, plus `govulncheck ./...` if it is installed. Record command, exit code, failure count, and failing names (first 10 if many).
-
-## Rows to add
-
-```markdown
-| go mod download | … | … |
-| Go version | … | go.mod 1.23, toolchain 1.23.x |
-| LSP | … | gopls-lsp enabled |
-| Migration status | … | … |
-```
+| 도구 | 명령 |
+| --- | --- |
+| Atlas | `atlas migrate diff <이름>` |
+| golang-migrate | `migrate create -ext sql -dir <디렉터리> -seq <이름>` (up/down 쌍) |

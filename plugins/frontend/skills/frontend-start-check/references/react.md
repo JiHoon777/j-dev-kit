@@ -1,51 +1,14 @@
-# React / Next.js: start checks
+# React / Next.js: 시작 점검
 
-Read by `frontend-start-check` when `react` is in package.json `dependencies` or `devDependencies`. Add these rows, baseline lines, prompts, questions, and rules to that skill's report.
+package.json 에 `react`가 있을 때 `frontend-start-check`가 읽는다. 아래를 그 스킬의 "지킬 것"에 더한다.
 
-| Part | Source |
-| --- | --- |
-| Hooks and compiler rules | React team's `eslint-plugin-react-hooks` (`recommended` preset) |
-| Health score | React Doctor (`millionco/react-doctor`) CLI |
-| Writing rules | Vercel `react-best-practices` skill (`vercel-labs/agent-skills`), invoked as is if installed |
+## 지킬 것
 
-## 1. Versions and structure
-
-- Record the installed versions of `react`, `react-dom`, and `next` (if present).
-- **React Compiler:** if `babel-plugin-react-compiler` is installed or `reactCompiler` is enabled in the Next config, record "compiler in use", and add to the rules during implementation that new code should not reach for `useMemo`, `useCallback`, or `memo` by habit.
-- **Next.js:** `app/` (App Router), `pages/` (Pages Router), or both. Count files with `'use client'` (count only; where and why goes to the exploration prompt).
-- **Data fetching:** record only whether `@tanstack/react-query`, `swr`, or `@apollo/client` is a dependency. How data is actually loaded is not investigated here; it goes to the exploration prompt.
-
-## 2. eslint-plugin-react-hooks
-
-- Check that the ESLint config includes `eslint-plugin-react-hooks` with `recommended` enabled (rules `rules-of-hooks`, `exhaustive-deps`, and compiler rules such as `purity`, `refs`, `immutability`, `set-state-in-effect`, `set-state-in-render`, `static-components`).
-- If it is missing or partly enabled, it is not a failure; return it as a question. The user decides whether to add it.
-
-## 3. Baseline
-
-- The project's lint result (count react-hooks violations separately).
-- React Doctor: score (0–100) and findings per category from `npx -y react-doctor@0.9.22 --verbose --no-telemetry`. Tell the user it downloads the package the first time. If it fails or the user declines, skip with "no React Doctor".
-
-## 4. Exploration prompt (to return)
-
-> Summarize how this React codebase loads and changes data: the query library (react-query, swr, …) and where query keys and the API client live, server component fetches, server actions, route handlers. With the App Router, where the `'use client'` boundaries are and why. Trace one existing feature similar to this item (<item path>) to the end, and return 5–10 files that must be read. Do not edit files.
-
-## 5. Rules during implementation (to return)
-
-- If the `vercel-react-best-practices` skill is installed, invoke it when creating or changing components and follow its rules (request waterfalls, bundle size, server work, client fetching, re-renders, rendering). If not, add a question about installing it (`npx -y skills@1.7.5 add vercel-labs/agent-skills`).
-- Call hooks only at the top level of components and custom hooks, never inside conditions or loops.
-- Do not keep values computed from other state in state; compute them during render. Do not sync state with `useEffect`.
-- If a `useEffect` creates a subscription, timer, or event listener, return a cleanup. Guard requests against races (cancel or ignore flag).
-- List `key`s are each item's unique value. Never use the array index for lists that add, remove, or reorder.
-- Next App Router: put `'use client'` only on the smallest component that needs interaction. Never import secrets or server-only modules from client components (use the `server-only` package if present).
-- Never insert values written by others with `dangerouslySetInnerHTML`.
-
-## Rows to add
-
-```markdown
-| React versions | pass | react 19.x, next 16.x (App Router, 'use client' 12 files) |
-| React Compiler | … | … |
-| react-hooks lint | … | recommended on / missing → question |
-| Data fetching | … | @tanstack/react-query in dependencies |
-```
-
-Baseline lines: `| Lint (react-hooks) | pnpm lint | 0 violations |`, `| React Doctor | npx -y react-doctor@0.9.22 --verbose --no-telemetry | 82 |`
+- 컴포넌트를 만들거나 바꿀 때 `vercel-react-best-practices` 스킬이 있으면 부르고 따른다.
+- 훅은 컴포넌트와 커스텀 훅의 최상위에서만 부른다.
+- 다른 state 나 props 로 계산할 수 있는 값은 state 에 두지 않고 렌더링 중에 계산한다. `useEffect`로 state 를 맞추지 않는다.
+- `useEffect`가 구독, 타이머, 리스너를 만들면 정리 함수를 반환한다. 요청은 늦게 온 응답이 새 응답을 덮지 않게 취소하거나 무시한다.
+- 추가·삭제·순서 변경이 있는 목록의 `key`에 배열 인덱스를 쓰지 않는다.
+- React Compiler(`babel-plugin-react-compiler`, Next `reactCompiler`)를 쓰면 습관적으로 `useMemo`, `useCallback`, `memo`를 더하지 않는다.
+- Next App Router: `'use client'`는 상호작용이 필요한 가장 작은 컴포넌트에만. 클라이언트 컴포넌트에서 비밀 값이나 서버 전용 모듈을 import 하지 않는다. 서버 액션은 입력 검증과 권한 확인을 한다.
+- 다른 사람이 쓴 값을 `dangerouslySetInnerHTML`로 넣지 않는다.

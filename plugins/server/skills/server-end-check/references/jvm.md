@@ -1,29 +1,14 @@
-# Java / Kotlin: end checks
+# Java / Kotlin: 마무리 점검
 
-Read by `server-end-check`. Add these rows to that skill's report.
+`server-end-check`가 읽는다.
 
-## Missing migration
+## 빠진 마이그레이션
 
-| Tool | Command |
+| 도구 | 명령 |
 | --- | --- |
-| Flyway | Check that the schema change in the diff has a new file under `db/migration/`, then `flyway validate` |
-| Liquibase | Check that the diff has a new changeset, then `liquibase validate` |
+| Flyway | diff 의 스키마 변경에 `db/migration/` 새 파일이 있는지 확인한 뒤 `flyway validate` |
+| Liquibase | diff 에 새 changeset 이 있는지 확인한 뒤 `liquibase validate` |
 
-If the project uses Hibernate `ddl-auto` other than `validate` or `none` outside tests, report it: the schema may be changing without migrations.
+## 설정 키 패턴
 
-## Apply from scratch (only after approval)
-
-- Flyway: `flyway clean` (only if `cleanDisabled` is false for the development database) then `flyway migrate`
-- Liquibase: `liquibase drop-all` then `liquibase update` against the development database
-
-## Environment variables read in code
-
-Patterns on added lines: `@Value("${`, `System.getenv(`, new keys in `application*.yml` / `application*.properties` that read `${ENV_VAR}`.
-
-## Rows to fill
-
-Fill the matching rows of the main table (do not add a second row):
-
-```markdown
-| Missing migration | … | `flyway validate` exit 0 |
-```
+`@Value("${`, `System.getenv(`, `application*.yml`·`application*.properties`에서 `${ENV_VAR}`를 읽는 새 키.

@@ -1,0 +1,98 @@
+> Translation. Source: [plugins/workflow/skills/task/references/end.md](../../../../../../../plugins/workflow/skills/task/references/end.md). Update this file when the source changes. Claude does not read this file.
+
+# task end: review and merge
+
+Review the work branch's changes, fix what the user decides, close the item, and finish the way the user chooses.
+
+If the project CLAUDE.md has PR/push rules, follow them. "Current state" is compared against `main`. If the base branch is different, look again with `git log --oneline <base>..HEAD` and `git diff --stat <base>...HEAD`.
+
+## 1. Can we start
+
+If any of these applies, stop and say so.
+
+| Check | If it applies |
+| --- | --- |
+| The branch does not start with `w/` | Ask which branch |
+| There is no item file matching the branch name | Ask which item |
+| There are uncommitted changes | Ask whether to commit or discard them. Do not discard on your own |
+| There are no changes in `<base>...HEAD` | Say there is nothing to review |
+
+Read the item file. If it is already in `docs/done/`, start from step 6.
+
+## 2. Stack checks
+
+Call, with the Skill tool, every available skill whose name ends in `-end-check` (e.g. `server:server-end-check`). Each check runs its inspection tools only when the change touched its area, and returns:
+
+- **Failures:** put them in the step 4 findings list as 🔴.
+- **Agents to add to the review:** add them to step 3 (with the evidence).
+- **To do after fixing:** do it in step 5.
+
+## 3. Review (agents, in parallel in one message)
+
+| Agent | When | What it does |
+| --- | --- | --- |
+| general-purpose | Always | Calls the `code-review` skill. Target is the current branch. No `--fix`, no `--comment`, no effort level given |
+| general-purpose | When authentication/authorization, input handling, secrets, external calls, or file/command execution changed | Calls the `security-review` skill. Before launching, if `git symbolic-ref refs/remotes/origin/HEAD` fails, run `git remote set-head origin -a` |
+| Stack review agents (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:rls-reviewer`) | When step 2 returned them | By that agent's own criteria |
+
+Agents cannot see this conversation, so put these in the instructions:
+
+1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
+2. Read only: do not edit files, do not commit, do not start servers, do not run build/verify commands.
+3. Report: only confirmed problems, as `file:line — problem — how to fix`. Do not report low-confidence ones. Do not give scores.
+4. If the skill cannot be called, do not make something up in its place; report that.
+
+## 4. Show and ask
+
+After all have returned, merge duplicates, check against the code directly, and drop wrong findings. Problems that existed before this change are written only as a count, "N pre-existing problems". Do not show scores.
+
+```markdown
+🔴 Must fix — confirmed bugs, security problems, data loss, AC violations, stack check failures
+- src/a.ts:12 — problem — how to fix (code-review)
+
+🟡 Consider — real problems but do not block the merge
+- …
+
+⚪ 4 minor (say so if you want to see them)
+```
+
+Ask once: "I'll fix 🔴 now. For 🟡: now / later (new item) / leave as is?" If the user wants, decide one at a time. If an agent suggests changing permissions, CLAUDE.md, or `.claude/` settings, do not change them; pass it on as a suggestion.
+
+Do not fix anything before getting an answer.
+
+## 5. Fix
+
+- Call the `superpowers:receiving-code-review` skill and follow it (check findings against the code; for wrong findings, give the reason and do not apply them).
+- For fixes that change behavior, write a failing test first.
+- Do step 2's "To do after fixing" for the fixed parts (e.g. browser-check only the fixed screens). If a fix touched a stack check's area, call that `*-end-check` again.
+- For "later", get approval and create a new item with `/task create`.
+- Write what was done and seen in `Implementation Notes` and commit.
+
+## 6. Verify and close the item (Backlog.md definition of done)
+
+1. Run the verify command fresh once. If there are failures not in `### Baseline`, stop and say so.
+2. Close only when everything is in place. If anything is missing, stop and say so.
+   - [ ] All Acceptance Criteria checked
+   - [ ] All Definition of Done checked
+   - [ ] `Final Summary`: what changed, what was fixed in review, what was deferred (new item numbers)
+3. On the work branch:
+
+```bash
+# after changing the item file's status to Done and updated_date to today
+git mv docs/backlog/<file> docs/done/<file>
+git add -A docs/
+git commit -m "docs(backlog): <number> done"
+git status --short   # must be empty
+```
+
+## 7. Finish
+
+Call the `superpowers:finishing-a-development-branch` skill and follow it. This skill shows options and waits for the user's answer. That is the merge approval. Tell the skill:
+
+- The verify command just passed in step 6. The base branch is the one from project settings.
+- If no worktree was used, there is no worktree to remove.
+- If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so.
+- If the base branch has no upstream, skip `git pull`.
+- Push only when the user asks.
+
+When done, report: the merged commits, the moved item file, new items, and the remaining `To Do` items.

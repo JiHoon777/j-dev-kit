@@ -1,113 +1,70 @@
-# task start: plan and implement one backlog item
+# task start: 항목 하나 계획하고 구현하기
 
-Plan **one** backlog item, get approval, and implement it. Review and merge are done by `/task end`.
+백로그 항목 **하나**를 계획하고, 승인을 받고, 구현한다. 리뷰와 머지는 `/task end`가 한다.
 
-This mode chains proven workflows. Each step names its source. Do not change how a source works.
+요청한 항목: `start` 뒤의 인자.
 
-| Step | Source |
+## 1. 시작할 수 있는지
+
+하나라도 해당하면 멈추고 알린다. 스스로 정리하지 않는다.
+
+| 확인 | 해당하면 |
 | --- | --- |
-| Handling the item | Backlog.md agent guidelines (task execution) |
-| 1-2 | `*-start-check` skills of enabled stack plugins (invoked as is) |
-| 2–5 | Anthropic `feature-dev` plugin, phases 2–5 |
-| Plan and approval | Claude Code plan mode |
-| 6 | `superpowers:test-driven-development`, `superpowers:verification-before-completion` (invoked as is), and the "Rules during implementation" and "Before finishing" returned by the stack checks |
+| 기준 브랜치에 커밋이 없다 | 첫 커밋이 필요하다고 말한다 |
+| 커밋하지 않은 변경이 있다 | 보여 주고 어떻게 할지 묻는다 |
+| `w/` 브랜치가 이미 있거나 현재 브랜치가 기준 브랜치가 아니다 | 이어 갈지, `/task end`로 끝낼지, 버릴지 묻는다. 이어 가면 그 브랜치로 바꾸고 항목의 `Implementation Plan`을 읽고 5단계부터 |
 
-Requested item: the arguments after `start`.
+항목 찾기: 인자를 `docs/backlog/`에서 찾는다. 없거나 여럿이면 `To Do` 항목을 번호와 제목으로 보여 주고 고르게 한다. 항목 파일을 끝까지 읽고, `dependencies`가 모두 `docs/done/`에 있는지 확인한다.
 
-## 1. Check that work can start and read the item
+## 2. 기준선과 스택 점검
 
-If any of these applies, **stop and tell the user.** Do not clean up or move on by yourself.
+1. **기준선:** 검증 명령을 한 번 돌린다. 이미 실패하는 것(명령, 실패한 테스트·파일 이름)만 적어 둔다. 작업을 막지는 않고 사용자에게 알린다. `/task end`가 이것과 비교해 새 실패만 본다.
+2. **스택 점검:** 쓸 수 있는 스킬 중 이름이 `-start-check`로 끝나는 것을 전부 Skill 도구로 부른다(예: `server:server-start-check`). 해당하지 않는 점검은 "해당 없음"만 돌려준다. 돌려받는 것:
+   - **지킬 것:** 구현 중 따를 규칙과 부를 스킬
+   - **플랜에 넣을 것:** 이 항목에 해당할 때만
+   - **물을 것:** 판단할 수 없는 것이 있을 때만
 
-| Check | If it applies |
-| --- | --- |
-| The base branch has no commits | Say a first commit is needed. Do not create it yourself |
-| There are uncommitted changes (including untracked files) | Show what is left and ask what to do |
-| A branch starting with `w/` already exists | One item at a time. Ask whether to continue that branch, finish it with `/task end`, or drop it |
-| The current branch is not the base branch | Same as above |
+## 3. 계획 (플랜 모드)
 
-If the user chooses to continue, switch to that branch, read the item's `Implementation Plan`, and resume from step 6.
+`EnterPlanMode`로 들어간다. 이 단계에서는 파일을 고치지 않는다.
 
-Finding the item: look up the argument in `docs/backlog/`. If it is empty, matches several, or matches none, list the `status: To Do` items by number and title and let the user pick. If it is in `docs/done/`, say it is already finished.
+**크기에 맞춘다.**
 
-Backlog.md: "Before mutating a task, read its current record and confirm its status, scope, acceptance criteria, and dependencies make it eligible to start." Read the item file to the end and check that every item in `dependencies` is in `docs/done/`. If not, stop and tell the user.
+- **작은 항목**(파일 몇 개, 새 구조 없음): 에이전트 없이 관련 코드를 직접 읽는다.
+- **큰 항목**(여러 모듈, 새 구조): `Explore` 에이전트를 최대 2개, 서로 다른 영역으로 한 메시지에서 띄운다. 비슷한 기존 기능과 이어지는 코드를 따라가 꼭 읽을 파일을 돌려받고, 그 파일을 직접 읽는다.
 
-### 1-2. Stack start checks
+**질문:** 코드와 문서로 답할 수 없고 계획을 바꾸는 것만, 스택 점검의 "물을 것"과 합쳐 한꺼번에 최대 3개. 나머지는 합리적으로 정하고 계획에 가정으로 적는다. 답을 받기 전에는 계획을 확정하지 않는다.
 
-1. In the list of available skills, find **every skill whose name ends with `-start-check`** (they carry a plugin prefix, e.g. `supabase:supabase-start-check`). Only enabled stack plugins appear in the list.
-2. Invoke each with the Skill tool. A check that does not apply to this project returns only "not applicable". If there are none, write "no stack plugin enabled" and move on.
-3. If any of them returns **stop**, stop and tell the user why.
-4. Keep what they return: **baseline** (check results before the work), **exploration prompts**, **add to the plan**, **questions to ask**, **rules during implementation**, **before finishing**. Exploration prompts go to step 2; the rest go to steps 3–6 as they are.
-5. Check skills only run commands. Gathering information by finding and reading code is not done by the check skills; they return exploration prompts, and step 2 runs them as agents. Do not go searching through the code yourself in this conversation.
+**설계:** 직접 정한다. 정말 갈리는 선택(구조, 라이브러리, 데이터 모델)이 있을 때만 두 안의 차이와 추천을 보여 준다.
 
-**Now enter plan mode with the `EnterPlanMode` tool.** Steps 2–5 happen in plan mode. If the tool is not available, proceed without editing any file.
+**계획(`ExitPlanMode`)에 넣을 것:**
 
-## 2. Explore the code (feature-dev phase 2)
+1. 무엇을 하나: 한두 문장, 이번에 빼는 것
+2. 바꿀 파일과 각각의 일, 먼저 쓸 테스트, 순서
+3. 성공 기준: Acceptance Criteria 마다 어떻게 확인하나
+4. 스택 점검의 "플랜에 넣을 것"
+5. 가정과 정한 것
 
-1. Launch 2–3 exploration agents (`Explore`) plus **one `Explore` agent per exploration prompt** returned in 1-2, **all at once in a single message**. Give stack prompts as received, filling `<…>` from the item. The default exploration agents:
-   - Follow the code to the end to understand structure, abstractions, and control flow.
-   - Each looks at a different aspect. Example prompts (feature-dev original):
-     - "Find features similar to [feature] and trace through their implementation comprehensively"
-     - "Map the architecture and abstractions for [feature area], tracing through the code comprehensively"
-     - "Analyze the current implementation of [existing feature/area], tracing through the code comprehensively"
-     - "Identify UI patterns, testing approaches, or extension points relevant to [feature]"
-   - Return a list of 5–10 files that must be read.
-2. When the agents return, **read every file they listed yourself.** Also read the documents CLAUDE.md points to that relate to this item.
-3. Summarize what you found and the patterns for the user, together with the stack checks' "add to the plan".
+승인 전에는 파일을 고치지 않고 브랜치도 만들지 않는다.
 
-## 3. Clarifying questions (feature-dev phase 3)
+## 4. 기록
 
-"This is one of the most important phases. DO NOT SKIP."
+1. `git switch -c w/<.md 를 뺀 항목 파일 이름>`
+2. 항목 파일: `status: In Progress`, `updated_date` 오늘, 승인된 계획을 `Implementation Plan`에, 기준선을 `Implementation Notes`의 `### Baseline` 아래에.
+3. 커밋: `chore(backlog): <번호> start`
 
-1. Look at the exploration results and the item again.
-2. Find what is underspecified: edge cases, error handling, integration points, scope boundaries, design preferences, performance. Add the stack checks' "questions to ask".
-3. **Present all questions together as an organized list.**
-4. **Do not move on to design before getting answers.**
+## 5. 구현
 
-If the user says "you decide", give your recommendation and get explicit confirmation. If the item's Acceptance Criteria cannot be checked, settle them here together. Do not ask what the docs and code already answer. If there is truly nothing to ask, say so and move on.
+- `superpowers:test-driven-development` 스킬을 부르고 따른다.
+- 스택 점검의 **지킬 것**을 따른다.
+- Acceptance Criteria 에 있는 것만 한다. 주변 코드를 다듬거나 리팩터링하지 않는다. 필요해 보이는 다른 일은 알리고, 동의하면 `/task create`로 따로 만든다.
+- AC 를 하나 끝내면 확인하고 바로 체크한다. 계획에서 바뀐 것은 `Implementation Notes`에 적는다. 범위가 커지면 멈추고 묻는다.
+- 의미 있는 단계마다 작업 브랜치에 커밋한다. 기준 브랜치에 커밋하지 않고 푸시하지 않는다.
 
-## 4. Design (feature-dev phase 4)
+## 6. 마무리
 
-1. Launch 2–3 design agents (`Plan`) **at once**, each with a different focus:
-   - **Minimal change:** the smallest change, reusing as much as possible
-   - **Clean architecture:** maintainable, with tidy abstractions
-   - **Pragmatic balance:** between speed and quality
-2. Review the three options and form your own view of what fits this item (a small fix or a large feature; look at the complexity).
-3. Show the user: a short summary of each option, a comparison of trade-offs, **a recommendation with reasons**, and how the implementation actually differs between options.
-
-## 5. Show the plan and get approval (feature-dev phase 5 gate)
-
-Show the plan with `ExitPlanMode`, in this order:
-
-1. **What we are doing:** the item in one or two sentences, including what is left out this time.
-2. **The three options and the recommendation:** from step 4. Let the user pick another option.
-3. **The plan for the recommended option:** files to create or change and what each is responsible for, tests to write first, the order of small steps. Every "add to the plan" from the stack checks must be in it.
-4. **How it will be verified:** how each Acceptance Criteria and Definition of Done line will be checked, including the stack checks' "before finishing".
-5. **What was decided in step 3.**
-
-"DO NOT START WITHOUT USER APPROVAL" — before approval, do not edit files and do not create the branch. If the user picks another option or asks for changes, revise the plan and show it again.
-
-## 6. Implement (after approval)
-
-**Record first (Backlog.md task execution guidelines):**
-
-1. Create the branch: `w/` followed by the item file name without `.md`. Example: `git switch -c w/001-common-login`
-2. In the item file: `status: In Progress`, `updated_date` to today, and the approved plan in `Implementation Plan`. Put the stack checks' baseline under `### Baseline` in `Implementation Notes`. If step 3 decided to change the Acceptance Criteria, edit them now. ("write it down in the task so that you can refer to it later.")
-3. Make the lint command pass and commit: `chore(backlog): <number> start`
-
-**Build:**
-
-- Invoke the `superpowers:test-driven-development` skill and follow it as is.
-- feature-dev phase 5: re-read the files identified earlier, follow the chosen design, and strictly follow this codebase's conventions.
-- Follow the stack checks' **rules during implementation** as they are (for example, a skill to invoke when building a new screen, or an autofixer to run on each file).
-- Backlog.md: "Only implement what's in the Acceptance Criteria." Do not change what the item does not cover. If something seems necessary, tell the user, and if they agree, create it separately with `/task create`.
-- Backlog.md: "Follow the acceptance criteria one by one and MARK THEM AS COMPLETE as soon as you finish them." Check and tick each one as soon as it is done.
-- Write what you learn and what changed from the plan in `Implementation Notes`. If the scope grows, stop and ask.
-- Commit to the work branch at each meaningful step. **Do not commit to the base branch, and do not push.**
-
-**Finish:**
-
-1. Invoke the `superpowers:verification-before-completion` skill and follow it as is, using this project's verification command.
-2. Do the stack checks' **before finishing** items (for example a browser test). If the tool is not available, do not skip it: stop and tell the user. Write what you did and saw in `Implementation Notes`.
-3. In Acceptance Criteria and Definition of Done, tick **only what you actually verified**.
-4. If you changed the item file, run the lint command and commit. **Do not leave uncommitted changes**; otherwise `/task end` cannot start.
-5. Report to the user: what was done, the result per criterion, what changed from the plan, and what could not be verified. Say that `/task end` is next.
+1. **정리:** 변경이 작지 않으면 `simplify` 스킬을 한 번 부른다. 이 스킬은 바뀐 코드에서 재사용·단순화할 곳을 찾아 직접 고친다. 동작을 바꾸는 수정은 되돌린다. 무엇을 정리했는지 한 줄로 적는다.
+2. **검증:** `superpowers:verification-before-completion` 스킬을 부르고 따른다. 검증 명령을 새로 돌리고 결과를 보여 준다. 기준선에 없던 실패가 있으면 고친다.
+3. **브라우저 확인:** 스택 점검이 돌려준 지킬 것에 브라우저 확인이 있고 UI 가 바뀌었으면 한다. 도구가 없으면 건너뛰지 말고 멈춰서 알린다. 한 일과 본 것을 `Implementation Notes`에 적는다.
+4. AC 와 Definition of Done 에서 실제로 확인한 것만 체크하고 커밋한다. 커밋하지 않은 변경을 남기지 않는다.
+5. 보고: 한 일, AC 별 결과, 계획에서 바뀐 것, 확인하지 못한 것. 다음은 `/task end`.

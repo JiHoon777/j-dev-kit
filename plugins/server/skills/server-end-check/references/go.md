@@ -1,32 +1,14 @@
-# Go: end checks
+# Go: 마무리 점검
 
-Read by `server-end-check`. Add these rows to that skill's report.
+`server-end-check`가 읽는다.
 
-## Extra checks
+## 빠진 마이그레이션
 
-- If `govulncheck` was in the baseline, run `govulncheck ./...` again. New vulnerabilities → fail.
-
-## Missing migration
-
-| Tool | Command |
+| 도구 | 명령 |
 | --- | --- |
-| Atlas | `atlas migrate validate`, `atlas migrate lint --dev-url <dev> --latest <number of new files>` |
-| golang-migrate | No model diff tool. Check that the schema change in the diff has a new up/down file pair |
+| Atlas | `atlas migrate validate` |
+| golang-migrate | 비교 도구가 없다. diff 의 스키마 변경에 새 up/down 파일 쌍이 있는지 확인한다 |
 
-## Apply from scratch (only after approval)
+## 설정 키 패턴
 
-- golang-migrate: `migrate -path <dir> -database <dev url> drop -f` then `up`
-- Atlas: `atlas migrate apply` against a fresh development database
-
-## Environment variables read in code
-
-Patterns on added lines: `os.Getenv(`, `os.LookupEnv(`, the project's config library (for example `envconfig` struct tags).
-
-## Rows to fill
-
-Fill the matching rows of the main table (do not add a second row):
-
-```markdown
-| govulncheck | … | 0 new vulnerabilities |
-| Missing migration | … | … |
-```
+`os.Getenv(`, `os.LookupEnv(`, 프로젝트의 설정 라이브러리(예: `envconfig` 태그).

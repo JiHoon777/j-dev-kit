@@ -1,107 +1,69 @@
 ---
 name: server-start-check
-description: Pre-work check for backend projects, called by the start mode of the workflow plugin's task skill. Detects the language, framework, and migration tool, then runs the common checks (environment variables, local services) and the language checks from the matching reference file (node.md, python.md, go.md, jvm.md), covering install, LSP, migration status, and baseline. Returns a baseline, an exploration prompt for the API and its consumers, questions, and rules during implementation.
+description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 언어(Node, Python, Go, Java/Kotlin)와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다. 언어·Supabase 별 내용은 references 에 있다.
 user-invocable: false
-version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
-# Server start check
+# 서버 시작 점검
 
-Called by `/task start`. Common backend checks live here; language and migration-tool checks live in `references/`.
+`/task start`가 부른다. 고치지 않는다. 이 항목에 맞는 것만 돌려준다. 보고는 프로젝트의 언어로.
 
-**This skill only runs commands to check state.** Gathering information by finding and reading code is returned as **exploration prompts** for `Explore` agents, which `/task start` launches together with its own exploration agents.
+## 0. 해당 여부와 판별
 
-Judge each item as **pass · fail · skip (reason) · stop** and return it in the format at the end. Fixing is not this skill's job. Write the report in the project's language.
+CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아니면 맞는 reference 를 모두 Read 도구로 끝까지 읽는다. 하나도 맞지 않으면 "해당 없음".
 
-| Part | Source |
+| 판별 근거 | reference |
 | --- | --- |
-| Code diagnostics | Anthropic's LSP plugins in the built-in `anthropic-plugin-directory` (`typescript-lsp`, `pyright-lsp`, `gopls-lsp`, `jdtls-lsp`) |
-| Migration status | Each ORM or tool's official CLI (in the references) |
-| Rules during implementation | OWASP API Security Top 10 2023, OWASP Logging Cheat Sheet |
+| package.json 에 `express`, `@nestjs/core`, `fastify`, `hono`, `koa` | `${CLAUDE_SKILL_DIR}/references/node.md` |
+| `pyproject.toml`·`requirements*.txt`에 `fastapi`, `django`, `flask` | `${CLAUDE_SKILL_DIR}/references/python.md` |
+| `go.mod` | `${CLAUDE_SKILL_DIR}/references/go.md` |
+| `pom.xml`·`build.gradle*`에 `spring-boot` | `${CLAUDE_SKILL_DIR}/references/jvm.md` |
+| `supabase/config.toml`, 또는 package.json 에 `@supabase/` 패키지 | `${CLAUDE_SKILL_DIR}/references/supabase.md` |
 
-## 0. Applicability and language detection
+모노레포면 이 항목이 건드리는 서비스를 정한다. 분명하지 않으면 물을 것으로.
 
-- If CLAUDE.md has a `stack:` line without server → "not applicable: not in stack setting".
-- If the project has only `supabase/` and no server code below, this skill does not apply (the `supabase` plugin covers it).
-- **Detect the language and read its reference.** For each match, **read the file in full with the Read tool and run its checks as well**. If none matches → "not applicable: no server code".
+### 마이그레이션 담당
 
-  | Detected | Language | Reference |
-  | --- | --- | --- |
-  | package.json (dependencies or devDependencies) has `express`, `@nestjs/core`, `fastify`, `hono`, or `koa` | Node | `${CLAUDE_SKILL_DIR}/references/node.md` |
-  | `pyproject.toml` or `requirements*.txt` has `fastapi`, `django`, or `flask` | Python | `${CLAUDE_SKILL_DIR}/references/python.md` |
-  | `go.mod` | Go | `${CLAUDE_SKILL_DIR}/references/go.md` |
-  | `pom.xml` or `build.gradle*` has `spring-boot` | Java/Kotlin | `${CLAUDE_SKILL_DIR}/references/jvm.md` |
+스키마 변경을 어느 도구로 할지 하나로 정한다. 처음 맞는 것을 쓴다.
 
-  In a monorepo, decide which service this item touches and work in that directory. If unclear, return it as a question.
+1. 서버 마이그레이션 도구(`prisma/schema.prisma`, `drizzle.config.*`, TypeORM DataSource, `alembic.ini`, Django `*/migrations/`, `atlas.hcl`, Flyway, Liquibase, golang-migrate 폴더)와 `supabase/migrations/`가 둘 다 있다 → "어느 쪽이 기준인가?"를 물을 것으로. 답 전까지는 서버 도구.
+2. 서버 마이그레이션 도구가 있다 → 서버 도구(DB 가 Supabase 여도).
+3. `supabase/` 폴더가 있다 → Supabase CLI.
+4. 없다 → 마이그레이션 없음.
 
-### Migration owner
+## 1. 지킬 것
 
-Exactly one plugin owns the migration checks. The `supabase` and `server` plugins decide it with the same rule, so the result is the same whichever runs first:
+이 항목에 해당하는 것만 돌려준다.
 
-Server migration tools: `prisma/schema.prisma`, `drizzle.config.*`, a TypeORM DataSource, `alembic.ini`, Django (`manage.py` plus app `*/migrations/`; `supabase/migrations/` does not count), `atlas.hcl`, Flyway `db/migration/` or `flyway.conf`, a Liquibase changelog, a golang-migrate folder. Apply the first rule that matches:
+- 새 엔드포인트마다 인증, 객체 단위 인가(요청한 사용자가 이 객체에 접근할 수 있는가), 입력 스키마 검증, 허용한 필드만 받기.
+- 여러 쓰기는 한 트랜잭션으로. 재시도될 수 있는 생성 요청(결제, 주문)에는 멱등성 키.
+- 스키마 변경은 담당 도구의 마이그레이션 파일로만. DB 를 손으로 바꾸지 않는다.
+- 비밀번호, 토큰, 키, 연결 문자열을 로그와 오류 응답에 남기지 않는다.
+- 실제(원격) 데이터베이스나 배포 환경을 바꾸는 명령은 돌리지 않는다. 필요하면 사용자에게 알린다.
+- reference 의 규칙.
 
-1. A server migration tool is present **and** `supabase/migrations/` has SQL files → the schema is managed in two places. Return it as a question ("which one is the source of truth?") and treat **server** as the owner until the user answers.
-2. A server migration tool is present → **server** owns migrations, even if the database is Supabase Postgres.
-3. `supabase/migrations/` exists, or `supabase/config.toml` exists without it (no migrations yet) → **supabase** owns migrations. The first schema change creates `supabase/migrations/`.
-4. None of the above → no migrations in this repository; migration items are "not applicable".
+## 2. 플랜에 넣을 것 / 물을 것
 
-Record the owner as the first row of the report. The plugin that does not own migrations skips its migration items with "skip: migrations owned by <owner> plugin".
+- 항목이 스키마를 바꾸면: 담당 도구로 마이그레이션 만들기(reference 의 명령), 필요하면 타입 재생성.
+- 항목이 API 요청·응답 형식을 바꾸면: 그 API 를 쓰는 쪽(프론트엔드, 다른 서비스)도 바꾸는지.
+- 마이그레이션 담당이 둘이거나 모노레포 서비스가 분명하지 않으면 물을 것으로.
 
-## 1. Environment variables and local services
-
-- Compare the keys in `.env.example` with those in the real `.env` and list only the missing **names**. Never print values.
-- If `docker-compose.yml` or `compose.yaml` exists, check with `docker compose ps` that services such as the database and cache are running. If they are stopped, ask whether to start them. If the user declines, skip the items that need the database.
-
-## 2. Language checks (from the reference)
-
-Run the reference's install, runtime version, LSP, migration status, and baseline checks. Atlas (`atlas.hcl`) is language-neutral: if present, use the Atlas commands in `references/go.md` whatever the language. **Run the migration status check only when server owns migrations**; otherwise skip it with "skip: migrations owned by supabase plugin". Commands that touch a database run **only against a local or development database**. If the connection looks like production, do not run them; **stop**.
-
-`npx --no-install` uses only tools installed in the project and never downloads. If a tool is not installed, do not install it; report "tool not installed".
-
-## 3. API spec and consumers (handed to an exploration agent)
-
-Only check by command whether an OpenAPI spec file (`openapi.*`, `swagger.*`) exists. Do not search for the APIs this item changes or for their consumers yourself; return the prompt below as an exploration prompt.
-
-> Find and summarize the API this item (<item path>) will touch: where the routes are defined, the flow through controllers, handlers, services, and queries, where authentication and authorization middleware applies, and where request and response formats are defined (DTOs, schemas, the spec, and the command if the spec is generated from code). Then find the consumers of that API (frontend code in the same repository, other services, tests). Return 5–10 files that must be read. Do not edit files.
-
-## 4. Rules during implementation (to return)
-
-- For every new endpoint: authentication, **object-level authorization** (does the requesting user own this object), input validation (a schema: zod, class-validator, pydantic, Bean Validation), accepting only allowed fields (no mass assignment), and an upper bound on page size for lists.
-- Wrap multiple writes in one transaction. Give create requests that may be retried (payments, orders) an idempotency key.
-- Make schema changes as migration files (the tool's generate command). Never change the database by hand.
-- Never log passwords, tokens, sessions, keys, or connection strings; mask personal data.
-- Write tests first for calculation and validation logic and for authorization rules.
-- Add the language rules from the reference read in step 0.
-
-## Return format
+## 돌려줄 형식
 
 ```markdown
 ### server start check
-| Item | Result | Evidence |
-| --- | --- | --- |
-| Migration owner | … | server (prisma) / supabase (supabase/migrations) |
-| Detection | pass | Node · NestJS, Prisma (references/node.md read) |
-| Environment variables | … | missing keys: … |
-| Local services | … | docker compose: db running |
-| (language rows from the reference: install, runtime, LSP, migration status) | … | … |
+감지: Node · NestJS, Supabase (references/node.md, supabase.md 읽음). 마이그레이션 담당: prisma
 
-#### Baseline
-| Check | Command | Result |
-| --- | --- | --- |
-
-#### Exploration prompts
-- API and consumers: (the step 3 prompt, filled in)
-
-#### Add to the plan
-- Migration: …
-
-#### Questions to ask
+#### 지킬 것
 - …
 
-#### Rules during implementation
-- (step 4, plus language rules)
+#### 플랜에 넣을 것
+- …
+
+#### 물을 것
+- …
 ```
 
-If anything is **stop**, write `stop: <reason>` above the table first.
+내용이 없는 섹션은 빼고 돌려준다.

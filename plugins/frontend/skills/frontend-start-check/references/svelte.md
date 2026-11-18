@@ -1,50 +1,21 @@
-# Svelte 5 / SvelteKit: start checks
+# Svelte 5 / SvelteKit: 시작 점검
 
-Read by `frontend-start-check` when `svelte` is in package.json `dependencies` or `devDependencies`. Add these rows, baseline lines, prompts, and rules to that skill's report.
+package.json 에 `svelte`가 있을 때 `frontend-start-check`가 읽는다. 아래를 그 스킬의 "지킬 것"에 더한다.
 
-| Part | Source |
-| --- | --- |
-| Docs lookup, autofixer, code-writing rules | Official Svelte plugin `svelte@svelte` (MCP `list-sections`, `get-documentation`, `svelte-autofixer`; skills `svelte-code-writer`, `svelte-core-bestpractices`), invoked as is. Recommended, not required |
-| Type and accessibility checks | `sv check` (`svelte-check`) |
+공식 Svelte 플러그인(`svelte@svelte`)이 있으면 그 스킬과 MCP 도구를 쓴다. 없어도 아래 CLI 로 된다.
 
-## 1. Versions and structure
+## 지킬 것
 
-- Record the installed versions of `svelte` and `@sveltejs/kit` (`version` in `node_modules/<package>/package.json`, after the common install step). If `node_modules` is missing, record the version ranges from package.json instead. If Svelte is 4 or older, say the later rules differ and that upgrading is outside this item's scope.
-- For SvelteKit, record the adapter (`adapter-*` in `svelte.config.js`, or in `vite.config.*` with SvelteKit 3). If it is `adapter-static`, add to the rules during implementation that server code (`+page.server.*`, `+server.*`, form actions) cannot be used.
-- Count leftovers of old patterns with `grep`. They are not failures; put the counts in the evidence. New code uses the new patterns.
-  - `$app/stores` imports → `$app/state` (`npx -y sv@1.2.0 migrate app-state` can move them)
-  - `.svelte` files with Svelte 4 syntax such as `export let`, `$:`, `on:click`, `<slot>`
+- `.svelte`, `.svelte.ts`, `.svelte.js`를 만들거나 고칠 때 `svelte-code-writer` 스킬이 있으면 부른다.
+- 모르는 API 는 추측하지 않는다. Svelte MCP 의 `list-sections` → `get-documentation`으로 문서를 본다.
+- 고친 Svelte 파일은 `svelte-autofixer`로 확인한다: MCP 도구, 없으면 `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`. 종료 코드가 아니라 출력으로 판단하고, 남은 문제가 없을 때까지 고친다.
+- 파생 값은 `$derived`. `$effect` 안에서 state 에 대입해 만들지 않는다.
+- 컴포넌트 최상위에서 `window`, `document`, `localStorage`를 쓰지 않는다. `onMount`, `$effect` 안이나 `browser` 확인 뒤에.
+- 다른 사람이 쓴 값을 `{@html}`로 넣지 않는다.
+- 비밀 값이 필요한 코드는 `+page.server.*`에만(`$env/static/private`는 서버 파일에서만). form action 실패는 `fail()`.
+- `adapter-static`이면 서버 파일(`+page.server.*`, `+server.*`, form action)을 만들지 않는다.
+- 새 코드에 Svelte 4 문법(`export let`, `$:`, `on:click`, `<slot>`, `$app/stores`)을 쓰지 않는다.
 
-## 2. Baseline
+## 물을 것
 
-- The project's type check command (usually the `check` script: `svelte-kit sync && svelte-check …`), otherwise `npx -y sv@1.2.0 check --output machine`.
-- Record the number of errors and warnings and the files (if many, the count and the first 10). Existing errors and warnings are **baseline**.
-
-## 3. Autofixer availability
-
-- Check that `svelte-autofixer` can run: the MCP tool from the Svelte plugin if present, otherwise the CLI `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`.
-- If it prints a result, it works, even if the process then exits non-zero (the CLI can time out after printing). If neither prints a result → fail (files cannot be auto-checked during implementation). If the Svelte plugin is not installed, suggest installing it (`/plugin marketplace add sveltejs/ai-tools`, then `/plugin install svelte@svelte`).
-
-## 4. Exploration prompt (to return)
-
-> Summarize how this Svelte codebase is put together for this item (<item path>): the route and layout structure under `src/routes`, where state lives (`.svelte.ts` modules with runes, context, stores), how data is loaded (`load` functions, client fetches, form actions), and shared components. Trace one existing feature similar to this item to the end, and return 5–10 files that must be read. Do not edit files.
-
-## 5. Rules during implementation (to return)
-
-- When creating or editing `.svelte`, `.svelte.ts`, or `.svelte.js` files, invoke the Svelte plugin's `svelte-code-writer` skill and follow it. When rune or state design is involved, also invoke `svelte-core-bestpractices`.
-- Do not guess unknown APIs. Read the official docs with the Svelte MCP's `list-sections` → `get-documentation`.
-- **Run every edited `.svelte` file through `svelte-autofixer`.** The MCP tool if available, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file path> --svelte-version 5`. Fix until no issues or suggestions remain.
-- Derived values use `$derived`. Do not build derived values by assigning to state inside `$effect`.
-- Do not use `window`, `document`, or `localStorage` in a component's top-level code (it breaks server rendering and prerendering). Use them in `onMount`, `$effect`, or after a `browser` check.
-- Never insert values written by others with `{@html}`.
-- With SvelteKit `load` and form actions: code that needs secrets goes only in `+page.server.*` (`$env/static/private` only in server files), and failures return `fail()`. With a static adapter, do not create server files.
-
-## Rows to add
-
-```markdown
-| Svelte versions | pass | svelte 5.x, @sveltejs/kit 3.x, adapter-static (vite.config.ts) |
-| Old patterns | … | $app/stores 2, Svelte 4 syntax files 0 |
-| Autofixer | … | MCP tool / CLI |
-```
-
-Baseline line: `| sv check | pnpm check | errors 0, warnings 2 |`
+설치된 `svelte`가 4 이하면 위 규칙이 맞지 않는다고 알리고 어떻게 할지 묻는다.

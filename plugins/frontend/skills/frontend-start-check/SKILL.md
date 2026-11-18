@@ -1,129 +1,58 @@
 ---
 name: frontend-start-check
-description: Pre-work check for frontend projects, called by the start mode of the workflow plugin's task skill. Detects the framework, then runs the common checks (package manager, Node version, install, baseline, environment variables) and the framework checks from the matching reference file (svelte.md, react.md). Returns a baseline, exploration prompts, questions, rules during implementation (frontend-design, modern-web-guidance, framework rules), and a browser test to do before finishing.
+description: 프론트엔드 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 프레임워크를 감지하고, 구현 중 지킬 것(frontend-design, 프레임워크 규칙, 브라우저 확인)과 플랜에 넣을 것을 돌려준다. 프레임워크별 내용은 references(svelte.md, react.md)에 있다.
 user-invocable: false
-version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
-# Frontend start check
+# 프론트엔드 시작 점검
 
-Called by `/task start`. Common frontend checks live here; framework-specific checks live in `references/`.
+`/task start`가 부른다. 고치지 않고, 명령도 거의 돌리지 않는다. 이 항목에 맞는 것만 돌려준다. 보고는 프로젝트의 언어로.
 
-**This skill only runs commands to check state.** Gathering information by finding and reading code is not done here; it is returned as **exploration prompts** for `Explore` agents, which `/task start` launches together with its own exploration agents.
+## 0. 해당 여부
 
-Judge each item as **pass · fail · skip (reason) · stop** and return it in the format at the end. Fixing is not this skill's job. Write the report in the project's language.
+- CLAUDE.md 에 frontend 가 빠진 `stack:` 줄이 있거나, package.json `dependencies`·`devDependencies`에 react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro 가 하나도 없으면 → "해당 없음"만 돌려준다.
+- 모노레포면 이 항목이 건드리는 앱을 정한다. 분명하지 않으면 물을 것으로.
+- 프레임워크를 감지하고 맞는 reference 를 Read 도구로 끝까지 읽는다. 여럿이면 모두.
 
-| Part | Source |
-| --- | --- |
-| During implementation: screen design | Anthropic `frontend-design` plugin (invoked as is) |
-| During implementation: choosing web features | Google `modern-web-guidance` plugin (invoked as is) |
-| Before finishing: browser test | Chrome DevTools plugin's `chrome-devtools` skill (invoked as is) |
-| Framework checks | `references/svelte.md`, `references/react.md` |
-
-## 0. Applicability and framework detection
-
-- If CLAUDE.md has a `stack:` line without frontend → "not applicable: not in stack setting".
-- If none of react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro is in package.json `dependencies` or `devDependencies` → "not applicable: no frontend framework". (Svelte and SvelteKit are usually in `devDependencies`.)
-- In a monorepo (`pnpm-workspace.yaml` with a `packages:` list, package.json `workspaces`, `turbo.json`, `nx.json`; a `pnpm-workspace.yaml` that only holds pnpm settings is not a monorepo), decide which app or package this item touches and work in that directory. If unclear, return it as a question.
-- **Detect the framework and read its reference.** For each match, **read the file in full with the Read tool and run its checks as well**:
-
-  | Detected in package.json (dependencies or devDependencies) | Reference |
+  | package.json 에 | reference |
   | --- | --- |
   | `svelte` | `${CLAUDE_SKILL_DIR}/references/svelte.md` |
   | `react` | `${CLAUDE_SKILL_DIR}/references/react.md` |
 
-  If several match, read all of them. If the framework has no reference yet (Vue, Angular, …), say so in the report and run only the common checks.
+## 1. 지킬 것
 
-## 1. Environment
+이 항목에 해당하는 것만 돌려준다.
 
-1. **Package manager** from the lockfile: `pnpm-lock.yaml` → pnpm, `yarn.lock` → yarn, `bun.lock`/`bun.lockb` → bun, `package-lock.json` → npm. More than one → fail. If package.json has `packageManager`, use that version.
-2. **Node version**: compare `.nvmrc`, `.node-version`, or `engines.node` with `node -v`. Mismatch → fail. If none of them exists → skip ("no Node version pinned").
-3. If the package manager's command is not installed on this machine → fail, skip the install and the baseline, and return a question ("install <pm>?"). Do not guess a version.
-4. **Install** without changing the lockfile: `pnpm install --frozen-lockfile` / `npm ci` / `yarn install --immutable` (yarn 2+) or `--frozen-lockfile` (yarn 1) / `bun install --frozen-lockfile`. If it fails because the lockfile does not match package.json → **stop**.
+- **새 화면이나 다시 디자인:** `frontend-design` 스킬을 부르고 따른다. 색과 글꼴은 프로젝트의 디자인 토큰 안에서 고르고, 새로 더하려면 먼저 묻는다. 승인된 디자인이나 CLAUDE.md 의 제품 원칙이 있으면 그것이 먼저다. 기존 화면을 그대로 옮기는 항목에는 부르지 않는다.
+- **새 웹 기능·UI 패턴을 고를 때**(다이얼로그, 팝오버, 레이아웃, 폼 검증 등): `modern-web-guidance` 스킬이 있으면 부른다.
+- **브라우저 확인**(UI 가 바뀌면, 구현 마무리에):
+  - 도구: `chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저. 둘 다 없으면 멈추고 알린다.
+  - 개발 서버를 띄운다(`.claude/launch.json`이 있으면 그것). 빌드에서만 보이는 변경(서비스 워커, 정적 생성)은 빌드 후 미리보기.
+  - 각 Acceptance Criteria 를 사용자처럼 따라간다. 콘솔 오류와 실패한 요청(4xx/5xx)이 없어야 한다.
+  - 뷰포트는 CLAUDE.md 에 정한 것, 없으면 데스크톱. 반응형 레이아웃을 바꿨으면 휴대폰(375×812)도.
+- reference 의 프레임워크 규칙.
 
-## 2. Baseline
+## 2. 플랜에 넣을 것 / 물을 것
 
-Record the state before the work. `/task end` compares against it to find only the failures this work introduced.
+- 새 화면이나 다시 디자인하는 항목인데 디자인·명세가 없으면 물을 것으로.
+- reference 가 더하는 것.
 
-- Use the verification command from the project's CLAUDE.md. If the verification command chains several checks (for example `pnpm lint && pnpm check && pnpm test && pnpm build`), run each part separately, so a failure in one does not hide the others. If CLAUDE.md has no verification command, find lint, type check, and test in package.json `scripts` (tests must not start in watch mode: `vitest run`, `CI=true jest`).
-- For each: command, exit code, failure count, names of failing files or tests (if many, the count and the first 10).
-- Existing failures are recorded as **baseline**; tell the user, but do not block the work.
-
-## 3. Environment variables
-
-- Compare the keys in `.env.example`/`.env.sample` with those in the real `.env`/`.env.local` and list only the **names** that are missing. Never print values. If no real env file exists at all, this is skip ("no local env file"), not fail; list the keys from the example as a question ("create `.env` with: …").
-- If a variable with a public prefix (`NEXT_PUBLIC_`, `VITE_`, `PUBLIC_`, `NUXT_PUBLIC_`, `REACT_APP_`) has `SECRET`, `PRIVATE`, `SERVICE_ROLE`, `TOKEN`, or `PASSWORD` in its name → fail. It ends up in the browser bundle.
-
-## 4. Reuse survey (handed to an exploration agent)
-
-Do not search yourself. Return the prompt below as an exploration prompt, filling `<…>` from the item.
-
-> For each UI element in this item (<item path>) — <element list> — find what already exists in this repository: shared component folders, design tokens (CSS or theme files defining colors, fonts, spacing), the UI library, existing screens that implement the same pattern, and shared utilities. Make a table with "use (path)" or "build new" per element, and return 5–10 files that must be read. Do not edit files.
-
-## 5. Design reference
-
-Check whether the item has a design or spec link. If the item builds a new screen or redesigns one and there is none, return it as a question. Do not make one up.
-
-## 6. Rules during implementation (to return)
-
-- **If the item builds a new screen or redesigns one,** invoke the `frontend-design` skill and work the way it does. But:
-  - Pick colors and fonts within the project's design tokens. If the skill suggests a new color or font, ask the user before adding it.
-  - The product principles in the project's CLAUDE.md come first.
-  - If there is an approved design, follow it.
-  - Do not invoke it for items that **port** an existing screen or prototype as is. The skill picks its own visual direction.
-- **When choosing a new web feature or UI pattern** (dialog, popover, scroll-driven effects, layout, form validation, …), invoke the `modern-web-guidance` skill and search the way it instructs.
-- Add the framework rules from the references read in step 0.
-
-## 7. Before finishing (to return): browser test
-
-Passing tests and type checks do not show that the screen works; it has to be clicked through.
-
-- **Tool:** invoke the `chrome-devtools` skill and use it as it says. If unavailable, use the Claude app's built-in browser preview. If neither is available, **do not skip; stop and tell the user.** Never record something unverified as done.
-- **Serving:** the dev server (use `.claude/launch.json` if present). For changes that only show in the build (service worker, manifest, static generation), build and use the preview. After rebuilding, restart the preview server too.
-- **Viewport:** whatever CLAUDE.md specifies; otherwise both phone 375×812 and desktop 1280.
-- **What to check:**
-  1. Go through each acceptance criterion as a user would: click, type, go back, reload.
-  2. No console errors and no failed requests (4xx/5xx).
-  3. Nothing else broke: open the start screen and related screens once each.
-  4. No horizontal scroll and no clipped text.
-  5. For screens with motion, check again with "reduce motion" on.
-- **Record:** write what you tried and saw in the item's `Implementation Notes`. If something fails, fix it and test again from the start.
-
-## Return format
+## 돌려줄 형식
 
 ```markdown
 ### frontend start check
-| Item | Result | Evidence |
-| --- | --- | --- |
-| Framework | pass | svelte 5.x (references/svelte.md read) |
-| Package manager | pass | pnpm 9.x (pnpm-lock.yaml) |
-| Node version | … | … |
-| Install | … | … |
-| Environment variables | … | missing keys: … |
-| Design reference | … | … |
-| (framework rows from the reference) | … | … |
+감지: svelte 5 (references/svelte.md 읽음)
 
-#### Baseline
-| Check | Command | Result |
-| --- | --- | --- |
-
-#### Exploration prompts
-- Reuse survey: (the step 4 prompt, filled in)
-- (framework prompts from the reference)
-
-#### Add to the plan
+#### 지킬 것
 - …
 
-#### Questions to ask
+#### 플랜에 넣을 것
 - …
 
-#### Rules during implementation
-- (step 6 items that apply to this item, plus framework rules)
-
-#### Before finishing
-- Browser test (step 7 procedure, viewport, server to run)
+#### 물을 것
+- …
 ```
 
-If anything is **stop**, write `stop: <reason>` above the table first.
+내용이 없는 섹션은 빼고 돌려준다.

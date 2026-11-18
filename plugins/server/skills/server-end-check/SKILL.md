@@ -1,86 +1,52 @@
 ---
 name: server-end-check
-description: Wrap-up check for backend projects, called by the end mode of the workflow plugin's task skill. Detects the language and migration tool, compares checks against the baseline, uses tools to find missing or misordered migrations, breaking API changes (oasdiff), and undocumented config keys, and calls the changed endpoints on a local server. Language commands come from the matching reference file (node.md, python.md, go.md, jvm.md). Returns the api-reviewer agent to add when server code changed.
+description: 백엔드·Supabase 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 서버 코드나 Supabase 가 바뀌었을 때만 빠진 마이그레이션, 마이그레이션 순서, API 스펙 호환성(oasdiff), 문서에 없는 설정 키, Supabase 검사(db diff, advisors, 타입, 키)를 확인하고, 리뷰에 넣을 api-reviewer·rls-reviewer 를 돌려준다.
 user-invocable: false
-version: "0.3.3"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
 ---
 
-# Server end check
+# 서버 마무리 점검
 
-Called by `/task end`. Common backend checks live here; language and migration-tool commands live in `references/`.
+`/task end`가 부른다. 명령을 돌리고 결과만 돌려준다. 코드를 읽고 판단하는 리뷰는 `server:api-reviewer`, `server:rls-reviewer`가 한다. 보고는 프로젝트의 언어로.
 
-**This skill only runs commands and checks results.** Reviews that read code and judge it (authorization, input validation, the impact of breaking changes, secrets in logs, how to handle risky DDL) are handed to the `server:api-reviewer` agent (step 6).
+## 0. 해당 여부
 
-Judge each item as **pass · fail · skip (reason)** and return it in the format at the end. Write the report in the project's language.
+- `server-start-check`와 같은 기준으로 판별하고, 같은 규칙으로 마이그레이션 담당을 정한다. 맞는 reference 를 Read 도구로 끝까지 읽는다(`${CLAUDE_SKILL_DIR}/references/` 의 `node.md`, `python.md`, `go.md`, `jvm.md`, `supabase.md`).
+- `git diff --name-only <기준>...HEAD`에 서버 코드, 마이그레이션, API 스펙, `supabase/`, 설정 파일이 없으면 "서버 변경 없음"만 돌려준다.
 
-## 0. Applicability and language detection
+## 1. 검사 (해당할 때만)
 
-- Same criteria as `server-start-check`. If not applicable → "not applicable". If no server code, migration, or API spec changed, do only step 1 and skip the rest with "no server changes".
-- **Detect the language and read its reference** (same table as `server-start-check`). For each match, **read the file in full with the Read tool**:
+데이터베이스 명령은 로컬·개발 DB 에만 돌린다. 운영으로 보이면 돌리지 않고 알린다. 프로젝트 도구는 설치된 것만 쓴다(`npx --no-install` 등). 없으면 "도구 없음"으로 적는다.
 
-  | Language | Reference |
-  | --- | --- |
-  | Node | `${CLAUDE_SKILL_DIR}/references/node.md` |
-  | Python | `${CLAUDE_SKILL_DIR}/references/python.md` |
-  | Go | `${CLAUDE_SKILL_DIR}/references/go.md` |
-  | Java/Kotlin | `${CLAUDE_SKILL_DIR}/references/jvm.md` |
+- **빠진 마이그레이션**(스키마 관련 코드가 바뀌었을 때): 담당 도구의 명령(reference).
+- **마이그레이션 순서**(새 마이그레이션이 있을 때): 작업하는 동안 기준 브랜치에 새 마이그레이션이 들어왔는가. 타임스탬프 파일이면 새 파일이 `origin/<기준>`의 가장 새 파일보다 늦어야 한다. head 가 여럿인 도구는 reference.
+- **API 스펙**(OpenAPI 스펙이 있고 바뀌었을 때): `oasdiff`가 있으면 `oasdiff breaking --fail-on ERR <기준 스펙> <새 스펙>`(기준 스펙은 `git show origin/<기준>:<경로>`). 호환성을 깨는 변경은 실패가 아니라 리뷰어에게 넘길 근거다. 없으면 두 경로를 리뷰어에게 넘긴다. 스펙을 코드에서 생성하면 생성 후 `git diff --exit-code <스펙>`, 차이가 있으면 실패.
+- **설정 키:** 추가된 줄에서 새로 읽는 환경 변수(패턴은 reference)가 `.env.example`에 없으면 실패. 이름만 비교하고 값은 읽지 않는다. `.env` 같은 값 파일이 커밋돼 있으면 실패.
+- reference 의 검사.
 
-## 1. Checks (compared with the baseline)
+## 2. 리뷰에 넣을 에이전트
 
-Run the same commands as `### Baseline` again. New failures → fail. Language-specific extras are in the reference.
+- 서버 코드(라우트, 핸들러, 서비스, 인가, 쿼리), API 스펙, 서버 마이그레이션이 바뀌었으면 `server:api-reviewer`. 근거: 바뀐 파일, 새 마이그레이션 파일, oasdiff 결과(또는 두 스펙 경로).
+- supabase.md 가 돌려주면 `server:rls-reviewer`.
 
-## 2. Migrations (only when server owns migrations)
+## 3. 고친 뒤 할 것
 
-Decide the migration owner with the same rule as `server-start-check` (section "Migration owner"). If supabase owns migrations, skip this whole step with "skip: migrations owned by supabase plugin".
+마이그레이션이나 스펙을 고쳤으면 1단계의 해당 검사를 다시 돌린다.
 
-- **Missing migration:** run the reference's command for the detected tool (Atlas, `atlas.hcl`, is language-neutral: if present, use the Atlas commands in `references/go.md` for any language) (the model changed but no migration was created → fail).
-- **Apply from scratch:** **ask** whether to empty the local or development database and re-apply every migration (data will be lost). If approved, run the reference's reset command. If declined → "not verified".
-- **Order:** check whether new migrations landed on the base branch during the work. Two heads (Alembic, Django) → fail (a merge migration is needed). With timestamped files, the new file must be later than the newest on the base branch.
-- **Risky DDL (locations only):** in the new migration files, `grep -niE "drop (table|column)|truncate|delete from|alter column|set not null|not null|create (unique )?index|rename"`, record `file:line` only, and mark **needs review**. How to handle them (preserving data, rolling back) is for `api-reviewer`.
-
-## 3. API contract
-
-- If there is an OpenAPI spec: compare it with the base branch's spec (`git show origin/<base>:<spec path>`). If `oasdiff` is installed, run `oasdiff breaking --fail-on ERR <base spec> <new spec>` (exit 1 on breaking changes). If not, record "no oasdiff" and pass both spec paths to `api-reviewer` to compare.
-- If the spec is generated from code, run the generate command and check with `git diff --exit-code <spec>` that it matches the code. A difference → fail.
-- Breaking changes are not a failure but **needs review**: the impact on consumers is for `api-reviewer`, and whether to bump the version is for the user.
-
-## 4. Environment variables
-
-- Check that every config key newly read in added lines (the read patterns are in the reference) is documented by name in `.env.example`. Missing → fail. Only names are compared; values are never read or printed.
-- If a value file such as `.env` or `.env.local` is staged for commit → fail.
-
-## 5. Actual calls
-
-Start the server locally (with the test configuration if there is one) and send the acceptance criteria's requests to each changed endpoint with `curl`. Record status codes and the gist of the responses. For endpoints that need authentication, also send one request without authentication and one **with another user's object id**, and check for 401, 403, or 404. If the server cannot start → "not verified" with the reason.
-
-## 6. Agents to add to the review
-
-If server code (routes, controllers, handlers, services, authorization middleware, database queries), the API spec, or migrations changed, return `server:api-reviewer` with: the evidence (changed files), the risky DDL locations from step 2 (only when server owns migrations), the oasdiff result from step 3 (or both spec paths), and the call results from step 5.
-
-## Return format
+## 돌려줄 형식
 
 ```markdown
 ### server end check
-| Item | Result | Evidence |
-| --- | --- | --- |
-| Migration owner | … | server (prisma) / supabase |
-| Checks (vs baseline) | … | 0 new failures |
-| Missing migration | … | `prisma migrate diff … --exit-code` 0 |
-| Apply from scratch | … | … / not verified |
-| Order | … | … |
-| Risky DDL locations | … | … |
-| API contract | … | oasdiff 0 breaking changes / generated spec matches |
-| Environment variables | … | 2 new variables, both in .env.example |
-| Actual calls | … | POST /orders 201, GET with another user's id 404 |
+마이그레이션 담당: prisma
+검사: 실패 1건 (나머지 통과, 건너뜀: oasdiff 없음)
+- .env.example — 새 키 STRIPE_WEBHOOK_SECRET 없음
 
-#### Failure details
-- `file:line` what the problem is, how to fix it
+#### 리뷰에 넣을 에이전트
+- `server:api-reviewer` — 근거: src/orders/*.ts, prisma/migrations/2026…/migration.sql
 
-#### Agents to add to the review
-- `server:api-reviewer` — evidence: …
-
-#### After fixes
-- Call the fixed endpoints again (step 5)
+#### 고친 뒤 할 것
+- …
 ```
+
+실패가 없으면 "검사: 모두 통과"라고 한 줄로 쓴다.

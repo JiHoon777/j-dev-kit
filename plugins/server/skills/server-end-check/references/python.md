@@ -1,32 +1,14 @@
-# Python: end checks
+# Python: 마무리 점검
 
-Read by `server-end-check`. Add these rows to that skill's report.
+`server-end-check`가 읽는다.
 
-## Missing migration
+## 빠진 마이그레이션과 순서
 
-| Tool | Command |
-| --- | --- |
-| Alembic | `alembic check` fails → fail |
-| Django | `python manage.py makemigrations --check` fails → fail |
+| 도구 | 빠진 마이그레이션 | 순서 |
+| --- | --- | --- |
+| Alembic | `alembic check` 실패 → 실패 | `alembic heads`가 두 줄 이상 → 실패(merge revision 필요) |
+| Django | `python manage.py makemigrations --check` 실패 → 실패 | 같은 명령이 conflicting leaf node 를 보고 → 실패(`makemigrations --merge`) |
 
-## Apply from scratch (only after approval)
+## 설정 키 패턴
 
-- Alembic: `alembic downgrade base && alembic upgrade head`
-- Django: run the tests (the test database is created from all migrations), or reset the development database with the project's script.
-
-## Order
-
-- Alembic: more than one line from `alembic heads` → fail (a merge revision is needed).
-- Django: `python manage.py makemigrations --check` reporting conflicting leaf nodes → fail (`makemigrations --merge` is needed).
-
-## Environment variables read in code
-
-Patterns on added lines: `os.environ[`, `os.environ.get(`, `os.getenv(`, pydantic `BaseSettings` fields, `env(` from django-environ.
-
-## Rows to fill
-
-Fill the matching rows of the main table (do not add a second row):
-
-```markdown
-| Missing migration | … | `alembic check` exit 0 |
-```
+`os.environ[`, `os.environ.get(`, `os.getenv(`, pydantic `BaseSettings` 필드, django-environ `env(`.
