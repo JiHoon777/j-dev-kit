@@ -1,11 +1,12 @@
 ---
 name: arch
-description: Designs or reviews the architecture of any project (web, API, mobile, CLI, library, data, desktop). design decides the structure and stack (the stack is checked with a web survey) and writes an overview document and ADRs. review looks at an existing codebase against maintainability, suitability, and extensibility criteria and shows the findings. Does not edit code. Runs only when the user invokes it directly.
+description: Use when designing or reviewing architecture. Works for any project: web, API, mobile, CLI, library, data, desktop. design decides the structure and stack (the stack is checked with a web survey) and writes an overview document and ADRs. review looks at an existing codebase against maintainability, suitability, and extensibility criteria and shows the findings. Does not edit code. Runs only when the user invokes it directly.
 argument-hint: "design <what to design> [--research] | review [path] [--research]"
 disable-model-invocation: true
 allowed-tools: Bash(git log *), Bash(git ls-files *), Bash(git status *), Bash(git branch --show-current), Bash(ls *), Bash(date *), Bash(wc *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
+  tags: [architecture, design-review, adr, tech-stack, maintainability]
 ---
 
 > Translation. Source: [plugins/architecture/skills/arch/SKILL.md](../../../../../../plugins/architecture/skills/arch/SKILL.md). Update this file when the source changes. Claude does not read this file.
@@ -24,6 +25,15 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
 | --- | --- | --- |
 | `design` | A new project, the structure of a new feature, a structural change, stack design | `references/design.md` |
 | `review` | Review of an existing codebase (or one path) | `references/review.md` |
+
+Examples:
+
+```
+/arch design A team schedule-sharing web app   # new project: quality goals, stack survey, structure, overview and ADRs
+/arch design Structure for adding payment methods   # existing project: current stack and ADRs are constraints
+/arch review                                   # the whole repository
+/arch review src/billing --research            # one path, also survey the latest structural guidance
+```
 
 - `architecture-reviewer` and `architecture-researcher` in the procedure files are this plugin's agents. When launching them, the names are `architecture:architecture-reviewer` and `architecture:architecture-researcher`.
 - If the first word is neither of the two, show this table and ask.

@@ -1,11 +1,12 @@
 ---
 name: arch
-description: 어떤 프로젝트든(웹, API, 모바일, CLI, 라이브러리, 데이터, 데스크톱) 아키텍처를 설계하거나 리뷰한다. design 은 구조와 스택을 정하고(스택은 웹 서베이로 확인) 개요 문서와 ADR 을 쓴다. review 는 기존 코드베이스를 유지보수성, 적합성, 확장성 기준으로 보고 지적을 보여 준다. 코드는 고치지 않는다. 사용자가 직접 부를 때만 돈다.
+description: 아키텍처를 설계하거나 리뷰할 때 쓴다. 웹, API, 모바일, CLI, 라이브러리, 데이터, 데스크톱 어떤 프로젝트든 된다. design 은 구조와 스택을 정하고(스택은 웹 서베이로 확인) 개요 문서와 ADR 을 쓴다. review 는 기존 코드베이스를 유지보수성, 적합성, 확장성 기준으로 보고 지적을 보여 준다. 코드는 고치지 않는다. 사용자가 직접 부를 때만 돈다.
 argument-hint: "design <무엇을 설계할지> [--research] | review [경로] [--research]"
 disable-model-invocation: true
 allowed-tools: Bash(git log *), Bash(git ls-files *), Bash(git status *), Bash(git branch --show-current), Bash(ls *), Bash(date *), Bash(wc *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
+  tags: [architecture, design-review, adr, tech-stack, maintainability]
 ---
 
 # arch
@@ -22,6 +23,15 @@ metadata:
 | --- | --- | --- |
 | `design` | 새 프로젝트, 새 기능의 구조, 구조 변경, 스택 설계 | `references/design.md` |
 | `review` | 기존 코드베이스(또는 경로 하나) 리뷰 | `references/review.md` |
+
+예:
+
+```
+/arch design 팀 일정 공유 웹앱          # 새 프로젝트: 품질 목표, 스택 서베이, 구조, 개요 문서와 ADR
+/arch design 결제 수단 추가 구조        # 기존 프로젝트: 기존 스택과 ADR 을 제약으로
+/arch review                            # 저장소 전체
+/arch review src/billing --research     # 경로 하나, 최신 구조 지침도 서베이
+```
 
 - 절차 파일의 `architecture-reviewer`, `architecture-researcher`는 이 플러그인의 에이전트다. 띄울 때 이름은 `architecture:architecture-reviewer`, `architecture:architecture-researcher`.
 - 첫 단어가 둘 중 어느 것도 아니면 이 표를 보여 주고 묻는다.
