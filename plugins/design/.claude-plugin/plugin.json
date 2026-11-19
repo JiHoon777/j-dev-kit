@@ -1,0 +1,8 @@
+{
+  "name": "design",
+  "description": "UI design steps with /ui: system writes DESIGN.md from the code's tokens, mockup drafts one or several mockups on the Claude Code design canvas and records the chosen one in the repo, review checks a built screen with the design-reviewer agent.",
+  "version": "0.1.0",
+  "author": {
+    "name": "JiHoon777"
+  }
+}

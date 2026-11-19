@@ -2,7 +2,7 @@
 
 **한국어** | [English](README.en.md)
 
-Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하나, 스택별 점검은 스택 플러그인으로 나눴다. 아키텍처 설계·리뷰는 스택과 상관없는 `/arch`로 따로 쓴다.
+Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하나, 스택별 점검은 스택 플러그인으로 나눴다. 아키텍처 설계·리뷰는 `/arch`, UI 시안·디자인 리뷰는 `/ui`로 따로 쓴다(둘 다 스택과 상관없음).
 
 | 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
 | --- | --- | --- |
@@ -10,6 +10,7 @@ Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하
 | `frontend` | Svelte·React 점검, 브라우저 확인, `frontend-reviewer` | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | 서버·Supabase 점검(마이그레이션, API 스펙, 키), `api-reviewer`, `supabase-reviewer` | `workflow` |
 | `architecture` | `/arch design`, `/arch review`, `architecture-reviewer`, `architecture-researcher` | 없음 |
+| `design` | `/ui system`, `/ui mockup`, `/ui review`, `design-reviewer` | 없음 |
 
 Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설치한다.
 
@@ -20,9 +21,10 @@ claude plugin marketplace add JiHoon777/j-dev-kit --scope project
 claude plugin install frontend@j-dev-kit --scope project
 claude plugin install server@j-dev-kit --scope project
 claude plugin install architecture@j-dev-kit --scope project
+claude plugin install design@j-dev-kit --scope project
 ```
 
-쓰는 스택만 설치한다. `architecture`는 어떤 프로젝트에나 따로 설치할 수 있다. `.claude/settings.json`에 적힌 의존 플러그인 줄은 지우지 않는다.
+쓰는 스택만 설치한다. `architecture`와 `design`은 어떤 프로젝트에나 따로 설치할 수 있다. `.claude/settings.json`에 적힌 의존 플러그인 줄은 지우지 않는다.
 
 프로젝트 CLAUDE.md 에 적는다.
 
@@ -74,6 +76,17 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 - 스택 추천은 항상 웹 서베이로 버전·지원 종료·유지보수 상태를 확인한다. 구조 지침 서베이는 `--research`일 때만.
 - 코드는 고치지 않는다. 쓰는 것은 `docs/architecture/`의 개요 문서, ADR, 리서치 파일뿐이고 쓰기 전에 묻는다.
 
+### 디자인
+
+```
+/ui system                     # 코드의 토큰으로 DESIGN.md 만들기·갱신, CLAUDE.md 에 @DESIGN.md
+/ui mockup 로그인 화면          # 시안 1개 또는 여러 개 → 캔버스에서 고르기 → docs/design/<NNN>-<slug>/ 에 기록
+/ui review http://localhost:5173/login   # 1440/768/375 폭, DESIGN.md·고른 시안·WCAG AA 기준 리뷰
+```
+
+- 시안은 Claude Code 디자인 캔버스(claude.ai 로그인, CLI·데스크톱)에 그린다. 못 쓰면 단일 `variants.html`로 대신한다.
+- 미감·접근성 규칙은 캔버스와 `frontend-design`에 맡기고, 이 플러그인은 절차(브리프, 시안 수, 방향, 고르기, 기록)만 담는다.
+
 ## 구조
 
 ```
@@ -81,6 +94,7 @@ plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, e
 plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md
 plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
 plugins/architecture/               skills/arch (SKILL.md + references/), agents/architecture-{reviewer,researcher}.md
+plugins/design/                     skills/ui (SKILL.md + references/), agents/design-reviewer.md
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
 ```
 
@@ -109,3 +123,5 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 [Backlog.md](https://github.com/MrLesk/Backlog.md) 항목 형식, [superpowers](https://github.com/obra/superpowers)(brainstorming, TDD, 완료 전 검증, 리뷰 받기, 브랜치 마무리), [spec-kit](https://github.com/github/spec-kit)(질문 최대 3개), [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin)(크기에 맞춘 계획), [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), Claude Code 내장 `code-review`·`security-review`·`simplify`, OWASP API Security Top 10, [supabase/agent-skills](https://github.com/supabase/agent-skills), Anthropic [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
 
 `architecture`: ISO/IEC 25010:2023, Parnas(정보 은닉), Ousterhout(깊은 모듈), *Building Evolutionary Architectures*(피트니스 함수), [arc42](https://arc42.org/), [MADR](https://adr.github.io/madr/), [Choose Boring Technology](https://mcfunley.com/choose-boring-technology), Azure Architecture Center·AWS Decision Guides, [endoflife.date](https://endoflife.date/)·[deps.dev](https://deps.dev/)·[OpenSSF Scorecard](https://scorecard.dev/). 아이디어를 빌린 스킬: [alexei-led/architect](https://github.com/alexei-led/architect)(지도 확인 후 판단, 증거 없으면 확인 못 함), [mattpocock/skills](https://github.com/mattpocock/skills) `improve-codebase-architecture`(핫스팟, 삭제 테스트), [mblode/agent-skills](https://github.com/mblode/agent-skills) `codebase-architecture`(새 에이전트로 레시피 따라 하기). 기준의 AI 근거 논문은 `criteria.md`에 링크.
+
+`design`: [Google DESIGN.md](https://github.com/google-labs-code/design.md), WCAG 2.2, Claude Code [artifacts](https://code.claude.com/docs/en/artifacts.md). 아이디어를 빌린 스킬: [emilkowalski/skills](https://github.com/emilkowalski/skills) `prototype`(이름과 축, 3~5개, 고를 때까지 멈춤), [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) `ce-prototype`(`decisions.md`), [impeccable](https://github.com/pbakaus/impeccable)(축 목록, 정체성 고정), [gstack](https://github.com/garrytan/gstack) `design-shotgun`(헤드라인 바꾸기 테스트), [OneRedOak/claude-code-workflows](https://github.com/OneRedOak/claude-code-workflows) `design-review`(폭별 실제 화면 리뷰).

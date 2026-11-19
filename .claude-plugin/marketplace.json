@@ -4,7 +4,7 @@
     "name": "JiHoon777"
   },
   "metadata": {
-    "description": "Personal Claude Code marketplace: one /task workflow plus stack check plugins (frontend, server incl. Supabase) and a stack-agnostic /arch architecture plugin."
+    "description": "Personal Claude Code marketplace: one /task workflow plus stack check plugins (frontend, server incl. Supabase), a stack-agnostic /arch architecture plugin, and a /ui design plugin."
   },
   "allowCrossMarketplaceDependenciesOn": [
     "anthropic-plugin-directory"
@@ -40,6 +40,11 @@
       "name": "architecture",
       "source": "./plugins/architecture",
       "description": "Stack-agnostic architecture design and review: /arch design (structure, stack recommendation from a live survey, ADRs) and /arch review (maintainability, fit and extensibility against established criteria). Writes an architecture overview and ADRs; never edits code."
+    },
+    {
+      "name": "design",
+      "source": "./plugins/design",
+      "description": "UI design steps with /ui: system writes DESIGN.md from the code's tokens, mockup drafts one or several mockups on the Claude Code design canvas and records the chosen one in the repo, review checks a built screen with the design-reviewer agent."
     }
   ]
 }
