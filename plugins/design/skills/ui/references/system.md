@@ -1,6 +1,6 @@
 # ui system: DESIGN.md 만들기·갱신
 
-형식은 Google DESIGN.md 다(alpha). 스펙은 외워 쓰지 말고 `npx -y -p @google/design.md@0.4.0 designmd spec --rules`로 받아 따른다(아래 명령도 이 형태로 쓴다. `npx @google/design.md …`는 Windows 에서 아무것도 출력하지 않는다).
+형식은 Google DESIGN.md 다(alpha). 스펙은 외워 쓰지 말고 `npx -y -p @google/design.md@0.4.0 designmd spec --rules`로 받아 따른다. 아래 명령도 이 형태로 쓴다.
 
 ## 1. 읽기
 

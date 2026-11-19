@@ -1,6 +1,6 @@
 ---
 name: ui
-description: Use when making UI mockups, setting up the design system (DESIGN.md), or reviewing the design of a built screen. system creates or updates DESIGN.md from the code's tokens, mockup draws one or several mockups on the Claude Code design canvas and records the chosen one in the repo, review checks a built screen against DESIGN.md, the chosen mockup, and accessibility. Runs only when the user invokes it directly.
+description: Use when making UI mockups, setting up the design system (DESIGN.md), or reviewing the design of a built screen. Runs only when the user invokes it directly.
 argument-hint: "system | mockup <screen> | review [URL]"
 disable-model-invocation: true
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(ls *), Bash(date *)

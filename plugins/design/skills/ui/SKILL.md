@@ -1,6 +1,6 @@
 ---
 name: ui
-description: UI 시안을 만들거나, 디자인 시스템(DESIGN.md)을 정리하거나, 구현된 화면의 디자인을 리뷰할 때 쓴다. system 은 코드의 토큰으로 DESIGN.md 를 만들거나 갱신하고, mockup 은 Claude Code 디자인 캔버스에 시안을 하나 또는 여러 개 만들어 고른 것을 레포에 기록하고, review 는 구현된 화면을 DESIGN.md·고른 시안·접근성 기준으로 리뷰한다. 사용자가 직접 부를 때만 돈다.
+description: UI 시안을 만들거나, 디자인 시스템(DESIGN.md)을 정리하거나, 구현된 화면의 디자인을 리뷰할 때 쓴다. 사용자가 직접 부를 때만 돈다.
 argument-hint: "system | mockup <화면> | review [URL]"
 disable-model-invocation: true
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(ls *), Bash(date *)

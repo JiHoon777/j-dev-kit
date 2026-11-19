@@ -2,7 +2,7 @@
 
 # ui system: create or update DESIGN.md
 
-The format is Google DESIGN.md (alpha). Do not write the spec from memory; get it with `npx -y -p @google/design.md@0.4.0 designmd spec --rules` and follow it (use this form for the commands below too; `npx @google/design.md …` prints nothing on Windows).
+The format is Google DESIGN.md (alpha). Do not write the spec from memory; get it with `npx -y -p @google/design.md@0.4.0 designmd spec --rules` and follow it. Use this form for the commands below too.
 
 ## 1. Read
 
