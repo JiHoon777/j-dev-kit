@@ -78,7 +78,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 ```
 
 - **scout:** only reads the repository and writes idea, backlog-grooming and improvement proposals to one proposals file. At most 3 per angle, nothing without evidence, and "None" when there is nothing. A proposal becomes an item only when the user promotes it.
-- **run:** the lead session does not edit code. It starts a work session per item in its own worktree, running the `/task start` and `end` procedures, and checks each report itself before raising it. It raises only proposal promotion, plan approval, merge approval, and blockers or questions. It merges approved branches one at a time, resolves conflicts then, and verifies after each.
+- **run:** the lead session does not edit code. Promoted proposals become items by the `/task create` procedure; it starts a work session per item in its own worktree that follows the `/task start` and `end` procedures as they are, and checks each report itself before raising it. What a work session would ask the user in the `/task` procedures (questions, plan approval, review finding decisions) is taken by the lead session and raised. The lead session merges one branch at a time by the wrap-up step of `/task end`, resolves conflicts then, and verifies after each.
 - Starting sessions and scheduling use what the app provides. Scheduled runs happen only while the app is open. Without a session-start tool, work runs in subagents isolated in worktrees.
 
 ### Architecture

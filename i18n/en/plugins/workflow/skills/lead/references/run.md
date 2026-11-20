@@ -2,7 +2,16 @@
 
 # lead run: start work sessions and direct them
 
-Raise proposals to the user and turn them into items, start a work session per item, check the reports and raise them to the user at the plan and merge points, and merge the approved branches.
+Creating items, implementing, reviewing and merging follow the `/task` procedure files as they are. All this mode adds is splitting the work and taking what a work session would ask the user and raising it.
+
+| Job | Procedure followed | Who |
+| --- | --- | --- |
+| Create an item | `${CLAUDE_SKILL_DIR}/../task/references/create.md` | Lead session |
+| Plan and implement | `${CLAUDE_SKILL_DIR}/../task/references/start.md` | Work session |
+| Review, fix, close the item | `${CLAUDE_SKILL_DIR}/../task/references/end.md` steps 1–6 | Work session |
+| Wrap up (merge) | Step 7 of the same `end.md` | Lead session |
+
+`/task` can only be invoked by the user, so do not call it with the Skill tool. Read the procedure files all the way through with the Read tool and follow them.
 
 Items to run: the numbers after `run`. If none, choose in step 3.
 
@@ -18,7 +27,7 @@ If this is not the base branch, or there are uncommitted changes (not counting t
 
 If the proposals file has proposals, show them all at once and ask: promote / reject / leave.
 
-- **Promote:** read `${CLAUDE_SKILL_DIR}/../task/references/create.md` and create the item by its steps 2–4. Remove that line from the proposals file.
+- **Promote:** read `create.md` and follow it as it is to create the item. What to create is that proposal's title and evidence. Afterwards remove that line from the proposals file.
 - **Reject:** write the title, date and reason under `## Rejected` in the proposals file and remove the original line.
 - Do not start work from a proposal the user has not promoted.
 
@@ -38,13 +47,12 @@ One session per item. Have it run in its own worktree cut from the base branch.
 A work session cannot see this conversation, so put in its instructions:
 
 1. The item file path, base branch, verify command, document language.
-2. The absolute path of `${CLAUDE_SKILL_DIR}/../task/references/start.md`. Read that file all the way through and follow it, but the lines below take precedence.
-3. This session is its own worktree, freshly cut from the base branch. Skip the branch check in start step 1. Other `w/` branches belong to other work sessions; do not touch them.
-4. **Plan:** do not use plan mode. Report the plan and stop. When the approval message arrives, continue from start step 4.
-5. **After implementing:** do steps 1–6 of `end.md` in the same folder. Do not ask in step 4. Fix the 🔴 findings; do not fix the 🟡 ones, write them in the report. Do not do step 7 (merge). Do not push.
-6. Do not create new backlog items. Write other work that seems needed in the report.
-7. Report and stop on anything you do not know, on scope growing, and on a failure that was not in the baseline and that you cannot fix.
-8. **Report format:** on the first line the state (`awaiting plan approval` / `question` / `blocked` / `ready to merge`) and the item number. Then the branch name, a few lines on what was done or planned, the 🟡 findings left, and what could not be verified.
+2. The absolute paths of `start.md` and `end.md`. Read `start.md` all the way through and follow it as it is; when done, read `end.md` all the way through and follow its steps 1–6 as they are. Only the four things below differ.
+3. **Wherever the procedure says to ask the user or get approval** (the questions and plan approval in start, the finding decisions in end step 4, the places that say stop and tell the user), do not ask directly. Report what you would ask and stop. The lead session passes on the user's words. Raise the plan as a report instead of using plan mode, and on approval continue from start step 4.
+4. **Branch check:** this session is its own worktree, freshly cut from the base branch. Skip the branch check in start step 1. Other `w/` branches belong to other work sessions; do not touch them.
+5. **New items:** where the procedure says to create a new backlog item, do not create it; write it in the report (the number would collide with other sessions).
+6. **Merge:** do not do end step 7. Do not push.
+7. **Report format:** on the first line the state (`awaiting plan approval` / `question` / `awaiting review decision` / `blocked` / `ready to merge`) and the item number. Then the branch name, a few lines on what you would ask or what was done, and what could not be verified.
 
 ## 5. Check reports and raise them
 
@@ -52,26 +60,27 @@ A report is that session's claim. Look for yourself before raising it.
 
 | State | What to check | To the user |
 | --- | --- | --- |
-| Awaiting plan approval | That the plan covers all of the item's Acceptance Criteria and adds nothing else | Plan summary, approve / what to change |
+| Awaiting plan approval | That the plan contains what start step 3 requires, covers all of the item's Acceptance Criteria and adds nothing else | Plan summary, approve / what to change |
 | Question, blocked | If code and docs can answer it, answer it yourself and send it back | Only what you cannot answer, right away |
-| Ready to merge | `git diff --stat <base>...<branch>`, the AC and DoD checks and `Final Summary` in the item file, the verification result | Step 6 |
+| Awaiting review decision | That the findings are in the end step 4 format (🔴 / 🟡 / ⚪) and the 🔴 ones hold in the code | The end step 4 question as it is |
+| Ready to merge | `git diff --stat <base>...<branch>`, that the item file is in `docs/done/` with AC and DoD checked, the `Final Summary`, the verification result | Step 6 |
 
-- Bundle plans and merge-ready reports that arrive at the same time and raise them once. Raise questions and blockers without waiting.
+- Bundle what arrives at the same time and raise it once. Raise questions and blockers without waiting.
 - Pass the user's answer to the session by quoting their words as they are. If there is no answer, wait.
 - If a report does not match reality, do not raise it to the user; write what differs and send it back.
+- Show the user the "new items" a work session reported, and if they decide to create one, create it by `create.md`.
 
-## 6. Merge (one at a time)
+## 6. Wrap up (one at a time)
 
-Show the merge-ready branches and ask: what changed, the remaining 🟡 (fix now / new item / leave), and whether to merge.
+For each merge-ready branch the lead session does step 7 of `end.md`. The answer that step gets from the user is the merge approval.
 
-1. Merge only the branches the user approved, one at a time, into the base branch. Follow the PR and push rules in the project CLAUDE.md if there are any. Push only on request.
-2. On a conflict, look at the intent of both items and resolve it. If you cannot judge which side to keep, stop and ask.
-3. Run the verify command fresh after every merge. If it fails, stop the next merge and say so. Do not revert on your own.
-4. Send "fix now" back to that work session. Create "new item" as in step 2.
-5. Propose cleaning up the work session and worktree of each merged item.
+- Also tell the skill that step 7 invokes: the branch to finish is `w/<item file name>` and it lives in the work session's worktree. The lead session is on the base branch.
+- Finish only one branch at a time. Move to the next after one is done.
+- On a conflict, look at the intent of both items and resolve it. If you cannot judge which side to keep, stop and ask.
+- Run the verify command fresh after every merge. If it fails, stop the next merge and say so. Do not revert on your own.
+- Propose cleaning up the work session and worktree of each merged item.
 
 ## 7. Next
 
 - If a slot is free and candidates remain, go back to step 3.
-- Show the "other work" that work sessions reported together with the proposals in the next step 2.
 - When finished, report: merged items, what is waiting for approval, what stopped, and the remaining `To Do` items.

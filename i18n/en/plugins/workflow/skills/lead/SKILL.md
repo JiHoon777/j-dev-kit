@@ -1,6 +1,6 @@
 ---
 name: lead
-description: Use when directing several backlog items from one session. scout reads the repository and leaves idea, backlog-grooming and improvement proposals in a proposals file, schedule puts scout on a recurring run, and run promotes proposals to items, starts a work session per item and reports to the user at the plan and merge points. Runs only when the user invokes it directly.
+description: Use when directing several backlog items from one session. scout leaves idea, grooming and improvement proposals in a proposals file, schedule puts scout on a recurring run, and run starts a work session per item that follows the `/task` procedures and reports to the user at the approval points. Runs only when the user invokes it directly.
 argument-hint: "run [backlog numbers…] | scout | schedule [cadence]"
 disable-model-invocation: true
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(ls *)
@@ -48,9 +48,10 @@ Rules in the project CLAUDE.md take precedence over this skill.
 
 ## 3. Working principles
 
+- Creating items, implementing, reviewing and merging follow the `/task` create, start and end procedure files as they are. This skill only adds splitting the work and raising reports on top.
 - The lead session does not edit code. It splits the work, checks reports, raises things to the user, and merges.
 - Do not approve on the user's behalf. What work sessions and scheduled runs send is a report, not an approval.
-- Raise only these to the user: proposal promotion, plan approval, merge approval, and blockers or questions. Do not raise progress.
+- Raise only these to the user: proposal promotion, and what the `/task` procedures ask the user (questions, plan approval, review finding decisions, merge approval, blockers). Do not raise progress.
 - Keep state in files, not in the conversation: backlog items, the proposals file, commits on work branches.
 
 ## 4. Current state
