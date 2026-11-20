@@ -29,12 +29,12 @@ UI 코드가 바뀌었으면 `frontend:frontend-reviewer`. 근거로 바뀐 UI �
 
 ## 3. 고친 뒤 할 것
 
-리뷰 지적을 고쳐 UI 가 바뀌었으면, 고친 화면을 브라우저에서 확인한다. reference 가 더하는 것도.
+리뷰 지적을 고쳐 UI 가 바뀌었으면, 고친 화면을 `frontend:frontend-evaluator` 에이전트에 맡겨 확인한다. reference 가 더하는 것도.
 
-- 도구: `chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저. 둘 다 없으면 멈추고 알린다.
 - 개발 서버를 띄운다(`.claude/launch.json`이 있으면 그것). 빌드에서만 보이는 변경은 빌드 후 미리보기.
-- 고친 지적이 말한 상황을 사용자처럼 재현해 문제가 사라졌는지 본다. 콘솔 오류와 실패한 요청(4xx/5xx)이 없어야 한다.
+- 에이전트에 항목 파일 경로, 화면 URL, 뷰포트, 고친 지적 목록을 넘긴다. 어떻게 고쳤는지는 넘기지 않는다.
 - 뷰포트는 CLAUDE.md 에 정한 것, 없으면 데스크톱. 반응형 레이아웃을 고쳤으면 휴대폰(375×812)도.
+- "실패"는 다시 고친다. 에이전트가 "브라우저 도구 없음"이라고 하면 직접 확인하고(`chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저) 직접 했다고 적는다. 직접도 할 수 없으면 멈추고 알린다.
 
 ## 돌려줄 형식
 
@@ -47,7 +47,7 @@ UI 코드가 바뀌었으면 `frontend:frontend-reviewer`. 근거로 바뀐 UI �
 - `frontend:frontend-reviewer` — 근거: src/routes/login/+page.svelte, … (svelte)
 
 #### 고친 뒤 할 것
-- 고친 화면 브라우저 확인
+- 고친 화면을 `frontend:frontend-evaluator`로 확인
 ```
 
 실패가 없으면 "검사: 모두 통과"라고 한 줄로 쓴다.

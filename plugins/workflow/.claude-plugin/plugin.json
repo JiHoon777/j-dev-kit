@@ -1,7 +1,7 @@
 {
   "name": "workflow",
-  "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins.",
-  "version": "0.5.2",
+  "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins. /lead directs several items from one session: scheduled proposals, a work session per item, reports at plan and merge points. A Stop hook re-runs the verify command when an item is marked done.",
+  "version": "0.6.0",
   "author": {
     "name": "JiHoon777"
   },

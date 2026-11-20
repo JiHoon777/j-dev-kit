@@ -31,12 +31,12 @@ If UI code changed, `frontend:frontend-reviewer`. Pass the list of changed UI fi
 
 ## 3. After fixes
 
-If fixing review findings changed the UI, check the fixed screens in the browser. Also what the reference adds.
+If fixing review findings changed the UI, hand the fixed screens to the `frontend:frontend-evaluator` agent to check. Also what the reference adds.
 
-- Tool: the `chrome-devtools` skill if available, otherwise the app's built-in browser. If neither is available, stop and say so.
 - Start the dev server (`.claude/launch.json` if present). For changes visible only in a build, preview after building.
-- Reproduce, as a user would, the situation the fixed finding described and see that the problem is gone. There must be no console errors and no failed requests (4xx/5xx).
+- Pass the agent the item file path, the screen URL, the viewport and the list of fixed findings. Do not pass how they were fixed.
 - Viewport: the one set in CLAUDE.md, otherwise desktop. If you fixed a responsive layout, also mobile (375×812).
+- Fix a "fail" again. If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser) and write that you did it yourself. If you cannot do that either, stop and say so.
 
 ## Return format
 
@@ -49,7 +49,7 @@ Checks: 1 failed (rest passed)
 - `frontend:frontend-reviewer` — basis: src/routes/login/+page.svelte, … (svelte)
 
 #### After fixes
-- Browser check of the fixed screens
+- Check the fixed screens with `frontend:frontend-evaluator`
 ```
 
 If nothing failed, write a single line: "Checks: all passed".

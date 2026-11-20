@@ -30,11 +30,12 @@ Return only what applies to this item.
 
 - **New screen or redesign:** invoke the `frontend-design` skill and follow it. Choose colors and fonts within the project's design tokens; ask first before adding new ones. If there is an approved design or product principles in CLAUDE.md, those come first. Do not invoke it for items that move an existing screen as-is.
 - **When choosing a new web feature or UI pattern** (dialog, popover, layout, form validation, etc.): invoke the `modern-web-guidance` skill if available.
-- **Browser check** (when the UI changes, at the end of implementation):
-  - Tool: the `chrome-devtools` skill if available, otherwise the app's built-in browser. If neither is available, stop and say so.
+- **Browser check** (when the UI changes, at the end of implementation): the implementing session does not judge it itself; hand it to the `frontend:frontend-evaluator` agent.
   - Start the dev server (`.claude/launch.json` if present). For changes visible only in a build (service worker, static generation), preview after building.
-  - Walk through each Acceptance Criterion as a user would. There must be no console errors and no failed requests (4xx/5xx).
+  - Pass the agent only the item file path, the screen URL and the viewport. Do not pass what was implemented or how.
   - Viewport: the one set in CLAUDE.md, otherwise desktop. If you changed a responsive layout, also mobile (375×812).
+  - Fix a "fail" and hand it over again. Do not check off a "could not verify"; tell the user.
+  - If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser): walk through each Acceptance Criterion as a user would, with no console errors and no failed requests (4xx/5xx). Write in `Implementation Notes` that you did it yourself. If you cannot do that either, stop and say so.
 - The framework rules from the reference.
 
 ## 2. To put in the plan / To ask

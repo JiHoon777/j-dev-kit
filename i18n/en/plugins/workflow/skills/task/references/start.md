@@ -59,6 +59,7 @@ Before approval, do not edit files and do not create a branch.
 
 - Call the `superpowers:test-driven-development` skill and follow it.
 - Follow the stack checks' **Follow**.
+- Do not delete or weaken existing tests to make them pass. If you think a test is wrong, stop and ask.
 - Do only what is in the Acceptance Criteria. Do not polish or refactor surrounding code. If other work seems needed, say so, and if agreed, create a separate item following steps 2-4 of `${CLAUDE_SKILL_DIR}/references/create.md`.
 - When one AC is done, verify it and check it off right away. Write what changed from the plan in `Implementation Notes`. If the scope grows, stop and ask.
 - Commit to the work branch at each meaningful step. Do not commit to the base branch and do not push.

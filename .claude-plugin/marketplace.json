@@ -13,7 +13,7 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins.",
+      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins. /lead directs several items from one session: scheduled proposals, a work session per item, reports at plan and merge points. A Stop hook re-runs the verify command when an item is marked done.",
       "dependencies": [
         "superpowers@anthropic-plugin-directory"
       ]
@@ -21,7 +21,7 @@
     {
       "name": "frontend",
       "source": "./plugins/frontend",
-      "description": "Frontend checks for /task start and /task end (Svelte and React references), browser verification, and the frontend-reviewer agent.",
+      "description": "Frontend checks for /task start and /task end (Svelte and React references), the frontend-reviewer agent, and the frontend-evaluator agent that verifies acceptance criteria in the browser.",
       "dependencies": [
         "workflow",
         "typescript-lsp@anthropic-plugin-directory",

@@ -4,12 +4,12 @@
 
 > Translation of README.md. The Korean README is the source.
 
-A personal Claude Code plugin marketplace. The work loop is a single `/task` skill; stack-specific checks live in stack plugins. Architecture design and review is a separate `/arch`, and UI mockups and design review a separate `/ui` (both stack-agnostic).
+A personal Claude Code plugin marketplace. The work loop is a single `/task` skill; stack-specific checks live in stack plugins. To direct several items from one session, use `/lead`. Architecture design and review is a separate `/arch`, and UI mockups and design review a separate `/ui` (both stack-agnostic).
 
 | Plugin | Contains | Also installs |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end` | `superpowers` |
-| `frontend` | Svelte and React checks, browser verification, `frontend-reviewer` | `workflow`, `typescript-lsp`, `frontend-design` |
+| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule` | `superpowers` |
+| `frontend` | Svelte and React checks, `frontend-reviewer`, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | Server and Supabase checks (migrations, API spec, keys), `api-reviewer`, `supabase-reviewer` | `workflow` |
 | `architecture` | `/arch design`, `/arch review`, `architecture-reviewer`, `architecture-researcher` | none |
 | `design` | `/ui system`, `/ui mockup`, `/ui review`, `design-reviewer` | none |
@@ -36,6 +36,7 @@ Add this to the project CLAUDE.md.
 - base branch: main
 - verify command: pnpm verify
 - document language: English
+- concurrent work sessions: 2
 
 ## superpowers
 The rules in this document take precedence. Follow only the skills `/task` calls; do not use
@@ -64,6 +65,21 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 
 - **start:** baseline (one run of the verify command), stack start checks, planning sized to the item (no agents for small items), test-first implementation, cleanup with `simplify`, verification.
 - **end:** stack end checks, review (`code-review` plus `security-review` and stack reviewers when needed), findings shown as 🔴 must fix / 🟡 consider / ⚪ minor with one question per group, fixes, verification, merge. Pushes only on request.
+- **Verify hook:** on a `w/` branch, when the item's Definition of Done is checked and Claude stops, a hook runs the `verify command:` from CLAUDE.md itself. On failure it sends Claude back once with the output. It does not run again while the code is unchanged. It can overlap the verification the skill already ran, so it may run once more per stage. On Windows it needs Git Bash.
+- **Browser check:** when the UI changes, the `frontend-evaluator` agent, not the implementing session, judges each Acceptance Criterion on the running screen.
+
+### Directing
+
+```
+/lead schedule weekdays at 9am   # put scout on a recurring run
+/lead scout                      # once, now: refresh the proposals file (docs/backlog/_proposals.md)
+/lead run                        # promote proposals → a work session per item → report at plan and merge points → merge
+/lead run 003 005                # only the chosen items
+```
+
+- **scout:** only reads the repository and writes idea, backlog-grooming and improvement proposals to one proposals file. At most 3 per angle, nothing without evidence, and "None" when there is nothing. A proposal becomes an item only when the user promotes it.
+- **run:** the lead session does not edit code. It starts a work session per item in its own worktree, running the `/task start` and `end` procedures, and checks each report itself before raising it. It raises only proposal promotion, plan approval, merge approval, and blockers or questions. It merges approved branches one at a time, resolves conflicts then, and verifies after each.
+- Starting sessions and scheduling use what the app provides. Scheduled runs happen only while the app is open. Without a session-start tool, work runs in subagents isolated in worktrees.
 
 ### Architecture
 
@@ -93,7 +109,9 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 
 ```
 plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
-plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md
+plugins/workflow/skills/lead/       SKILL.md + references/run.md, scout.md, schedule.md
+plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)
+plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md, frontend-evaluator.md
 plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
 plugins/architecture/               skills/arch (SKILL.md + references/), agents/architecture-{reviewer,researcher}.md
 plugins/design/                     skills/ui (SKILL.md + references/), agents/design-reviewer.md
@@ -118,11 +136,16 @@ Then open a new session. Maintainers bump `version` in `plugin.json` for each ch
 | --- | --- |
 | `supabase@j-dev-kit` cannot be found | It was merged into `server`. Remove it from `enabledPlugins` and install `server@j-dev-kit`. |
 | `Dependency "…" is not installed` | Install the removed dependency plugin with the same `--scope`. |
+| The verify command runs when Claude stops | That is the verify hook. It runs only when the item's Definition of Done is checked and the code changed since the last pass. Without a `verify command:` line in CLAUDE.md it does not run. |
 | No stack checks run | The plugin is disabled, or it is missing from `stack:` in CLAUDE.md. |
 
 ## Sources
 
 [Backlog.md](https://github.com/MrLesk/Backlog.md) item format, [superpowers](https://github.com/obra/superpowers) (brainstorming, TDD, verification before completion, receiving review, finishing a branch), [spec-kit](https://github.com/github/spec-kit) (at most 3 questions), [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) (planning sized to the task), [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), Claude Code built-in `code-review`, `security-review`, `simplify`, OWASP API Security Top 10, [supabase/agent-skills](https://github.com/supabase/agent-skills), Anthropic [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
+
+Verify hook and `frontend-evaluator`: Claude Code [hooks](https://code.claude.com/docs/en/hooks.md) (rules that must hold go in hooks, not instructions), Anthropic [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps) (an evaluator kept apart from the builder uses the running app itself).
+
+`/lead`: [GitHub Agentic Workflows safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/) (a cap per run, "nothing to do" allowed, proposals promoted by a person), [Langfuse weekly digest](https://langfuse.com/blog/2026-03-13-weekly-digest-ai-skill) (evidence links, clear next step / needs discussion), Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) (workers report with artifacts and a short summary) and [long-running harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) (state in files and git, never delete tests), Claude Code [scheduled tasks](https://code.claude.com/docs/en/desktop-scheduled-tasks.md). Survey records are in `reports/`. The number 3 per angle is a default, not an evidence-based value.
 
 `architecture`: ISO/IEC 25010:2023, Parnas (information hiding), Ousterhout (deep modules), *Building Evolutionary Architectures* (fitness functions), [arc42](https://arc42.org/), [MADR](https://adr.github.io/madr/), [Choose Boring Technology](https://mcfunley.com/choose-boring-technology), Azure Architecture Center and AWS Decision Guides, [endoflife.date](https://endoflife.date/), [deps.dev](https://deps.dev/), [OpenSSF Scorecard](https://scorecard.dev/). Ideas borrowed from skills: [alexei-led/architect](https://github.com/alexei-led/architect) (confirm the map before judging, no evidence means "could not verify"), [mattpocock/skills](https://github.com/mattpocock/skills) `improve-codebase-architecture` (hotspots, deletion test), [mblode/agent-skills](https://github.com/mblode/agent-skills) `codebase-architecture` (a fresh agent follows the recipes). The research papers behind the AI evidence are linked in `criteria.md`.
 

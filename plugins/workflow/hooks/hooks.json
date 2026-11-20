@@ -1,0 +1,15 @@
+{
+  "description": "On a w/* work branch, when the item's Definition of Done is checked, run the project's verify command before Claude stops and send it back once if it fails.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/verify-on-stop.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
