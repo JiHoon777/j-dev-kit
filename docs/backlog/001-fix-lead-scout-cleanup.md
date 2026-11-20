@@ -52,8 +52,8 @@ lead·scout·schedule 절차와 설명의 빈틈을 메우고, 지침으로만 �
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate .` 통과(#3 뒤에는 바뀐 검증 명령 통과)
-- [ ] #2 원문을 고친 곳은 번역본도 고쳤고, workflow version 을 올렸다
+- [x] #1 `claude plugin validate .` 통과(#3 뒤에는 바뀐 검증 명령 통과)
+- [x] #2 원문을 고친 곳은 번역본도 고쳤고, workflow version 을 올렸다
 
 <!-- DOD:END -->
 
@@ -102,5 +102,9 @@ lead·scout·schedule 절차와 설명의 빈틈을 메우고, 지침으로만 �
 ### 정리 (simplify)
 
 재사용·단순화·효율·깊이 4관점. 반영: 검사 스크립트의 `version_of` 를 sed 하나로, 쓸모없는 `sort -u` 제거, 리다이렉션 순서, 위 두 문서 위치, README 업데이트 절은 검증 명령을 CLAUDE.md 로 가리킨다. 건너뜀: untracked 목록 재사용·awk 합치기(이득이 미미하다).
+
+### 검증
+
+`claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(exit 0). AC 마다 원문·번역본의 고친 줄을 grep 으로 확인했다. 브라우저 확인은 해당 없음(UI 없음).
 
 ## Final Summary
