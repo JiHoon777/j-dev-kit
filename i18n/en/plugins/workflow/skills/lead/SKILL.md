@@ -35,7 +35,6 @@ Examples:
 /lead run 003 005                # run only these two items
 ```
 
-- `backlog-scout` and `trend-scout` in the procedure files are this plugin's agents. Their names when starting them are `workflow:backlog-scout` and `workflow:trend-scout`.
 - If the first word is none of the three, show this table and ask.
 - Read only the chosen mode's procedure file, all the way through, with the Read tool, and follow it as written.
 
@@ -45,13 +44,7 @@ Read these from the project CLAUDE.md. If missing, use the default in parenthese
 
 - Base branch (`main`), verify command, language for items and reports: same as `/task`
 - Concurrent work sessions (2)
-- Outside trends, `바깥 동향` (on): scout searches the web with `trend-scout`. `바깥 동향: 끄기` (outside trends: off) turns it off. If there are search topics or page URLs to always look at, write them below, one per line. If the list is long, keep it in a file in the repository and write that path in backticks (do not import it with `@`; CLAUDE.md is read in every session).
-
-  ```markdown
-  - 바깥 동향:
-    - 주제: Claude Code 플러그인 기능 요청
-    - https://github.com/anthropics/claude-code/issues
-  ```
+- Outside trends, `바깥 동향` (on): scout searches the web with `trend-scout`. `바깥 동향: 끄기` (outside trends: off) turns it off. If there are search topics or page URLs to always look at, write them under `- 바깥 동향:`, one per line. If the list is long, keep it in a file in the repository and write that path in backticks (do not import it with `@`; CLAUDE.md is read in every session).
 
 Rules in the project CLAUDE.md take precedence over this skill.
 

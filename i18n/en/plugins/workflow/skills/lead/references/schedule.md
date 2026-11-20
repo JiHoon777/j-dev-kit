@@ -17,8 +17,7 @@ Register with the in-session scheduling tool (CronCreate, what `/loop` uses).
 - Write the prompt as instructions, not as a slash command. A `/workflow:lead scout` that arrives from a schedule is not expanded into the skill; it arrives only as text. Put in the prompt:
   1. "This is a scheduled lead scout run. Read `<skill folder>/references/scout.md` all the way through with the Read tool and follow it as written."
   2. "`${CLAUDE_SKILL_DIR}` in that file means `<skill folder>`."
-  3. "The agents' names are `workflow:backlog-scout` and `workflow:trend-scout`."
-  4. "In step 4 (raise), show and ask about only the proposals new this time; the whole accumulated list is shown in `/lead run`. If there is no new proposal, do not ask about promotion; say so, and give only the lines step 4 adds (what was dropped, what was wrong, what could not be read)."
+  3. "In step 4 (raise), show and ask about only the proposals new this time; the whole accumulated list is shown in `/lead run`. If there is no new proposal, do not ask about promotion; say so, and give only the lines step 4 adds."
 
   Replace `<skill folder>` with this skill's absolute path (Base directory). Do not paste procedures.
 - The path contains the plugin version. After updating the plugin, call `/lead schedule` again to register with the new path.
