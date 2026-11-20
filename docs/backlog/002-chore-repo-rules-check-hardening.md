@@ -1,7 +1,7 @@
 ---
 id: '002'
 title: 저장소 규칙 검사 보강 — 설명 일치, 시나리오 테스트, 남은 사소함
-status: To Do
+status: In Progress
 labels: [chore]
 priority: medium
 dependencies: []
@@ -52,6 +52,29 @@ description 이 같다는 뜻이다. README.md·README.en.md 의 플러그인 �
 
 ## Implementation Plan
 
+무엇을 하나: `scripts/check-repo-rules.sh` 에 설명 일치와 README 목록 검사를 더하고, 사소함 4건을 고치고, 시나리오 테스트를 저장소 안의 스크립트 하나로 둔다. 빼는 것: 번역 품질 검사, CI 연동, README 문장 비교, marketplace 에 없는 plugins/ 폴더 검사, 번역본만 남은 파일 검사.
+
+커밋 1 — 시나리오 테스트 (AC #3 의 틀)
+- 새 `scripts/test-check-repo-rules.sh`(bash·git 만): 임시 폴더에 작은 가짜 저장소(플러그인 `alpha`·`beta`, plugin.json, 마크다운과 `i18n/en/` 짝, marketplace.json, README 두 개)를 만들어 커밋하고, 시나리오마다 그것을 clone 한 곳에서 검사 스크립트를 돌려 종료 코드와 메시지 일부를 확인한다. 실제 플러그인 내용에 기대지 않는다.
+- 001 의 12개(노트의 목록으로 다시 만든다): 변경 없음 → 통과 / 번역본 짝 지움 → 실패 / 추가 안 한 md 짝 없음 → 실패 / 고치고 version 그대로 → 실패 / version 올림 → 통과 / 커밋한 변경 version 그대로 → 실패 / 번역본만 고침 → 통과 / 원문만 고침 → 실패 / 원문·번역본 함께 고침 → 통과 / 다른 플러그인으로 옮기고 받는 쪽만 올림 → 실패 / 옮기고 양쪽 올림 → 통과 / 기준 브랜치 없음 → 건너뛴다고 알리고 통과.
+- 이번에 더하는 것(먼저 실패를 본다): 설명 다름 → 이름과 실패(#1) / README.md·README.en.md 에서 빠짐 → 실패(#2) / 원문·번역본 함께 지우고 스테이징 안 함 → 통과(#4) / 한글 경로 md 짝 없음 → 메시지에 한글 그대로(#5) / version 내림 → 실패(#6) / 로컬 main 없고 origin/main 만 → version 그대로면 실패(#7) / 플러그인 폴더 통째로 지움 → version 검사로 실패하지 않음.
+
+커밋 2 — 검사 스크립트 (AC #1, 2, 4~7)
+- `git -c core.quotePath=false`(#5). 작업 폴더에 없는 원문은 짝 검사에서 건너뜀(#4). merge-base 를 `<기준>` 으로 못 찾으면 `origin/<기준>`(#7). version 이 `sort -V` 로 낮으면 실패, manifest 가 없는 플러그인은 건너뜀(#6).
+- 새 4번: marketplace.json `plugins` 항목마다 description 을 `plugins/<name>/.claude-plugin/plugin.json` description 과 비교(#1). jq 없이 sed/awk.
+- 새 5번: marketplace.json 의 플러그인마다 README.md·README.en.md 에 표 줄 ``| `<이름>` |``(#2). 4·5번은 기준 대비가 아니라 항상 본다.
+
+커밋 3 — 문서: README 두 개의 구조 절에 테스트 스크립트 한 줄, 업데이트 절의 검사 설명에 설명 일치·README 목록·version 내림, 검사 스크립트를 고치면 테스트를 돌린다. 플러그인 파일은 고치지 않으므로 version·i18n·marketplace.json 은 그대로.
+
+성공 기준: #1·#2·#4~#7 은 위 시나리오의 종료 코드와 메시지, #3 은 `bash scripts/test-check-repo-rules.sh` 가 모두 통과, DoD #1 은 검증 명령 통과.
+
+가정(승인됨): 시나리오 테스트는 검증 명령에 넣지 않는다(Stop 훅이 매번 돌리므로). JSON 은 jq 없이 "한 줄에 키 하나" 형식을 가정한다(못 읽으면 빈 값과 비교해 실패한다). 001 노트에 다 적히지 않은 시나리오 2개는 위처럼 정한다. 플러그인 이름 → 폴더는 `plugins/<name>`.
+
 ## Implementation Notes
+
+### Baseline
+
+- `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(exit 0). 이미 실패하는 것 없음.
+- 스택 점검: frontend·server 해당 없음(`stack: 없음`).
 
 ## Final Summary
