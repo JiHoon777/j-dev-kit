@@ -1,9 +1,9 @@
 ---
 name: lead
-description: 백로그 항목 여러 개를 한 세션에서 지휘할 때 쓴다. scout 는 제안함에 아이디어·정리·개선 제안을 남기고, schedule 은 scout 을 주기로 걸고, run 은 항목마다 작업 세션을 띄워 `/task` 절차로 돌리며 승인 지점에서 사용자에게 보고한다. 사용자가 직접 부를 때만 돈다.
+description: 백로그 항목 여러 개를 한 세션에서 지휘할 때 쓴다. scout 는 에이전트가 찾은 아이디어·정리·개선 제안을 확인해 제안함에 적고 사용자에게 올리고, schedule 은 scout 을 주기로 걸고, run 은 항목마다 작업 세션을 띄워 `/task` 절차로 돌리며 승인 지점에서 사용자에게 보고한다. 사용자가 직접 부를 때만 돈다.
 argument-hint: "run [백로그 번호…] | scout | schedule [주기]"
 disable-model-invocation: true
-allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(ls *)
+allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(ls *), Bash(date *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
   tags: [orchestration, backlog, work-sessions, scheduling, human-approval]
@@ -20,14 +20,14 @@ metadata:
 | 첫 단어 | 모드 | 절차 파일 |
 | --- | --- | --- |
 | `run` | 제안 올리기, 작업 세션 띄우기, 보고, 머지 | `${CLAUDE_SKILL_DIR}/references/run.md` |
-| `scout` | 제안함 한 번 갱신하기 | `${CLAUDE_SKILL_DIR}/references/scout.md` |
+| `scout` | 제안을 받아 제안함에 적고 올리기 | `${CLAUDE_SKILL_DIR}/references/scout.md` |
 | `schedule` | scout 을 주기 실행으로 걸기 | `${CLAUDE_SKILL_DIR}/references/schedule.md` |
 
 예:
 
 ```
 /lead schedule 평일 아침 9시     # scout 을 주기 실행으로 건다
-/lead scout                      # 지금 한 번 제안함을 갱신한다
+/lead scout                      # 지금 한 번 제안을 받아 제안함에 적고 올린다
 /lead run                        # 제안을 올리고, 고른 항목마다 작업 세션을 띄운다
 /lead run 003 005                # 이 두 항목만 돌린다
 ```

@@ -1,9 +1,9 @@
 ---
 name: lead
-description: Use when directing several backlog items from one session. scout leaves idea, grooming and improvement proposals in a proposals file, schedule puts scout on a recurring run, and run starts a work session per item that follows the `/task` procedures and reports to the user at the approval points. Runs only when the user invokes it directly.
+description: Use when directing several backlog items from one session. scout checks the idea, grooming and improvement proposals the agent finds, writes them to the proposals file and raises them to the user, schedule puts scout on a recurring run, and run starts a work session per item that follows the `/task` procedures and reports to the user at the approval points. Runs only when the user invokes it directly.
 argument-hint: "run [backlog numbers…] | scout | schedule [cadence]"
 disable-model-invocation: true
-allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(ls *)
+allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(ls *), Bash(date *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
   tags: [orchestration, backlog, work-sessions, scheduling, human-approval]
@@ -22,14 +22,14 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
 | First word | Mode | Procedure file |
 | --- | --- | --- |
 | `run` | Raise proposals, start work sessions, report, merge | `${CLAUDE_SKILL_DIR}/references/run.md` |
-| `scout` | Refresh the proposals file once | `${CLAUDE_SKILL_DIR}/references/scout.md` |
+| `scout` | Take proposals, write them to the proposals file, and raise them | `${CLAUDE_SKILL_DIR}/references/scout.md` |
 | `schedule` | Put scout on a recurring run | `${CLAUDE_SKILL_DIR}/references/schedule.md` |
 
 Examples:
 
 ```
 /lead schedule weekdays at 9am   # put scout on a recurring run
-/lead scout                      # refresh the proposals file once, now
+/lead scout                      # once, now: take proposals, write them to the proposals file, and raise them
 /lead run                        # raise proposals, then start a work session per chosen item
 /lead run 003 005                # run only these two items
 ```

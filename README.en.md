@@ -72,12 +72,12 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 
 ```
 /lead schedule weekdays at 9am   # put scout on a recurring run
-/lead scout                      # once, now: refresh the proposals file (docs/backlog/_proposals.md)
+/lead scout                      # once, now: take proposals → write the proposals file (docs/backlog/_proposals.md) → ask about promotion
 /lead run                        # promote proposals → a work session per item → report at plan and merge points → merge
 /lead run 003 005                # only the chosen items
 ```
 
-- **scout:** the `backlog-scout` agent reads the repository and writes idea, backlog-grooming and improvement proposals to one proposals file. The calling session reads only the finished proposals file and shows it. Proposals accumulate (at most 10 per angle) and only resolved ones drop out. Nothing without evidence, and "None" when there is nothing. A proposal becomes an item only when the user promotes it.
+- **scout:** the `backlog-scout` agent reads the repository and returns idea, backlog-grooming and improvement proposals as a report. The agent writes no files. The calling session checks the evidence, writes the proposals file, and asks about promotion and rejection as `run` does. A scheduled run only writes; when it finishes, the session that set it up is notified and asks. Proposals accumulate (at most 10 per angle) and only resolved ones drop out. Nothing without evidence, and "None" when there is nothing. A proposal becomes an item only when the user promotes it.
 - **run:** the lead session does not edit code. Promoted proposals become items by the `/task create` procedure; it starts a work session per item in its own worktree that follows the `/task start` and `end` procedures as they are, and checks each report itself before raising it. What a work session would ask the user in the `/task` procedures (questions, plan approval, review finding decisions) is taken by the lead session and raised. The lead session merges one branch at a time by the wrap-up step of `/task end`, resolves conflicts then, and verifies after each.
 - Starting sessions and scheduling use what the app provides. Scheduled runs happen only while the app is open. Without a session-start tool, work runs in subagents isolated in worktrees.
 
