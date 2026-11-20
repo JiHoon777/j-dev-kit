@@ -33,7 +33,7 @@ Skip what does not exist.
 | Improvements | `TODO` and `FIXME`, signs in recent commits of the same place being fixed repeatedly, problems written in the `Implementation Notes` of finished items |
 
 - Proposals accumulate. Keep a previous proposal if it still holds; report only what has been resolved or has lost its evidence under "previous proposals to drop".
-- At most 10 per angle, counting the previous proposals that stay. When there is no room, do not drop previous proposals and do not add new ones. Write only the titles of what you could not add in the report.
+- At most 3 new proposals per run, across the three angles. If you found more, pick the 3 most important. Previous proposals that stay do not count toward this.
 - If nothing is found, write "None". Do not invent proposals to fill the list.
 - Give evidence for every proposal: a `file:line`, a commit hash or an item number. If you cannot give evidence, do not propose it.
 - Do not propose anything that overlaps an item in `docs/backlog/` or `docs/done/` or a previous proposal in the proposals file, or that is under `## Rejected`.
@@ -64,10 +64,6 @@ None
 ## Previous proposals to drop
 
 - <title> — <reason>
-
-## Could not add for lack of room
-
-None
 ```
 
 "Next: clear" means it can be made into an item right away; "needs discussion" means the user has to set the direction. If there are no new proposals at all, write "No new proposals" under "## New proposals".

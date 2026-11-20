@@ -32,7 +32,7 @@ Skip what does not exist.
 - Open the pages you use as evidence with WebFetch and check their content. Do not propose from search result summaries alone.
 - Do not propose anything this repository already has (check the README and the code), anything that overlaps an item in `docs/backlog/` or `docs/done/` or a previous proposal in the proposals file, or anything under `## Rejected`.
 - Proposals accumulate. Keep a previous proposal if it still holds; report only what is now in the repository or whose evidence page is gone under "previous proposals to drop".
-- At most 10, counting the previous proposals that stay. When there is no room, do not drop previous proposals and do not add new ones. Write only the titles of what you could not add in the report.
+- At most 3 new proposals per run. If you found more, pick the 3 most important (strong requests or reactions, and a good fit for this repository). Previous proposals that stay do not count toward this.
 - If nothing is found, write "None". Do not invent proposals to fill the list.
 - Give evidence for every proposal: `URL · date checked` (the date is today's date given by the calling session). When you cite a number (👍, stars, installs, points), give the metric's name and value with it. If you cannot give evidence, do not propose it.
 
@@ -50,10 +50,6 @@ Return this one format so the calling session can copy it as it is. Write "None"
 ## Previous proposals to drop
 
 - <title> — <reason>
-
-## Could not add for lack of room
-
-None
 
 ## Could not read
 
