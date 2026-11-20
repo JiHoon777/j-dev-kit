@@ -42,7 +42,7 @@ If the proposals file has proposals, show them all at once and ask: promote / re
 One session per item. Have it run in its own worktree cut from the base branch.
 
 - If there is a tool that starts a new session, use it (the user can open the session and talk to it directly).
-- Otherwise, use a background subagent isolated in a worktree. The Stop hook (which runs the verify command once the Definition of Done is checked) does not run for subagents. The verify command run after every merge in step 6 covers that check.
+- Otherwise, use a background subagent isolated in a worktree. The Stop hook (which runs the verify command once the Definition of Done is checked) does not run for subagents. That check is covered by the verification the work session runs by the procedures (start step 6, end step 6) and by the verification before and after each merge in step 6.
 
 A work session cannot see this conversation, so put in its instructions:
 
@@ -76,6 +76,7 @@ A report is that session's claim. Look for yourself before raising it.
 For each merge-ready branch the lead session does step 7 of `end.md`. The answer that step gets from the user is the merge approval.
 
 - Also tell the skill that step 7 invokes: the branch to finish is `w/<item file name>` and it lives in the work session's worktree. The lead session is on the base branch.
+- **Before merging:** in the work session's worktree, bring the latest base branch into the work branch (`git merge <base>`) and run the verify command. Overlaps with items merged earlier (such as bumping to the same version) show up here. If it fails, do not merge; send it back to that work session with the output.
 - Finish only one branch at a time. Move to the next after one is done.
 - On a conflict, look at the intent of both items and resolve it. If you cannot judge which side to keep, stop and ask.
 - Run the verify command fresh after every merge. If it fails, stop the next merge and say so. Do not revert on your own.

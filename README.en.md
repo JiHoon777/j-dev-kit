@@ -78,7 +78,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 ```
 
 - **scout:** the `backlog-scout` agent reads the repository and returns idea, backlog-grooming and improvement proposals as a report. The agent writes no files. The calling session checks the evidence, writes the proposals file, and asks about promotion and rejection as `run` does. A schedule also just follows the scout procedure inside this session, so the flow is the same (a slash command arriving from a schedule is not expanded into the skill, so the schedule uses instructions). A scheduled run raises only the newly found proposals; the whole accumulated list is shown in `/lead run`. Proposals accumulate (at most 10 per angle, a fixed value) and only resolved ones drop out. Nothing without evidence, and "None" when there is nothing. A proposal becomes an item only when the user promotes it.
-- **run:** the lead session does not edit code. Promoted proposals become items by the `/task create` procedure; it starts a work session per item in its own worktree that follows the `/task start` and `end` procedures as they are, and checks each report itself before raising it. What a work session would ask the user in the `/task` procedures (questions, plan approval, review finding decisions) is taken by the lead session and raised. The lead session merges one branch at a time by the wrap-up step of `/task end`, resolves conflicts then, and verifies after each.
+- **run:** the lead session does not edit code. Promoted proposals become items by the `/task create` procedure; it starts a work session per item in its own worktree that follows the `/task start` and `end` procedures as they are, and checks each report itself before raising it. What a work session would ask the user in the `/task` procedures (questions, plan approval, review finding decisions) is taken by the lead session and raised. The lead session merges one branch at a time by the wrap-up step of `/task end`. Before each merge it brings the latest base branch into the work branch and verifies there (resolving conflicts then), and it verifies again after the merge.
 - Starting sessions uses what the app provides. Scheduling is in-session (what `/loop` uses), so it creates no separate session; it runs only while this session is open and expires after 7 days. Without a session-start tool, work runs in subagents isolated in worktrees.
 
 ### Architecture
@@ -117,7 +117,7 @@ plugins/server/                     skills/server-{start,end}-check, agents/api-
 plugins/architecture/               skills/arch (SKILL.md + references/), agents/architecture-{reviewer,researcher}.md
 plugins/design/                     skills/ui (SKILL.md + references/), agents/design-reviewer.md
 i18n/en/                            English translations (Claude does not read them)
-scripts/check-repo-rules.sh         repository rule check (translation pairs, version bumps)
+scripts/check-repo-rules.sh         repository rule check (translation pairs and updates, version bumps)
 ```
 
 - The source is Korean (`plugins/`); translations live in `i18n/en/`. Update the translation when you change the source.
@@ -130,7 +130,7 @@ claude plugin marketplace update j-dev-kit
 claude plugin update <plugin>@j-dev-kit --scope project
 ```
 
-Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command in CLAUDE.md (`claude plugin validate .` and `scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, or when a plugin changed since `main` still has the same `version`. If the version is unchanged, the update is not picked up.
+Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command in CLAUDE.md (`claude plugin validate .` and `scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, when a source changed since `main` but its translation did not, or when a plugin changed since `main` still has the same `version`. If the version is unchanged, the update is not picked up.
 
 ## Troubleshooting
 

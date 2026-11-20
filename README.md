@@ -76,7 +76,7 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 ```
 
 - **scout:** `backlog-scout` 에이전트가 저장소를 읽고 아이디어·백로그 정리·개선 제안을 보고로 돌려준다. 에이전트는 파일을 쓰지 않는다. 부른 세션이 근거를 확인해 제안함 파일에 적고, `run`처럼 승격·기각을 묻는다. 예약도 이 세션 안에서 scout 절차를 따르는 것이라 흐름이 같다(예약으로 들어온 슬래시 명령은 스킬로 펼쳐지지 않아 지시문으로 건다). 다만 예약 실행은 새로 생긴 제안만 올리고, 쌓인 전체는 `/lead run`에서 본다. 제안은 쌓이고(관점마다 최대 10개, 고정값) 해결된 것만 빠진다. 근거 없으면 제안하지 않고, 없으면 "없음". 제안은 사용자가 승격해야 항목이 된다.
-- **run:** 상위 세션은 코드를 고치지 않는다. 승격한 제안은 `/task create` 절차로 항목을 만들고, 항목마다 자기 워크트리의 작업 세션을 띄워 `/task start`·`end` 절차를 그대로 따르게 하고, 보고를 직접 확인한 뒤 올린다. 작업 세션이 `/task` 절차에서 사용자에게 물을 것(질문, 계획 승인, 리뷰 지적 결정)은 상위 세션이 받아 올린다. 머지는 상위 세션이 `/task end`의 마무리 단계대로 하나씩 하고, 충돌은 그때 풀고 매번 검증한다.
+- **run:** 상위 세션은 코드를 고치지 않는다. 승격한 제안은 `/task create` 절차로 항목을 만들고, 항목마다 자기 워크트리의 작업 세션을 띄워 `/task start`·`end` 절차를 그대로 따르게 하고, 보고를 직접 확인한 뒤 올린다. 작업 세션이 `/task` 절차에서 사용자에게 물을 것(질문, 계획 승인, 리뷰 지적 결정)은 상위 세션이 받아 올린다. 머지는 상위 세션이 `/task end`의 마무리 단계대로 하나씩 한다. 머지 전에 작업 브랜치에 최신 기준 브랜치를 반영해 검증하고(충돌은 이때 푼다), 머지한 뒤에도 검증한다.
 - 세션 시작은 앱이 주는 기능을 쓴다. 예약은 세션 안 예약(`/loop`가 쓰는 것)이라 따로 세션을 만들지 않고, 이 세션이 열려 있을 때만 돌며 7일 뒤 만료된다. 세션 시작 도구가 없으면 워크트리로 격리한 서브에이전트로 돈다.
 
 ### 아키텍처
@@ -115,7 +115,7 @@ plugins/server/                     skills/server-{start,end}-check, agents/api-
 plugins/architecture/               skills/arch (SKILL.md + references/), agents/architecture-{reviewer,researcher}.md
 plugins/design/                     skills/ui (SKILL.md + references/), agents/design-reviewer.md
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
-scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝, version 올리기)
+scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, version 올리기)
 ```
 
 - 원문은 한국어(`plugins/`), 번역본은 `i18n/en/`. 원문을 고치면 번역본도 고친다.
@@ -128,7 +128,7 @@ claude plugin marketplace update j-dev-kit
 claude plugin update <플러그인>@j-dev-kit --scope project
 ```
 
-그다음 세션을 새로 연다. 관리자는 바뀐 플러그인의 `plugin.json` `version`을 올리고 CLAUDE.md 의 검증 명령(`claude plugin validate .`과 `scripts/check-repo-rules.sh`)을 돌린 뒤 푸시한다. 검사 스크립트는 `plugins/`의 마크다운에 `i18n/en/` 번역본이 없거나, `main` 대비 바뀐 플러그인의 `version`이 그대로면 실패한다. 버전이 같으면 업데이트되지 않는다.
+그다음 세션을 새로 연다. 관리자는 바뀐 플러그인의 `plugin.json` `version`을 올리고 CLAUDE.md 의 검증 명령(`claude plugin validate .`과 `scripts/check-repo-rules.sh`)을 돌린 뒤 푸시한다. 검사 스크립트는 `plugins/`의 마크다운에 `i18n/en/` 번역본이 없거나, `main` 대비 원문만 고치고 번역본은 그대로이거나, 바뀐 플러그인의 `version`이 그대로면 실패한다. 버전이 같으면 업데이트되지 않는다.
 
 ## 문제 해결
 
