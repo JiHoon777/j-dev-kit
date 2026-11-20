@@ -9,8 +9,6 @@ The `workflow:backlog-scout` agent looks for proposals and reports them. Only th
 3. **Write:** add the new proposals to the proposals file by angle, and delete the lines of the previous proposals to drop. Update the update time (`date`) and the seen commit on the first line. Leave the remaining lines and `## Rejected` as they are. If `docs/backlog/` or the file does not exist, create it (`/task create` makes `README.md` and `_template.md`). The format is below.
 4. **Raise:** read step 2 of `${CLAUDE_SKILL_DIR}/references/run.md` and follow it as written. Show the proposals all at once and ask: promote / reject / leave. Add one line on what is new and what was dropped.
 
-- In a scheduled run, where no user is present, do not ask in step 4. Report only the titles of new proposals, the titles of dropped proposals and why, and what was not written, then finish.
-- When this session is notified that a scheduled run finished, read the proposals file and do step 4.
 - If the agent cannot be used, read `${CLAUDE_SKILL_DIR}/../../agents/backlog-scout.md`, follow that procedure yourself to make a report in the same format, and continue from step 3.
 
 ## Proposals file format

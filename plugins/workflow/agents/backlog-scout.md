@@ -1,6 +1,6 @@
 ---
 name: backlog-scout
-description: 저장소와 제안함(docs/backlog/_proposals.md)을 읽고 아이디어·백로그 정리·개선 제안을 찾아 보고로 돌려준다. workflow 플러그인의 /lead scout 과 그 예약 실행이 저장소 경로를 주고 부른다. 파일을 쓰지 않는다. 제안함은 부른 세션이 보고를 확인해 적는다.
+description: 저장소와 제안함(docs/backlog/_proposals.md)을 읽고 아이디어·백로그 정리·개선 제안을 찾아 보고로 돌려준다. workflow 플러그인의 /lead scout 이 저장소 경로를 주고 부른다(/lead schedule 로 주기 실행될 때도 같다). 파일을 쓰지 않는다. 제안함은 부른 세션이 보고를 확인해 적는다.
 tools: Read, Grep, Glob, Bash
 ---
 

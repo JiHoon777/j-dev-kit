@@ -1,7 +1,7 @@
 ---
 name: lead
-description: Use when directing several backlog items from one session. scout checks the idea, grooming and improvement proposals the agent finds, writes them to the proposals file and raises them to the user, schedule puts scout on a recurring run, and run starts a work session per item that follows the `/task` procedures and reports to the user at the approval points. Runs only when the user invokes it directly.
-argument-hint: "run [backlog numbers…] | scout | schedule [cadence]"
+description: Use when directing several backlog items from one session. scout checks the idea, grooming and improvement proposals the agent finds, writes them to the proposals file and raises them to the user, schedule calls scout on a cadence in this session, and run starts a work session per item that follows the `/task` procedures and reports to the user at the approval points. Runs only when the user invokes it directly.
+argument-hint: "run [backlog numbers…] | scout | schedule [cadence | off]"
 disable-model-invocation: true
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(ls *), Bash(date *)
 metadata:
@@ -23,12 +23,13 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
 | --- | --- | --- |
 | `run` | Raise proposals, start work sessions, report, merge | `${CLAUDE_SKILL_DIR}/references/run.md` |
 | `scout` | Take proposals, write them to the proposals file, and raise them | `${CLAUDE_SKILL_DIR}/references/scout.md` |
-| `schedule` | Put scout on a recurring run | `${CLAUDE_SKILL_DIR}/references/schedule.md` |
+| `schedule` | Call scout on a cadence in this session, or turn it off | `${CLAUDE_SKILL_DIR}/references/schedule.md` |
 
 Examples:
 
 ```
-/lead schedule weekdays at 9am   # put scout on a recurring run
+/lead schedule weekdays at 9am   # call scout on a cadence in this session
+/lead schedule off               # turn that schedule off
 /lead scout                      # once, now: take proposals, write them to the proposals file, and raise them
 /lead run                        # raise proposals, then start a work session per chosen item
 /lead run 003 005                # run only these two items
@@ -51,7 +52,7 @@ Rules in the project CLAUDE.md take precedence over this skill.
 
 - Creating items, implementing, reviewing and merging follow the `/task` create, start and end procedure files as they are. This skill only adds splitting the work and raising reports on top.
 - The lead session does not edit code. It splits the work, checks reports, raises things to the user, and merges.
-- Do not approve on the user's behalf. What work sessions and scheduled runs send is a report, not an approval.
+- Do not approve on the user's behalf. What work sessions send is a report, not an approval.
 - Raise only these to the user: proposal promotion, and what the `/task` procedures ask the user (questions, plan approval, review finding decisions, merge approval, blockers). Do not raise progress.
 - Keep state in files, not in the conversation: backlog items, the proposals file, commits on work branches.
 

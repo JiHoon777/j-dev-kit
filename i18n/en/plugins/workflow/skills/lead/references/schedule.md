@@ -1,8 +1,10 @@
 > Translation. Source: [plugins/workflow/skills/lead/references/schedule.md](../../../../../../../plugins/workflow/skills/lead/references/schedule.md). Update this file when the source changes. Claude does not read this file.
 
-# lead schedule: put scout on a recurring run
+# lead schedule: call scout on a cadence in this session
 
-Cadence: the arguments after `schedule`. If missing, ask (e.g. weekdays at 9 in the morning).
+Cadence: the arguments after `schedule`. If missing, ask (e.g. weekdays at 9 in the morning). If the argument is `off`, do only section 3.
+
+The schedule runs only inside this session. At each set time, this session runs `/workflow:lead scout`: it starts the agent, takes the report, writes the proposals file, and asks about promotion. Do not use a schedule that creates a separate session (the app's scheduled tasks). That session cannot be followed, and its report does not come back to this session.
 
 ## 1. Take the proposals file out of git
 
@@ -10,25 +12,21 @@ If `.gitignore` does not have `docs/backlog/_proposals.md`, propose adding it, a
 
 ## 2. Register
 
-Pick from the scheduling means available now, from the top.
+Register with the in-session scheduling tool (CronCreate, what `/loop` uses).
 
-| Means | Characteristics |
-| --- | --- |
-| The app's scheduled-task tool | Runs while the app is open. Each run is a new session, and this session is notified when it finishes |
-| `/loop` | Runs only while this session is open. Expires after 7 days |
+- The prompt is one line: `/workflow:lead scout`. Do not paste procedures. After the plugin is updated, the next run follows the new procedure.
+- Turn the cadence into cron. Unless the user named an exact time, avoid minute 0 and 30.
+- If there is an end ("until 5 today"), pin the date and hours in the cron so it does not run after that.
+- If a schedule with the same prompt already exists (CronList), delete it and register anew.
+- If the user asked to start right away ("from now"), after registering, read `${CLAUDE_SKILL_DIR}/references/scout.md` and follow it once.
+- If this session has no in-session scheduling tool, do not register. Tell the user to type `/loop <cadence> /workflow:lead scout` themselves.
 
-A scheduled run does not know this conversation. Put in the prompt:
+## 3. Turn off
 
-1. The repository's absolute path and a line saying "work in this folder".
-2. "Follow the scout procedure below. This is a scheduled run with no user present, so do not ask in step 4." and the full text of `${CLAUDE_SKILL_DIR}/references/scout.md`.
-3. "If the `workflow:backlog-scout` agent cannot be used, follow the procedure below yourself." and the full body of `${CLAUDE_SKILL_DIR}/../../agents/backlog-scout.md`.
+Find the schedule whose prompt is `/workflow:lead scout` in CronList and delete it with CronDelete. If there is none, say so.
 
-- If a schedule doing the same job already exists, do not create a new one; update it.
-- If registering is blocked by permissions, do not work around it. Show the prompt and the cadence and let the user create it in the app.
+## 4. Tell the user
 
-## 3. Tell the user
-
-- The cadence, the next run time, and which means was used
-- That means' limit (it does not run while the app or the session is closed)
-- The procedures pasted into the prompt do not change when the plugin is updated. To run with the new procedures, call `/lead schedule` again
-- This session is notified after each run, and raises the proposals then (step 4 of `scout.md`). If this session was closed, proposals are reviewed in `/lead run`
+- The cadence and the next run time (the time given in the registration result)
+- Limits: it runs only while this session is open and idle. It can run later than the set time. It expires after 7 days
+- To turn it off, `/lead schedule off`

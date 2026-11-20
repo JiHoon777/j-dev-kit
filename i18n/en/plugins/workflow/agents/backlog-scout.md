@@ -1,6 +1,6 @@
 ---
 name: backlog-scout
-description: Reads the repository and the proposals file (docs/backlog/_proposals.md), looks for idea, backlog-grooming and improvement proposals, and returns them as a report. Called by the workflow plugin's /lead scout and its scheduled runs, which pass the repository path. Writes no files; the calling session checks the report and writes the proposals file.
+description: Reads the repository and the proposals file (docs/backlog/_proposals.md), looks for idea, backlog-grooming and improvement proposals, and returns them as a report. Called by the workflow plugin's /lead scout, which passes the repository path (the same when /lead schedule runs it on a cadence). Writes no files; the calling session checks the report and writes the proposals file.
 tools: Read, Grep, Glob, Bash
 ---
 
