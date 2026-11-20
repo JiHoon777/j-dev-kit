@@ -13,11 +13,11 @@ while IFS= read -r f; do
   [ -f "i18n/en/$f" ] && continue
   echo "번역본 없음: $f → i18n/en/$f"
   fail=1
-done < <(git ls-files --cached --others --exclude-standard -- 'plugins/*.md' | sort -u)
+done < <(git ls-files --cached --others --exclude-standard -- 'plugins/*.md')
 
 # 2. version 올리기 (기준과 지금 작업 폴더를 비교한다)
-version_of() { # 내용이 들어오면 version 값
-  grep -m1 '"version"' | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/'
+version_of() { # 표준 입력의 plugin.json 에서 version 값
+  sed -nE '/"version"/{s/.*"version"[[:space:]]*:[[:space:]]*"([^"]*)".*/\1/p;q;}'
 }
 if base=$(git merge-base "$base_branch" HEAD 2>/dev/null); then
   changed=$(
@@ -28,7 +28,7 @@ if base=$(git merge-base "$base_branch" HEAD 2>/dev/null); then
     manifest="plugins/$p/.claude-plugin/plugin.json"
     old=$(git show "$base:$manifest" 2>/dev/null | version_of)
     [ -n "$old" ] || continue # 기준에 없던 플러그인
-    new=$(version_of < "$manifest" 2>/dev/null)
+    new=$(version_of 2>/dev/null < "$manifest")
     if [ "$old" = "$new" ]; then
       echo "version 그대로: $p ($old). $manifest 의 version 을 올린다."
       fail=1

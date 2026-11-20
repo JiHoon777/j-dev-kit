@@ -96,5 +96,11 @@ lead·scout·schedule 절차와 설명의 빈틈을 메우고, 지침으로만 �
 ### 계획에서 바뀐 것
 
 - workflow version(0.6.7)을 커밋 C 대신 커밋 B 에서 올렸다. B 가 workflow 의 plugin.json 을 고치므로, 올리지 않으면 새 검사가 B 에서 실패한다.
+- AC #13 의 "예약 실행은 새 제안만" 규칙을 scout.md 4단계가 아니라 schedule.md 2절이 거는 예약 프롬프트(4번째 줄)에 두었다. scout.md 가 프롬프트 첫머리 문자열에 기대지 않게 하려고(simplify 지적).
+- AC #11 의 .gitignore 제안은 scout.md 3단계에서 schedule.md 1절을 가리키게 했다. 같은 절차를 두 곳(번역본까지 네 곳)에 쓰지 않으려고(simplify 지적).
+
+### 정리 (simplify)
+
+재사용·단순화·효율·깊이 4관점. 반영: 검사 스크립트의 `version_of` 를 sed 하나로, 쓸모없는 `sort -u` 제거, 리다이렉션 순서, 위 두 문서 위치, README 업데이트 절은 검증 명령을 CLAUDE.md 로 가리킨다. 건너뜀: untracked 목록 재사용·awk 합치기(이득이 미미하다).
 
 ## Final Summary

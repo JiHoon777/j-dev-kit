@@ -130,7 +130,7 @@ claude plugin marketplace update j-dev-kit
 claude plugin update <plugin>@j-dev-kit --scope project
 ```
 
-Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command (`claude plugin validate . && bash scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, or when a plugin changed since `main` still has the same `version`. If the version is unchanged, the update is not picked up.
+Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command in CLAUDE.md (`claude plugin validate .` and `scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, or when a plugin changed since `main` still has the same `version`. If the version is unchanged, the update is not picked up.
 
 ## Troubleshooting
 

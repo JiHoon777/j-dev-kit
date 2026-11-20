@@ -18,6 +18,7 @@ Register with the in-session scheduling tool (CronCreate, what `/loop` uses).
   1. "This is a scheduled lead scout run. Read `<skill folder>/references/scout.md` all the way through with the Read tool and follow it as written."
   2. "`${CLAUDE_SKILL_DIR}` in that file means `<skill folder>`."
   3. "The agent's name is `workflow:backlog-scout`."
+  4. "In step 4 (raise), show and ask about only the proposals new this time; the whole accumulated list is shown in `/lead run`. If there is no new proposal, do not ask; say so in one line."
 
   Replace `<skill folder>` with this skill's absolute path (Base directory). Do not paste procedures.
 - The path contains the plugin version. After updating the plugin, call `/lead schedule` again to register with the new path.
