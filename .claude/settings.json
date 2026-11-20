@@ -1,0 +1,20 @@
+{
+  "enabledPlugins": {
+    "superpowers@anthropic-plugin-directory": true,
+    "workflow@j-dev-kit": true,
+    "typescript-lsp@anthropic-plugin-directory": true,
+    "frontend-design@anthropic-plugin-directory": true,
+    "frontend@j-dev-kit": true,
+    "server@j-dev-kit": true,
+    "architecture@j-dev-kit": true,
+    "design@j-dev-kit": true
+  },
+  "extraKnownMarketplaces": {
+    "j-dev-kit": {
+      "source": {
+        "source": "github",
+        "repo": "JiHoon777/j-dev-kit"
+      }
+    }
+  }
+}
