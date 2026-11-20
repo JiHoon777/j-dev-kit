@@ -1,7 +1,7 @@
 ---
 id: '002'
 title: 저장소 규칙 검사 보강 — 설명 일치, 시나리오 테스트, 남은 사소함
-status: In Progress
+status: Done
 labels: [chore]
 priority: medium
 dependencies: []
@@ -91,7 +91,7 @@ description 이 같다는 뜻이다. README.md·README.en.md 의 플러그인 �
 
 ### 검증
 
-`claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(exit 0), `bash scripts/test-check-repo-rules.sh` 21개 중 21개(exit 0). 브라우저 확인은 해당 없음(UI 없음).
+`claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(exit 0), `bash scripts/test-check-repo-rules.sh` 21개 중 21개(exit 0). 리뷰 반영 뒤 다시 돌려 검증 명령 통과, 시나리오 27개 중 27개. 브라우저 확인은 해당 없음(UI 없음).
 
 ### 리뷰 (end)
 
@@ -103,3 +103,15 @@ description 이 같다는 뜻이다. README.md·README.en.md 의 플러그인 �
 - 시나리오 6개를 더해 27개: 설명 없음 → 실패, 설명 없는 항목도 README 검사, 항목 안 author.name → 통과, plugins 뒤 최상위 키 → 통과, 기준 plugin.json 한 줄 → 실패, 다른 줄의 의존 칸에만 있음 → 실패. 모두 고치기 전 틀리는 것(RED)을 보고 고쳤고, 고친 뒤 27개 모두 맞음.
 
 ## Final Summary
+
+바뀐 것:
+- `scripts/check-repo-rules.sh`
+  - 새 검사 둘: marketplace.json 의 플러그인마다 plugin.json 과 description 이 같아야 하고(다르면 이름과 함께 실패), README.md·README.en.md 의 표에 그 플러그인 줄이 있어야 한다.
+  - 사소함 4건: 경로를 이스케이프하지 않음, 지웠지만 스테이징하지 않은 원문은 짝 검사에서 뺌, version 을 내리면 실패, 로컬 기준 브랜치가 없으면 `origin/<기준>`.
+  - JSON 은 한 줄에 키 하나라고 보고 bash 로 읽는다. 못 읽으면 조용히 통과하지 않고 실패한다(marketplace 에서 플러그인 0개, version 못 읽음).
+- 새 `scripts/test-check-repo-rules.sh`: 가짜 저장소로 시나리오 27개(001 의 12개 + 이번 15개)를 돌린다.
+- README 두 개: 검사 항목과 시나리오 테스트 명령. 플러그인 파일은 고치지 않아 version 은 그대로다.
+
+리뷰에서 고친 것: 🟡 description 없는 marketplace 항목이 검사를 건너뜀, 🟡 항목 안 author.name·plugins 뒤 키와 잘못 짝지음, 🟡 한 줄 plugin.json 이면 version 검사를 건너뜀. 고치면서 찾은 AC #2 빈틈(의존 칸의 이름으로 README 검사 통과)도 고쳤다.
+
+미룬 것: 없음(새 항목 없음). ⚪ 3건은 그대로 두었다(Implementation Notes).
