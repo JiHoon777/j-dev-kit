@@ -89,6 +89,8 @@ s_korean_path()      { echo "# 한글" > "plugins/alpha/skills/한글.md"; bump 
 s_version_down()     { both alpha; bump alpha 0.0.9; }
 s_origin_only()      { git branch -q -D main; both alpha; }
 s_plugin_removed()   { git rm -rq plugins/gamma i18n/en/plugins/gamma; }
+s_one_line_json()    { tr -d '
+' < .claude-plugin/marketplace.json > m && mv m .claude-plugin/marketplace.json; }
 
 pass=0 total=0
 scenario() { # 설명 기대종료코드 준비함수 [출력에 있어야 할 문구]
@@ -132,6 +134,7 @@ scenario "한글 경로 → 이스케이프 없이 실패"      1 s_korean_path 
 scenario "version 내림 → 실패"                   1 s_version_down      "version 내림: alpha"
 scenario "로컬 main 없고 origin/main 만 → 실패"  1 s_origin_only       "version 그대로: alpha"
 scenario "marketplace 밖 플러그인 지움 → 통과"   0 s_plugin_removed
+scenario "marketplace 를 못 읽음 → 실패"        1 s_one_line_json     "marketplace.json 에서 플러그인을 읽지 못했다"
 
 echo "$total 개 중 $pass 개 맞음"
 [ "$pass" = "$total" ]
