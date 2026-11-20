@@ -5,7 +5,7 @@ Claude Code 플러그인 마켓플레이스 저장소다. 내용은 마크다운
 ## 작업 설정
 - stack: 없음
 - 기준 브랜치: main
-- 검증 명령: `claude plugin validate .`
+- 검증 명령: `claude plugin validate . && bash scripts/check-repo-rules.sh`
 - 문서 언어: 한국어
 - 동시 작업 세션: 2
 

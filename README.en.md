@@ -117,6 +117,7 @@ plugins/server/                     skills/server-{start,end}-check, agents/api-
 plugins/architecture/               skills/arch (SKILL.md + references/), agents/architecture-{reviewer,researcher}.md
 plugins/design/                     skills/ui (SKILL.md + references/), agents/design-reviewer.md
 i18n/en/                            English translations (Claude does not read them)
+scripts/check-repo-rules.sh         repository rule check (translation pairs, version bumps)
 ```
 
 - The source is Korean (`plugins/`); translations live in `i18n/en/`. Update the translation when you change the source.
@@ -129,7 +130,7 @@ claude plugin marketplace update j-dev-kit
 claude plugin update <plugin>@j-dev-kit --scope project
 ```
 
-Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run `claude plugin validate .`, and push. If the version is unchanged, the update is not picked up.
+Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command (`claude plugin validate . && bash scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, or when a plugin changed since `main` still has the same `version`. If the version is unchanged, the update is not picked up.
 
 ## Troubleshooting
 
