@@ -8,10 +8,13 @@ Read the repository and rewrite the single file `docs/backlog/_proposals.md`. On
 
 - The only file written is `docs/backlog/_proposals.md`. Do not edit code, backlog items or other docs. Do not commit.
 - Read only: reading files, `git log`, `git diff`. Do not run the verify command, builds or servers.
-- If `docs/backlog/` does not exist, write nothing and report that.
+- If `docs/backlog/` does not exist, create only the folder and write `_proposals.md`. `/task create` makes `README.md` and `_template.md`.
+- Propose even when there are no backlog items. "Backlog grooming" is then "None".
 - Use the document language set in the project CLAUDE.md.
 
 ## 2. What to read
+
+Skip what does not exist.
 
 - Items in `docs/backlog/` and `docs/done/`, and the notes in `docs/backlog/README.md`
 - The existing `docs/backlog/_proposals.md`: what is under `## Rejected`, and the previous proposals

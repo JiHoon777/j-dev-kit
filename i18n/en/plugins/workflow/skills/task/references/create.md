@@ -8,7 +8,7 @@ What to create: the arguments after `create`.
 
 ## 0. The first time
 
-If `docs/backlog/` does not exist, propose creating the two files below, and create them once approved. Ask the user for the labels.
+If `docs/backlog/README.md` does not exist, propose creating the two files below, and create them once approved. Ask the user for the labels.
 
 - `docs/backlog/README.md`: the rules from step 2, the label list, and a "Notes not yet made into items" section
 - `docs/backlog/_template.md`: the template below. Replace `<verify command>` with the project's.

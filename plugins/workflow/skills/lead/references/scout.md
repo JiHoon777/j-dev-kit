@@ -6,10 +6,13 @@
 
 - 쓰는 파일은 `docs/backlog/_proposals.md` 하나다. 코드, 백로그 항목, 다른 문서는 고치지 않는다. 커밋하지 않는다.
 - 읽기만 한다: 파일 읽기, `git log`, `git diff`. 검증 명령, 빌드, 서버는 돌리지 않는다.
-- `docs/backlog/`가 없으면 아무것도 쓰지 않고 그렇다고 보고한다.
+- `docs/backlog/`가 없으면 폴더만 만들고 `_proposals.md`를 쓴다. `README.md`와 `_template.md`는 `/task create`가 만든다.
+- 백로그 항목이 없어도 제안한다. 그때 "백로그 정리"는 "없음"이다.
 - 언어는 프로젝트 CLAUDE.md 의 문서 언어를 따른다.
 
 ## 2. 읽을 것
+
+없는 것은 건너뛴다.
 
 - `docs/backlog/`와 `docs/done/`의 항목, `docs/backlog/README.md`의 메모
 - 기존 `docs/backlog/_proposals.md`: `## 기각` 아래와 지난 제안
