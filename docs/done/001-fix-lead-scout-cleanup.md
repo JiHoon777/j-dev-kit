@@ -1,7 +1,7 @@
 ---
 id: '001'
 title: lead·scout 정리와 저장소 규칙 검사
-status: In Progress
+status: Done
 labels: [fix]
 priority: medium
 dependencies: []
@@ -120,3 +120,12 @@ lead·scout·schedule 절차와 설명의 빈틈을 메우고, 지침으로만 �
 - 사소함 4건(quotePath, 지웠지만 스테이징하지 않은 파일, version 내림, origin/<기준> 찾기)은 고치지 않았다.
 
 ## Final Summary
+
+바뀐 것:
+- `scripts/check-repo-rules.sh` 새로 만들고 CLAUDE.md 검증 명령에 넣었다. `plugins/` 마크다운의 `i18n/en/` 짝, 기준 대비 원문만 고치고 번역본을 그대로 둔 것, 기준 대비 바뀐 플러그인의 version 그대로를 잡는다.
+- workflow 0.6.7: 설명(marketplace·plugin.json)에 /lead 와 backlog-scout, README 상한 10 은 고정값. /lead allowed-tools 에 git diff, schedule 끄기·off. run.md 에 서브에이전트 작업 세션의 검증 범위, 멈춘 서브에이전트에 SendMessage 로 답 전하기, 머지 전 작업 브랜치에 기준 브랜치를 반영해 검증하기. scout.md 에 갱신 줄 위치, 자리가 없어 더하지 못한 것 알리기, 제안함을 처음 만들면 .gitignore 제안(schedule 1절). 예약 프롬프트는 새로 생긴 제안만 올린다.
+- 원문과 `i18n/en/` 번역본, README 두 개를 함께 고쳤다.
+
+리뷰에서 고친 것: 🔴 run.md 검증 범위 문장, 🔴 예약 실행에서 자리가 없어 더하지 못한 것 누락. 🟡 이름 바꿈 검사, 머지 전 기준 반영 검증, 번역본 갱신 검사.
+
+미룬 것: 없음(새 항목 없음). 사소함 4건은 고치지 않았다(Implementation Notes).
