@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # check-repo-rules.sh 의 시나리오 테스트. `bash scripts/test-check-repo-rules.sh`
-# 임시 폴더에 작은 가짜 저장소를 만들고, 시나리오마다 그것을 clone 해 검사 스크립트를 돌린다.
+# 임시 폴더에 작은 가짜 저장소를 만들어 clone 해 두고, 시나리오마다 그것을 복사해 검사 스크립트를 돌린다.
 # 실제 플러그인 내용에 기대지 않는다. 하나라도 틀리면 1로 끝난다.
 
 check="$(cd "$(dirname "$0")" && pwd)/check-repo-rules.sh"
@@ -79,8 +79,8 @@ s_add_pair_bump()    { echo "# b" > plugins/alpha/skills/b.md; echo "# b" > i18n
 s_move_receiver()    { git mv plugins/alpha/skills/a.md plugins/beta/skills/moved.md
                        git mv i18n/en/plugins/alpha/skills/a.md i18n/en/plugins/beta/skills/moved.md; bump beta; }
 s_move_both()        { s_move_receiver; bump alpha; }
-s_no_base()          { git branch -q -D main; git update-ref -d refs/remotes/origin/HEAD
-                       git update-ref -d refs/remotes/origin/main; both alpha; }
+s_no_base()          { s_origin_only; git update-ref -d refs/remotes/origin/HEAD
+                       git update-ref -d refs/remotes/origin/main; }
 s_desc_mismatch()    { sed -i 's/"alpha plugin"/"alpha plugin, changed"/' plugins/alpha/.claude-plugin/plugin.json; bump alpha; }
 s_readme_missing()   { sed -i '/`alpha`/d' README.md; }
 s_readme_en_missing(){ sed -i '/`beta`/d' README.en.md; }
@@ -97,8 +97,8 @@ scenario() { # 설명 기대종료코드 준비함수 [출력에 있어야 할 �
   local name=$1 want=$2 setup=$3 msg=$4 dir out code
   total=$((total + 1))
   dir="$tmp/case$total"
-  git clone -q "$tmp/fixture" "$dir"
-  if ! (cd "$dir" && git switch -q -c work && $setup) > "$dir.setup" 2>&1; then
+  cp -a "$tmp/template" "$dir"
+  if ! (cd "$dir" && $setup) > "$dir.setup" 2>&1; then
     echo "틀림: $name (준비 실패)"; sed 's/^/    /' "$dir.setup"; return
   fi
   out=$(cd "$dir" && bash "$check" 2>&1); code=$?
@@ -110,7 +110,9 @@ scenario() { # 설명 기대종료코드 준비함수 [출력에 있어야 할 �
   fi
 }
 
-(make_fixture) > /dev/null || { echo "가짜 저장소를 만들지 못했다"; exit 1; }
+# 템플릿: 가짜 저장소를 clone 해 origin/main 을 두고 work 브랜치로 옮긴 것
+{ (make_fixture) && git clone -q "$tmp/fixture" "$tmp/template" && git -C "$tmp/template" switch -q -c work; } > /dev/null ||
+  { echo "가짜 저장소를 만들지 못했다"; exit 1; }
 
 # 001 에서 만든 것
 scenario "변경 없음 → 통과"                     0 s_none

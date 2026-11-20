@@ -22,32 +22,34 @@ while IFS= read -r f; do
 done < <(git ls-files --cached --others --exclude-standard -- 'plugins/*.md')
 
 # 2. marketplace.json 의 플러그인: 설명 일치와 README 목록 (JSON 은 한 줄에 키 하나라고 본다)
-json_string() { # 줄에서 "<키>": "<값>" 의 값
-  sed -nE "s/^[[:space:]]*\"$1\"[[:space:]]*:[[:space:]]*\"(.*)\",?[[:space:]]*$/\1/p"
+json_pairs() { # 표준 입력의 "<키>": "<문자열>" 줄마다 키<탭>값. 키는 정규식
+  sed -nE "s/^[[:space:]]*\"($1)\"[[:space:]]*:[[:space:]]*\"(.*)\",?[[:space:]]*\$/\1"$'\t'"\2/p"
 }
-listed=0
-while IFS=$'\t' read -r name desc; do
-  listed=$((listed + 1))
+json_value() { # 표준 입력에서 처음 나온 키의 값
+  json_pairs "$1" | { IFS=$'\t' read -r _ v; printf '%s' "$v"; }
+}
+names=()
+while IFS=$'\t' read -r key val; do
+  [ "$key" = name ] && { name=$val; continue; }
+  names+=("$name") # description 줄에서 바로 앞의 name 과 짝짓는다
   manifest="plugins/$name/.claude-plugin/plugin.json"
-  own=$(json_string description 2>/dev/null < "$manifest" | head -n 1)
-  if [ "$own" != "$desc" ]; then
+  if [ "$(json_value description 2>/dev/null < "$manifest")" != "$val" ]; then
     echo "설명 다름: $name. $manifest 와 marketplace.json 의 description 을 맞춘다."
     fail=1
   fi
-  for readme in README.md README.en.md; do
-    grep -qF "| \`$name\` |" "$readme" && continue
-    echo "README 에 없음: $readme $name. 플러그인 표에 줄을 더한다."
-    fail=1
-  done
-done < <(
-  sed -n '/"plugins"[[:space:]]*:/,$p' .claude-plugin/marketplace.json | awk '
-    /^[[:space:]]*"name"[[:space:]]*:/        { name = $0; sub(/^[^:]*:[[:space:]]*"/, "", name); sub(/",?[[:space:]]*$/, "", name) }
-    /^[[:space:]]*"description"[[:space:]]*:/ { d = $0; sub(/^[^:]*:[[:space:]]*"/, "", d); sub(/",?[[:space:]]*$/, "", d); print name "\t" d }'
-)
-if [ "$listed" = 0 ]; then
+done < <(sed -n '/"plugins"[[:space:]]*:/,$p' .claude-plugin/marketplace.json | json_pairs 'name|description')
+if [ "${#names[@]}" = 0 ]; then
   echo "marketplace.json 에서 플러그인을 읽지 못했다. 한 줄에 키 하나인 형식인지 본다."
   fail=1
 fi
+for readme in README.md README.en.md; do
+  text=$(< "$readme")
+  for name in "${names[@]}"; do
+    [[ $text == *"| \`$name\` |"* ]] && continue
+    echo "README 에 없음: $readme $name. 플러그인 표에 줄을 더한다."
+    fail=1
+  done
+done
 
 for ref in "$base_branch" "origin/$base_branch"; do
   base=$(git merge-base "$ref" HEAD 2>/dev/null) && break
@@ -73,13 +75,12 @@ while IFS= read -r f; do
 done < <(printf '%s\n' "$changed" | grep -E '^plugins/.*\.md$')
 
 # 4. version 올리기
-version_of() { json_string version | head -n 1; }
 for p in $(printf '%s\n' "$changed" | grep '^plugins/' | cut -d/ -f2 | sort -u); do
   manifest="plugins/$p/.claude-plugin/plugin.json"
   [ -f "$manifest" ] || continue # 지운 플러그인
-  old=$(git show "$base:$manifest" 2>/dev/null | version_of)
+  old=$(git show "$base:$manifest" 2>/dev/null | json_value version)
   [ -n "$old" ] || continue # 기준에 없던 플러그인
-  new=$(version_of < "$manifest")
+  new=$(json_value version < "$manifest")
   if [ "$old" = "$new" ]; then
     echo "version 그대로: $p ($old). $manifest 의 version 을 올린다."
     fail=1
