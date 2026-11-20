@@ -117,7 +117,8 @@ plugins/server/                     skills/server-{start,end}-check, agents/api-
 plugins/architecture/               skills/arch (SKILL.md + references/), agents/architecture-{reviewer,researcher}.md
 plugins/design/                     skills/ui (SKILL.md + references/), agents/design-reviewer.md
 i18n/en/                            English translations (Claude does not read them)
-scripts/check-repo-rules.sh         repository rule check (translation pairs and updates, version bumps)
+scripts/check-repo-rules.sh         repository rule check (translation pairs and updates, matching descriptions, README lists, version bumps)
+scripts/test-check-repo-rules.sh    scenario tests for the check script
 ```
 
 - The source is Korean (`plugins/`); translations live in `i18n/en/`. Update the translation when you change the source.
@@ -130,7 +131,7 @@ claude plugin marketplace update j-dev-kit
 claude plugin update <plugin>@j-dev-kit --scope project
 ```
 
-Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command in CLAUDE.md (`claude plugin validate .` and `scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, when a source changed since `main` but its translation did not, or when a plugin changed since `main` still has the same `version`. If the version is unchanged, the update is not picked up.
+Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command in CLAUDE.md (`claude plugin validate .` and `scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, when a plugin's description differs between `plugin.json` and `marketplace.json`, when a plugin in `marketplace.json` is missing from the table in either README, when a source changed since `main` (or `origin/main` if there is no local `main`) but its translation did not, or when a plugin changed since `main` kept or lowered its `version`. If the version is unchanged, the update is not picked up. After changing the check script, run the scenarios with `bash scripts/test-check-repo-rules.sh`.
 
 ## Troubleshooting
 
