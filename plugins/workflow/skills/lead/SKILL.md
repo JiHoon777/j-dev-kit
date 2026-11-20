@@ -1,9 +1,9 @@
 ---
 name: lead
 description: 백로그 항목 여러 개를 한 세션에서 지휘할 때 쓴다. scout 는 에이전트가 찾은 아이디어·정리·개선 제안을 확인해 제안함에 적고 사용자에게 올리고, schedule 은 이 세션에서 scout 을 주기로 부르고, run 은 항목마다 작업 세션을 띄워 `/task` 절차로 돌리며 승인 지점에서 사용자에게 보고한다. 사용자가 직접 부를 때만 돈다.
-argument-hint: "run [백로그 번호…] | scout | schedule [주기 | 끄기]"
+argument-hint: "run [백로그 번호…] | scout | schedule [주기 | 끄기 | off]"
 disable-model-invocation: true
-allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(ls *), Bash(date *)
+allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(git diff *), Bash(ls *), Bash(date *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
   tags: [orchestration, backlog, work-sessions, scheduling, human-approval]
@@ -27,7 +27,7 @@ metadata:
 
 ```
 /lead schedule 평일 아침 9시     # 이 세션에서 scout 을 주기로 부른다
-/lead schedule 끄기              # 그 예약을 끈다
+/lead schedule 끄기              # 그 예약을 끈다 (off 도 된다)
 /lead scout                      # 지금 한 번 제안을 받아 제안함에 적고 올린다
 /lead run                        # 제안을 올리고, 고른 항목마다 작업 세션을 띄운다
 /lead run 003 005                # 이 두 항목만 돌린다

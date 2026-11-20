@@ -35,16 +35,16 @@ lead·scout·schedule 절차와 설명의 빈틈을 메우고, 지침으로만 �
 - [x] #2 main 대비 바뀐 플러그인의 version 이 그대로면 검증 명령이 실패한다
 - [x] #3 CLAUDE.md 의 검증 명령이 #1·#2 검사를 포함한다
 - [x] #4 README 두 개가 관점별 상한 10 을 고정값으로 적는다
-- [ ] #5 run.md 가 서브에이전트 작업 세션의 검증은 상위 세션의 머지 때 검증으로 덮는다고 적는다
-- [ ] #6 run.md 가 멈춘 백그라운드 서브에이전트에 사용자 답을 이어서 전하는 방법을 적는다
+- [x] #5 run.md 가 서브에이전트 작업 세션의 검증은 상위 세션의 머지 때 검증으로 덮는다고 적는다
+- [x] #6 run.md 가 멈춘 백그라운드 서브에이전트에 사용자 답을 이어서 전하는 방법을 적는다
 - [x] #7 marketplace.json 의 metadata.description 에 /lead 가 있다
 - [x] #8 workflow 의 plugin.json·marketplace.json 설명에 backlog-scout 에이전트가 있다
-- [ ] #9 /lead 의 allowed-tools 에 git diff 가 있다
-- [ ] #10 scout 가 "자리가 없어 더하지 못한 것"의 제목을 사용자에게 알린다
-- [ ] #11 /lead scout 가 제안함을 처음 만들 때 .gitignore 에 넣자고 제안한다
-- [ ] #12 /lead schedule 이 "끄기"와 "off" 둘 다로 예약을 끈다
-- [ ] #13 예약으로 돈 scout 는 새로 생긴 제안만 올린다
-- [ ] #14 scout 3단계가 갱신 줄을 "제목 아래 갱신: 줄"로 가리킨다
+- [x] #9 /lead 의 allowed-tools 에 git diff 가 있다
+- [x] #10 scout 가 "자리가 없어 더하지 못한 것"의 제목을 사용자에게 알린다
+- [x] #11 /lead scout 가 제안함을 처음 만들 때 .gitignore 에 넣자고 제안한다
+- [x] #12 /lead schedule 이 "끄기"와 "off" 둘 다로 예약을 끈다
+- [x] #13 예약으로 돈 scout 는 새로 생긴 제안만 올린다
+- [x] #14 scout 3단계가 갱신 줄을 "제목 아래 갱신: 줄"로 가리킨다
 
 <!-- AC:END -->
 

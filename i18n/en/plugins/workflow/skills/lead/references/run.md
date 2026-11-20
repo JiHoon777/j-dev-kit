@@ -42,7 +42,7 @@ If the proposals file has proposals, show them all at once and ask: promote / re
 One session per item. Have it run in its own worktree cut from the base branch.
 
 - If there is a tool that starts a new session, use it (the user can open the session and talk to it directly).
-- Otherwise, use a background subagent isolated in a worktree.
+- Otherwise, use a background subagent isolated in a worktree. The Stop hook (which runs the verify command once the Definition of Done is checked) does not run for subagents. The verify command run after every merge in step 6 covers that check.
 
 A work session cannot see this conversation, so put in its instructions:
 
@@ -67,6 +67,7 @@ A report is that session's claim. Look for yourself before raising it.
 
 - Bundle what arrives at the same time and raise it once. Raise questions and blockers without waiting.
 - Pass the user's answer to the session by quoting their words as they are. If there is no answer, wait.
+  - A work session started as a background subagent has reported and stopped. Do not start a new one; send to the same agent with the agent ID you got when starting it (SendMessage), so it continues with what it has read and done.
 - If a report does not match reality, do not raise it to the user; write what differs and send it back.
 - Show the user the "new items" a work session reported, and if they decide to create one, create it by `create.md`.
 

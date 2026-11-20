@@ -2,9 +2,9 @@
 
 # lead schedule: call scout on a cadence in this session
 
-Cadence: the arguments after `schedule`. If missing, ask (e.g. weekdays at 9 in the morning). If the argument is `off`, do only section 3.
+Cadence: the arguments after `schedule`. If missing, ask (e.g. weekdays at 9 in the morning). If the argument is `off` or `끄기`, do only section 3.
 
-The schedule runs only inside this session. At each set time, this session follows the scout procedure (`scout.md`): it starts the agent, takes the report, writes the proposals file, and asks about promotion. Do not use a schedule that creates a separate session (the app's scheduled tasks). That session cannot be followed, and its report does not come back to this session.
+The schedule runs only inside this session. At each set time, this session follows the scout procedure (`scout.md`): it starts the agent, takes the report, writes the proposals file, and asks about promoting the new proposals. Do not use a schedule that creates a separate session (the app's scheduled tasks). That session cannot be followed, and its report does not come back to this session.
 
 ## 1. Take the proposals file out of git
 
@@ -35,4 +35,4 @@ Find the schedule whose prompt starts with "This is a scheduled lead scout run" 
 
 - The cadence and the next run time (the time given in the registration result)
 - Limits: it runs only while this session is open and idle. It can run later than the set time. It expires after 7 days
-- To turn it off, `/lead schedule off`
+- To turn it off, `/lead schedule off` (or `끄기`)

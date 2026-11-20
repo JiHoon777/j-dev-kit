@@ -1,9 +1,9 @@
 ---
 name: lead
 description: Use when directing several backlog items from one session. scout checks the idea, grooming and improvement proposals the agent finds, writes them to the proposals file and raises them to the user, schedule calls scout on a cadence in this session, and run starts a work session per item that follows the `/task` procedures and reports to the user at the approval points. Runs only when the user invokes it directly.
-argument-hint: "run [backlog numbers…] | scout | schedule [cadence | off]"
+argument-hint: "run [backlog numbers…] | scout | schedule [cadence | off | 끄기]"
 disable-model-invocation: true
-allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(ls *), Bash(date *)
+allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(git diff *), Bash(ls *), Bash(date *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
   tags: [orchestration, backlog, work-sessions, scheduling, human-approval]
@@ -29,7 +29,7 @@ Examples:
 
 ```
 /lead schedule weekdays at 9am   # call scout on a cadence in this session
-/lead schedule off               # turn that schedule off
+/lead schedule off               # turn that schedule off (끄기 works too)
 /lead scout                      # once, now: take proposals, write them to the proposals file, and raise them
 /lead run                        # raise proposals, then start a work session per chosen item
 /lead run 003 005                # run only these two items
