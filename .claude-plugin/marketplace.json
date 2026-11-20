@@ -4,7 +4,7 @@
     "name": "JiHoon777"
   },
   "metadata": {
-    "description": "Personal Claude Code marketplace: one /task workflow plus stack check plugins (frontend, server incl. Supabase), a stack-agnostic /arch architecture plugin, and a /ui design plugin."
+    "description": "Personal Claude Code marketplace: one /task workflow and /lead to direct several backlog items, plus stack check plugins (frontend, server incl. Supabase), a stack-agnostic /arch architecture plugin, and a /ui design plugin."
   },
   "allowCrossMarketplaceDependenciesOn": [
     "anthropic-plugin-directory"
@@ -13,7 +13,7 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins. /lead directs several items from one session: scheduled proposals, a work session per item, reports at plan and merge points. A Stop hook re-runs the verify command when an item is marked done.",
+      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins. /lead directs several items from one session: scheduled proposals from the backlog-scout agent, a work session per item, reports at plan and merge points. A Stop hook re-runs the verify command when an item is marked done.",
       "dependencies": [
         "superpowers@anthropic-plugin-directory"
       ]
