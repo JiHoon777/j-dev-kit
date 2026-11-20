@@ -91,6 +91,13 @@ s_origin_only()      { git branch -q -D main; both alpha; }
 s_plugin_removed()   { git rm -rq plugins/gamma i18n/en/plugins/gamma; }
 s_one_line_json()    { tr -d '
 ' < .claude-plugin/marketplace.json > m && mv m .claude-plugin/marketplace.json; }
+s_readme_dep_column(){ sed -i -e '/^| `alpha`/d' -e 's/^| `beta` | 베타 |$/| `beta` | 베타 | `alpha` |/' README.md; }
+s_desc_missing()     { sed -i '/"description": "alpha plugin"/d' .claude-plugin/marketplace.json; }
+s_desc_missing_readme(){ s_desc_missing; sed -i '/`alpha`/d' README.md; }
+s_author_in_entry()  { sed -i 's|^      "source": "./plugins/alpha",$|&\n      "author": {\n        "name": "someone"\n      },|' .claude-plugin/marketplace.json; }
+s_key_after_plugins(){ sed -i 's|^  \]$|  ],\n  "extra": {\n    "description": "other"\n  }|' .claude-plugin/marketplace.json; }
+s_one_line_base()    { tr -s ' \n' ' ' < plugins/gamma/.claude-plugin/plugin.json > m && mv m plugins/gamma/.claude-plugin/plugin.json
+                       git commit -qam one-line && git branch -q -f main HEAD; both gamma; }
 
 pass=0 total=0
 scenario() { # 설명 기대종료코드 준비함수 [출력에 있어야 할 문구]
@@ -131,12 +138,18 @@ scenario "기준 브랜치 없음 → 건너뛰고 통과"      0 s_no_base     
 scenario "설명 다름 → 실패"                      1 s_desc_mismatch     "설명 다름: alpha"
 scenario "README.md 에 없음 → 실패"              1 s_readme_missing    "README 에 없음: README.md alpha"
 scenario "README.en.md 에 없음 → 실패"           1 s_readme_en_missing "README 에 없음: README.en.md beta"
+scenario "다른 줄의 의존 칸에만 있음 → 실패"     1 s_readme_dep_column "README 에 없음: README.md alpha"
 scenario "함께 지우고 스테이징 안 함 → 통과"     0 s_delete_unstaged
 scenario "한글 경로 → 이스케이프 없이 실패"      1 s_korean_path       "번역본 없음: plugins/alpha/skills/한글.md"
 scenario "version 내림 → 실패"                   1 s_version_down      "version 내림: alpha"
 scenario "로컬 main 없고 origin/main 만 → 실패"  1 s_origin_only       "version 그대로: alpha"
 scenario "marketplace 밖 플러그인 지움 → 통과"   0 s_plugin_removed
 scenario "marketplace 를 못 읽음 → 실패"        1 s_one_line_json     "marketplace.json 에서 플러그인을 읽지 못했다"
+scenario "marketplace 항목에 설명 없음 → 실패"   1 s_desc_missing      "설명 다름: alpha"
+scenario "설명 없는 항목도 README 검사"        1 s_desc_missing_readme "README 에 없음: README.md alpha"
+scenario "항목 안 author.name → 통과"          0 s_author_in_entry
+scenario "plugins 뒤 최상위 키 → 통과"         0 s_key_after_plugins
+scenario "기준 plugin.json 한 줄 → 실패"       1 s_one_line_base     "version 을 읽지 못함: gamma"
 
 echo "$total 개 중 $pass 개 맞음"
 [ "$pass" = "$total" ]

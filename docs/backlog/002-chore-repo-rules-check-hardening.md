@@ -87,10 +87,19 @@ description 이 같다는 뜻이다. README.md·README.en.md 의 플러그인 �
 
 ### 정리 (simplify)
 
-재사용·단순화·효율·깊이 4관점. 반영: JSON 값 뽑기를 `json_pairs`/`json_value` 하나로(awk 파서와 `head` 제거), README 는 파일마다 한 번 읽고 bash 패턴으로 확인, 테스트는 clone 대신 템플릿 복사, `s_no_base` 가 `s_origin_only` 를 재사용, README 새 문장을 문단 끝으로. 건너뜀: marketplace 항목을 `{}` 깊이로 짝짓기(지금 형식 가정 안에서는 같은 결과, 코드가 커짐), manifest 의 version 을 못 읽을 때 따로 알리기(동작이 바뀜), 시나리오 동시 실행(테스트가 복잡해짐), `-z` 경로 처리와 작은 프로세스 줄이기(이득이 작음).
+재사용·단순화·효율·깊이 4관점. 반영: JSON 값 뽑기를 `json_pairs`/`json_value` 하나로(awk 파서와 `head` 제거), README 는 파일마다 한 번 읽고 bash 패턴으로 확인, 테스트는 clone 대신 템플릿 복사, `s_no_base` 가 `s_origin_only` 를 재사용, README 새 문장을 문단 끝으로. 건너뜀: marketplace 항목을 `{}` 깊이로 짝짓기, manifest 의 version 을 못 읽을 때 따로 알리기(둘 다 리뷰에서 다시 지적되어 고쳤다. 아래 리뷰 절), 시나리오 동시 실행(테스트가 복잡해짐), `-z` 경로 처리와 작은 프로세스 줄이기(이득이 작음).
 
 ### 검증
 
 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(exit 0), `bash scripts/test-check-repo-rules.sh` 21개 중 21개(exit 0). 브라우저 확인은 해당 없음(UI 없음).
+
+### 리뷰 (end)
+
+스택 종료 점검 둘 다 해당 없음. code-review·security-review 를 돌렸고 security 지적은 없다. 🔴 없음. 사용자 결정: 🟡 3건 모두 "지금 고침", ⚪ 3건(`sort -V` 의 prerelease, 테스트의 전역 gpgsign·hooksPath, 테스트 `tr -d` 인자의 실제 줄바꿈)은 그대로.
+
+- 🟡 marketplace 항목에 description 이 없으면 설명·README 검사를 둘 다 건너뛰었다. 🟡 description 을 바로 앞 name 줄과 짝지어, 항목 안 `author.name` 이나 `plugins` 뒤 최상위 키가 있으면 엉뚱한 이름과 짝지었다. → marketplace.json 을 bash 로 한 줄씩 읽어 `{`·`[` 깊이를 세고, `plugins` 항목 바로 아래의 name·description 만 받아 항목이 끝날 때 검사한다. 설명이 없으면 "설명 다름". 값 뽑기는 정규식 `kv_re` 하나로 plugin.json 과 같이 쓴다(sed `json_pairs` 는 없앴다).
+- 🟡 기준 쪽 plugin.json 이 한 줄 JSON 이면 version 검사를 조용히 건너뛰었다(main 대비 퇴보). → 기준에 파일이 있는데 기준이나 지금의 version 을 못 읽으면 "version 을 읽지 못함"으로 실패한다.
+- 고치면서 찾은 것(AC #2): 실제 README 에서 `server` 줄의 의존 칸에 ``| `workflow` |`` 가 있어, `workflow` 줄이 빠져도 통과했다(code-review 는 "다른 줄에 없다"며 뺐지만 틀렸다). → 줄 첫 칸만 본다. 실제 README.en.md 에서 workflow 줄을 잠시 지워 실패하는 것을 확인했다.
+- 시나리오 6개를 더해 27개: 설명 없음 → 실패, 설명 없는 항목도 README 검사, 항목 안 author.name → 통과, plugins 뒤 최상위 키 → 통과, 기준 plugin.json 한 줄 → 실패, 다른 줄의 의존 칸에만 있음 → 실패. 모두 고치기 전 틀리는 것(RED)을 보고 고쳤고, 고친 뒤 27개 모두 맞음.
 
 ## Final Summary
