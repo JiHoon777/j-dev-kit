@@ -31,13 +31,13 @@ description 이 같다는 뜻이다. README.md·README.en.md 의 플러그인 �
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 어떤 플러그인의 plugin.json description 과 marketplace.json description 이 다르면 검증 명령이 그 플러그인 이름과 함께 실패한다
-- [ ] #2 marketplace.json 에 있는 플러그인이 README.md 나 README.en.md 에 빠져 있으면 검증 명령이 실패한다
-- [ ] #3 저장소 안의 한 명령으로 검사 스크립트의 시나리오(001 의 12개와 이번에 더한 것)를 돌릴 수 있고, 모두 통과한다
-- [ ] #4 원문과 번역본을 함께 지우고 스테이징하지 않은 상태에서 검증 명령이 통과한다
-- [ ] #5 한글 등 비ASCII 경로의 파일이 걸릴 때 메시지에 경로가 이스케이프되지 않고 그대로 나온다
-- [ ] #6 plugin.json version 을 기준보다 낮추면 검증 명령이 실패한다
-- [ ] #7 로컬 `main` 이 없고 `origin/main` 만 있을 때도 번역본 갱신·version 검사를 건너뛰지 않는다
+- [x] #1 어떤 플러그인의 plugin.json description 과 marketplace.json description 이 다르면 검증 명령이 그 플러그인 이름과 함께 실패한다
+- [x] #2 marketplace.json 에 있는 플러그인이 README.md 나 README.en.md 에 빠져 있으면 검증 명령이 실패한다
+- [x] #3 저장소 안의 한 명령으로 검사 스크립트의 시나리오(001 의 12개와 이번에 더한 것)를 돌릴 수 있고, 모두 통과한다
+- [x] #4 원문과 번역본을 함께 지우고 스테이징하지 않은 상태에서 검증 명령이 통과한다
+- [x] #5 한글 등 비ASCII 경로의 파일이 걸릴 때 메시지에 경로가 이스케이프되지 않고 그대로 나온다
+- [x] #6 plugin.json version 을 기준보다 낮추면 검증 명령이 실패한다
+- [x] #7 로컬 `main` 이 없고 `origin/main` 만 있을 때도 번역본 갱신·version 검사를 건너뛰지 않는다
 
 <!-- AC:END -->
 
@@ -45,8 +45,8 @@ description 이 같다는 뜻이다. README.md·README.en.md 의 플러그인 �
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 UI 가 바뀌었으면 브라우저에서 확인함
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 UI 가 바뀌었으면 브라우저에서 확인함 (UI 없음, 해당 없음)
 
 <!-- DOD:END -->
 
@@ -76,5 +76,21 @@ description 이 같다는 뜻이다. README.md·README.en.md 의 플러그인 �
 
 - `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(exit 0). 이미 실패하는 것 없음.
 - 스택 점검: frontend·server 해당 없음(`stack: 없음`).
+
+### 시나리오 테스트
+
+`bash scripts/test-check-repo-rules.sh`. 001 의 12개를 노트로 다시 만들고 이번에 9개를 더했다. 고치기 전 새 7개(설명 다름, README 두 개, 함께 지우고 스테이징 안 함, 한글 경로, version 내림, origin/main 만)가 실패(RED)하는 것을 보고 고쳤다. "marketplace 밖 플러그인 지움"은 version 내림 검사가 지운 플러그인을 잘못 잡지 않게 하는 가드라 처음부터 통과했다. 고친 뒤 21개 모두 맞음. 실제 저장소에서도 design 의 plugin.json 설명을 잠시 바꿔 "설명 다름: design" 으로 실패하는 것을 보고 되돌렸다.
+
+### 계획에서 바뀐 것
+
+- 시나리오를 하나 더했다: marketplace.json 을 한 줄 JSON 으로 바꾸면 플러그인을 하나도 못 읽어 설명·README 검사가 조용히 통과했다. 계획의 가정("못 읽으면 조용히 통과하지 않는다")을 지키려고 "marketplace.json 에서 플러그인을 읽지 못했다"로 실패하게 했다(RED 확인 후 고침).
+
+### 정리 (simplify)
+
+재사용·단순화·효율·깊이 4관점. 반영: JSON 값 뽑기를 `json_pairs`/`json_value` 하나로(awk 파서와 `head` 제거), README 는 파일마다 한 번 읽고 bash 패턴으로 확인, 테스트는 clone 대신 템플릿 복사, `s_no_base` 가 `s_origin_only` 를 재사용, README 새 문장을 문단 끝으로. 건너뜀: marketplace 항목을 `{}` 깊이로 짝짓기(지금 형식 가정 안에서는 같은 결과, 코드가 커짐), manifest 의 version 을 못 읽을 때 따로 알리기(동작이 바뀜), 시나리오 동시 실행(테스트가 복잡해짐), `-z` 경로 처리와 작은 프로세스 줄이기(이득이 작음).
+
+### 검증
+
+`claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(exit 0), `bash scripts/test-check-repo-rules.sh` 21개 중 21개(exit 0). 브라우저 확인은 해당 없음(UI 없음).
 
 ## Final Summary
