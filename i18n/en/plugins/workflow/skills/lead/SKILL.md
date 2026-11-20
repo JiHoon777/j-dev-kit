@@ -51,6 +51,7 @@ Rules in the project CLAUDE.md take precedence over this skill.
 ## 3. Working principles
 
 - Creating items, implementing, reviewing and merging follow the `/task` create, start and end procedure files as they are. This skill only adds splitting the work and raising reports on top.
+- Where a `/task` procedure tells the user the next command (`/task start <number>` and so on), point to `/lead run <number>` instead. This session directs the work with `/lead`.
 - The lead session does not edit code. It splits the work, checks reports, raises things to the user, and merges.
 - Do not approve on the user's behalf. What work sessions send is a report, not an approval.
 - Raise only these to the user: proposal promotion, and what the `/task` procedures ask the user (questions, plan approval, review finding decisions, merge approval, blockers). Do not raise progress.
