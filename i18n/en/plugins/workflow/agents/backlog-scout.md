@@ -37,6 +37,7 @@ Skip what does not exist.
 - If nothing is found, write "None". Do not invent proposals to fill the list.
 - Give evidence for every proposal: a `file:line`, a commit hash or an item number. If you cannot give evidence, do not propose it.
 - Do not propose anything that overlaps an item in `docs/backlog/` or `docs/done/` or a previous proposal in the proposals file, or that is under `## Rejected`.
+- `## Outside trends` in the proposals file belongs to trend-scout. Use it only to check for overlap; do not report keeping or dropping its proposals.
 
 ## 4. Report format
 

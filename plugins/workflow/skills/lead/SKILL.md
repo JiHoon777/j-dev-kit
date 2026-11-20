@@ -1,6 +1,6 @@
 ---
 name: lead
-description: 백로그 항목 여러 개를 한 세션에서 지휘할 때 쓴다. scout 는 에이전트가 찾은 아이디어·정리·개선 제안을 확인해 제안함에 적고 사용자에게 올리고, schedule 은 이 세션에서 scout 을 주기로 부르고, run 은 항목마다 작업 세션을 띄워 `/task` 절차로 돌리며 승인 지점에서 사용자에게 보고한다. 사용자가 직접 부를 때만 돈다.
+description: 백로그 항목 여러 개를 한 세션에서 지휘할 때 쓴다. scout 는 에이전트가 찾은 아이디어·정리·개선·바깥 동향 제안을 확인해 제안함에 적고 사용자에게 올리고, schedule 은 이 세션에서 scout 을 주기로 부르고, run 은 항목마다 작업 세션을 띄워 `/task` 절차로 돌리며 승인 지점에서 사용자에게 보고한다. 사용자가 직접 부를 때만 돈다.
 argument-hint: "run [백로그 번호…] | scout | schedule [주기 | 끄기 | off]"
 disable-model-invocation: true
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git worktree list), Bash(git log *), Bash(git diff *), Bash(ls *), Bash(date *)
@@ -33,7 +33,7 @@ metadata:
 /lead run 003 005                # 이 두 항목만 돌린다
 ```
 
-- 절차 파일의 `backlog-scout`는 이 플러그인의 에이전트다. 띄울 때 이름은 `workflow:backlog-scout`.
+- 절차 파일의 `backlog-scout`와 `trend-scout`는 이 플러그인의 에이전트다. 띄울 때 이름은 `workflow:backlog-scout`, `workflow:trend-scout`.
 - 첫 단어가 셋 중 어느 것도 아니면 이 표를 보여 주고 묻는다.
 - 고른 모드의 절차 파일 하나만 Read 도구로 끝까지 읽고 그대로 따른다.
 
@@ -43,6 +43,13 @@ metadata:
 
 - 기준 브랜치 (`main`), 검증 명령, 항목·보고에 쓸 언어: `/task`와 같다
 - 동시 작업 세션 (2)
+- 바깥 동향 (켜짐): scout 가 `trend-scout`로 웹을 검색한다. `바깥 동향: 끄기`면 끈다. 꼭 볼 검색 주제나 페이지 URL 이 있으면 아래에 한 줄씩 적는다. 길면 저장소 안 파일에 두고 그 경로를 백틱으로 적는다(`@`로 가져오지 않는다. CLAUDE.md 는 세션마다 읽힌다).
+
+  ```markdown
+  - 바깥 동향:
+    - 주제: Claude Code 플러그인 기능 요청
+    - https://github.com/anthropics/claude-code/issues
+  ```
 
 프로젝트 CLAUDE.md 의 규칙이 이 스킬보다 우선한다.
 
