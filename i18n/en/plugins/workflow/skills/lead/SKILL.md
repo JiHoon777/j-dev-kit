@@ -34,6 +34,7 @@ Examples:
 /lead run 003 005                # run only these two items
 ```
 
+- `backlog-scout` in the procedure files is this plugin's agent. Its name when starting it is `workflow:backlog-scout`.
 - If the first word is none of the three, show this table and ask.
 - Read only the chosen mode's procedure file, all the way through, with the Read tool, and follow it as written.
 

@@ -6,7 +6,7 @@ Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하
 
 | 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule` | `superpowers` |
+| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule`, `backlog-scout` | `superpowers` |
 | `frontend` | Svelte·React 점검, `frontend-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | 서버·Supabase 점검(마이그레이션, API 스펙, 키), `api-reviewer`, `supabase-reviewer` | `workflow` |
 | `architecture` | `/arch design`, `/arch review`, `architecture-reviewer`, `architecture-researcher` | 없음 |
@@ -75,7 +75,7 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 /lead run 003 005                # 고른 항목만
 ```
 
-- **scout:** 저장소를 읽기만 하고 아이디어·백로그 정리·개선 제안을 제안함 파일 하나에 쓴다. 관점마다 최대 3개, 근거 없으면 제안하지 않고, 없으면 "없음". 제안은 사용자가 승격해야 항목이 된다.
+- **scout:** `backlog-scout` 에이전트가 저장소를 읽고 아이디어·백로그 정리·개선 제안을 제안함 파일 하나에 쓴다. 부른 세션은 다 쓴 제안함만 읽어 보여 준다. 제안은 쌓이고(관점마다 최대 10개) 해결된 것만 빠진다. 근거 없으면 제안하지 않고, 없으면 "없음". 제안은 사용자가 승격해야 항목이 된다.
 - **run:** 상위 세션은 코드를 고치지 않는다. 승격한 제안은 `/task create` 절차로 항목을 만들고, 항목마다 자기 워크트리의 작업 세션을 띄워 `/task start`·`end` 절차를 그대로 따르게 하고, 보고를 직접 확인한 뒤 올린다. 작업 세션이 `/task` 절차에서 사용자에게 물을 것(질문, 계획 승인, 리뷰 지적 결정)은 상위 세션이 받아 올린다. 머지는 상위 세션이 `/task end`의 마무리 단계대로 하나씩 하고, 충돌은 그때 풀고 매번 검증한다.
 - 세션 시작과 예약은 앱이 주는 기능을 쓴다. 예약 실행은 앱이 열려 있을 때만 돈다. 세션 시작 도구가 없으면 워크트리로 격리한 서브에이전트로 돈다.
 
@@ -108,6 +108,7 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 ```
 plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
 plugins/workflow/skills/lead/       SKILL.md + references/run.md, scout.md, schedule.md
+plugins/workflow/agents/            backlog-scout.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
 plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md, frontend-evaluator.md
 plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
@@ -143,7 +144,7 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 
 검증 훅과 `frontend-evaluator`: Claude Code [hooks](https://code.claude.com/docs/en/hooks.md)(꼭 지킬 것은 지침이 아니라 훅으로), Anthropic [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps)(만든 쪽과 따로 둔 평가자가 실행 중인 앱을 직접 써 본다).
 
-`/lead`: [GitHub Agentic Workflows safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/)(실행당 상한, 할 일 없음 허용, 제안은 사람이 승격), [Langfuse 주간 다이제스트](https://langfuse.com/blog/2026-03-13-weekly-digest-ai-skill)(근거 링크, 다음 단계 분명함 / 논의 필요), Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system)(워커는 산출물과 짧은 요약으로 보고)·[long-running harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)(상태는 파일과 git 에, 테스트를 지우지 않는다), Claude Code [scheduled tasks](https://code.claude.com/docs/en/desktop-scheduled-tasks.md). 관점마다 3개라는 숫자는 근거가 있는 값이 아니라 기본값이다.
+`/lead`: [GitHub Agentic Workflows safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/)(실행당 상한, 할 일 없음 허용, 제안은 사람이 승격), [Langfuse 주간 다이제스트](https://langfuse.com/blog/2026-03-13-weekly-digest-ai-skill)(근거 링크, 다음 단계 분명함 / 논의 필요), Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system)(워커는 산출물과 짧은 요약으로 보고)·[long-running harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)(상태는 파일과 git 에, 테스트를 지우지 않는다), Claude Code [scheduled tasks](https://code.claude.com/docs/en/desktop-scheduled-tasks.md). 관점마다 10개라는 숫자는 근거가 있는 값이 아니라 기본값이다.
 
 `architecture`: ISO/IEC 25010:2023, Parnas(정보 은닉), Ousterhout(깊은 모듈), *Building Evolutionary Architectures*(피트니스 함수), [arc42](https://arc42.org/), [MADR](https://adr.github.io/madr/), [Choose Boring Technology](https://mcfunley.com/choose-boring-technology), Azure Architecture Center·AWS Decision Guides, [endoflife.date](https://endoflife.date/)·[deps.dev](https://deps.dev/)·[OpenSSF Scorecard](https://scorecard.dev/). 아이디어를 빌린 스킬: [alexei-led/architect](https://github.com/alexei-led/architect)(지도 확인 후 판단, 증거 없으면 확인 못 함), [mattpocock/skills](https://github.com/mattpocock/skills) `improve-codebase-architecture`(핫스팟, 삭제 테스트), [mblode/agent-skills](https://github.com/mblode/agent-skills) `codebase-architecture`(새 에이전트로 레시피 따라 하기). 기준의 AI 근거 논문은 `criteria.md`에 링크.
 

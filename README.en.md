@@ -8,7 +8,7 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 
 | Plugin | Contains | Also installs |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule` | `superpowers` |
+| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule`, `backlog-scout` | `superpowers` |
 | `frontend` | Svelte and React checks, `frontend-reviewer`, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | Server and Supabase checks (migrations, API spec, keys), `api-reviewer`, `supabase-reviewer` | `workflow` |
 | `architecture` | `/arch design`, `/arch review`, `architecture-reviewer`, `architecture-researcher` | none |
@@ -77,7 +77,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 /lead run 003 005                # only the chosen items
 ```
 
-- **scout:** only reads the repository and writes idea, backlog-grooming and improvement proposals to one proposals file. At most 3 per angle, nothing without evidence, and "None" when there is nothing. A proposal becomes an item only when the user promotes it.
+- **scout:** the `backlog-scout` agent reads the repository and writes idea, backlog-grooming and improvement proposals to one proposals file. The calling session reads only the finished proposals file and shows it. Proposals accumulate (at most 10 per angle) and only resolved ones drop out. Nothing without evidence, and "None" when there is nothing. A proposal becomes an item only when the user promotes it.
 - **run:** the lead session does not edit code. Promoted proposals become items by the `/task create` procedure; it starts a work session per item in its own worktree that follows the `/task start` and `end` procedures as they are, and checks each report itself before raising it. What a work session would ask the user in the `/task` procedures (questions, plan approval, review finding decisions) is taken by the lead session and raised. The lead session merges one branch at a time by the wrap-up step of `/task end`, resolves conflicts then, and verifies after each.
 - Starting sessions and scheduling use what the app provides. Scheduled runs happen only while the app is open. Without a session-start tool, work runs in subagents isolated in worktrees.
 
@@ -110,6 +110,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 ```
 plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
 plugins/workflow/skills/lead/       SKILL.md + references/run.md, scout.md, schedule.md
+plugins/workflow/agents/            backlog-scout.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)
 plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md, frontend-evaluator.md
 plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
@@ -145,7 +146,7 @@ Then open a new session. Maintainers bump `version` in `plugin.json` for each ch
 
 Verify hook and `frontend-evaluator`: Claude Code [hooks](https://code.claude.com/docs/en/hooks.md) (rules that must hold go in hooks, not instructions), Anthropic [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps) (an evaluator kept apart from the builder uses the running app itself).
 
-`/lead`: [GitHub Agentic Workflows safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/) (a cap per run, "nothing to do" allowed, proposals promoted by a person), [Langfuse weekly digest](https://langfuse.com/blog/2026-03-13-weekly-digest-ai-skill) (evidence links, clear next step / needs discussion), Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) (workers report with artifacts and a short summary) and [long-running harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) (state in files and git, never delete tests), Claude Code [scheduled tasks](https://code.claude.com/docs/en/desktop-scheduled-tasks.md). The number 3 per angle is a default, not an evidence-based value.
+`/lead`: [GitHub Agentic Workflows safe outputs](https://github.github.com/gh-aw/reference/safe-outputs/) (a cap per run, "nothing to do" allowed, proposals promoted by a person), [Langfuse weekly digest](https://langfuse.com/blog/2026-03-13-weekly-digest-ai-skill) (evidence links, clear next step / needs discussion), Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system) (workers report with artifacts and a short summary) and [long-running harness](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents) (state in files and git, never delete tests), Claude Code [scheduled tasks](https://code.claude.com/docs/en/desktop-scheduled-tasks.md). The number 10 per angle is a default, not an evidence-based value.
 
 `architecture`: ISO/IEC 25010:2023, Parnas (information hiding), Ousterhout (deep modules), *Building Evolutionary Architectures* (fitness functions), [arc42](https://arc42.org/), [MADR](https://adr.github.io/madr/), [Choose Boring Technology](https://mcfunley.com/choose-boring-technology), Azure Architecture Center and AWS Decision Guides, [endoflife.date](https://endoflife.date/), [deps.dev](https://deps.dev/), [OpenSSF Scorecard](https://scorecard.dev/). Ideas borrowed from skills: [alexei-led/architect](https://github.com/alexei-led/architect) (confirm the map before judging, no evidence means "could not verify"), [mattpocock/skills](https://github.com/mattpocock/skills) `improve-codebase-architecture` (hotspots, deletion test), [mblode/agent-skills](https://github.com/mblode/agent-skills) `codebase-architecture` (a fresh agent follows the recipes). The research papers behind the AI evidence are linked in `criteria.md`.
 
