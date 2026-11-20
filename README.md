@@ -115,7 +115,8 @@ plugins/server/                     skills/server-{start,end}-check, agents/api-
 plugins/architecture/               skills/arch (SKILL.md + references/), agents/architecture-{reviewer,researcher}.md
 plugins/design/                     skills/ui (SKILL.md + references/), agents/design-reviewer.md
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
-scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, version 올리기)
+scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, 설명 일치, README 목록, version 올리기)
+scripts/test-check-repo-rules.sh    검사 스크립트의 시나리오 테스트
 ```
 
 - 원문은 한국어(`plugins/`), 번역본은 `i18n/en/`. 원문을 고치면 번역본도 고친다.
@@ -128,7 +129,7 @@ claude plugin marketplace update j-dev-kit
 claude plugin update <플러그인>@j-dev-kit --scope project
 ```
 
-그다음 세션을 새로 연다. 관리자는 바뀐 플러그인의 `plugin.json` `version`을 올리고 CLAUDE.md 의 검증 명령(`claude plugin validate .`과 `scripts/check-repo-rules.sh`)을 돌린 뒤 푸시한다. 검사 스크립트는 `plugins/`의 마크다운에 `i18n/en/` 번역본이 없거나, `main` 대비 원문만 고치고 번역본은 그대로이거나, 바뀐 플러그인의 `version`이 그대로면 실패한다. 버전이 같으면 업데이트되지 않는다.
+그다음 세션을 새로 연다. 관리자는 바뀐 플러그인의 `plugin.json` `version`을 올리고 CLAUDE.md 의 검증 명령(`claude plugin validate .`과 `scripts/check-repo-rules.sh`)을 돌린 뒤 푸시한다. 검사 스크립트는 `plugins/`의 마크다운에 `i18n/en/` 번역본이 없거나, `plugin.json`과 `marketplace.json`의 플러그인 설명이 다르거나, `marketplace.json`의 플러그인이 README 두 개의 표에 없거나, `main`(없으면 `origin/main`) 대비 원문만 고치고 번역본은 그대로이거나, 바뀐 플러그인의 `version`이 그대로이거나 내려갔으면 실패한다. 검사 스크립트를 고치면 `bash scripts/test-check-repo-rules.sh`로 시나리오를 돌린다. 버전이 같으면 업데이트되지 않는다.
 
 ## 문제 해결
 
