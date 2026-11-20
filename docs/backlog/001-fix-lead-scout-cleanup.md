@@ -1,7 +1,7 @@
 ---
 id: '001'
 title: lead·scout 정리와 저장소 규칙 검사
-status: To Do
+status: In Progress
 labels: [fix]
 priority: medium
 dependencies: []
@@ -59,6 +59,34 @@ lead·scout·schedule 절차와 설명의 빈틈을 메우고, 지침으로만 �
 
 ## Implementation Plan
 
+무엇을 하나: 저장소 규칙 두 가지(번역본 짝, version 올리기)를 검사 스크립트로 강제하고, lead·scout·schedule 절차와 설명의 빈틈을 메운다. 빼는 것: SubagentStop 훅, 상한 설정화, 번역본만 남은 파일 검사, README·marketplace 설명 일치 검사.
+
+커밋 A — 검사 (AC #1~3)
+- `scripts/check-repo-rules.sh` 새로(bash·git 만): `plugins/` 의 md(추적 + untracked)마다 `i18n/en/<같은 경로>` 확인. `git merge-base <기준, 기본 main> HEAD` 대비 작업 폴더에서 `plugins/<이름>/` 이 바뀐 플러그인마다 `plugin.json` `version` 이 기준과 같으면 실패. 기준에 없던 플러그인은 건너뛴다. main 에서는 diff 가 비어 통과
+- CLAUDE.md 검증 명령: `claude plugin validate . && bash scripts/check-repo-rules.sh`
+- README 두 개: 구조·업데이트 절에 스크립트 한 줄
+- 테스트: en 파일 하나 잠시 지움 → 실패 / workflow md 고치고 version 그대로 → 실패 / version 올림 → 통과 / 변경 없음 → 통과. 결과는 Implementation Notes 에
+
+커밋 B — 설명 (AC #4, 7, 8)
+- README 두 개: "관점마다 10개는 기본값" → "고정값(설정으로 바꿀 수 없다)"
+- marketplace.json `metadata.description` 에 /lead, workflow 설명에 backlog-scout 에이전트. plugin.json description 도 같은 문구
+
+커밋 C — lead 절차 (AC #5, 6, 9~14), 원문 + en, workflow 0.6.6 → 0.6.7
+- lead/SKILL.md: allowed-tools 에 `Bash(git diff *)`, argument-hint `schedule [주기 | 끄기 | off]`
+- run.md 4단계: 서브에이전트 작업 세션에는 Stop 검증 훅이 돌지 않고 6단계 머지 때 검증이 덮는다. 5단계: 멈춘 백그라운드 서브에이전트에는 같은 에이전트에 SendMessage 로 이어서 전한다
+- scout.md 3단계: "제목 아래 `갱신:` 줄", 제안함을 새로 만들었고 .gitignore 에 없으면 4단계에서 넣자고 제안. 4단계: "자리가 없어 더하지 못한 것" 제목을 알린다, 예약 실행이면 새로 생긴 제안만 올리고 없으면 한 줄로 알린다
+- schedule.md: `끄기`나 `off` 면 3절만, 4절에 둘 다
+- README 두 개 진두지휘 절에 끄기 두 가지, 예약은 새 제안만
+
+성공 기준: #1·#2 는 위 경우를 돌려 확인, #3 은 CLAUDE.md 줄과 새 검증 명령 통과, #4~#14 는 고친 줄을 grep 으로(원문·en 둘 다).
+
+가정: 항목의 가정 둘(상한 고정값, SendMessage 로 이어 전하기). version 은 패치(0.6.7). 스크립트는 저장소 루트 `scripts/`(플러그인 밖이라 version 검사 대상 아님). schedule 1절의 .gitignore 제안은 그대로 두고 scout 에 "처음 만들 때"만 더한다.
+
 ## Implementation Notes
+
+### Baseline
+
+- `claude plugin validate .` 통과. 이미 실패하는 것 없음.
+- 스택 점검: frontend·server 해당 없음(`stack: 없음`).
 
 ## Final Summary
