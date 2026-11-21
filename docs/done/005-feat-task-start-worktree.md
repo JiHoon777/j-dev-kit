@@ -1,7 +1,7 @@
 ---
 id: '005'
 title: 설정을 켜면 /task start 가 항목마다 워크트리를 따고 포트가 겹치지 않게
-status: In Progress
+status: Done
 labels: [feat]
 priority: medium
 dependencies: []
@@ -102,6 +102,17 @@ updated_date: 2026-11-21
 - 이어 갈 때 의존성과 포트를 다시 확인하지 않는다.
 - `git worktree remove` 뒤 빈 `.claude/worktrees/` 폴더가 남는다(exclude 로 보이지 않는다).
 
+### 리뷰
+
+- security-review: 확인된 문제 없음.
+- code-review 10건, 모두 고침(700dd85). 사용자가 "머지·푸시까지"를 요청해 🟡도 묻지 않고 같이 고쳤다.
+  - end: 머지 전에 기준 폴더가 기준 브랜치이고 깨끗한지 확인. 정리는 로컬 머지일 때만(PR·그대로 두기면 워크트리를 남김).
+  - start: exclude 경로를 `git rev-parse --git-path info/exclude`로. 대체 경로(세션이 기준 폴더에 남음)면 Stop 훅이 돌지 않으니 검증을 워크트리에서. 검사 도구가 `.claude/worktrees/`를 읽으면 알림(README 에도). lsof 가 없으면 `nc -z`, 확인할 수 없으면 알림. 진행 중 항목의 포트와 그 항목들의 기본 포트도 피함, `docs/done`은 보지 않음. 포트를 정하자마자 항목에 적음.
+  - 개발 서버 세 곳: launch.json 은 고치지 않고 다르면 개발 명령을 직접. 웹이 백엔드 주소를 받는 곳도 서버 포트로(파일을 고치지 않고).
+- 리뷰 반영 뒤 시나리오는 다시 돌리지 않았다. 바뀐 것은 문장과 확인 단계다.
+
 ## Final Summary
 
-`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
+- 바뀐 것: CLAUDE.md `## 작업 설정`의 `- 워크트리: 켜기`, `- 웹 포트`, `- 서버 포트`. 켜면 `/task start`가 `.claude/worktrees/<항목>` 워크트리와 `w/<항목>` 브랜치를 따 옮겨 일하고, `/task end`가 기준 폴더에서 머지하고 정리한다. 포트는 `기준 + 번호`에 쓰이는 포트·다른 항목 포트를 피해 항목에 적고, 개발 서버를 띄우는 세 곳이 그 포트를 쓴다. workflow 0.9.0, frontend 0.6.0, design 0.2.0.
+- 리뷰에서 고친 것: 위 "리뷰" 10건, 시나리오 시험에서 나온 결함 7건.
+- 미룬 것: 진행 중 항목이 기준 폴더에서 `To Do`로 보이는 것, 이어 갈 때 의존성·포트 재확인, 빈 `.claude/worktrees/` 폴더. 새 항목은 만들지 않았다.
