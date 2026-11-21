@@ -90,7 +90,7 @@ git status --short   # 비어 있어야 한다
 
 - 검증 명령은 6단계에서 방금 통과했다. 기준 브랜치는 프로젝트 설정의 것이다.
 - 워크트리를 쓰지 않았으면 지울 워크트리가 없다.
-- 이 세션이 `/task start`가 딴 `.claude/worktrees/<이름>` 워크트리에서 일했으면, 머지와 정리는 이 줄이 스킬의 해당 단계보다 우선한다. 기준 브랜치는 기준 폴더(`git worktree list`의 첫 줄)에 있으니 머지는 `git -C <기준 폴더> merge …`처럼 거기서 돌린다. 그다음 세션을 기준 폴더로 돌리고(`EnterWorktree`로 들어왔으면 `ExitWorktree`의 keep, 그 폴더에서 명령만 돌렸으면 이후 명령을 기준 폴더에서) `git worktree remove .claude/worktrees/<이름>`과 `git branch -d w/<이름>`으로 정리한다. 세션을 그 워크트리 안에서 처음 열어 돌아갈 수 없으면 지우지 않고, 기준 폴더에서 그 두 명령을 돌리면 된다고 알린다.
+- 이 세션이 `/task start`가 딴 `.claude/worktrees/<이름>` 워크트리에서 일했으면, 머지와 정리는 이 줄이 스킬의 해당 단계보다 우선한다. 기준 브랜치는 기준 폴더(`git worktree list`의 첫 줄)에 있으니 머지는 `git -C <기준 폴더> merge …`처럼 거기서 돌린다. 머지 전에 기준 폴더가 기준 브랜치에 있고(`git -C <기준 폴더> branch --show-current`) 깨끗한지(`status --short`) 보고, 아니면 멈추고 알린다. 정리는 로컬 머지를 골랐을 때만 한다. PR 이나 그대로 두기를 골랐으면 워크트리를 남긴다. 머지했으면 세션을 기준 폴더로 돌리고(`EnterWorktree`로 들어왔으면 `ExitWorktree`의 keep, 그 폴더에서 명령만 돌렸으면 이후 명령을 기준 폴더에서) `git worktree remove .claude/worktrees/<이름>`과 `git branch -d w/<이름>`으로 정리한다. 세션을 그 워크트리 안에서 처음 열어 돌아갈 수 없으면 지우지 않고, 기준 폴더에서 그 두 명령을 돌리면 된다고 알린다.
 - PR 을 만들 수 없으면(CLAUDE.md 에 그렇게 적혀 있거나 `gh auth status`가 실패하면) 그렇다고 말한다.
 - 기준 브랜치에 upstream 이 없으면 `git pull`을 건너뛴다.
 - 푸시는 사용자가 요청할 때만.

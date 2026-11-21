@@ -55,13 +55,16 @@ Before approval, do not edit files and do not create a branch.
 
 1. Create the work branch `w/<item file name without .md>` (`<name>` below).
    - If the worktree setting is on and you are outside a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` are the same):
-     1. If `.git/info/exclude` lacks `.claude/worktrees/`, add it, so it does not show up as uncommitted changes in the base folder.
+     1. If the file `git rev-parse --git-path info/exclude` points to lacks `.claude/worktrees/`, add it (create the folder if missing), so it does not show up as uncommitted changes in the base folder.
      2. `git worktree add .claude/worktrees/<name> -b w/<name> <base branch>`
-     3. Move the session there by giving that path to the `EnterWorktree` tool. If the tool is missing or refuses, run every later command in that folder. Do 2 and 3 of this step 4 and everything from step 5 in that worktree.
+     3. Move the session there by giving that path to the `EnterWorktree` tool. If the tool is missing or refuses, run every later command in that folder. The session itself then sits in the base folder, so the verify Stop hook does not run for this item; be sure to run step 6's verification in that worktree. Do 2 and 3 of this step 4 and everything from step 5 in that worktree.
      4. If the project needs dependencies installed (for example `package.json` and a lockfile), install them in that worktree. A new worktree has nothing installed.
+     5. If the test, lint or type-check tools read into `.claude/worktrees/` (many do not look at git's ignore lists), verification in the base folder also runs other items' code. If those tool settings do not leave out `.claude/worktrees/`, say so.
    - Otherwise (setting off, or already in a worktree): `git switch -c w/<name>`
-   - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5000, item 007 → 5007). Only the ones that are set. If that port is already in use (it shows up in `lsof -nP -iTCP:<port> -sTCP:LISTEN`), go up by 1 until a free one comes up. Ports written under `### 포트` in other worktrees' item files also count as in use. This keeps it clear of other items and of other projects' servers.
-2. Item file: `status: In Progress`, `updated_date` today, the approved plan in `Implementation Plan`, the baseline under `### Baseline` in `Implementation Notes`, the ports you set under `### 포트` (one per line, like `- 웹: 5180`).
+   - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5000, item 007 → 5007). Only the ones that are set.
+     - Treat these ports as in use and go up by 1 to avoid them: ports something is listening on (`lsof -nP -iTCP:<port> -sTCP:LISTEN`, or `nc -z 127.0.0.1 <port>` if lsof is missing or fails), the `### 포트` of items in progress in other worktrees (`In Progress` in `docs/backlog/`), and those items' default ports (base port + their number). This keeps it clear of other items and of other projects' servers. If there is no way to check whether a port is listening, say so.
+     - Write the ports into the item file as soon as they are set (2 below), so that another session started at the same time can see them.
+2. Item file: `status: In Progress`, `updated_date` today, the approved plan in `Implementation Plan`, the baseline under `### Baseline` in `Implementation Notes`, the ports you set under `### 포트` (one per line, like `- 웹: 5007`).
 3. Commit: `chore(backlog): <number> start`
 
 ## 5. Implement
