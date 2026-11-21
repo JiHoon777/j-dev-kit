@@ -14,7 +14,7 @@ If any of these applies, stop and say so. Do not clean it up on your own.
 | --- | --- |
 | The base branch has no commits | Say that a first commit is needed |
 | There are uncommitted changes | Show them and ask what to do |
-| A `w/` branch already exists, or the current branch is not the base branch | Ask whether to continue, finish with `/task end`, or discard. If continuing, switch to that branch, read the item's `Implementation Plan`, and resume from step 5. When the worktree setting is on, leave out other items' `w/` branches (the ones in their own worktrees) from this check |
+| A `w/` branch already exists, or the current branch is not the base branch | Ask whether to continue, finish with `/task end`, or discard. If continuing, switch to that branch, read the item's `Implementation Plan`, and resume from step 5. When the worktree setting is on, leave out other items' `w/` branches (the ones in their own worktrees) from this check. If this item's branch is in a worktree, do not switch branches; move into that worktree and continue there |
 
 Finding the item: look up the argument in `docs/backlog/` (`README.md` and files starting with `_` are not items). If there is no match or several, show the `To Do` items by number and title and let the user pick. Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
 
@@ -52,12 +52,13 @@ Before approval, do not edit files and do not create a branch.
 ## 4. Record
 
 1. Create the work branch `w/<item file name without .md>` (`<name>` below).
-   - If the worktree setting is on and you are outside a worktree (`git rev-parse --git-dir` and `--git-common-dir` are the same):
+   - If the worktree setting is on and you are outside a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` are the same). The paths below are relative to the repository root (`git rev-parse --show-toplevel`):
      1. If `.git/info/exclude` lacks `.claude/worktrees/`, add it, so it does not show up as uncommitted changes in the base folder.
      2. `git worktree add .claude/worktrees/<name> -b w/<name> <base branch>`
-     3. Move the session there by giving that path to the `EnterWorktree` tool. Without the tool, run every later command in that folder. Do 2 and 3 below and everything from step 5 in that worktree.
+     3. Move the session there by giving that path to the `EnterWorktree` tool. If the tool is missing or refuses, run every later command in that folder. Do 2 and 3 below and everything from step 5 in that worktree.
+     4. If the project needs dependencies installed (for example `package.json` and a lockfile), install them in that worktree. A new worktree has nothing installed.
    - Otherwise (setting off, or already in a worktree): `git switch -c w/<name>`
-   - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5173, item 007 → 5180). Only the ones that are set.
+   - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5000, item 007 → 5007). Only the ones that are set. If that port is already in use (it shows up in `lsof -nP -iTCP:<port> -sTCP:LISTEN`), go up by 1 until a free one comes up. This keeps it clear of other projects' servers too.
 2. Item file: `status: In Progress`, `updated_date` today, the approved plan in `Implementation Plan`, the baseline under `### Baseline` in `Implementation Notes`, the ports you set under `### 포트` (one per line, like `- 웹: 5180`).
 3. Commit: `chore(backlog): <number> start`
 
