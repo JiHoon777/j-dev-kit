@@ -4,11 +4,11 @@
 
 > Translation of README.md. The Korean README is the source.
 
-A personal Claude Code plugin marketplace. The work loop is a single `/task` skill; stack-specific checks live in stack plugins. To direct several items from one session, use `/lead`. Architecture design and review is a separate `/arch`, and UI mockups and design review a separate `/ui` (both stack-agnostic).
+A personal Claude Code plugin marketplace. The work loop is a single `/task` skill; stack-specific checks live in stack plugins. To direct several items from one session, use `/lead`; to hand over work with only a goal and an end condition, use `/until-done`. Architecture design and review is a separate `/arch`, and UI mockups and design review a separate `/ui` (both stack-agnostic).
 
 | Plugin | Contains | Also installs |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule`, `backlog-scout`, `trend-scout` | `superpowers` |
+| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule`, `/until-done`, `backlog-scout`, `trend-scout` | `superpowers` |
 | `frontend` | Svelte and React checks, `frontend-reviewer`, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | Server and Supabase checks (migrations, API spec, keys), `api-reviewer`, `supabase-reviewer` | `workflow` |
 | `architecture` | `/arch design`, `/arch review`, `architecture-reviewer`, `architecture-researcher` | none |
@@ -65,7 +65,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 
 - **start:** baseline (one run of the verify command), stack start checks, planning sized to the item (no agents for small items), test-first implementation, cleanup with `simplify`, verification.
 - **end:** stack end checks, review (`code-review` plus `security-review` and stack reviewers when needed), findings shown as 🔴 must fix / 🟡 consider / ⚪ minor with one question per group, fixes, verification, merge. Pushes only on request.
-- **Verify hook:** on a `w/` branch, when the item's Definition of Done is checked and Claude stops, a hook runs the `verify command:` from CLAUDE.md itself. On failure it sends Claude back once with the output. It does not run again while the code is unchanged. It can overlap the verification the skill already ran, so it may run once more per stage. On Windows it needs Git Bash.
+- **Verify hook:** on a `w/` branch, when the item's Definition of Done is checked and Claude stops, a hook runs the `verify command:` from CLAUDE.md itself. On failure it sends Claude back with the output, only once for the same content. It does not run again while the code is unchanged. It still runs after another Stop hook such as `/goal` has blocked the stop. It can overlap the verification the skill already ran, so it may run once more per stage. On Windows it needs Git Bash.
 - **Browser check:** when the UI changes, the `frontend-evaluator` agent, not the implementing session, judges each Acceptance Criterion on the running screen.
 
 ### Directing
@@ -81,6 +81,19 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 - **Outside trends setting:** on by default. To turn it off, put `- 바깥 동향: 끄기` (outside trends: off) under `## 작업 설정` (work settings) in CLAUDE.md. Write search topics or page URLs to always look at under `- 바깥 동향:`, one per line. If the list is long, keep it in a file in the repository and write that path in backticks in CLAUDE.md (do not import it with `@`).
 - **run:** the lead session does not edit code. Promoted proposals become items by the `/task create` procedure; it starts a work session per item in its own worktree that follows the `/task start` and `end` procedures as they are, and checks each report itself before raising it. What a work session would ask the user in the `/task` procedures (questions, plan approval, review finding decisions) is taken by the lead session and raised. The lead session merges one branch at a time by the wrap-up step of `/task end`. Before each merge it brings the latest base branch into the work branch and verifies there (resolving conflicts then), and it verifies again after the merge.
 - Starting sessions uses what the app provides. Scheduling is in-session (what `/loop` uses), so it creates no separate session; it runs only while this session is open and expires after 7 days. Without a session-start tool, work runs in subagents isolated in worktrees.
+
+### Handing over
+
+```
+/until-done build the login screen — done: pnpm verify passes, login works in the browser
+```
+
+- Takes only a goal and an end condition. It asks nothing else, and keeps anything said along the way (for example "deploy later") until the end.
+- It reads and follows the `/task`, `/lead`, `/ui` and `/arch` procedure files, but where a procedure asks the user (plan approval, merge approval, choosing a mockup, and so on) it decides and leaves `Ruling: what was decided — why — what it costs if wrong` in the item's Implementation Notes.
+- It does not judge completion itself. It reruns a command, or gives a fresh agent that has not seen the conversation only the condition and the files, gets pass or fail per criterion, and shows the results in the conversation as they are. It stops after the same failure three times.
+- It asks only about irreversible actions (deleting, push, PR, deploy, changes outside the project) and values only the user knows, all together.
+- Keeping going until done is left to the built-in Claude Code [`/goal`](https://code.claude.com/docs/en/goal.md). At the start it gives the `/goal` line to type. At the end it reports what was done, every `Ruling`, and what was not done.
+- It is not the Claude Code auto permission mode. The permission mode removes tool permission prompts; this skill removes the procedure's questions. Use both together.
 
 ### Architecture
 
@@ -111,6 +124,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 ```
 plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
 plugins/workflow/skills/lead/       SKILL.md + references/run.md, scout.md, schedule.md
+plugins/workflow/skills/until-done/ SKILL.md
 plugins/workflow/agents/            backlog-scout.md, trend-scout.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)
 plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md, frontend-evaluator.md
@@ -120,6 +134,7 @@ plugins/design/                     skills/ui (SKILL.md + references/), agents/d
 i18n/en/                            English translations (Claude does not read them)
 scripts/check-repo-rules.sh         repository rule check (translation pairs and updates, matching descriptions, README lists, version bumps)
 scripts/test-check-repo-rules.sh    scenario tests for the check script
+scripts/test-verify-on-stop.sh      scenario tests for the verify hook
 ```
 
 - The source is Korean (`plugins/`); translations live in `i18n/en/`. Update the translation when you change the source.

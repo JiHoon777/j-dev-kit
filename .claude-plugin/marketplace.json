@@ -13,7 +13,7 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins. /lead directs several items from one session: scheduled proposals from the backlog-scout agent (repository) and the trend-scout agent (web search for outside trends), a work session per item, reports at plan and merge points. A Stop hook re-runs the verify command when an item is marked done.",
+      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins. /lead directs several items from one session: scheduled proposals from the backlog-scout agent (repository) and the trend-scout agent (web search for outside trends), a work session per item, reports at plan and merge points. A Stop hook re-runs the verify command when an item is marked done, also after another Stop hook such as /goal has blocked. /until-done takes only a goal and an end condition and works to the end, deciding where the procedures would ask and checking completion with a command or a fresh agent.",
       "dependencies": [
         "superpowers@anthropic-plugin-directory"
       ]

@@ -2,11 +2,11 @@
 
 **한국어** | [English](README.en.md)
 
-Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하나, 스택별 점검은 스택 플러그인으로 나눴다. 여러 항목을 한 세션에서 지휘할 때는 `/lead`를 쓴다. 아키텍처 설계·리뷰는 `/arch`, UI 시안·디자인 리뷰는 `/ui`로 따로 쓴다(둘 다 스택과 상관없음).
+Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하나, 스택별 점검은 스택 플러그인으로 나눴다. 여러 항목을 한 세션에서 지휘할 때는 `/lead`를, 목표와 끝나는 조건만 주고 맡길 때는 `/until-done`을 쓴다. 아키텍처 설계·리뷰는 `/arch`, UI 시안·디자인 리뷰는 `/ui`로 따로 쓴다(둘 다 스택과 상관없음).
 
 | 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule`, `backlog-scout`, `trend-scout` | `superpowers` |
+| `workflow` | `/task create`, `/task start`, `/task end`, `/lead run`, `/lead scout`, `/lead schedule`, `/until-done`, `backlog-scout`, `trend-scout` | `superpowers` |
 | `frontend` | Svelte·React 점검, `frontend-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | 서버·Supabase 점검(마이그레이션, API 스펙, 키), `api-reviewer`, `supabase-reviewer` | `workflow` |
 | `architecture` | `/arch design`, `/arch review`, `architecture-reviewer`, `architecture-researcher` | 없음 |
@@ -63,7 +63,7 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 
 - **start:** 기준선(검증 명령 한 번), 스택 시작 점검, 크기에 맞춘 계획(작은 항목은 에이전트 없이), 테스트 먼저 구현, `simplify`로 정리, 검증.
 - **end:** 스택 종료 점검, 리뷰(`code-review` + 필요할 때 `security-review`·스택 리뷰어), 지적을 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 구분별로 묻기, 고치기, 검증, 머지. 푸시는 요청할 때만.
-- **검증 훅:** `w/` 브랜치에서 항목의 Definition of Done 을 체크하고 멈추면, 훅이 CLAUDE.md 의 `검증 명령:`을 직접 돌린다. 실패하면 출력과 함께 한 번 되돌려 보낸다. 코드가 그대로면 다시 돌리지 않는다. 스킬이 이미 돌린 검증과 겹쳐 단계마다 한 번 더 돌 수 있다. Windows 에서는 Git Bash 가 필요하다.
+- **검증 훅:** `w/` 브랜치에서 항목의 Definition of Done 을 체크하고 멈추면, 훅이 CLAUDE.md 의 `검증 명령:`을 직접 돌린다. 실패하면 출력과 함께 되돌려 보내는데, 같은 내용으로는 한 번뿐이다. 코드가 그대로면 다시 돌리지 않는다. `/goal` 같은 다른 Stop 훅이 멈춤을 막은 뒤에도 돈다. 스킬이 이미 돌린 검증과 겹쳐 단계마다 한 번 더 돌 수 있다. Windows 에서는 Git Bash 가 필요하다.
 - **브라우저 확인:** UI 가 바뀌면 구현한 세션이 아니라 `frontend-evaluator` 에이전트가 실행 중인 화면에서 Acceptance Criteria 를 하나씩 판정한다.
 
 ### 진두지휘
@@ -79,6 +79,19 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 - **바깥 동향 설정:** 기본으로 켜져 있다. 끄려면 CLAUDE.md `## 작업 설정`에 `- 바깥 동향: 끄기`. 꼭 볼 검색 주제나 페이지 URL 은 `- 바깥 동향:` 아래에 한 줄씩 적는다. 길면 저장소 안 파일에 두고 CLAUDE.md 에는 그 경로를 백틱으로 적는다(`@`로 가져오지 않는다).
 - **run:** 상위 세션은 코드를 고치지 않는다. 승격한 제안은 `/task create` 절차로 항목을 만들고, 항목마다 자기 워크트리의 작업 세션을 띄워 `/task start`·`end` 절차를 그대로 따르게 하고, 보고를 직접 확인한 뒤 올린다. 작업 세션이 `/task` 절차에서 사용자에게 물을 것(질문, 계획 승인, 리뷰 지적 결정)은 상위 세션이 받아 올린다. 머지는 상위 세션이 `/task end`의 마무리 단계대로 하나씩 한다. 머지 전에 작업 브랜치에 최신 기준 브랜치를 반영해 검증하고(충돌은 이때 푼다), 머지한 뒤에도 검증한다.
 - 세션 시작은 앱이 주는 기능을 쓴다. 예약은 세션 안 예약(`/loop`가 쓰는 것)이라 따로 세션을 만들지 않고, 이 세션이 열려 있을 때만 돌며 7일 뒤 만료된다. 세션 시작 도구가 없으면 워크트리로 격리한 서브에이전트로 돈다.
+
+### 맡기기
+
+```
+/until-done 로그인 화면 만들기 — 끝: pnpm verify 통과, 브라우저에서 로그인됨
+```
+
+- 목표와 끝나는 조건만 받는다. 그 밖의 것은 묻지 않고, 중간에 말한 것(예: "배포는 나중에")은 끝까지 지킨다.
+- `/task`·`/lead`·`/ui`·`/arch` 절차 파일을 읽고 따르되, 절차가 사용자에게 묻는 곳(계획 승인, 머지 승인, 시안 고르기 등)에서는 스스로 정하고 `Ruling: 정한 것 — 이유 — 틀렸을 때 비용`을 항목의 Implementation Notes 에 남긴다.
+- 끝났는지는 스스로 판단하지 않는다. 명령을 새로 돌리거나, 이 대화를 보지 못한 새 에이전트에게 조건과 파일만 주고 기준마다 통과/실패를 받아 대화에 그대로 보여 준다. 같은 실패가 세 번이면 멈춘다.
+- 되돌릴 수 없는 일(지우기, 푸시·PR·배포, 프로젝트 밖 변경)과 사용자만 아는 값만 모아서 묻는다.
+- 끝날 때까지 이어 가는 것은 Claude Code 내장 [`/goal`](https://code.claude.com/docs/en/goal.md)에 맡긴다. 시작할 때 입력할 `/goal` 한 줄을 알려 준다. 끝나면 한 일, `Ruling` 전부, 못 한 것을 보고한다.
+- Claude Code 권한 모드의 auto 와는 다르다. 권한 모드는 도구 권한 확인을, 이 스킬은 절차의 질문을 없앤다. 둘을 함께 쓰면 된다.
 
 ### 아키텍처
 
@@ -109,6 +122,7 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 ```
 plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
 plugins/workflow/skills/lead/       SKILL.md + references/run.md, scout.md, schedule.md
+plugins/workflow/skills/until-done/ SKILL.md
 plugins/workflow/agents/            backlog-scout.md, trend-scout.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
 plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md, frontend-evaluator.md
@@ -118,6 +132,7 @@ plugins/design/                     skills/ui (SKILL.md + references/), agents/d
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
 scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, 설명 일치, README 목록, version 올리기)
 scripts/test-check-repo-rules.sh    검사 스크립트의 시나리오 테스트
+scripts/test-verify-on-stop.sh      검증 훅의 시나리오 테스트
 ```
 
 - 원문은 한국어(`plugins/`), 번역본은 `i18n/en/`. 원문을 고치면 번역본도 고친다.
