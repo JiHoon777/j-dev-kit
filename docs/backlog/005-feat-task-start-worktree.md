@@ -1,7 +1,7 @@
 ---
 id: '005'
 title: 설정을 켜면 /task start 가 항목마다 워크트리를 따고 포트가 겹치지 않게
-status: To Do
+status: In Progress
 labels: [feat]
 priority: medium
 dependencies: []
@@ -50,11 +50,23 @@ updated_date: 2026-11-21
 
 ## Implementation Plan
 
-만들 때는 비워 둔다. `/task start`가 승인된 계획을 적는다.
+설정(CLAUDE.md `## 작업 설정`): `- 워크트리: 켜기`(기본 끄기), `- 웹 포트: <기준>`, `- 서버 포트: <기준>`(적은 것만 나눈다). 항목 포트 = 기준 포트 + 항목 번호. 포트는 워크트리 설정과 따로 동작한다(`/lead run` 작업 세션도 갈리게).
+
+1. `task/SKILL.md` 2절 설정 목록에 워크트리·웹 포트·서버 포트.
+2. `start.md` 4단계: 워크트리가 켜져 있고 워크트리 밖이면 `.claude/worktrees/`를 `.git/info/exclude`에 더하고 `git worktree add .claude/worktrees/<항목> -b w/<항목> <기준>`, `EnterWorktree`(path)로 옮긴다(도구가 없으면 그 폴더에서 이어 간다). 이미 워크트리 안이거나 꺼져 있으면 지금처럼. 포트 설정이 있으면 `Implementation Notes`의 `### 포트`에 적는다.
+3. `end.md` 7단계: `.claude/worktrees/` 워크트리면 기준 폴더(`git worktree list` 첫 줄)에서 머지하고, 세션을 기준 폴더로 돌린 뒤 워크트리와 브랜치를 지운다.
+4. `frontend-start-check`, `frontend-end-check`, `ui/references/review.md`: 항목의 `### 포트`가 있으면 그 포트로 개발 서버를 띄운다(포트 옵션이나 `PORT`). 서버도 띄우면 서버 포트.
+5. 번역본, version(workflow 0.9.0, frontend 0.6.0, design 0.2.0), README 두 개, workflow 설명.
+
+성공 기준: 임시 저장소에서 하위 에이전트로 켠 상태(001·002 시작 → 워크트리·브랜치·포트가 갈리고 기준 폴더 `git status` 깨끗, 001 end → 머지·정리), 끈 상태(브랜치만), 워크트리 안에서 시작(새로 안 만듦).
+
+가정: `EnterWorktree`로 경로로 들어간 워크트리는 `ExitWorktree`가 지우지 않아 `git worktree remove`로 정리한다. `/lead run`이 작업 세션을 띄우는 곳은 바꾸지 않는다.
 
 ## Implementation Notes
 
-작업하며 알게 된 것, 계획에서 바뀐 것.
+### Baseline
+
+`claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(2026-11-21). 스택 점검(`-start-check`) 스킬은 이 세션에 없어 해당 없음.
 
 ## Final Summary
 
