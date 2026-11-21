@@ -32,12 +32,12 @@ updated_date: 2026-11-21
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 목표와 끝나는 조건을 주고 켜면 그 밖의 것을 묻지 않고 j-dev-kit 스킬로 일을 시작한다.
+- [x] #1 목표와 끝나는 조건을 주고 켜면 그 밖의 것을 묻지 않고 j-dev-kit 스킬로 일을 시작한다.
 - [ ] #2 스킬이 사용자에게 물으라는 곳에서 묻지 않고 정해서 진행하고, 정한 것이 적혀 남는다.
-- [ ] #3 끝났는지를 일한 세션의 말이 아니라 명령 결과나 대화를 보지 못한 에이전트의 확인으로 정한다.
+- [x] #3 끝났는지를 일한 세션의 말이 아니라 명령 결과나 대화를 보지 못한 에이전트의 확인으로 정한다.
 - [ ] #4 되돌릴 수 없는 일(지우기, 푸시, 프로젝트 밖 변경)에서만 멈추고 묻는다.
-- [ ] #5 끝나면 한 일, 스스로 정한 것, 못 한 것을 보고한다.
-- [ ] #6 `/goal` 같은 다른 Stop 훅이 멈춤을 막은 뒤에도 Definition of Done 을 체크한 항목의 검증 명령 실패가 Claude 에게 돌아가고, 같은 실패로 되풀이해 되돌려 보내지는 않는다.
+- [x] #5 끝나면 한 일, 스스로 정한 것, 못 한 것을 보고한다.
+- [x] #6 `/goal` 같은 다른 Stop 훅이 멈춤을 막은 뒤에도 Definition of Done 을 체크한 항목의 검증 명령 실패가 Claude 에게 돌아가고, 같은 실패로 되풀이해 되돌려 보내지는 않는다.
 
 <!-- AC:END -->
 
@@ -45,10 +45,10 @@ updated_date: 2026-11-21
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 원문을 고친 곳은 번역본도 고쳤고, 고친 플러그인의 version·README 두 개·marketplace.json 설명을 맞췄다
-- [ ] #3 임시 저장소에서 목표 하나로 한 번 돌려 보고, 질문 횟수와 끝 보고를 Implementation Notes 에 적었다
-- [ ] #4 `verify-on-stop.sh`를 `stop_hook_active` 참·거짓, DoD 체크 있음·없음, 검증 통과·실패, 같은 실패 두 번째의 JSON 입력과 임시 저장소로 돌리는 시나리오 테스트가 통과한다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 원문을 고친 곳은 번역본도 고쳤고, 고친 플러그인의 version·README 두 개·marketplace.json 설명을 맞췄다
+- [x] #3 임시 저장소에서 목표 하나로 한 번 돌려 보고, 질문 횟수와 끝 보고를 Implementation Notes 에 적었다
+- [x] #4 `verify-on-stop.sh`를 `stop_hook_active` 참·거짓, DoD 체크 있음·없음, 검증 통과·실패, 같은 실패 두 번째의 JSON 입력과 임시 저장소로 돌리는 시나리오 테스트가 통과한다
 
 <!-- DOD:END -->
 
@@ -71,6 +71,23 @@ updated_date: 2026-11-21
 ### Baseline
 
 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(2026-11-21). 스택 점검(`-start-check`) 스킬은 이 세션에 없어 해당 없음.
+
+### 구현
+
+- 명령 이름은 `/until-done`. workflow 0.8.0.
+- verify-on-stop: `stop_hook_active`로 빠져나가지 않고, 되돌려 보낸 내용(tree)을 `.git/task-verify-bounced`에 남겨 같은 내용은 한 번만 되돌린다. `scripts/test-verify-on-stop.sh` 8개 시나리오: 고치기 전 6/8(다른 훅 뒤 실패 두 개가 기대대로 틀림), 고친 뒤 8/8.
+- simplify 는 부르지 않았다. 바뀐 셸 코드가 몇 줄이고 나머지는 문서다.
+
+### 임시 저장소 실행 (DoD #3)
+
+- `claude -p --plugin-dir`로 돌리려 했으나 CLI 가 "구독을 쓸 수 없다(결제)"는 인증 오류로 시작하지 못했다.
+- 대신 서브에이전트에게 SKILL.md 를 그대로 따르게 해 목표 "hello.sh 만들기 — 끝: bash hello.sh 의 출력이 정확히 Hello 한 줄"로 돌렸다. 슬래시 호출과 `/goal`은 빠진 근사치다.
+- 결과: 사용자에게 물은 횟수 0. 시작할 때 목표·끝나는 조건·확인 방법(diff 명령)·`/goal` 한 줄을 알림. 명령으로 확인해 통과. 끝 보고에 한 일, 스스로 정한 것(없음), 못 한 것(커밋 안 함). `hello.sh` 내용과 출력은 직접 확인했다.
+- 확인하지 못한 것: AC #2(질문 지점에서 정하고 Ruling 남기기), AC #4(되돌릴 수 없는 일에서만 묻기). 목표가 작아 질문 지점과 되돌릴 수 없는 일이 나오지 않았다. 확인 목록형 조건에서 새 에이전트로 확인하는 경로도 돌지 않았다. 실제 세션에서 `/until-done`으로 `/task` 항목 하나를 돌려 봐야 한다.
+
+### 그 밖에
+
+- `scripts/test-check-repo-rules.sh`가 이 맥에서 27개 중 10개만 맞는다. GNU `sed -i` 문법을 써서 BSD sed 에서 준비가 실패한다. 이 브랜치에서 바꾸지 않은 파일이고 검증 명령에 들어 있지 않다.
 
 ## Final Summary
 
