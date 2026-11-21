@@ -31,7 +31,7 @@ Return only what applies to this item.
 - **New screen or redesign:** invoke the `frontend-design` skill and follow it. Choose colors and fonts within the project's design tokens; ask first before adding new ones. If there is an approved design or product principles in CLAUDE.md, those come first. Do not invoke it for items that move an existing screen as-is.
 - **When choosing a new web feature or UI pattern** (dialog, popover, layout, form validation, etc.): invoke the `modern-web-guidance` skill if available.
 - **Browser check** (when the UI changes, at the end of implementation): the implementing session does not judge it itself; hand it to the `frontend:frontend-evaluator` agent.
-  - Start the dev server (`.claude/launch.json` if present). For changes visible only in a build (service worker, static generation), preview after building.
+  - Start the dev server (`.claude/launch.json` if present). If the work branch item has a web port under `### 포트`, start it on that port (the dev command's port option, for example Vite `--port`, or the `PORT` environment variable) and use that port in the screen URL. If a server is needed too, start it on the server port. For changes visible only in a build (service worker, static generation), preview after building.
   - Pass the agent only the item file path, the screen URL and the viewport. Do not pass what was implemented or how.
   - Viewport: the one set in CLAUDE.md, otherwise desktop. If you changed a responsive layout, also mobile (375×812).
   - Fix a "fail" and hand it over again. Do not check off a "could not verify"; tell the user.
