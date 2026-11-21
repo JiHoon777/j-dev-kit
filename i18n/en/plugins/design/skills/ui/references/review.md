@@ -4,7 +4,7 @@
 
 ## 1. Prepare
 
-- **Screen:** use the URL from the arguments. Without one, start the dev server (`.claude/launch.json` if present). If the work branch item has a web port under `### 포트`, start it on that port (the dev command's port option, for example Vite `--port`, or the `PORT` environment variable) and use that port in the screen URL. If a server is needed too, start it on the server port. If it is unclear which screen, ask.
+- **Screen:** use the URL from the arguments. Without one, start the dev server (`.claude/launch.json` if present). If the work branch item has a web port under `### 포트`, use it over the port in `.claude/launch.json`. Check in the script how the dev command takes a port (for example Vite `--port`, a positional argument, or the `PORT` environment variable), start it on that port, confirm it is actually listening there (`lsof -nP -iTCP:<port> -sTCP:LISTEN`), and then use it in the screen URL. If a backend server is needed too, start it on the server port the same way. If it is unclear which screen, ask.
 - **Baseline:** the root `DESIGN.md` and this screen's `docs/design/*/decisions.md`. If several records match or it is unclear, ask. If neither exists, say only accessibility and consistency will be checked.
 
 ## 2. Review
