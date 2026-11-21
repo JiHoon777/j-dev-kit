@@ -2,11 +2,11 @@
 # Stop 훅. 작업 브랜치(w/*)의 항목이 Definition of Done 을 체크했으면
 # 프로젝트의 검증 명령을 실제로 돌려 본다. 실패하면 그 내용으로는 한 번만 되돌려 보낸다.
 # 해당하지 않으면 아무것도 하지 않고 끝난다.
-# stop_hook_active 는 보지 않는다. 어느 Stop 훅(/goal 등)이 막았든 true 가 되어서,
-# 그것으로 빠져나가면 다른 훅이 한 번 막은 뒤로는 검증이 돌지 않는다.
+# "한 번만"은 내용(tree)으로 가린다. stop_hook_active 는 어느 Stop 훅(/goal 등)이 막았든 true 가 되어서,
+# 그것으로 빠져나가면 다른 훅이 한 번 막은 뒤로는 검증이 돌지 않는다. 내용을 구하지 못할 때만 그것으로 가린다.
 # 이 스크립트를 고치면 scripts/test-verify-on-stop.sh 를 돌린다.
 
-cat > /dev/null # 입력(JSON)은 쓰지 않는다
+input=$(cat)
 
 branch=$(git branch --show-current 2>/dev/null) || exit 0
 case "$branch" in w/*) ;; *) exit 0 ;; esac
@@ -45,17 +45,23 @@ tree=$(
 rm -f "$idx"
 marker="$(git rev-parse --git-dir)/task-verified"
 [ -n "$tree" ] && [ -f "$marker" ] && [ "$(cat "$marker")" = "$tree" ] && exit 0
-# 같은 내용으로 이미 되돌려 보냈으면 다시 보내지 않는다(내용이 바뀌면 다시 돌린다).
+# 같은 브랜치·같은 내용으로 이미 되돌려 보냈으면 다시 보내지 않는다(내용이 바뀌면 다시 돌린다).
+# 내용을 구하지 못했으면 Stop 훅 때문에 이어 가는 중일 때 통과시킨다(끝없이 막지 않게).
 bounced="$(git rev-parse --git-dir)/task-verify-bounced"
-[ -n "$tree" ] && [ -f "$bounced" ] && [ "$(cat "$bounced")" = "$tree" ] && exit 0
+if [ -n "$tree" ]; then
+  [ -f "$bounced" ] && [ "$(cat "$bounced")" = "$branch $tree" ] && exit 0
+else
+  printf '%s' "$input" | grep -q '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
+fi
 
 out=$(eval "$cmd" 2>&1)
 status=$?
 if [ "$status" -eq 0 ]; then
   [ -n "$tree" ] && printf '%s' "$tree" > "$marker"
+  rm -f "$bounced"
   exit 0
 fi
-[ -n "$tree" ] && printf '%s' "$tree" > "$bounced"
+[ -n "$tree" ] && printf '%s' "$branch $tree" > "$bounced"
 
 {
   echo "검증 명령이 실패했다(종료 코드 $status): $cmd"

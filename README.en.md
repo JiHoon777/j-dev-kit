@@ -91,7 +91,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 - Takes only a goal and an end condition. It asks nothing else, and keeps anything said along the way (for example "deploy later") until the end.
 - It reads and follows the `/task`, `/lead`, `/ui` and `/arch` procedure files, but where a procedure asks the user (plan approval, merge approval, choosing a mockup, and so on) it decides and leaves `Ruling: what was decided — why — what it costs if wrong` in the item's Implementation Notes.
 - It does not judge completion itself. It reruns a command, or gives a fresh agent that has not seen the conversation only the condition and the files, gets pass or fail per criterion, and shows the results in the conversation as they are. It stops after the same failure three times.
-- It asks only about irreversible actions (deleting, push, PR, deploy, changes outside the project) and values only the user knows, all together.
+- It asks only about irreversible actions (deleting anything unmerged, push, PR, deploy, changes outside the project) and values only the user knows, all together. Work the goal includes (for example "also push it to the remote") is not asked about.
 - Keeping going until done is left to the built-in Claude Code [`/goal`](https://code.claude.com/docs/en/goal.md). At the start it gives the `/goal` line to type. At the end it reports what was done, every `Ruling`, and what was not done.
 - It is not the Claude Code auto permission mode. The permission mode removes tool permission prompts; this skill removes the procedure's questions. Use both together.
 

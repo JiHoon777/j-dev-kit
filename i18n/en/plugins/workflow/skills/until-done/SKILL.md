@@ -38,7 +38,7 @@ This session has been handed the work. It received only a goal and an end condit
   | `/ui` | Installed: `${CLAUDE_SKILL_DIR}/../../../../design/<version>/skills/ui/` (the highest version if there are several). Used straight from the repository: `${CLAUDE_SKILL_DIR}/../../../design/skills/ui/` |
   | `/arch` | The same way, `architecture/…/skills/arch/` |
 
-  If you cannot find it, do not do that work and list it in the section 5 report.
+  In files read this way, `${CLAUDE_SKILL_DIR}` means that skill's folder (for `/task`, `${CLAUDE_SKILL_DIR}/../task`), and `$ARGUMENTS` means the mode and arguments you chose for the goal (for example `start 004`). If you cannot find it, do not do that work and list it in the section 5 report.
 - Where a procedure says to ask the user or get approval (questions, plan approval, review finding decisions, merge approval, number, direction and choice of mockups, and so on), do not ask. Pick what best fits the goal and the end condition, write one line, and continue. Do not enter plan mode either.
 
   ```
@@ -61,12 +61,12 @@ Show the results in the conversation as they are: `pass`/`fail` and one line of 
 
 Ask only about irreversible actions.
 
-- Deleting or discarding: files, branches, worktrees, uncommitted changes
+- Deleting or discarding: files, unmerged branches and worktrees, uncommitted changes. Branches and worktrees already merged into the base branch keep their commits, so delete them without asking
 - Anything visible outside: push, PR, deploy, sending messages
 - Changes outside the project: global installs, other repositories, remote databases and services
 - Values only the user knows
 
-Ask them together, once. Do not ask again about something already answered.
+Ask them together, once. Do not ask about work the goal includes or the user already asked for (for example a push, when the goal says "also push it to the remote"), or about something already answered.
 
 ## 5. Finish
 

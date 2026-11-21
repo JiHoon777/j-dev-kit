@@ -39,6 +39,8 @@ dod_checked() { sed 's/- \[ \] #1/- [x] #1/' docs/backlog/001-feat-x.md > d && m
 verify_fails() { echo fail > .verify-result; }
 verify_passes() { rm -f .verify-result; }
 change_code() { echo "b" >> src.txt; }
+revert_code() { git checkout -q -- src.txt; }
+hide_index() { chmod 000 .git/index; } # 인덱스를 못 읽게 해 내용(tree)을 구하지 못하는 경우를 만든다
 
 pass=0 total=0
 # scenario <설명> <기대 마지막 종료 코드> <단계...>
@@ -80,6 +82,9 @@ scenario "다른 훅이 막은 뒤에도 검증 실패 → 되돌림"   2 dod_ch
 scenario "같은 내용 두 번째 실패 → 되풀이 안 함"      0 dod_checked verify_fails run:false expect:2 run:true
 scenario "내용을 바꾼 뒤 다시 실패 → 되돌림"          2 dod_checked verify_fails run:false expect:2 change_code run:true
 scenario "통과한 내용은 다시 돌리지 않음"             0 dod_checked verify_passes run:false expect:0 verify_fails run:false
+scenario "통과한 뒤 예전 실패 내용으로 돌아감 → 되돌림" 2 dod_checked verify_fails run:false expect:2 change_code verify_passes run:true expect:0 revert_code verify_fails run:true
+scenario "내용을 못 구하고 다른 훅이 막은 뒤 → 통과"  0 dod_checked verify_fails hide_index run:true
+scenario "내용을 못 구해도 첫 멈춤의 실패 → 되돌림"   2 dod_checked verify_fails hide_index run:false
 
 echo "$total 개 중 $pass 개 맞음"
 [ "$pass" = "$total" ]
