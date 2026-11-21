@@ -12,7 +12,7 @@
 | --- | --- |
 | 기준 브랜치에 커밋이 없다 | 첫 커밋이 필요하다고 말한다 |
 | 커밋하지 않은 변경이 있다 | 보여 주고 어떻게 할지 묻는다 |
-| `w/` 브랜치가 이미 있거나 현재 브랜치가 기준 브랜치가 아니다 | 이어 갈지, `/task end`로 끝낼지, 버릴지 묻는다. 이어 가면 그 브랜치로 바꾸고 항목의 `Implementation Plan`을 읽고 5단계부터 |
+| `w/` 브랜치가 이미 있거나 현재 브랜치가 기준 브랜치가 아니다 | 이어 갈지, `/task end`로 끝낼지, 버릴지 묻는다. 이어 가면 그 브랜치로 바꾸고 항목의 `Implementation Plan`을 읽고 5단계부터. 워크트리가 켜져 있으면 다른 항목의 `w/` 브랜치(자기 워크트리에 있는 것)는 이 확인에서 뺀다 |
 
 항목 찾기: 인자를 `docs/backlog/`에서 찾는다(`README.md`와 `_`로 시작하는 파일은 항목이 아니다). 없거나 여럿이면 `To Do` 항목을 번호와 제목으로 보여 주고 고르게 한다. 항목 파일을 끝까지 읽고, `dependencies`가 모두 `docs/done/`에 있는지 확인한다.
 
@@ -49,8 +49,14 @@
 
 ## 4. 기록
 
-1. `git switch -c w/<.md 를 뺀 항목 파일 이름>`
-2. 항목 파일: `status: In Progress`, `updated_date` 오늘, 승인된 계획을 `Implementation Plan`에, 기준선을 `Implementation Notes`의 `### Baseline` 아래에.
+1. 작업 브랜치 `w/<.md 를 뺀 항목 파일 이름>`(아래 `<이름>`)을 만든다.
+   - 워크트리가 켜져 있고 지금 워크트리 밖이면(`git rev-parse --git-dir`와 `--git-common-dir`가 같으면):
+     1. `.git/info/exclude`에 `.claude/worktrees/`가 없으면 더한다. 기준 폴더의 커밋하지 않은 변경으로 잡히지 않게 한다.
+     2. `git worktree add .claude/worktrees/<이름> -b w/<이름> <기준 브랜치>`
+     3. `EnterWorktree` 도구에 그 경로를 줘서 세션을 옮긴다. 도구가 없으면 이후 명령을 모두 그 폴더에서 돌린다. 아래 2·3과 5단계부터는 그 워크트리에서 한다.
+   - 그 밖(꺼져 있거나 이미 워크트리 안)이면 `git switch -c w/<이름>`
+   - 웹 포트나 서버 포트가 설정돼 있으면 항목 포트를 `기준 포트 + 항목 번호`로 정한다(예: 웹 5173, 항목 007 → 5180). 적은 것만 정한다.
+2. 항목 파일: `status: In Progress`, `updated_date` 오늘, 승인된 계획을 `Implementation Plan`에, 기준선을 `Implementation Notes`의 `### Baseline` 아래에, 정한 포트를 `### 포트` 아래에(`- 웹: 5180`처럼 한 줄씩).
 3. 커밋: `chore(backlog): <번호> start`
 
 ## 5. 구현

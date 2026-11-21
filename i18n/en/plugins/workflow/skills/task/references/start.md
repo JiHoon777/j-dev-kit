@@ -14,7 +14,7 @@ If any of these applies, stop and say so. Do not clean it up on your own.
 | --- | --- |
 | The base branch has no commits | Say that a first commit is needed |
 | There are uncommitted changes | Show them and ask what to do |
-| A `w/` branch already exists, or the current branch is not the base branch | Ask whether to continue, finish with `/task end`, or discard. If continuing, switch to that branch, read the item's `Implementation Plan`, and resume from step 5 |
+| A `w/` branch already exists, or the current branch is not the base branch | Ask whether to continue, finish with `/task end`, or discard. If continuing, switch to that branch, read the item's `Implementation Plan`, and resume from step 5. When the worktree setting is on, leave out other items' `w/` branches (the ones in their own worktrees) from this check |
 
 Finding the item: look up the argument in `docs/backlog/` (`README.md` and files starting with `_` are not items). If there is no match or several, show the `To Do` items by number and title and let the user pick. Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
 
@@ -51,8 +51,14 @@ Before approval, do not edit files and do not create a branch.
 
 ## 4. Record
 
-1. `git switch -c w/<item file name without .md>`
-2. Item file: `status: In Progress`, `updated_date` today, the approved plan in `Implementation Plan`, the baseline under `### Baseline` in `Implementation Notes`.
+1. Create the work branch `w/<item file name without .md>` (`<name>` below).
+   - If the worktree setting is on and you are outside a worktree (`git rev-parse --git-dir` and `--git-common-dir` are the same):
+     1. If `.git/info/exclude` lacks `.claude/worktrees/`, add it, so it does not show up as uncommitted changes in the base folder.
+     2. `git worktree add .claude/worktrees/<name> -b w/<name> <base branch>`
+     3. Move the session there by giving that path to the `EnterWorktree` tool. Without the tool, run every later command in that folder. Do 2 and 3 below and everything from step 5 in that worktree.
+   - Otherwise (setting off, or already in a worktree): `git switch -c w/<name>`
+   - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5173, item 007 → 5180). Only the ones that are set.
+2. Item file: `status: In Progress`, `updated_date` today, the approved plan in `Implementation Plan`, the baseline under `### Baseline` in `Implementation Notes`, the ports you set under `### 포트` (one per line, like `- 웹: 5180`).
 3. Commit: `chore(backlog): <number> start`
 
 ## 5. Implement

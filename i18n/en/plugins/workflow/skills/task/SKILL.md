@@ -34,6 +34,8 @@ Read these from the project CLAUDE.md. If missing, use the default in parenthese
 - Base branch (`main`)
 - Verify command (e.g. `pnpm verify` — lint, types, tests, build)
 - Language for items and reports (the language of the conversation)
+- Worktree (off): when `켜기` (on), `/task start` makes a worktree per item under `.claude/worktrees/`
+- Web port, server port (none): only the ones written down are split per item as `base port + item number`
 
 Rules in the project CLAUDE.md take precedence over this skill and superpowers.
 

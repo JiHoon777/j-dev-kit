@@ -92,6 +92,7 @@ Call the `superpowers:finishing-a-development-branch` skill and follow it. This 
 
 - The verify command just passed in step 6. The base branch is the one from project settings.
 - If no worktree was used, there is no worktree to remove.
+- If this session is in the `.claude/worktrees/<name>` worktree that `/task start` made: the base branch is in the base folder (the first line of `git worktree list`), so merge there. Run the merge in the base folder, like `git -C <base folder> merge …`. If this session entered with `EnterWorktree`, go back to the base folder with `ExitWorktree` (keep) and clean up with `git worktree remove .claude/worktrees/<name>` and `git branch -d w/<name>`. If the session was opened in the worktree and cannot go back, do not remove it; say those two commands can be run from the base folder.
 - If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so.
 - If the base branch has no upstream, skip `git pull`.
 - Push only when the user asks.
