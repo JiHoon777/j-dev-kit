@@ -22,6 +22,8 @@ updated_date: 2026-11-21
 
 끝나는 조건을 채울 때까지 이어 가는 것은 새로 만들지 않고 Claude Code 내장 `/goal`을 쓴다. `/goal`의 판정 모델은 대화만 보므로(공식 문서 goal.md, 2026-11-21 확인) 확인 결과를 대화에 그대로 보여 준다.
 
+`/goal`과 함께 쓰려면 `plugins/workflow/hooks/verify-on-stop.sh`도 고쳐야 한다. 이 훅은 `stop_hook_active`가 true 면 검사 없이 통과시키는데, 이 값은 어느 Stop 훅이 막았든 true 가 된다(공식 hooks.md). 그래서 `/goal`이 한 번 막은 뒤에는 Definition of Done 을 체크해도 검증 명령이 돌지 않는다.
+
 이번에 빼는 것: 다른 스킬 고치기, 새 Stop 훅, 도구 권한 프롬프트(권한 모드는 사용자가 정한다).
 
 이름 "auto 모드"는 Claude Code 의 권한 모드 이름과 겹친다. 만들 때 이름을 정한다.
@@ -35,6 +37,7 @@ updated_date: 2026-11-21
 - [ ] #3 끝났는지를 일한 세션의 말이 아니라 명령 결과나 대화를 보지 못한 에이전트의 확인으로 정한다.
 - [ ] #4 되돌릴 수 없는 일(지우기, 푸시, 프로젝트 밖 변경)에서만 멈추고 묻는다.
 - [ ] #5 끝나면 한 일, 스스로 정한 것, 못 한 것을 보고한다.
+- [ ] #6 `/goal` 같은 다른 Stop 훅이 멈춤을 막은 뒤에도 Definition of Done 을 체크한 항목의 검증 명령 실패가 Claude 에게 돌아가고, 같은 실패로 되풀이해 되돌려 보내지는 않는다.
 
 <!-- AC:END -->
 
@@ -45,6 +48,7 @@ updated_date: 2026-11-21
 - [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
 - [ ] #2 원문을 고친 곳은 번역본도 고쳤고, 고친 플러그인의 version·README 두 개·marketplace.json 설명을 맞췄다
 - [ ] #3 임시 저장소에서 목표 하나로 한 번 돌려 보고, 질문 횟수와 끝 보고를 Implementation Notes 에 적었다
+- [ ] #4 `verify-on-stop.sh`를 `stop_hook_active` 참·거짓, DoD 체크 있음·없음, 검증 통과·실패, 같은 실패 두 번째의 JSON 입력과 임시 저장소로 돌리는 시나리오 테스트가 통과한다
 
 <!-- DOD:END -->
 
