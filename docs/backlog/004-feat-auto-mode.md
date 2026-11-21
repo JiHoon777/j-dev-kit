@@ -1,7 +1,7 @@
 ---
 id: '004'
 title: 'auto 모드: 목표와 끝나는 조건만 주면 묻지 않고 끝까지 진행'
-status: To Do
+status: In Progress
 labels: [feat]
 priority: medium
 dependencies: []
@@ -54,11 +54,23 @@ updated_date: 2026-11-21
 
 ## Implementation Plan
 
-만들 때는 비워 둔다. `/task start`가 승인된 계획을 적는다.
+명령 이름은 `/until-done`(사용자가 "더 명시적으로"를 요청). workflow 플러그인에 스킬 하나를 더하고 verify-on-stop 을 고친다. 다른 스킬은 고치지 않는다.
+
+1. `scripts/test-verify-on-stop.sh` 를 먼저 쓴다(test-check-repo-rules.sh 처럼 임시 저장소 + JSON 입력). 시나리오: `w/` 아님, DoD 체크 없음, 검증 통과, 검증 실패, `stop_hook_active: true` 에서 검증 실패(지금은 통과돼 실패해야 함), 같은 내용 두 번째 실패, 내용을 바꾼 뒤 실패.
+2. `plugins/workflow/hooks/verify-on-stop.sh`: `stop_hook_active`로 빠져나가는 줄을 빼고, 되돌려 보낸 내용(tree)을 표시 파일에 남겨 같은 내용이면 다시 되돌리지 않는다.
+3. `plugins/workflow/skills/until-done/SKILL.md`(사용자만 부름): 맡겨진 상태 네 줄, `Ruling:` 기록, 대화를 못 본 에이전트나 명령으로 끝 확인, 되돌릴 수 없는 일만 모아서 묻기, 끝 보고, 시작할 때 `/goal` 한 줄 안내, 절차 파일 찾는 곳.
+4. 번역본 `i18n/en/plugins/workflow/skills/until-done/SKILL.md`.
+5. workflow version 0.8.0, plugin.json·marketplace.json 설명, README 두 개(표, 사용법, 구조, 권한 모드 auto 와 다르다는 줄).
+
+성공 기준: AC #1~#5 는 임시 저장소에서 `claude -p --plugin-dir`로 작은 목표 한 번(안 되면 적고 수동 방법을 남긴다). AC #6 은 시나리오 테스트. DoD #1·#2 는 검증 명령.
+
+가정: 스킬은 workflow 플러그인에 둔다. 다른 플러그인의 절차 파일은 설치 폴더에서 가장 높은 버전을 읽는다(옛 버전에 고정된 프로젝트에서는 틀릴 수 있다).
 
 ## Implementation Notes
 
-작업하며 알게 된 것, 계획에서 바뀐 것.
+### Baseline
+
+`claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(2026-11-21). 스택 점검(`-start-check`) 스킬은 이 세션에 없어 해당 없음.
 
 ## Final Summary
 
