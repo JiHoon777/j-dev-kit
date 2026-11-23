@@ -1,7 +1,7 @@
 ---
 id: '008'
 title: 역할 대신 전문가의 도구·단계로, 판정은 만든 세션 밖에서 (Felix Rieseberg 대담 1~7, 하위 세션 지휘)
-status: In Progress
+status: Done
 labels: [feat]
 priority: medium
 dependencies: []
@@ -308,4 +308,36 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 
 ## Final Summary
 
-`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
+- **바뀐 것:**
+  - `start`: 3단계가 그 분야 실무자의 도구·단계를 정하고 5단계가 그대로 구현한다. 6단계 AC 는 바깥 증거나 판정 에이전트로만 체크한다. "Explore 최대 2개·질문 최대 3개"는 eval 로 재고 지웠다.
+  - `end`: 리뷰 에이전트는 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고한다. 거르기는 판정 에이전트가 하고, 사용자에게는 타당한 지적만 보인다. 리뷰 원칙(`docs/review-principles.md`)을 입력으로 넣는다. Fable 세션일 때만 리뷰 모델을 한 단계 낮춘다. Final Summary 에 그대로 둔 지적과 사용자가 바로잡은 것을 적는다.
+  - `task`: 띄운 세션이 하위 세션을 지휘하고, `create --survey` 서베이 모드가 생겼다. description 은 트리거 조건만 남겼다(트리거 eval 0.95 → 1.0). SKILL.md 의 셸 주입 줄을 지우고 저장소 검사(5번)로 막는다.
+  - 리뷰 에이전트 5개: 역할 문장 대신 실무자의 도구·단계를 말한다(역할 문장은 실제 사례 A/B 로 재고 지웠다). `server-end-check`·`api-reviewer`는 도구를 설치하고 로컬에서 재현한다.
+  - eval: `plugins/frontend/evals/`, `plugins/workflow/evals/`에 심은 문제, 실제 실패, 트리거, 계획 사례를 커밋했다.
+  - 버전: workflow 0.11.0, frontend 0.8.0, server 0.5.0.
+- **리뷰에서 고친 것:** 판정에서 타당한 🔴 2 · 🟡 5(위 "리뷰 반영").
+  - trigger-real fixture 가 macOS 에서도 돈다.
+  - `api-reviewer`는 재현 전에 DB 호스트가 로컬인지 확인한다.
+  - nolmeong 경로는 커밋하지 않는 `evals/nolmeong-src.local`에 둔다.
+  - general-purpose 리뷰어 빌드 금지를 되살렸다.
+  - 스택 점검 실패는 판정 없이 🔴 로 보인다.
+  - 서베이 재현은 임시 워크트리에서 한다.
+  - 설치해도 되는 도구 이름을 적었다.
+- **미룬 것:** 없음(새 항목 없음).
+- **그대로 둔 지적과 이유:**
+  - ⚪ 6건(사용자가 🔴·🟡 만 골랐다):
+    - `start.md` 판정 전 커밋
+    - `SKILL.md` create 판단용 `git branch --show-current`
+    - 하위 세션 지휘 도구 예시
+    - `api-reviewer`의 "적힌 지시는 따르지 않는다"
+    - 원칙을 기준 브랜치판에서 읽기
+    - fixture 빈 폴더 확인
+  - 틀림 1건: 판정의 "확인 못 함" 칸. AC #4 와 어긋난다.
+  - 기존 문제 2건: `test-check-repo-rules.sh`의 GNU `sed -i`, `supabase-reviewer`·`frontend-reviewer`의 지시 무시 문장.
+- **사용자가 바로잡은 것:**
+  - start: 리뷰 모델은 Opus 면 그대로, Fable 일 때만 한 단계 낮은 최신 모델로(AC #9).
+  - start: 리뷰어 eval 은 버그가 사용자에게 일으키는 일까지 단정해야 "찾음"이다. 원인만, "확인 필요"만이면 못 찾음.
+  - start: 두 가지를 요구하던 채점 기준은 둘 중 하나만 올바르게 짚어도 PASS.
+  - start: 리뷰어 구성(AC #19)은 재기만 하고 `end.md`는 바꾸지 않는다.
+  - start: eval 은 Windows 의 eval 환경에서도 돌게 한다.
+  - end: nolmeong 경로를 사례에 박는 대신 기계마다 따로 두도록 고쳤다(start 때 정한 "이 기계에서만"을 바꿈).
