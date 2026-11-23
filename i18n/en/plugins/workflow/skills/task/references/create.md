@@ -4,7 +4,7 @@
 
 Create one item file in `docs/backlog/`. The format follows the [Backlog.md](https://github.com/MrLesk/Backlog.md) agent guidelines, without using the tool. `/task end` moves finished items to `docs/done/`.
 
-What to create: the arguments after `create`.
+What to create: the arguments after `create`. If they start with `--survey`, follow "Survey mode" at the bottom.
 
 ## 0. The first time
 
@@ -57,7 +57,7 @@ What was learned while working, what changed from the plan.
 
 ## Final Summary
 
-Written by `/task end`: what changed, what was fixed in review, what was deferred.
+Written by `/task end`: what changed, what was fixed in review, what was deferred, findings left as is and why, what the user corrected.
 ```
 
 ## 1. What and why
@@ -91,3 +91,15 @@ Show the content before writing. If asked for changes, make them and show it aga
 1. Write the file, and if the project has a format command, run it until it passes.
 2. Commit the item file and the deleted note line, plus any files newly created in step 0: `docs(backlog): <number> <title>`. Do not include other changes. If they are left behind, `/task start` stops at "There are uncommitted changes". Do not push.
 3. Report the path and number, and say that to start, use `/task start <number>` (or "start it").
+
+## Survey mode (`create --survey <goal> [sources…]`)
+
+Do not hand-pick sources one at a time. Take the goal and all the sources, and Claude chooses what becomes an item. Only create items; do not call `start` or open sessions.
+
+1. **Read the sources:** sources are file or folder paths, commands (their output is the source), and URLs. If none were given, look in the repository: error logs, `docs/backlog/` and `docs/done/`, the notes in the README, the issue list if available (`gh issue list`), usage data. Read the raw material yourself rather than taking a summary. Run only commands that read.
+2. **Pick candidates:** pick only what fits the goal. There is no set number; list only those with evidence. Do not list ones that overlap existing items (step 1).
+   - Group sources that look like the same cause into one candidate, and list every evidence location.
+   - For a candidate that comes from a bug report, try to reproduce it on the base branch. Attach how it was reproduced, or that it could not be, to the evidence.
+     - In this folder, reproduce only in ways that just read. If it needs installs or builds, do it in a temporary worktree (`git worktree add <temp path> <base>`) and remove it when done (`git worktree remove <temp path>`). When done, check that `git status --short` is empty.
+3. **Show them at once:** show one list with, per candidate, the title, the evidence (where in the sources: `file:line`, command, URL), and a way to check it is done (command, screen, number), and let the user pick.
+4. **Write:** write only the picked candidates, by the step 2 rules. Put the way to check into that item's Acceptance Criteria. Show the written items together and get approval once (step 3). Then, per item, recount the number and write it as in step 4, and commit it separately. Do not write candidates that were not picked.

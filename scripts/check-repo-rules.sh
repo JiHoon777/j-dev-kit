@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # 저장소 규칙 검사. CLAUDE.md 의 검증 명령이 부른다.
-# 1. plugins/ 의 마크다운마다 i18n/en/ 에 같은 경로의 번역본이 있다.
+# 1. plugins/ 의 마크다운마다 i18n/en/ 에 같은 경로의 번역본이 있다(plugins/*/evals/ 의 eval 사례는 뺀다).
 # 2. marketplace.json 의 플러그인마다 plugin.json 과 설명이 같고, README 두 개의 목록에 있다.
+# 5. 스킬·에이전트 마크다운(번역본 포함)에 셸 주입 줄(!`명령`)이 없다. Bash 가 막힌 곳에서 그 줄 하나가 스킬 호출 전체를 멈춘다.
 # 기준 브랜치(인자, 기본 main. 없으면 origin/<기준>) 대비:
 # 3. 원문 마크다운을 고쳤으면 번역본도 고쳤다.
 # 4. 바뀐 플러그인은 plugin.json 의 version 을 올렸다(내리지 않았다).
@@ -12,6 +13,7 @@ base_branch=${1:-main}
 git() { command git -c core.quotePath=false "$@"; } # 한글 경로를 그대로
 cd "$(git rev-parse --show-toplevel)" || exit 1
 fail=0
+evals_re='^(i18n/en/)?plugins/[^/]+/evals/' # eval 사례는 원문 마크다운이 아니다
 
 # 1. 번역본 짝 (추적하는 파일과 아직 추가하지 않은 파일. 지웠지만 스테이징하지 않은 파일은 뺀다)
 while IFS= read -r f; do
@@ -19,7 +21,14 @@ while IFS= read -r f; do
   [ -f "i18n/en/$f" ] && continue
   echo "번역본 없음: $f → i18n/en/$f"
   fail=1
-done < <(git ls-files --cached --others --exclude-standard -- 'plugins/*.md')
+done < <(git ls-files --cached --others --exclude-standard -- 'plugins/*.md' | grep -vE "$evals_re")
+
+# 5. 셸 주입 줄
+while IFS= read -r f; do
+  [ -f "$f" ] && grep -qF '!`' "$f" || continue
+  echo "셸 주입 줄: $f. 스킬을 불러올 때 셸을 돌리지 말고, 절차가 명령을 직접 돌리게 한다."
+  fail=1
+done < <(git ls-files --cached --others --exclude-standard -- 'plugins/*.md' 'i18n/en/plugins/*.md' | grep -vE "$evals_re")
 
 # 2. marketplace.json 의 플러그인: 설명 일치와 README 목록
 # JSON 은 한 줄에 키 하나라고 본다. "<키>": "<문자열>" 줄이 아닌 줄에서만 괄호를 세어 깊이를 안다.
@@ -88,7 +97,7 @@ while IFS= read -r f; do
   printf '%s\n' "$changed" | grep -qxF "i18n/en/$f" && continue
   echo "번역본 그대로: $f 를 고쳤는데 i18n/en/$f 는 바뀌지 않았다."
   fail=1
-done < <(printf '%s\n' "$changed" | grep -E '^plugins/.*\.md$')
+done < <(printf '%s\n' "$changed" | grep -E '^plugins/.*\.md$' | grep -vE "$evals_re")
 
 # 4. version 올리기
 for p in $(printf '%s\n' "$changed" | grep '^plugins/' | cut -d/ -f2 | sort -u); do

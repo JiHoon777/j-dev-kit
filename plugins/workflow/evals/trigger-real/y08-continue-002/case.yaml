@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: trigger-real-y08-continue-002
+description: 부를 요청(합성). main 에서
+tags: [trigger-real]
+context:
+  scaffold_script: fixture.sh

@@ -1,7 +1,7 @@
 ---
 name: task
-description: 백로그 항목으로 일할 때 쓴다. 사용자가 할 일을 백로그 항목으로 만들자고 하면 create, 항목을 시작하거나 구현하자고 하면 start, 작업 브랜치를 리뷰하고 마무리하거나 머지하자고 하면 end. create 와 start 는 기본으로 하위 세션을 띄워 그 세션에서 한다. 켜 둔 스택 플러그인의 start-check, end-check 스킬을 부른다. 항목·브랜치 이야기 없이 바로 고쳐 달라는 요청에는 쓰지 않는다.
-argument-hint: "create <한두 문장> [--here] | start [백로그 번호나 이름 일부] [--here] | end"
+description: 백로그 항목으로 일할 때 쓴다. 사용자가 할 일을 백로그 항목으로 만들자고 하면 create, 자료(로그, 이슈 등)를 보고 고칠 것을 항목으로 뽑자고 하면 create --survey, 항목을 시작하거나 구현하자고 하면 start, 작업 브랜치를 리뷰하고 마무리하거나 머지하자고 하면 end. 항목·브랜치 이야기 없이 바로 고쳐 달라는 요청에는 쓰지 않는다.
+argument-hint: "create <한두 문장> [--here] | create --survey <목표> [자료…] [--here] | start [백로그 번호나 이름 일부] [--here] | end"
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git log *), Bash(git diff *), Bash(ls *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -39,8 +39,10 @@ metadata:
      | `create` | 이 폴더 그대로(워크트리 없이) |
      | `start` | 기준 브랜치에서 딴 새 워크트리, 브랜치 이름 `w/<.md 를 뺀 항목 파일 이름>` |
 
-  4. 그 세션은 이 대화를 볼 수 없다. 지시문은 "`task` 스킬을 `<모드> <나머지 인자> --here`로 불러 그 절차를 따른다" 한 줄과, 이 대화에서 사용자가 말한 배경이나 정한 것(있을 때만)이다.
-  5. 세션 링크를 알리고 끝낸다. 그 일은 이 세션에서 하지 않는다. 질문과 승인은 사용자가 그 세션에서 직접 한다.
+  4. 그 세션은 이 대화를 볼 수 없다. 지시문은 "`task` 스킬을 `<모드> <나머지 인자> --here`로 불러 그 절차를 따른다", "질문과 승인 요청(계획은 전문)은 턴의 마지막 메시지에 빠짐없이 쓰고 멈춘다" 두 줄과, 이 대화에서 사용자가 말한 배경이나 정한 것(있을 때만)이다.
+  5. 세션 링크를 알린다. 그 일은 이 세션에서 하지 않고, 이 세션이 지휘한다.
+     - 하위 세션이 턴을 끝내면 질문·승인 요청은 빠짐없이 사용자에게 보여 주고 답을 사용자의 말 그대로 그 세션에 전한다. 결과(커밋, 바뀐 파일)는 직접 확인해 사용자가 묻기 전에 보고한다.
+     - 사용자가 하위 세션에서 직접 답했으면 그것을 받아들인다.
 
 ## 3. 프로젝트 설정
 
@@ -58,14 +60,3 @@ metadata:
 - 모르는 것은 가정하지 말고 말한다. 코드와 문서로 답할 수 있는 것은 묻지 않는다.
 - 항목이 요구하는 것만 한다. 바뀐 줄은 모두 항목으로 거슬러 올라갈 수 있어야 한다.
 - "됐다"고 하기 전에 검증을 새로 돌리고 그 결과를 보여 준다.
-
-## 5. 현재 상태
-
-- 브랜치: !`git branch --show-current 2>/dev/null || echo "(unknown)"`
-- 작업 브랜치: !`git branch --list 'w/*' 2>/dev/null || echo "(none)"`
-- 커밋하지 않은 변경: !`git status --short 2>/dev/null | head -20`
-- 최근 커밋: !`git log --oneline -3 2>/dev/null || echo "(no commits)"`
-- 백로그: !`ls docs/backlog 2>/dev/null || echo "(none)"`
-- 완료: !`ls docs/done 2>/dev/null || echo "(none)"`
-- 이 브랜치의 커밋(`main` 대비): !`git log --oneline main..HEAD 2>/dev/null | head -30`
-- `main` 대비 바뀐 파일: !`git diff --stat main...HEAD 2>/dev/null | tail -30`

@@ -96,6 +96,15 @@ s_desc_missing()     { sed -i '/"description": "alpha plugin"/d' .claude-plugin/
 s_desc_missing_readme(){ s_desc_missing; sed -i '/`alpha`/d' README.md; }
 s_author_in_entry()  { sed -i 's|^      "source": "./plugins/alpha",$|&\n      "author": {\n        "name": "someone"\n      },|' .claude-plugin/marketplace.json; }
 s_key_after_plugins(){ sed -i 's|^  \]$|  ],\n  "extra": {\n    "description": "other"\n  }|' .claude-plugin/marketplace.json; }
+s_eval_md()          { mkdir -p plugins/alpha/evals/c1/graders; echo "# p" > plugins/alpha/evals/c1/prompt.md
+                       echo "# g" > plugins/alpha/evals/c1/graders/g.md; bump alpha; }
+s_eval_md_edit()     { s_eval_md; git add -A && git commit -qm eval && git branch -q -f main HEAD
+                       edit plugins/alpha/evals/c1/prompt.md
+                       sed -i 's/"version": "0.1.1"/"version": "0.1.2"/' plugins/alpha/.claude-plugin/plugin.json; }
+s_skill_bang()       { printf -- '- 브랜치: !`git branch --show-current`
+' >> plugins/alpha/skills/a.md
+                       printf -- '- Branch: !`git branch --show-current`
+' >> i18n/en/plugins/alpha/skills/a.md; bump alpha; }
 s_one_line_base()    { tr -s ' \n' ' ' < plugins/gamma/.claude-plugin/plugin.json > m && mv m plugins/gamma/.claude-plugin/plugin.json
                        git commit -qam one-line && git branch -q -f main HEAD; both gamma; }
 
@@ -150,6 +159,10 @@ scenario "설명 없는 항목도 README 검사"        1 s_desc_missing_readme 
 scenario "항목 안 author.name → 통과"          0 s_author_in_entry
 scenario "plugins 뒤 최상위 키 → 통과"         0 s_key_after_plugins
 scenario "기준 plugin.json 한 줄 → 실패"       1 s_one_line_base     "version 을 읽지 못함: gamma"
+# 008 에서 더한 것
+scenario "evals 의 md 는 번역본 없이 → 통과"   0 s_eval_md
+scenario "evals 의 md 만 고침 → 통과"          0 s_eval_md_edit
+scenario "스킬에 셸 주입 줄 → 실패"           1 s_skill_bang        "셸 주입 줄: plugins/alpha/skills/a.md"
 
 echo "$total 개 중 $pass 개 맞음"
 [ "$pass" = "$total" ]

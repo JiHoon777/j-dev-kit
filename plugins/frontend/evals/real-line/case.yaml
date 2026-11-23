@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: real-line
+description: nolmeong 002 한 줄 화면(리뷰 전 300f562). 정답은 리뷰에서 고친 동작 버그 10건(고친 커밋 3d1649b, 5aaa792)
+tags: [real]
+context:
+  scaffold_script: fixture.sh

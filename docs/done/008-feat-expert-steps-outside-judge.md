@@ -1,0 +1,343 @@
+---
+id: '008'
+title: 역할 대신 전문가의 도구·단계로, 판정은 만든 세션 밖에서 (Felix Rieseberg 대담 1~7, 하위 세션 지휘)
+status: Done
+labels: [feat]
+priority: medium
+dependencies: []
+created_date: 2026-11-23
+updated_date: 2026-11-23
+---
+
+## Description
+
+Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/posts/8mo5m6gkz9p)과 j-dev-kit 을 대조한 보고서 `.claude/.local/reports/2026-11-23-felix-rieseberg-대담-비교.md`(커밋하지 않음)의 개선 후보 1~6과, 보고서가 제안하지 않았던 컨베이어 벨트를 바꾼 7, 그리고 이 항목을 만들며 드러난 하위 세션 지휘 8을 한 항목으로 한다. 사용자가 나누지 않기로 정했다. 대담의 타임스탬프 근거는 보고서에 있다.
+
+1. **전문가의 도구와 단계(가장 중요):** "넌 뛰어난 X야"라는 역할 문장은 어휘만 따라 하게 한다. 대신 그 분야 최고 실무자가 쓰는 도구와 밟는 단계를 묻고 그대로 쓰게 한다(8:52, 25:28). 지금 `start.md` 3단계에는 이 단계가 없고 도구는 스택 점검에 고정돼 있다. 리뷰 에이전트 5개는 "너는 X 리뷰어다/평가자다"로 시작한다. `server-end-check`의 "새로 내려받지 않는다"와 `api-reviewer`의 curl 재현을 "돌리지는 않는다"는 모델이 소프트웨어를 설치하고 직접 돌리는 방식(22:24)과 반대다. `supabase-reviewer`의 "테스트 사용자 둘로 로컬 DB 에 확인"은 이미 이 방식이다.
+2. **지적 판정을 만든 세션 밖으로:** `end.md` 4단계에서 작업 세션이 틀린 지적을 직접 뺀다. 지금 세션이 자기 일을 판정하지 않게(14:55, 26:24) 판정을 따로 하고, 만든 쪽이 가려 반영하는 5단계(`receiving-code-review`)는 그대로 둔다.
+3. **사용자 피드백을 원칙으로:** Final Summary 에 "그대로 둔 지적과 이유"가 없어 피드백이 쌓이지 않는다. 모으고, 원칙으로 압축하고, 이후 리뷰의 입력으로 쓴다(28:45). 예: 006 에서 "리뷰용 개발 서버를 끄지 않는다(포트는 항목마다 다르다)"를 그대로 두기로 한 것.
+4. **UI 가 아닌 AC 판정:** `start.md` 6단계 4에서 구현 세션이 AC 를 스스로 체크한다. 바깥에서 판정하는 건 UI 의 `frontend-evaluator`뿐이다. `docs/backlog/_proposals.md`의 홀드아웃 아이디어와 같은 문제다.
+5. **eval 로 덜어내기:** 고정 체크리스트(`frontend-reviewer`의 Svelte·React 항목, `start.md`의 Explore 최대 2개·질문 최대 3개 등)가 지금 모델에 도움이 되는지 잰 적이 없다(21:49). 있을 때와 없을 때를 비교하고 근거 있는 것만 지운다.
+6. **리뷰 모델 한 단계 낮추기:** 적대적 검토는 한 단계 낮은 모델로도 된다(13:47). 비용을 줄인다.
+7. **컨베이어 벨트 대신 서베이:** 크래시를 하나씩 골라 Claude 앞에 놓지 말고, 데이터 전부와 목표를 넘기고 무엇을 고칠지는 Claude 가 정하게 한다. 확인 수단도 함께 준다(22:49). 보고서에서는 "제안하지 않는 것"이었는데, 사용자가 `task create`에 서베이 인자를 넣는 모양으로 넣기로 했다. 지운 `/lead`(여러 항목 지휘)를 되살리는 게 아니라 `create`의 한 모드다. 인자가 없으면 지금처럼 항목 하나를 쓴다.
+8. **하위 세션은 띄운 세션이 지휘:** 지금 `task` 스킬 2절 5는 "질문과 승인은 사용자가 그 세션에서 직접 한다"여서, 사용자가 하위 세션을 하나하나 찾아가 승인하고 결과도 직접 확인해야 한다. 이 항목을 만들 때 실제로 그랬고, 사용자가 "너가 지휘를 해야지 내가 하위 세션 가게 만들면 어떻게 해"라고 했다. 띄운 세션이 하위 세션의 질문·승인 요청을 사용자에게 보여 주고 답을 받아 전하며, 하위 세션이 끝나면 결과를 확인해 먼저 보고한다.
+
+계획 승인 때 보고서 `.claude/.local/reports/2026-11-23-네-자료-비교.md`(커밋하지 않음) 3절 5~7을 더했다.
+
+9. **서베이 후보 묶기와 재현:** 같은 원인으로 보이는 자료는 한 후보로 묶는다. 이슈마다 하나씩이면 실마리를 잃는다(탠 44:23–45:07). 버그 제보에서 온 후보는 기준 브랜치에서 재현되는지 본다(37:16).
+10. **eval 을 저장소에 남기기:** 모델이 바뀌어도 자체 eval 로 다시 잰다(나델라 50:57).
+11. **사용자가 바로잡은 것도 원칙의 재료로(낮음):** 지난 대화에서 끼어든 순간이 스킬의 재료다(탠 1:00:35). Claude Code 자동 메모리와 겹치면 하지 않는다.
+
+구현 중에 보고서 `.claude/.local/reports/2026-11-23-전문가-스킬-활용.md`(커밋하지 않음) 5절 후보 1·3·5와 2.5절을 더했다(사용자 "제안대로 나눠 넣기").
+
+12. **리뷰어가 미리 거르지 않게:** 리뷰 지시의 "확신이 낮은 것은 보고하지 않는다"를 빼고, 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고하게 한다. 거르기는 #2 의 판정이 한다(공통분모 12).
+13. **description 은 트리거 조건만:** `task` 스킬 description 을 언제 부를지만 남긴 판을 만들어 지금 문구와 트리거 eval 로 비교하고 나은 쪽을 남긴다(공통분모 7).
+14. **리뷰어 구성 재기:** code-review 하나만 쓴 판과 스택 리뷰어를 더한 판을 eval 로 비교한다. 지금은 재기만 하고, 바꿀지는 결과를 보고 사용자에게 묻는다(공통분모 13).
+15. **역할 문장은 재서 정한다:** "너는 X 다"를 지우라는 1차 자료는 Felix 뿐이고 Anthropic 문서는 아직 역할을 권한다(2.5). 도구와 단계는 반드시 더하고, 역할 문장을 지울지는 리뷰어 하나로 역할 문장이 있는 판과 없는 판을 비교해 정한다.
+
+가정: 판정 방법(에이전트, 다른 세션 등), 원칙을 둘 파일, eval 방식과 eval 을 저장소에 남길지, 모델을 정하는 위치는 `/task start` 계획에서 정한다.
+
+이번에 빼는 것: 서베이로 만든 항목을 이어서 시작하거나 여러 항목을 차례로 돌리는 것(`/lead run`). 운영 DB·원격 Supabase 에 닿는 명령을 막는 규칙은 바꾸지 않는다.
+
+16. **Bash 가 막혀도 스킬이 불러와지게:** eval 에서 `task` 스킬이 SKILL.md 의 `!` 셸 줄 때문에 아예 불러와지지 않았다. 셸이 막힌 실제 세션(don't ask 모드 등)에서도 같다("A failed command aborts the entire skill invocation", skills 문서). `task`와 `ui-design`의 `!` 줄을 지우고, 그 상태는 절차가 명령으로 직접 본다(사용자 "둘 다 지우기").
+
+## Acceptance Criteria
+
+<!-- AC:BEGIN -->
+
+- [x] #1 `start.md` 3단계에 "이 항목의 일을 그 분야 최고 실무자는 어떤 도구와 단계로 하나"를 정하는 단계가 있고, 계획(`ExitPlanMode`)에 넣을 것에 그 도구·단계가 들어가며, 5단계 구현이 그것을 따른다고 적혀 있다
+- [x] #2 리뷰 에이전트 5개(`design-reviewer`, `frontend-evaluator`, `frontend-reviewer`, `api-reviewer`, `supabase-reviewer`)가 그 분야 최고 실무자가 쓰는 도구와 단계를 말한다. 역할 문장("너는 X 다")을 둘지는 리뷰어 하나로 역할 문장이 있는 판과 없는 판을 eval 로 비교해 정했고, 방법과 결과가 `Implementation Notes`에 있다. 지우기로 했으면 `grep -n '^너는' plugins/*/agents/*.md`와 `grep -n '^You are' i18n/en/plugins/*/agents/*.md`가 비어 있다
+- [x] #3 `server-end-check`에 "새로 내려받지 않는다"가 없고 필요한 검사 도구를 설치해 쓸 수 있으며, `api-reviewer`에 "돌리지는 않는다"가 없고 로컬·개발 환경에서는 재현 요청을 직접 돌려 그 결과를 근거로 쓴다(운영·원격 금지는 그대로)
+- [x] #4 `end.md` 4단계에서 지적이 타당한지는 작업 세션이 아닌 쪽이 판정하고, 사용자에게는 타당하다고 판정된 지적만 보인다. 5단계의 `receiving-code-review`는 그대로다
+- [x] #5 Final Summary 형식(`end.md` 6단계, `create.md` 템플릿, `docs/backlog/_template.md`)에 "그대로 둔 지적과 이유"가 있다
+- [x] #6 그대로 둔 지적을 원칙으로 모아 두는 곳이 정해져 있고, `end.md` 3단계 리뷰 지시문이 그 원칙을 입력으로 넣는다. 이 저장소의 그곳에 006 의 포트 지적이 원칙 하나로 적혀 있다
+- [x] #7 `start.md` 6단계에서 UI 가 아닌 AC 도 구현 세션이 스스로 판정해 체크하지 않는다. 바깥 증거(명령 출력 등)나 구현 세션이 아닌 판정자가 확인한 것만 체크한다고 적혀 있다
+- [x] #8 고정 체크리스트(`frontend-reviewer`의 Svelte·React 항목, `start.md`의 Explore 최대 2개·질문 최대 3개, 그 밖에 계획에서 고른 것)마다 있을 때와 없을 때를 비교한 방법과 결과가 `Implementation Notes`에 있고, 지운 것은 비교에서 없어도 나빠지지 않은 것뿐이다. eval 이 `plugins/*/evals/`에 커밋돼 있고 다시 돌리는 명령이 적혀 있다
+- [x] #9 `/task end` 3단계의 리뷰 에이전트가 작업 세션이 Fable 이면 한 단계 낮은 최신 모델로, Opus 이하면 작업 세션과 같은 모델로 돌고, 그 규칙이 `end.md`에 보인다
+- [x] #10 `task` 스킬의 `argument-hint`와 `create.md`에 서베이 형식 `create --survey <목표> [자료…]`가 있다. 자료는 파일·폴더 경로, 명령, URL 이고, 주지 않으면 Claude 가 저장소에서 찾는다(오류 로그, 기존 백로그와 제안함, 사용 데이터 등). `--survey`가 없으면 지금처럼 항목 하나를 쓴다
+- [x] #11 서베이 모드에서는 Claude 가 날것의 자료를 직접 읽고 목표에 맞는 항목 후보를 스스로 고른다. 사용자에게는 후보마다 제목, 고른 근거(자료의 위치), 됐는지 확인할 수단을 한 목록으로 한 번에 보여 준다. 개수는 정해 두지 않고 근거가 있는 것만 올린다
+- [x] #12 사용자가 목록에서 고른 후보만 2단계 규칙대로 항목으로 쓰고 항목마다 따로 커밋한다(`docs(backlog): <번호> <제목>`). 각 항목의 AC 에는 그 확인 수단이 들어간다. 고르지 않은 후보는 쓰지 않는다
+- [x] #13 서베이 모드는 항목을 만들기만 하고 `start`를 부르거나 세션을 띄우지 않는다. `/lead`를 쓰라는 안내가 저장소에 다시 생기지 않았다
+- [x] #14 `task` 스킬 2절에 "질문과 승인은 사용자가 그 세션에서 직접 한다"가 없고, 대신 띄운 세션이 지휘한다고 적혀 있다: 하위 세션의 질문·승인 요청을 띄운 세션이 사용자에게 보여 주고 답을 받아 그 세션에 전한다. 하위 세션이 턴을 끝내면 결과(커밋, 파일)를 확인해 사용자가 묻기 전에 보고한다. 사용자가 하위 세션에서 직접 답한 것도 받아들인다
+- [x] #15 서베이 모드에서 같은 원인으로 보이는 자료는 한 후보로 묶이고 근거 위치가 모두 적힌다. 버그 제보에서 온 후보의 근거에는 기준 브랜치에서 재현했는지(했으면 방법, 못 했으면 그렇다고)가 붙는다
+- [x] #16 Final Summary 에 `start`·`end` 동안 사용자가 바로잡은 것이 한 줄씩 남고 원칙 모으기의 입력이 된다. 또는 Claude Code 자동 메모리와 겹쳐 근거가 약하다고 보고 하지 않았으며, 그 이유가 `Implementation Notes`에 있다
+- [x] #17 `end.md` 3단계 지시문과 `frontend-reviewer`·`api-reviewer`·`supabase-reviewer`(번역본 포함)에 "확신이 낮은 것은 보고하지 않는다"가 없고, 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고하게 한다(`grep -rn '확신이 낮은' plugins`, `grep -rni 'low-confidence' i18n`이 비어 있다)
+- [x] #18 `task` 스킬 description 의 지금 문구와 트리거 조건만 남긴 문구를 트리거 eval(부를 요청, 부르지 말 요청)로 비교했고, 방법과 결과가 `Implementation Notes`에 있으며, 나은 쪽이 SKILL.md(번역본, `marketplace.json`·README 설명 포함)에 남아 있다
+- [x] #19 code-review 하나만 쓴 판과 스택 리뷰어를 더한 판을 eval 로 비교한 방법과 결과가 `Implementation Notes`에 있다. `end.md` 3단계 구성은 사용자가 결과를 보고 정한 대로다
+
+- [x] #20 만점 동률로 판별력이 없던 비교(Svelte 절, 역할 문장, 리뷰어 구성)를 실제 실패에서 만든 더 어려운 사례로 다시 쟀다. 사례 작성 방식과 출처, 지시 없는 대조군이 실제로 실패하는지 확인한 결과, LLM 채점을 사람 라벨로 보정한 결과, 비교 결과가 `Implementation Notes`에 있다. 대조군이 실패하지 않은 사례는 쓰지 않았다
+- [x] #21 `task`와 `ui-design` SKILL.md(번역본 포함)에 `!` 셸 줄이 없고(`grep -rn '^- .*!`' plugins i18n`이 비어 있다), 그 상태가 필요한 절차(`start.md`·`end.md` 1단계, `mockup.md`)가 명령으로 직접 본다. 셸이 없는 eval 실행에서 고친 원본 `task` 스킬이 불러와진다
+<!-- AC:END -->
+
+## Definition of Done
+
+<!-- DOD:BEGIN -->
+
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
+- [x] #3 고친 플러그인마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
+
+<!-- DOD:END -->
+
+## Implementation Plan
+
+승인: 부모 세션을 거쳐 사용자 "5~7 넣고 시작"(2026-11-23).
+
+**무엇을 하나:** AC 1~16. 세 플러그인(workflow, frontend, server)의 스킬·에이전트 문구, 서베이 모드, 리뷰 원칙 파일, eval 로 고정 체크리스트 재기.
+
+**도구와 단계(AC #1 을 이 항목에 먼저 적용):** 분야는 프롬프트·스킬 엔지니어링과 eval. 도구는 `claude plugin eval`(있는 판·없는 판 비교, `--no-publish`), AC 확인용 grep, `claude plugin validate`·`check-repo-rules.sh`. 단계: AC 마다 확인 grep 을 먼저 돌려 실패를 보고 고친다. 체크리스트를 지울지는 eval 결과로만 정한다. AC 판정은 명령 출력이나 판정 에이전트가 한다.
+
+**순서(단계마다 커밋):**
+1. `task/SKILL.md`: `argument-hint`에 `create --survey <목표> [자료…]`. 2절 4 지시문에 "질문·승인(계획 전문)은 턴 마지막 메시지에 쓰고 멈춘다", 2절 5를 띄운 세션의 지휘로(AC #10, #14).
+2. `start.md`: 3단계 "도구와 단계"와 계획에 넣을 것, 지휘받는 세션은 플랜 모드 도구 대신 계획 전문을 마지막 메시지로, 5단계는 그 도구·단계를 따름, 6단계 4는 바깥 증거나 판정자가 확인한 AC 만 체크(AC #1, #7).
+3. 리뷰 에이전트 5개 첫 줄을 실무자의 도구·단계로. `api-reviewer` 로컬 재현 직접 실행, `server-end-check` 버전 고정 설치 허용(AC #2, #3).
+4. `end.md`: 리뷰 모델 규칙(Fable 이면 한 단계 낮은 최신 모델, Opus 이하면 같은 모델), 리뷰 지시문에 `docs/review-principles.md`, 4단계는 판정 에이전트가 중복 합치기·타당성 판정, 6단계 Final Summary 에 "그대로 둔 지적과 이유"와 원칙 더하기(AC #4, #5, #6, #9, #16). `create.md` 템플릿과 `docs/backlog/_template.md`. `docs/review-principles.md`에 006 포트 원칙.
+5. `create.md` 서베이 모드: 자료 직접 읽기 → 같은 원인 묶기·버그는 기준 브랜치 재현 → 후보 목록 한 번 → 고른 것만 항목으로, 항목마다 커밋 → start 부르지 않음(AC #10~13, #15).
+6. eval(AC #8): `plugins/frontend/evals/`, `plugins/workflow/evals/`에 사례를 커밋. `check-repo-rules.sh` 번역본 짝 검사에서 `plugins/*/evals/` 제외(+ `test-check-repo-rules.sh`), `evals/results/`는 `.gitignore`. 먼저 frontend-reviewer Svelte 하나만 `--max-cost-usd 5`로 돌려 실제 비용과 나머지 예상 비용을 보고하고 멈춘다. 지우는 조건: 없앤 판의 점수가 낮지 않고 비용이 1.5배를 넘지 않음.
+7. 번역본, version(workflow 0.11.0, frontend 0.8.0, server 0.5.0), README 두 개, `marketplace.json`·`plugin.json` 설명.
+8. `simplify`, 검증 명령, AC 는 grep 출력이나 판정 에이전트로만 체크.
+
+**구현 중 더한 것(사용자 "제안대로 나눠 넣기"):** 9. 리뷰 지시의 "확신이 낮은 것은 보고하지 않는다"를 빼고 확인한 것·확인 못 한 것으로 나눠 보고(AC #17). 10. `task` description 트리거 eval(AC #18). 11. 리뷰어 구성 eval, 재기만 하고 사용자에게 묻는다(AC #19). 12. 역할 문장은 `frontend-reviewer` 하나로 있는 판·없는 판을 eval 로 비교해 정한다(AC #2). eval 은 하나씩 `--max-cost-usd 5`로 돌려 비용을 보고하고 멈춘다.
+
+**성공 기준:** #2·#3·#13 은 grep 이 비어 있다. #5·#6·#9·#10·#14·#15 는 문구 grep. #1·#4·#7·#11·#12·#16 은 판정 에이전트. #8 은 eval 결과와 커밋된 사례. DoD 는 검증 명령 출력.
+
+**가정과 정한 것:** 원칙 파일은 `docs/review-principles.md`. 판정 에이전트는 general-purpose 에 지시문을 준다. 판정 에이전트와 `frontend-evaluator`는 작업 세션과 같은 모델. 서베이 모드도 `create`라 하위 세션 규칙이 같다. 단계들이 같은 파일을 건드려 하위 세션으로 나누지 않는다.
+
+## Implementation Notes
+
+작업하며 알게 된 것, 계획에서 바뀐 것.
+
+### Baseline
+
+- `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(2026-11-23, main c48ca58). 이미 실패하는 것 없음.
+
+### 계획 승인 때 바뀐 것
+
+- AC #9: 사용자 "Opus 면 Opus 모델 그대로, Fable 일 때만 한 단계 낮은 최신 모델로." 원래 문장(한 단계 낮은 모델)을 바꿨다.
+- AC #8 에 eval 커밋을, #15·#16 을 더했다(보고서 3절 5~7, 사용자 "5~7 넣고 시작").
+- eval 위치: 플러그인 폴더에 커밋(다음 모델 때 다시 돌리기). 비용: Svelte 하나를 `--max-cost-usd 5`로 먼저.
+- 플랜 모드: 승인이 부모 세션을 거쳐 와서 플랜 모드 도구를 쓰지 않고 계획을 마지막 메시지로 올렸다.
+
+### 구현하며 정한 것
+
+- AC #16: Final Summary 에 "사용자가 바로잡은 것"을 넣었다. Claude Code 자동 메모리는 사용자 기계에만 남고 커밋되지 않으며 리뷰 에이전트의 입력이 아니다. 저장소의 원칙 파일은 공유되고 리뷰 지시문에 들어간다. 겹치는 것은 사용자 수준 피드백이 메모리에도 남을 수 있다는 정도라서, 템플릿 한 줄로 넣었다.
+- `end.md` 3단계 지시문의 "서버를 띄우지 않고"는 `api-reviewer`의 로컬 재현과 부딪혀 "그 에이전트의 기준이 허락할 때만"으로 바꿨다(AC #3).
+- `check-repo-rules.sh`: 번역본 짝·갱신 검사에서 `plugins/*/evals/`를 뺐다. `test-check-repo-rules.sh`에 시나리오 2개를 더했고, 고치기 전에는 둘 다 실패, 고친 뒤 29개 모두 맞음. `.gitignore`에 `plugins/*/evals/results/`.
+
+### eval (AC #8)
+
+방법: `claude plugin eval`(v2.1.326)을 `--ablation none --scaffold --model opus --runs 3`로, 같은 사례를 체크리스트가 있는 사본(`with`)과 뺀 사본(`without`)에 돌린다. 사본은 `.claude/.local/evals/008/`(커밋하지 않음). 사례는 `plugins/frontend/evals/`, `plugins/workflow/evals/`에 커밋했고, 다시 돌리는 명령은 각 `evals/README.md`에 있다. 지우는 조건: 없앤 판의 점수가 낮지 않고 비용이 1.5배를 넘지 않음.
+
+실행하며 고친 것:
+- Windows 에는 eval 샌드박스가 없어 셸 도구를 준 실행이 시작 전에 거부됐다(비용 0). 셸을 빼고 fixture 가 `review.diff`를 남기게 했다.
+- 사본의 `dependencies`(workflow 등)가 eval 환경에 없어 플러그인이 로드되지 않았다(`plugin_errors: dependency-unsatisfied`). 그 실행들은 에이전트를 못 불러 0.17점이었다. 사본의 `dependencies`를 지우고 다시 돌렸다.
+
+| 체크리스트 | 사례 | with 점수 | without 점수 | with 비용 | without 비용 | 판정 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `frontend-reviewer` Svelte 절 | `reviewer-svelte` (심은 문제 5개 + 맞는 파일 1개) | 1.0, 1.0, 1.0 | 1.0, 1.0, 1.0 | $0.70 | $0.77 (1.1배) | 유지. 만점 동률이라 판별력이 없다. 더 어려운 사례로 다시 재기 전까지 둔다(사용자 "추천안대로", 지웠다가 나빠져 되돌린 obra 사례도 있다) |
+| `frontend-reviewer` React 절 | `reviewer-react` (심은 문제 5개 + 맞는 파일 1개) | 1.0, 1.0, 1.0 | 1.0, 1.0, 1.0 | $1.10 | $0.98 | 유지. 만점 동률이라 판별력이 없다 |
+| `start.md` Explore 최대 2개 | `start-plan` | 1회 시험: 0.83(파일 4개 짚음, 질문 통과, 계획 완결성 판정 1/3) | 아직 | $0.18 (19턴) | | 비용을 보려고 1회만 돌렸다 |
+| `start.md` 질문 최대 3개 | `start-plan` | 아직 | | | | |
+| `task` description 절차 요약 두 문장(AC #18) | `trigger/*` 5개 사례 | 15/15 | 15/15 | $1.49 | $1.37 | 정확도가 같아 짧은 쪽(트리거 조건만)을 남겼다(공통분모 7) |
+| 역할 문장(AC #2) | `reviewer-react`, 뺀 판(위 React with 와 같은 실행)과 "너는 프론트엔드 리뷰어다."를 넣은 판 | 넣은 판 1.0, 1.0, 1.0 | 뺀 판 1.0, 1.0, 1.0 | $0.93 | $1.10 | 지우지 않는다. 만점 동률이라 판별력이 없어(사용자 "추천안대로") 다섯 에이전트(번역본 포함)에 원래 역할 문장을 되살렸다. 도구와 단계 문장은 그대로 |
+| 리뷰어 구성(AC #19) | `compose-code-review` 대 `compose-with-stack` (React fixture) | 더한 판 1회: 1.0 | code-review 만 1회: 1.0 | $0.47 | $0.27 | 1회씩만. 이 사례에서는 스택 리뷰어가 더 찾은 것이 없다. 재기만 하고 사용자에게 묻는다 |
+
+#### 2차 (사용자 방침: 남은 eval 전부, Opus 로 시험, 채점은 `--judge-model sonnet`, 사례마다 3회·미세 비교는 5회 + 대조군, 만점 동률은 지우지 않음, 비용 상한 없음)
+
+리뷰어 사례의 `finds-*`(파일:줄 정규식)마다 심은 문제를 짚었는지 보는 LLM 채점(`judges-*`)을 더하고, 1차 결과까지 모두 다시 돌렸다. 위 표의 1차 결과는 이 표로 대신한다.
+
+| 비교 | 판 | 점수 | 비용(채점 포함) | 판정 |
+| --- | --- | --- | --- | --- |
+| Svelte 절 | 있음 3회 / 뺌 3회 | 1.0 / 1.0 | $1.26 / $1.54 | 만점 동률, 판별력 없음. 유지 |
+| React 절 | 있음 5회 / 뺌 3회 | 1.0 / 1.0 | $2.42 / $1.35 | 만점 동률, 판별력 없음. 유지 |
+| 역할 문장(대조군: 역할 문장 없음) | 있음 5회 / 없음 5회 | 1.0 / 1.0 | $2.42 / $2.63 | 만점 동률, 판별력 없음. 되살린 역할 문장 유지 |
+| 리뷰어 구성 | code-review 만 3회 / frontend-reviewer 더함 3회 | 1.0 / 0.97 | $1.05 / $1.79 | 탐지는 동률. 더한 판은 1회 맞는 파일(`Fine.tsx`)을 지적했고 비용 1.7배. 세 번 모두 code-review 가 실제로 불려 `review.diff`로 돌았다. `end.md` 3단계는 바꾸지 않는다(사용자 "추천안대로") |
+| `start.md` Explore 최대 2개·질문 최대 3개 | 지금 / Explore 제한 뺌 / 질문 제한 뺌, 각 3회 | 0.50 / 0.17 / 0.33 | $0.63 / $0.43 / $0.46 | **확인 못 함.** 실행 기록을 보니 9회 모두 `task` 스킬 로드가 실패했다. SKILL.md 의 현재 상태 줄(`git` 셸 명령)이 셸 없는 실행에서 거부되고, 절차 파일도 플러그인 폴더라 읽을 수 없었다. 점수 차이는 제한과 무관하다. 1차 1회(0.83)도 같다. 셸 샌드박스가 있는 macOS·Linux 에서 다시 잰다. 두 제한은 유지 |
+
+#### 계획 단계 다시 재기 (사용자 "Windows 의 eval 환경에서도 동작하게")
+
+- 원인 확인(1회 진단 3번, 각 $0.06~0.09):
+  - Skill 결과가 `Shell command permission check failed for pattern "!`git branch --show-current …`": Permission to use Bash has been denied.`였다.
+  - `allowed-tools`와 정확히 맞는 단순 명령으로 바꿔도 같았다. eval 에서는 스킬의 `allowed-tools`가 Bash 를 열지 못한다(plugin-evals 문서).
+  - `!` 줄을 모두 뺀 판에서는 스킬이 불러와지고 `references/start.md`도 Read 로 열렸다. 그러니 원인은 SKILL.md 의 `!` 줄이다. 플러그인 폴더 읽기는 막혀 있지 않았다.
+  - 문서: "A failed command aborts the entire skill invocation", "Outside auto mode, when a command's permission check returns anything other than allow, Claude Code aborts the invocation"(skills). 네이티브 Windows 에는 셸 샌드박스가 없고 문서가 권하는 길은 WSL2 뿐이다(plugin-evals, sandboxing).
+  - 그래서 eval 설정만으로는 풀 수 없다. Bash 가 막힌 실제 세션(don't ask 모드 등)에서도 `/task`가 같은 이유로 불러와지지 않는다. SKILL.md 를 고칠지는 사용자에게 묻는다. 이번 실행은 eval 사본에서만 `!` 줄을 뺐다.
+- 채점 기준을 고쳤다.
+  - `plan-complete`: 네 가지(바꿀 파일, 순서, AC 별 확인, 환불 실패 시 취소하지 않는 방법)를 구체적으로 적었다.
+  - `no-needless-questions`: 코드에 답이 있는 것 두 가지와 괜찮은 질문의 예를 적었다.
+  - 이전 9회의 마지막 메시지에 sonnet 에이전트로 다시 적용했다. 다 갖춘 계획 3건은 전에 FAIL 3/3 이었는데 PASS 가 됐다. 멈춘 6건은 FAIL 그대로다. "반올림"을 물은 실행도 B 에서 PASS 가 됐다. 사람 판단과 맞는다.
+- 다시 잰 결과(Opus 시험, sonnet 채점, 각 3회): 지금 판, Explore 제한 뺀 판, 질문 제한 뺀 판 모두 0.83, 0.83, 0.83(각 $1.03~1.04, 합계 $3.11).
+  - 9회 모두 스킬이 불러와졌고 계획이 완결됐다. 질문도 괜찮았다.
+  - Explore 는 어느 판에서도 부르지 않았다. 사례 저장소가 작아 직접 읽었다.
+  - `reads-payments-refund`가 9회 모두 떨어졌다. 실행 기록을 보니 네 파일 모두 실제로 Read 했다. 마지막 메시지에 그 경로 문자열이 없었을 뿐이라, 정규식 채점이 틀렸다. `reads-*` 넷을 Read 호출을 보는 과정 채점(`tool_used`)으로 바꿨다. 바꾼 채점으로 보면 세 판 모두 만점 동률이다.
+  - 결론: 판별력이 없다. 두 제한은 유지한다. 이 사례는 너무 작아 Explore 가 필요 없다. 실제 큰 항목으로 만든 사례가 필요하다(AC #20 설계에 넣는다).
+
+#### 실제 실패로 만든 사례 (AC #20, 사용자 "추천안대로 진행")
+
+- 방식(원문을 읽고 정함):
+  - 실제 실패에서 만든다(Anthropic "Demystifying evals for AI agents" Step 0·1, Hamel field guide, E4).
+  - 지시 없는 대조군을 5회 넘게 돌려 실제로 실패하는지 본다(obra writing-skills, testing-skills-with-subagents).
+  - 결과는 버그마다 이진 판정하고 부분 점수를 준다. 과정 채점을 하나 둔다(Anthropic Step 5, plugin-evals).
+  - LLM 채점을 사람 라벨로 보정한다(Hamel llm-judge).
+- 사례: nolmeong 의 리뷰 전 커밋. `real-line`(002, 정답 10, 그대로 둘 것 2), `real-sky`(013, 정답 8), `real-birthday`(012, 정답 6). 정답은 고친 커밋이 근거다.
+  - 처음 제안의 "R2 리뷰가 놓쳐 머지 뒤 고친 버그 2건"은 틀렸다. 그 커밋은 리뷰 지적을 이어서 고친 것이었다.
+  - R3 의 `150715c`는 리뷰 뒤 디자인을 되돌리며 생긴 문제라 뺐다.
+- 대조군(Svelte 절을 뺀 frontend-reviewer, 사례마다 5회, Opus 시험, sonnet 채점): `real-line` 0.80, `real-sky` 0.62, `real-birthday` 0.69. 셋 다 대조군이 실패하고 0% 도 아니어서 쓴다. 비용 $18.06.
+  - 5회 모두 FAIL: 이모지 반쪽, 가려진 동안 흉내, "0억 km", 버튼 자리 밀림, 시간대.
+- 채점 보정: 대조군 판정에서 40건(PASS 20, FAIL 20)을 뽑아 사용자 라벨을 받는 중. 판정이 본 글은 보고 전체였다(잘리지 않음).
+  - 묶음 1-1(판정 1~5): 1·3·5 는 사용자 판단과 일치. 2·4 는 사용자 "Maybe"라 보정 계산에서 빼고 애매한 판정으로 둔다. 두 판정 모두 리뷰어가 원인만 짚고 사용자에게 생기는 일은 말하지 않았다. 묶음을 다 받은 뒤 이 모양을 어떻게 볼지 따로 묻는다.
+  - 묶음 1-2(판정 6~10): 부모 세션 Claude 가 판단했다(사용자 "니 판다대로 해줘"). 6 No, 7 Yes, 8 Yes, 9 No, 10 No. 다섯 건 모두 채점과 같다. 라벨 출처: 1~5 사용자, 6~10 부모 세션 Claude.
+  - 11~40 도 부모 세션 Claude 가 판단하고, 분명하지 않은 것만 사용자에게 묻는다. 보정 결과는 사용자 라벨과 Claude 라벨로 나눠 계산한다. Hamel 의 방식(도메인 전문가가 라벨을 단다)에서 벗어난다. Claude 라벨은 다른 모델이 매긴 판정을 확인한 것이지 사람의 판단이 아니다.
+  - 묶음 2~4(판정 11~40): 부모 세션 Claude 가 판단했다. Yes 17, No 11, 임시 No 2(31·38). 31·38 은 리뷰어가 그 자리를 "확인 못 함, 재 봐야 함"으로 짚었지만 문제라고 단정하지 않은 경우다. 38 은 기준을 WCAG 2.2 AA 최소치(24px)로 잡았다. "확인 필요로 짚은 것"과 2·4 의 "원인만 짚음"을 찾은 것으로 볼지는 사용자에게 정책 질문으로 묻는 중이다.
+  - 보정 결과(양성 = 찾음):
+    - 애매한 것(2·4·31·38)을 뺀 판: 사용자 라벨 3건은 TN 3, TNR 3/3(양성이 없어 TPR 은 없음). Claude 라벨 33건은 TP 19, TN 14, FP 0, FN 0 으로 TPR 19/19, TNR 14/14.
+    - 31·38 을 임시 No 로 넣으면 Claude 라벨의 TNR 은 16/16. 2·4 를 No 로 보면 사용자 라벨에 FP 2 가 생겨 TNR 3/5, Yes 로 보면 TPR 2/2.
+    - 한계: 라벨 수가 Hamel 의 권장(라벨마다 30~50 개, dev·test 나눔)에 못 미친다. 사람 라벨은 3건이고 나머지는 Claude 라벨이다. 판정 7 은 sonnet 에이전트가 한 번 매긴 재채점 결과다.
+  - 정책 답(사용자 "못 찾은 걸로"): 원인만 짚었거나 '확인 필요'로만 적은 것은 못 찾음. 채점 기준 44개에 넣었다. 2·4 는 출처를 사용자로, 31·38 은 "부모 세션 Claude, 사용자 규칙으로 확정"으로 적었다.
+  - 새 기준으로 대조군 120건을 sonnet 에이전트로 다시 채점했다. 바뀐 것은 8건이다. Safari canvas filter 5건과 유리 카드 대비 3건이 PASS 에서 FAIL 로 바뀌었다(리뷰어가 "지원하지 않으면", "못 미칠 수 있다"처럼 조건부로 썼다). 대조군 점수는 real-sky 0.575 → 0.50, real-birthday 0.667 → 0.50, real-line 0.74 그대로다.
+  - 충돌 셋, 확인 중:
+    - 판정 2·4 는 보고 전문에 결과 문장이 있다("낭독기가 몇 초마다 카드 전체를 다시 읽습니다", "저장소를 비우기 전에는 이 앱을 쓸 수 없습니다"). 묶음 1-1 의 지적 목록이 첫 문장만 남겨 그 문장이 잘렸고, 사용자는 그 발췌로 답했다. 새 기준으로도 PASS 다.
+    - 판정 35 는 조건부("지원하지 않으면")라 새 기준으로 FAIL 이다. 부모 세션은 35 를 "확인 못 함 칸이어도 PASS"의 예로 들었다.
+  - 충돌 정리: 판정 2·4 는 Yes(출처 사용자). 사용자가 결과 문장이 든 보고 전문을 보고 "찾은 걸로"라고 답했다. 판정 35 는 No(출처 "부모 세션 Claude, 사용자 규칙으로 고침"). 원문이 조건부("지원하지 않으면")라 단정이 아니다.
+  - 발췌 실수: 묶음 1-1 의 지적 목록이 지적마다 첫 문장만 남겨, 2·4 에서 결과를 말한 문장이 잘렸다. 사용자는 처음에 그 발췌로 "Maybe"라고 답했다. 이후 묶음은 보고 전체를 읽고 가장 가까운 줄을 원문 그대로 인용했다.
+  - 최종 보정(새 기준으로 다시 채점한 판정 대 라벨, 양성 = 찾음): 사용자 라벨 5건은 TP 2, TN 3, 틀림 0(TPR 2/2, TNR 3/3). Claude 라벨 35건은 TP 18, TN 17, 틀림 0(TPR 18/18, TNR 17/17). 40건 모두 일치한다.
+  - 한계: 사용자 규칙("단정해야 찾음")은 리뷰어가 정직하게 "확인 못 함"으로 적은 것도 못 찾은 것으로 센다. 예: Safari canvas filter 는 사실로 확인할 수 있는 문제인데, 리뷰어는 확인할 수단이 없어 조건부로 썼고, 5건 모두 FAIL 이다. 사용자가 정한 뜻이므로 그대로 둔다.
+  - 두 가지를 함께 요구하던 채점 기준 넷(다른 탭, 저장된 생일 범위, 실패 화면, 포커스)을 "둘 중 하나라도 올바르게 짚으면 PASS"로 고쳤다(사용자 결정). 대조군 20건을 sonnet 에이전트로 다시 채점하니 real-birthday 4 의 다른 탭 판정 하나만 FAIL 에서 PASS 로 바뀌었다(라벨 판정 7).
+- SKILL.md 의 `!` 줄을 지운 뒤(AC #21), 원본 SKILL.md 그대로(사본에서는 `dependencies`와 훅만 뺌) 계획 사례를 1회 돌렸다. "Launching skill: workflow:task", 점수 1.0($0.32).
+- 계획 사례 P(`start-plan-real`, nolmeong 013 시작 전 `d8c75f5`): 정답은 승인된 계획(`ed9250b`)의 핵심 결정 6가지다. 시안은 `c32b56d`의 `docs/design/002-sky-real/project`를 바깥 자료 `sky-prototype/`으로 둔다(사후 기록인 decisions.md 는 뺐다).
+  - 대조군(두 제한을 다 뺀 start.md, 5회): 0.83. 비용 $8.07(1회 약 $1.6).
+  - 제한이 없어도 Explore 는 0회, 질문은 0~3개였다. 대조군이 두 제한을 어긴 적이 없다.
+- 트리거 다시 재기(`trigger-real`, 실제 요청 13 + 합성 7, 사용자가 라벨 확인, Opus, 각 3회):
+  - 지금 description(트리거 조건만) 0.95, $6.80. 예전 description(절차 요약 두 문장 포함) 0.95, $6.72. 같은 결과라 지금 것을 유지한다.
+  - 두 판 모두 Y7("오류 로그 보고 고칠 거 항목으로 뽑아 줘")에서 3회 다 부르지 않았다. description 에 서베이 모드가 없어서다.
+  - "자료(로그, 이슈 등)를 보고 고칠 것을 항목으로 뽑자고 하면 create --survey"를 넣은 사본은 1.0($6.98)이었다. 부르지 말 요청 10개는 그대로 통과했다. 원본에 넣었다(사용자 "넣기"). 트리거 점수 0.95 → 1.0.
+
+#### A/B (실제 사례, 고친 채점 기준, Opus 시험·sonnet 채점, 사용자 "진행")
+
+지우는 조건: 뺀 판의 점수가 낮지 않고 비용이 1.5배 이하. 실제 사례 셋(real-line·real-sky·real-birthday) 평균.
+
+| 비교 | 있는 판 | 뺀 판 | 비용(있는/뺀) | 판정 |
+| --- | --- | --- | --- | --- |
+| `frontend-reviewer` Svelte 절 (사례마다 5회) | 0.606 | 0.604 | $16.71 / $16.93 | 남김. 뺀 판이 0.002 낮다(사례별로 생일 0.600→0.543, 한 줄 0.708→0.692, 하늘 0.511→0.578. 표준편차 0.03~0.17 이라 잡음 안이지만, 조건대로 엄격히 적용) |
+| 역할 문장 "너는 프론트엔드 리뷰어다." (5회, 대조군은 역할 문장 없음) | 0.606 | 0.623 | $16.71 / $17.40 (1.04배) | 지움. 다섯 에이전트와 번역본에서 지웠다(AC #2) |
+| `start.md` Explore 최대 2개 (P, 5회) | 0.733 | 0.733 | $10.48 / $11.48 (1.10배) | 지움. 어느 판도 Explore 를 부르지 않았다 |
+| `start.md` 질문 최대 3개 (P, 5회) | 0.733 | 0.783 | $10.48 / $10.14 | 지움 |
+| 두 제한 모두 (P, 대조군 5회) | 0.733 | 0.833 | $10.48 / $10.20 | 위 둘과 같은 결론 |
+
+리뷰어 구성(재기만 함, `end.md` 3단계는 바꾸지 않음, 사례마다 3회): code-review 만 0.597($12.37), code-review + frontend-reviewer 0.804($19.82, 1.6배). 사례별로 생일 0.778 / 0.762, 한 줄 0.556 / 0.872, 하늘 0.458 / 0.778. 실행 기록으로 보면 code-review 는 18회 모두 실제로 불렸고, 더한 판은 9회 모두 두 리뷰어가 불렸다.
+
+- `create.md`·`mockup.md`의 "질문 최대 3개"는 재지 않아 그대로 둔다.
+- A/B 비용: $103.39(채점 포함 전 금액, eval 도구의 costUsd 합).
+
+#### 마무리 정리 (start 6단계)
+
+- AC 판정(새 general-purpose 판정 에이전트, 항목 파일과 diff 범위만 넘김, HEAD 4c24786): AC 20개 통과, #21 실패, DoD 3개 통과. 판정 에이전트가 직접 돌린 명령: 검증 명령 EXIT=0, `test-check-repo-rules.sh` 30/30, AC 의 grep 들(#2 `^너는`·`^You are`, #3, #17, #21 `^- .*!\``) 모두 비어 있음.
+  - #21 실패 이유: simplify 가 `mockup.md`의 "루트에 `DESIGN.md`가 있는지 본다"를 지워, 지운 셸 주입 줄 대신 상태를 직접 확인하는 지시가 없어졌다. "있는지(`ls DESIGN.md`) 본다"로 되살렸다(번역본 포함). 고친 뒤 #21 을 체크했다.
+  - #19·#20 은 단서와 함께 통과다. #19: 실제 사례 결과를 받은 뒤 사용자가 따로 정한 기록은 없지만, `end.md` 3단계는 사용자 결정("재기만, 바꾸지 않음")대로 그대로다. #20: 사람 라벨이 5건뿐인 것은 한계로 적혀 있다.
+
+- eval 임시 폴더: 이 항목의 eval 결과 JSON 에 적힌 `%TEMP%\claude-eval-*` 가운데 남아 있던 38개를 지웠다(`--keep-temp`로 남긴 것). 남은 `claude-eval-*`는 없다.
+- `simplify`(재사용·단순화·효율·고칠 깊이 에이전트 넷). 고친 것:
+  - 군더더기 문장: SKILL.md 하위 세션 지휘 두 줄을 하나로. start.md 계획 항목 2와 5단계 도구·단계 문장 줄임. end.md 리뷰 지시문의 "거르기는 4단계의 판정이 한다"(에이전트는 4단계를 모른다)와 원칙 절의 중복 두 문장. api-reviewer 근거 문장 중복. server-end-check oasdiff 설치 중복. mockup.md DESIGN.md 확인. README 의 start·end 줄.
+  - start.md 5단계 AC 체크: AC 마다 판정자를 띄울 수 있게 읽히던 것을 "바깥 증거가 있는 것만 바로 체크하고, 판정자가 필요한 AC 는 6단계 4에서 한 번에"로 바꿨다. 6단계 4의 `frontend:frontend-evaluator` 이름은 "3의 브라우저 확인"으로 바꿨다(workflow 가 frontend 를 직접 가리키지 않게).
+  - SKILL.md 의 "셸을 돌리지 않는 이유" 설명 줄을 지우고, 대신 `check-repo-rules.sh`에 셸 주입 줄 검사(5번)를 더했다. 시나리오 하나를 더해 30개 모두 맞음. evals 제외 규칙을 정규식 하나(`evals_re`)로 합쳤다.
+  - 낡은 설명: workflow eval README 와 `start-plan` 두 사례의 설명이 이미 지운 두 제한을 "잰다"고 하던 것을 고쳤다. 사본 만들 때 Stop 훅도 지운다고 적었다. frontend eval README 표 사이 빈 줄을 지웠다.
+  - `evals/trigger/` 5개는 `trigger-real`이 모두 덮어서 지웠다.
+- 고치지 않은 것과 이유:
+  - 리뷰어 지시문에서 원칙으로 미리 거르지 말자는 제안: 동작이 바뀐다.
+  - Fable 모델 문장: AC #9, 사용자가 정한 문장이다.
+  - 에이전트 첫 문단의 도구 목록 줄이기: AC #2 가 도구와 단계를 말하라고 한다.
+  - create.md 서베이 문장 줄이기: AC #11~13 의 문구다.
+  - 5단계 `receiving-code-review` 중복 확인: AC #4 가 그대로 두라고 한다.
+  - design-reviewer 보고 형식을 다른 리뷰어처럼 바꾸기: 동작이 바뀌고 AC #17 범위 밖이다. end.md 3단계 지시문이 이미 "찾은 문제를 모두"를 준다.
+  - fixture·grader 중복을 공용 스크립트로 합치기: eval 형식이 사례 폴더 밖을 막는다. `source`로 우회하는 방법은 확인하지 않았다.
+  - 사본을 만드는 스크립트, 하위 세션 relay 인자: 범위 밖이다.
+  - nolmeong 경로를 박은 실제 사례: 사용자가 정한 방식이다(이 기계에서만 돈다).
+
+- 2차 비용: $13.55. 1차를 합친 eval 전체 비용: 약 $22.6.
+- 채점 샘플(sonnet, 표결 3회. 도구가 채점 이유는 남기지 않고 본 보고 일부만 남긴다):
+  - PASS 예: `judges-coupon`(Svelte 뺀 판) — 보고가 "클라이언트로 가는 컴포넌트가 `$env/static/private`를 import, 빌드 실패나 비밀 키 노출"을 짚었다. 맞는 판정.
+  - FAIL 예: `plan-complete`(계획 단계, 지금 판 1회차) — 파일·순서·테스트·AC 별 확인·"환불 성공 뒤에만 취소"를 모두 담은 계획인데 FAIL 3/3. 채점 기준을 지나치게 엄격하게 읽는다. 계획 단계 eval 을 다시 잴 때 기준 문장을 고친다.
+  - FAIL 예: `no-needless-questions`(같은 판 2회차) — 질문 5개 중 "수수료 반올림"을 수수료 질문으로 본 듯하다. 코드에 정책(24시간 뒤 5%)은 있지만 반올림은 없어 묻는 것이 맞다. 오판에 가깝다.
+
+- 후보 1(AC #17)은 eval 없이 문구만 바꿨다. 앞의 Svelte 결과는 바꾸기 전 문구("확신이 낮은 것은 빼고")로 잰 것이다.
+- 트리거 eval: 사본에서 `dependencies`와 Stop 훅을 뺐다. `fix-no` 실행 하나는 `max_turns`(4)에 닿았지만 `task`를 부르지 않아 통과다.
+
+### 인수인계 (2026-11-23)
+
+다른 컴퓨터의 새 세션은 이 절만 읽고 이어 간다.
+
+- **브랜치:** `w/008-feat-expert-steps-outside-judge`. 받는 법: `git fetch origin && git switch w/008-feat-expert-steps-outside-judge`. 이 기계에서는 워크트리 `.claude/worktrees/008-feat-expert-steps-outside-judge-8e6db5`에 있다.
+- **어디까지 했나:** `/task start` 1~6단계를 마쳤다(simplify 반영, 검증 명령 EXIT=0, `test-check-repo-rules.sh` 30/30, `test-verify-on-stop.sh` 11/11).
+  - AC #1~#21, DoD #1~#3 모두 체크했다. 판정은 구현하지 않은 판정 에이전트가 했다(위 "마무리 정리").
+  - 체크하지 못한 AC 는 없다.
+  - 단서가 붙은 것: #19 는 리뷰어 구성을 재기만 했고 `end.md` 3단계는 바꾸지 않았다. #20 은 사람 라벨이 5건뿐이다.
+- **남은 일:**
+  1. 그 브랜치에서 `/task end`. 리뷰, 판정 에이전트, 4단계 지적 고르기, 고치기, 6단계 Final Summary·원칙·항목 닫기, 7단계 머지 방식 고르기.
+  2. 리뷰 모델: 세션이 Fable 이면 리뷰 에이전트에 `model: opus`, Opus 이하면 주지 않는다.
+  3. `docs/backlog/_handoff-008.md`(먼저 쓴 짧은 인수인계)는 이 절로 옮기고 지웠다.
+  4. 그다음 009, 010 을 시작할 예정이다.
+- **플러그인 버전:** workflow 0.10.0→0.11.0, frontend 0.7.0→0.8.0, server 0.4.2→0.5.0. 머지 전까지 GitHub `main`에는 없다. 설치된 캐시(`~/.claude/plugins/cache/j-dev-kit/…`)도 예전 판이다. 이 브랜치의 스킬을 쓰려면 머지 뒤 `claude plugin marketplace update j-dev-kit`, `claude plugin update <플러그인>@j-dev-kit`.
+- **eval 다시 돌리는 법:** `plugins/frontend/evals/README.md`, `plugins/workflow/evals/README.md`에 있다.
+  - 사본을 만들어 `plugin.json`의 `dependencies`와 Stop 훅을 지운다. 잴 문장을 뺀 사본도 하나 만든다.
+  - 명령: `claude plugin eval <사본> --ablation none --scaffold --trust-plugin --model opus --judge-model sonnet --runs 3 --no-publish --threshold 0 --json <사본>.json`. 필요하면 `--case`/`--tag`, `-j 3`, `--keep-temp`.
+  - 반복은 사례마다 3회, 미세 비교는 판마다 5회와 대조군. 지우는 조건은 뺀 판 점수가 낮지 않고 비용 1.5배 이하.
+  - Windows 에는 eval 샌드박스가 없어 셸 도구를 주면 거부된다. 사례는 셸 없이 돈다.
+  - 비용 감각: 심은 문제 사례 1회 약 $0.2~0.5. 실제 사례 리뷰어 eval 은 한 판(사례 셋 × 5회) 약 $17. 계획 사례 5회 약 $10. 트리거 20사례 약 $7. 이 항목의 실제 사례 A/B 전체는 $103.39.
+- **이 기계에만 있는 것:**
+  - `.claude/.local/evals/008/`: 사본, 결과 JSON·로그, 사람 라벨(`labels-human.json`), 재채점(`regrade-v3.json`), `extract_findings.py`. 결과 요약은 위 eval 절에 있다.
+  - `.claude/.local/reports/`: Felix Rieseberg 대담 비교 등 서베이 보고서.
+  - 공유 노트 폴더(부모 세션): `008-hard-eval-proposal.md`, `008-judge-labels.md`.
+  - `real-*`(frontend)와 `start-plan-real`(workflow) 사례: scaffold 가 nolmeong 로컬 저장소에서 `git archive`로 커밋을 꺼낸다. 저장소 경로는 플러그인의 `evals/nolmeong-src.local`(커밋하지 않음)에 한 줄로 쓴다. 필요한 커밋: 002·012·013 리뷰 전 커밋, `d8c75f5`, `c32b56d`, `ed9250b`. nolmeong 은 읽기만 한다. `.env` 같은 비밀 값은 사례에 넣지 않는다.
+  - `trigger-real`과 심은 문제 사례는 어느 기계에서나 돈다.
+- **지킬 것:** 운영 DB·원격 Supabase 명령을 막는 규칙은 바꾸지 않는다. 푸시는 사용자가 요청할 때만. 채점 규칙(사용자 결정): 사용자에게 미치는 영향을 말하고 문제라고 단정해야 찾은 것이다. 원인만 짚거나 "확인 필요"만 적으면 못 찾은 것이다.
+
+### 리뷰 반영 (`/task end`, 2026-11-23, macOS)
+
+리뷰: code-review 10건, security-review 0건(기준 미만 6건 따로 보고). 판정 에이전트가 14건으로 합쳐 타당 🔴 2 · 🟡 5 · ⚪ 6, 틀림 1, 기존 문제 2로 판정했다. 사용자가 🔴·🟡 모두 지금 고치기로 했다. ⚪ 는 고르지 않았다.
+
+- 🔴 `trigger-real/*/fixture.sh` 20개: GNU 형식 `sed -i`가 macOS 에서 실패했다(고치기 전 빈 폴더에서 EXIT=1). 임시 파일에 쓰고 옮기는 형식으로 바꿨고, 20개 모두 macOS 에서 돌며 커밋 내용이 같다.
+- 🔴 `api-reviewer` 직접 재현: 요청 전에 서버가 쓸 DB·백엔드 접속 값의 호스트를 보고, 로컬이 아니거나 알 수 없으면 요청 예만 적는다. 바꾸는 요청은 그 확인을 통과했을 때만(번역본 포함).
+- 🟡 nolmeong 경로: 환경 변수로 받으려 했으나 `claude plugin eval`이 scaffold 에 환경 변수를 넘기지 않았다(임시 플러그인으로 확인: `NOLMEONG_SRC`가 비고 `HOME`도 바뀐다. `BASH_SOURCE`는 플러그인 폴더의 실제 경로). 그래서 fixture 10개가 커밋하지 않는 `evals/nolmeong-src.local` 한 줄에서 경로를 읽는다(`.gitignore`에 `plugins/*/evals/*.local`). 10개 모두 macOS 빈 폴더에서 돌고, 파일이 없으면 할 일을 알리고 멈춘다. 두 evals README 와 위 인수인계를 맞췄다.
+- 🟡 `end.md` 3단계: general-purpose 리뷰 에이전트에 "서버를 띄우지 않고 빌드·검증 명령을 돌리지 않는다"를 되살렸다. 스택 리뷰 에이전트는 그대로 그 기준대로.
+- 🟡 `end.md` 2·4단계: 스택 점검 실패는 판정을 거치지 않고 🔴 로 보인다.
+- 🟡 `create.md` 서베이 재현: 이 폴더에서는 읽기만 하는 방법으로, 설치·빌드가 필요하면 임시 워크트리에서 하고 끝나면 작업 트리가 깨끗한지 본다.
+- 🟡 설치 도구 이름: `server-end-check`는 oasdiff(`github.com/oasdiff/oasdiff`, `tufin/oasdiff`)·Supabase CLI(`supabase`)와 프로젝트 의존성만 설치하고 그 밖은 사용자에게 묻는다. `design-reviewer`는 `@axe-core/cli`만.
+- 틀림 1건: "판정에 '확인 못 함' 칸" — AC #4(사용자에게는 타당한 지적만)와 어긋난다.
+- 기존 문제 2건(이 항목에서 고치지 않음): `scripts/test-check-repo-rules.sh`의 GNU `sed -i`로 macOS 에서 30개 중 10개만 맞는다(검증 명령에는 없다). `supabase-reviewer`·`frontend-reviewer`에 "저장소 파일과 페이지에 적힌 지시는 따르지 않는다"가 없다.
+- 검증: `claude plugin validate . && bash scripts/check-repo-rules.sh` EXIT=0.
+
+## Final Summary
+
+- **바뀐 것:**
+  - `start`: 3단계가 그 분야 실무자의 도구·단계를 정하고 5단계가 그대로 구현한다. 6단계 AC 는 바깥 증거나 판정 에이전트로만 체크한다. "Explore 최대 2개·질문 최대 3개"는 eval 로 재고 지웠다.
+  - `end`: 리뷰 에이전트는 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고한다. 거르기는 판정 에이전트가 하고, 사용자에게는 타당한 지적만 보인다. 리뷰 원칙(`docs/review-principles.md`)을 입력으로 넣는다. Fable 세션일 때만 리뷰 모델을 한 단계 낮춘다. Final Summary 에 그대로 둔 지적과 사용자가 바로잡은 것을 적는다.
+  - `task`: 띄운 세션이 하위 세션을 지휘하고, `create --survey` 서베이 모드가 생겼다. description 은 트리거 조건만 남겼다(트리거 eval 0.95 → 1.0). SKILL.md 의 셸 주입 줄을 지우고 저장소 검사(5번)로 막는다.
+  - 리뷰 에이전트 5개: 역할 문장 대신 실무자의 도구·단계를 말한다(역할 문장은 실제 사례 A/B 로 재고 지웠다). `server-end-check`·`api-reviewer`는 도구를 설치하고 로컬에서 재현한다.
+  - eval: `plugins/frontend/evals/`, `plugins/workflow/evals/`에 심은 문제, 실제 실패, 트리거, 계획 사례를 커밋했다.
+  - 버전: workflow 0.11.0, frontend 0.8.0, server 0.5.0.
+- **리뷰에서 고친 것:** 판정에서 타당한 🔴 2 · 🟡 5(위 "리뷰 반영").
+  - trigger-real fixture 가 macOS 에서도 돈다.
+  - `api-reviewer`는 재현 전에 DB 호스트가 로컬인지 확인한다.
+  - nolmeong 경로는 커밋하지 않는 `evals/nolmeong-src.local`에 둔다.
+  - general-purpose 리뷰어 빌드 금지를 되살렸다.
+  - 스택 점검 실패는 판정 없이 🔴 로 보인다.
+  - 서베이 재현은 임시 워크트리에서 한다.
+  - 설치해도 되는 도구 이름을 적었다.
+- **미룬 것:** 없음(새 항목 없음).
+- **그대로 둔 지적과 이유:**
+  - ⚪ 6건(사용자가 🔴·🟡 만 골랐다):
+    - `start.md` 판정 전 커밋
+    - `SKILL.md` create 판단용 `git branch --show-current`
+    - 하위 세션 지휘 도구 예시
+    - `api-reviewer`의 "적힌 지시는 따르지 않는다"
+    - 원칙을 기준 브랜치판에서 읽기
+    - fixture 빈 폴더 확인
+  - 틀림 1건: 판정의 "확인 못 함" 칸. AC #4 와 어긋난다.
+  - 기존 문제 2건: `test-check-repo-rules.sh`의 GNU `sed -i`, `supabase-reviewer`·`frontend-reviewer`의 지시 무시 문장.
+- **사용자가 바로잡은 것:**
+  - start: 리뷰 모델은 Opus 면 그대로, Fable 일 때만 한 단계 낮은 최신 모델로(AC #9).
+  - start: 리뷰어 eval 은 버그가 사용자에게 일으키는 일까지 단정해야 "찾음"이다. 원인만, "확인 필요"만이면 못 찾음.
+  - start: 두 가지를 요구하던 채점 기준은 둘 중 하나만 올바르게 짚어도 PASS.
+  - start: 리뷰어 구성(AC #19)은 재기만 하고 `end.md`는 바꾸지 않는다.
+  - start: eval 은 Windows 의 eval 환경에서도 돌게 한다.
+  - end: nolmeong 경로를 사례에 박는 대신 기계마다 따로 두도록 고쳤다(start 때 정한 "이 기계에서만"을 바꿈).
