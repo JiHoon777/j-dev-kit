@@ -61,8 +61,8 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 - **하위 세션:** `create`와 `start`는 기본으로 세션을 하나 띄우고 링크만 알린다. `create`는 같은 폴더에서(기준 브랜치에 있을 때만. 작업 브랜치나 워크트리에서는 이 세션에서 한다), `start`는 기준 브랜치에서 딴 새 워크트리(`w/<항목>` 브랜치)에서 돈다. 띄운 세션이 지휘한다: 하위 세션의 질문과 승인 요청을 이 세션에서 보여 주고 답을 전하며, 하위 세션이 끝나면 결과를 확인해 먼저 보고한다. 하위 세션에서 직접 답해도 된다. 작업하던 세션을 닫았으면 `start <번호>`가 이 세션에서 그 브랜치를 이어 간다. `end`는 작업한 세션에서 부른다. 세션을 새로 띄우는 도구가 없으면(데스크톱 앱이 아닌 곳) 이 세션에서 한다. 여러 항목을 함께 하려면 `start`를 여러 번 부르면 된다.
 
 - **create --survey:** 목표와 자료(경로, 명령, URL. 없으면 저장소에서 찾는다)를 받아 Claude 가 날것을 직접 읽고 항목 후보를 고른다. 같은 원인은 한 후보로 묶고, 버그 제보는 기준 브랜치에서 재현해 본다. 후보마다 근거와 확인 수단을 한 목록으로 보여 주고, 고른 것만 항목으로 쓴다. `start`는 부르지 않는다.
-- **start:** 기준선(검증 명령 한 번), 스택 시작 점검, 크기에 맞춘 계획(작은 항목은 에이전트 없이. 역할 대신 그 분야 최고 실무자의 도구와 단계를 정한다), 테스트 먼저 구현, `simplify`로 정리, 검증. AC 는 바깥 증거(명령 출력)나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다.
-- **end:** 스택 종료 점검, 리뷰(`code-review` + 필요할 때 `security-review`·스택 리뷰어·화면이 바뀌면 `design-reviewer`. 작업 세션이 Fable 이면 한 단계 낮은 최신 모델, 아니면 같은 모델), 지적의 타당성은 작업 세션이 아닌 판정 에이전트가 가리고 타당한 것만 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 구분별로 묻기, 고치기, 검증, 머지. 푸시는 요청할 때만.
+- **start:** 기준선(검증 명령 한 번), 스택 시작 점검, 크기에 맞춘 계획(작은 항목은 에이전트 없이), 그 분야 최고 실무자의 도구와 단계 정하기, 테스트 먼저 구현, `simplify`로 정리, 검증. AC 는 바깥 증거(명령 출력)나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다.
+- **end:** 스택 종료 점검, 리뷰(`code-review` + 필요할 때 `security-review`·스택 리뷰어·화면이 바뀌면 `design-reviewer`), 지적의 타당성은 작업 세션이 아닌 판정 에이전트가 가리고 타당한 것만 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 구분별로 묻기, 고치기, 검증, 머지. 푸시는 요청할 때만.
 - **리뷰 원칙:** 그대로 두기로 한 지적과 사용자가 바로잡은 것은 Final Summary 에 남고, 다른 항목에도 통하면 `docs/review-principles.md`에 원칙 한 줄로 모여 다음 리뷰의 입력이 된다.
 - **검증 훅:** `w/` 브랜치에서 항목의 Definition of Done 을 체크하고 멈추면, 훅이 CLAUDE.md 의 `검증 명령:`을 직접 돌린다. 실패하면 출력과 함께 되돌려 보내는데, 같은 내용으로는 한 번뿐이다. 코드가 그대로면 다시 돌리지 않는다. `/goal` 같은 다른 Stop 훅이 멈춤을 막은 뒤에도 돈다. 스킬이 이미 돌린 검증과 겹쳐 단계마다 한 번 더 돌 수 있다. Windows 에서는 Git Bash 가 필요하다.
 - **포트:** CLAUDE.md `## 작업 설정`에 `- 웹 포트: 5000`, `- 서버 포트: 6000`을 두면 항목마다 `기준 포트 + 항목 번호`(항목 007 → 5007, 6007)를 항목의 `### 포트`에 적고, 개발 서버를 띄우는 점검과 `design-reviewer` 리뷰가 그 포트를 쓴다. 그 포트를 이미 누가 쓰고 있으면 1씩 올린다. 여러 프로젝트를 함께 한다면 프로젝트마다, 그리고 웹과 서버끼리 기준 포트를 1000씩 떨어뜨린다(예: 프로젝트 A 웹 5000·서버 6000, 프로젝트 B 웹 7000·서버 8000). 항목 번호가 세 자리라 겹치지 않는다. Supabase·DB 포트는 나누지 않는다.
@@ -78,7 +78,7 @@ plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
 plugins/frontend/                   skills/frontend-{start,end}-check, ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
 plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
-scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, 설명 일치, README 목록, version 올리기)
+scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, 설명 일치, README 목록, version 올리기, 스킬의 셸 주입 줄)
 scripts/test-check-repo-rules.sh    검사 스크립트의 시나리오 테스트
 scripts/test-verify-on-stop.sh      검증 훅의 시나리오 테스트
 ```

@@ -43,8 +43,7 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
 
   4. That session cannot see this conversation. The brief is two lines, "Invoke the `task` skill with `<mode> <rest of the arguments> --here` and follow its procedure" and "Write questions and approval requests (a plan in full) completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any).
   5. Report the session link. That work does not happen in this session; this session directs it.
-     - When the sub-session ends its turn with a question or an approval request, show it to the user in full, and pass the answer to that session in the user's own words.
-     - When the sub-session ends a turn, check the result (commits, changed files) yourself and report it before the user asks.
+     - When the sub-session ends a turn, show any question or approval request to the user in full and pass the answer to that session in the user's own words. Check the result (commits, changed files) yourself and report it before the user asks.
      - If the user answered in the sub-session directly, accept that.
 
 ## 3. Project settings
@@ -63,4 +62,3 @@ Rules in the project CLAUDE.md take precedence over this skill and superpowers.
 - Do not assume what you do not know; say it. Do not ask what code and docs can answer.
 - Do only what the item requires. Every changed line must trace back to the item.
 - Before saying "done", run verification fresh and show the result.
-- Each procedure checks current state such as branches and changes with commands itself. The skill runs no shell when it loads, so that it still loads where Bash is blocked.

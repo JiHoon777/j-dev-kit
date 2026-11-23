@@ -33,7 +33,7 @@ A schema change must ship with a migration. If schema-related code changed:
 
 When an OpenAPI spec exists and changed:
 
-- `oasdiff breaking --fail-on ERR <base spec> <new spec>` (base spec from `git show origin/<base>:<path>`; if oasdiff is missing, install it as above). A breaking change is not a failure but evidence to pass to the reviewer. If it cannot be installed, pass both paths to the reviewer.
+- `oasdiff breaking --fail-on ERR <base spec> <new spec>` (base spec from `git show origin/<base>:<path>`). A breaking change is not a failure but evidence to pass to the reviewer. If it cannot be installed, pass both paths to the reviewer.
 - If the spec is generated from code, run the generator, then `git diff --exit-code <spec>`. A difference is a failure.
 
 ### Config keys

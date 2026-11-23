@@ -229,6 +229,26 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - `create.md`·`mockup.md`의 "질문 최대 3개"는 재지 않아 그대로 둔다.
 - A/B 비용: $103.39(채점 포함 전 금액, eval 도구의 costUsd 합).
 
+#### 마무리 정리 (start 6단계)
+
+- eval 임시 폴더: 이 항목의 eval 결과 JSON 에 적힌 `%TEMP%\claude-eval-*` 가운데 남아 있던 38개를 지웠다(`--keep-temp`로 남긴 것). 남은 `claude-eval-*`는 없다.
+- `simplify`(재사용·단순화·효율·고칠 깊이 에이전트 넷). 고친 것:
+  - 군더더기 문장: SKILL.md 하위 세션 지휘 두 줄을 하나로. start.md 계획 항목 2와 5단계 도구·단계 문장 줄임. end.md 리뷰 지시문의 "거르기는 4단계의 판정이 한다"(에이전트는 4단계를 모른다)와 원칙 절의 중복 두 문장. api-reviewer 근거 문장 중복. server-end-check oasdiff 설치 중복. mockup.md DESIGN.md 확인. README 의 start·end 줄.
+  - start.md 5단계 AC 체크: AC 마다 판정자를 띄울 수 있게 읽히던 것을 "바깥 증거가 있는 것만 바로 체크하고, 판정자가 필요한 AC 는 6단계 4에서 한 번에"로 바꿨다. 6단계 4의 `frontend:frontend-evaluator` 이름은 "3의 브라우저 확인"으로 바꿨다(workflow 가 frontend 를 직접 가리키지 않게).
+  - SKILL.md 의 "셸을 돌리지 않는 이유" 설명 줄을 지우고, 대신 `check-repo-rules.sh`에 셸 주입 줄 검사(5번)를 더했다. 시나리오 하나를 더해 30개 모두 맞음. evals 제외 규칙을 정규식 하나(`evals_re`)로 합쳤다.
+  - 낡은 설명: workflow eval README 와 `start-plan` 두 사례의 설명이 이미 지운 두 제한을 "잰다"고 하던 것을 고쳤다. 사본 만들 때 Stop 훅도 지운다고 적었다. frontend eval README 표 사이 빈 줄을 지웠다.
+  - `evals/trigger/` 5개는 `trigger-real`이 모두 덮어서 지웠다.
+- 고치지 않은 것과 이유:
+  - 리뷰어 지시문에서 원칙으로 미리 거르지 말자는 제안: 동작이 바뀐다.
+  - Fable 모델 문장: AC #9, 사용자가 정한 문장이다.
+  - 에이전트 첫 문단의 도구 목록 줄이기: AC #2 가 도구와 단계를 말하라고 한다.
+  - create.md 서베이 문장 줄이기: AC #11~13 의 문구다.
+  - 5단계 `receiving-code-review` 중복 확인: AC #4 가 그대로 두라고 한다.
+  - design-reviewer 보고 형식을 다른 리뷰어처럼 바꾸기: 동작이 바뀌고 AC #17 범위 밖이다. end.md 3단계 지시문이 이미 "찾은 문제를 모두"를 준다.
+  - fixture·grader 중복을 공용 스크립트로 합치기: eval 형식이 사례 폴더 밖을 막는다. `source`로 우회하는 방법은 확인하지 않았다.
+  - 사본을 만드는 스크립트, 하위 세션 relay 인자: 범위 밖이다.
+  - nolmeong 경로를 박은 실제 사례: 사용자가 정한 방식이다(이 기계에서만 돈다).
+
 - 2차 비용: $13.55. 1차를 합친 eval 전체 비용: 약 $22.6.
 - 채점 샘플(sonnet, 표결 3회. 도구가 채점 이유는 남기지 않고 본 보고 일부만 남긴다):
   - PASS 예: `judges-coupon`(Svelte 뺀 판) — 보고가 "클라이언트로 가는 컴포넌트가 `$env/static/private`를 import, 빌드 실패나 비밀 키 노출"을 짚었다. 맞는 판정.

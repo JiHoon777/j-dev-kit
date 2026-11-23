@@ -43,7 +43,7 @@ For suspicious findings, send a reproduction request with `curl` and use the sta
 
 ## Report format
 
-Report every problem you found, split into confirmed ones (🔴 · 🟡 · ⚪ below) and unconfirmed ones (at the bottom, with what would confirm them). The caller's judge does the filtering. Do not write scores. As evidence, write the request sent and the response received.
+Report every problem you found, split into confirmed ones (🔴 · 🟡 · ⚪ below) and unconfirmed ones (at the bottom, with what would confirm them). The caller's judge does the filtering. Do not write scores.
 
 ```markdown
 🔴 Must fix

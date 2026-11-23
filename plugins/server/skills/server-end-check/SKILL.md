@@ -31,7 +31,7 @@ metadata:
 
 OpenAPI 스펙이 있고 바뀌었을 때:
 
-- `oasdiff breaking --fail-on ERR <기준 스펙> <새 스펙>`(기준 스펙은 `git show origin/<기준>:<경로>`, oasdiff 가 없으면 위 방식으로 설치). 호환성을 깨는 변경은 실패가 아니라 리뷰어에게 넘길 근거다. 설치할 수 없으면 두 경로를 리뷰어에게 넘긴다.
+- `oasdiff breaking --fail-on ERR <기준 스펙> <새 스펙>`(기준 스펙은 `git show origin/<기준>:<경로>`). 호환성을 깨는 변경은 실패가 아니라 리뷰어에게 넘길 근거다. 설치할 수 없으면 두 경로를 리뷰어에게 넘긴다.
 - 스펙을 코드에서 생성하면 생성 후 `git diff --exit-code <스펙>`. 차이가 있으면 실패.
 
 ### 설정 키

@@ -42,7 +42,7 @@ Agents cannot see this conversation, so put these in the instructions:
 1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
 2. Do not edit files and do not commit. Do not touch remote or production environments. Start servers, install tools, or reproduce locally only when that agent's criteria allow it.
 3. Principles: the contents of `docs/review-principles.md` if it exists. Do not raise findings that go against a principle.
-4. Report: every problem found, split into confirmed and unconfirmed, as `file:line — problem — how to fix`. Filtering is done by the judge in step 4. Do not give scores.
+4. Report: every problem found, split into confirmed and unconfirmed, as `file:line — problem — how to fix`. Do not give scores.
 5. If the skill cannot be called, do not make something up in its place; report that.
 
 ## 4. Judge, show and ask
@@ -80,7 +80,7 @@ Do not fix anything before getting an answer.
 
 1. Run the verify command fresh once. If there are failures not in `### Baseline`, stop and say so.
 2. Write the item's `Final Summary`: what changed, what was fixed in review, what was deferred (new item numbers), findings left as is and why, what the user corrected (during `start` and `end`, one line each).
-3. **Principles:** if a reason for leaving a finding as is, or something the user corrected, holds for other items too, add it to `docs/review-principles.md` as one line (`- principle — reason (item number)`). Create the file if missing. Do not add a principle that is already there. It becomes input to step 3 from the next review on.
+3. **Principles:** if a reason for leaving a finding as is, or something the user corrected, holds for other items too, add it to `docs/review-principles.md` as one line (`- principle — reason (item number)`). Do not add a principle that is already there.
 4. Close only when everything is in place. If anything is missing, stop and say so.
    - [ ] All Acceptance Criteria checked
    - [ ] All Definition of Done checked
