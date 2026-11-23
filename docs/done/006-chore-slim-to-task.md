@@ -1,7 +1,7 @@
 ---
 id: '006'
 title: /task 하나로 줄이고 create·start 는 하위 세션에서, Claude 가 알아서 부르게
-status: In Progress
+status: Done
 labels: [chore]
 priority: medium
 dependencies: []
@@ -23,13 +23,13 @@ updated_date: 2026-11-23
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 `architecture`, `design` 플러그인, `lead`·`until-done` 스킬, `backlog-scout`·`trend-scout` 에이전트가 원문·번역본·marketplace·README·`.claude/settings.json`에서 모두 없어졌다
-- [ ] #2 `design-reviewer`가 frontend 에이전트로 있고, 화면이 바뀌었을 때 `frontend-end-check`가 `/task end` 리뷰에 넣으라고 돌려준다
-- [ ] #7 frontend 에 `ui-design` 스킬(DESIGN.md 만들기·갱신, 캔버스 시안)이 있고, `frontend-start-check`가 새 화면·다시 디자인하는 항목이면 계획 전에 시안을, DESIGN.md 가 없거나 토큰이 바뀌면 DESIGN.md 를 돌려준다. 사용자가 따로 부르지 않아도 된다
-- [ ] #3 `/task create <내용>`과 `/task start <번호>`는 세션 도구가 있으면 하위 세션을 띄우고 링크만 알린다(start 는 워크트리, `w/<항목>` 브랜치). 그 세션이 절차를 따른다
-- [ ] #4 `--here`를 붙이거나 세션 도구가 없으면 지금 세션에서 절차를 따른다
-- [ ] #5 `task` 스킬에 `disable-model-invocation`이 없고, description 이 언제 쓰는지 말한다. 절차 안의 "Skill 도구로 부르지 않는다" 우회가 없다
-- [ ] #6 저장소 어디에도 지운 것(`/lead`, `/until-done`, `/arch`, `/ui`, `워크트리: 켜기`)을 쓰라는 안내가 남지 않았다(`docs/done/`, `.claude/.local/`, 그때 상태를 적은 인수인계 메모 `docs/backlog/_handoff-app-autopilot.md` 제외)
+- [x] #1 `architecture`, `design` 플러그인, `lead`·`until-done` 스킬, `backlog-scout`·`trend-scout` 에이전트가 원문·번역본·marketplace·README·`.claude/settings.json`에서 모두 없어졌다
+- [x] #2 `design-reviewer`가 frontend 에이전트로 있고, 화면이 바뀌었을 때 `frontend-end-check`가 `/task end` 리뷰에 넣으라고 돌려준다
+- [x] #7 frontend 에 `ui-design` 스킬(DESIGN.md 만들기·갱신, 캔버스 시안)이 있고, `frontend-start-check`가 새 화면·다시 디자인하는 항목이면 계획 전에 시안을, DESIGN.md 가 없거나 토큰이 바뀌면 DESIGN.md 를 돌려준다. 사용자가 따로 부르지 않아도 된다
+- [x] #3 `/task create <내용>`과 `/task start <번호>`는 세션 도구가 있으면 하위 세션을 띄우고 링크만 알린다(start 는 워크트리, `w/<항목>` 브랜치). 그 세션이 절차를 따른다
+- [x] #4 `--here`를 붙이거나 세션 도구가 없으면 지금 세션에서 절차를 따른다
+- [x] #5 `task` 스킬에 `disable-model-invocation`이 없고, description 이 언제 쓰는지 말한다. 절차 안의 "Skill 도구로 부르지 않는다" 우회가 없다
+- [x] #6 저장소 어디에도 지운 것(`/lead`, `/until-done`, `/arch`, `/ui`, `워크트리: 켜기`)을 쓰라는 안내가 남지 않았다(`docs/done/`, `.claude/.local/`, 그때 상태를 적은 인수인계 메모 `docs/backlog/_handoff-app-autopilot.md` 제외)
 
 <!-- AC:END -->
 
@@ -37,8 +37,8 @@ updated_date: 2026-11-23
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 원문을 고친 곳은 번역본도 고쳤고, 고친 플러그인의 version·README 두 개·marketplace.json 설명을 맞췄다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 원문을 고친 곳은 번역본도 고쳤고, 고친 플러그인의 version·README 두 개·marketplace.json 설명을 맞췄다
 
 <!-- DOD:END -->
 
@@ -81,4 +81,7 @@ updated_date: 2026-11-23
 
 ## Final Summary
 
-`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
+- **바뀐 것:** `architecture`·`design` 플러그인, `/lead`, `/until-done`, scout 에이전트를 지우고 `/task create | start | end`만 남겼다. `task`는 Claude 가 알아서 부를 수 있고, `create`·`start`는 기본으로 하위 세션을 띄운다(`--here`나 세션 도구가 없으면 이 세션). 워크트리 설정과 손으로 따는 워크트리 절차를 지웠다. 디자인은 frontend 로 모았다: `ui-design` 스킬(DESIGN.md·캔버스 시안)을 `frontend-start-check`가 필요할 때 끼워 넣고, `design-reviewer`는 `frontend-end-check`가 리뷰에 넣는다. workflow 0.10.0, frontend 0.7.0.
+- **리뷰에서 고친 것:** 기준선 전에 의존성 설치, 세션이 없어도 기존 `w/` 브랜치 이어 가기, "막 딴 워크트리" 판단에 워크트리 확인, `create` 하위 세션은 기준 브랜치에서만.
+- **미룬 것:** 없음. 리뷰용 개발 서버를 끄지 않는 것은 그대로 두기로 했다(항목마다 포트가 다르다).
+- **확인하지 못한 것:** 하위 세션 흐름과 시안 단계를 실제 세션·UI 프로젝트에서 돌려 보지는 않았다(절차 문서만 바꿨다). 디자인을 frontend 로 옮긴 마지막 변경은 리뷰 에이전트로 다시 보지 않았다.
