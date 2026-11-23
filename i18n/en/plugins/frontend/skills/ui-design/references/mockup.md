@@ -11,7 +11,7 @@ Settle the screen, who uses it, what they do there, and the real copy and data. 
 - **One:** build one direction right away. Skip step 2.
 - **Several:** 3 by default, at most 5. Compare after building and pick.
 
-If the root has no `DESIGN.md`, suggest `system` first. If the user wants to go ahead anyway, go ahead. If `/task start` invoked this before planning, do not suggest it (DESIGN.md is handled in that item's plan).
+Check whether the root has a `DESIGN.md` (`ls DESIGN.md`). If not, suggest `system` first. If the user wants to go ahead anyway, go ahead. If `/task start` invoked this before planning, do not suggest it (DESIGN.md is handled in that item's plan).
 
 ## 2. Directions (several only)
 

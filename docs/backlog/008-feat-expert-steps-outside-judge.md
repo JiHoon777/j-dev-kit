@@ -45,37 +45,37 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 `start.md` 3단계에 "이 항목의 일을 그 분야 최고 실무자는 어떤 도구와 단계로 하나"를 정하는 단계가 있고, 계획(`ExitPlanMode`)에 넣을 것에 그 도구·단계가 들어가며, 5단계 구현이 그것을 따른다고 적혀 있다
-- [ ] #2 리뷰 에이전트 5개(`design-reviewer`, `frontend-evaluator`, `frontend-reviewer`, `api-reviewer`, `supabase-reviewer`)가 그 분야 최고 실무자가 쓰는 도구와 단계를 말한다. 역할 문장("너는 X 다")을 둘지는 리뷰어 하나로 역할 문장이 있는 판과 없는 판을 eval 로 비교해 정했고, 방법과 결과가 `Implementation Notes`에 있다. 지우기로 했으면 `grep -n '^너는' plugins/*/agents/*.md`와 `grep -n '^You are' i18n/en/plugins/*/agents/*.md`가 비어 있다
-- [ ] #3 `server-end-check`에 "새로 내려받지 않는다"가 없고 필요한 검사 도구를 설치해 쓸 수 있으며, `api-reviewer`에 "돌리지는 않는다"가 없고 로컬·개발 환경에서는 재현 요청을 직접 돌려 그 결과를 근거로 쓴다(운영·원격 금지는 그대로)
-- [ ] #4 `end.md` 4단계에서 지적이 타당한지는 작업 세션이 아닌 쪽이 판정하고, 사용자에게는 타당하다고 판정된 지적만 보인다. 5단계의 `receiving-code-review`는 그대로다
-- [ ] #5 Final Summary 형식(`end.md` 6단계, `create.md` 템플릿, `docs/backlog/_template.md`)에 "그대로 둔 지적과 이유"가 있다
-- [ ] #6 그대로 둔 지적을 원칙으로 모아 두는 곳이 정해져 있고, `end.md` 3단계 리뷰 지시문이 그 원칙을 입력으로 넣는다. 이 저장소의 그곳에 006 의 포트 지적이 원칙 하나로 적혀 있다
-- [ ] #7 `start.md` 6단계에서 UI 가 아닌 AC 도 구현 세션이 스스로 판정해 체크하지 않는다. 바깥 증거(명령 출력 등)나 구현 세션이 아닌 판정자가 확인한 것만 체크한다고 적혀 있다
-- [ ] #8 고정 체크리스트(`frontend-reviewer`의 Svelte·React 항목, `start.md`의 Explore 최대 2개·질문 최대 3개, 그 밖에 계획에서 고른 것)마다 있을 때와 없을 때를 비교한 방법과 결과가 `Implementation Notes`에 있고, 지운 것은 비교에서 없어도 나빠지지 않은 것뿐이다. eval 이 `plugins/*/evals/`에 커밋돼 있고 다시 돌리는 명령이 적혀 있다
-- [ ] #9 `/task end` 3단계의 리뷰 에이전트가 작업 세션이 Fable 이면 한 단계 낮은 최신 모델로, Opus 이하면 작업 세션과 같은 모델로 돌고, 그 규칙이 `end.md`에 보인다
-- [ ] #10 `task` 스킬의 `argument-hint`와 `create.md`에 서베이 형식 `create --survey <목표> [자료…]`가 있다. 자료는 파일·폴더 경로, 명령, URL 이고, 주지 않으면 Claude 가 저장소에서 찾는다(오류 로그, 기존 백로그와 제안함, 사용 데이터 등). `--survey`가 없으면 지금처럼 항목 하나를 쓴다
-- [ ] #11 서베이 모드에서는 Claude 가 날것의 자료를 직접 읽고 목표에 맞는 항목 후보를 스스로 고른다. 사용자에게는 후보마다 제목, 고른 근거(자료의 위치), 됐는지 확인할 수단을 한 목록으로 한 번에 보여 준다. 개수는 정해 두지 않고 근거가 있는 것만 올린다
-- [ ] #12 사용자가 목록에서 고른 후보만 2단계 규칙대로 항목으로 쓰고 항목마다 따로 커밋한다(`docs(backlog): <번호> <제목>`). 각 항목의 AC 에는 그 확인 수단이 들어간다. 고르지 않은 후보는 쓰지 않는다
-- [ ] #13 서베이 모드는 항목을 만들기만 하고 `start`를 부르거나 세션을 띄우지 않는다. `/lead`를 쓰라는 안내가 저장소에 다시 생기지 않았다
-- [ ] #14 `task` 스킬 2절에 "질문과 승인은 사용자가 그 세션에서 직접 한다"가 없고, 대신 띄운 세션이 지휘한다고 적혀 있다: 하위 세션의 질문·승인 요청을 띄운 세션이 사용자에게 보여 주고 답을 받아 그 세션에 전한다. 하위 세션이 턴을 끝내면 결과(커밋, 파일)를 확인해 사용자가 묻기 전에 보고한다. 사용자가 하위 세션에서 직접 답한 것도 받아들인다
-- [ ] #15 서베이 모드에서 같은 원인으로 보이는 자료는 한 후보로 묶이고 근거 위치가 모두 적힌다. 버그 제보에서 온 후보의 근거에는 기준 브랜치에서 재현했는지(했으면 방법, 못 했으면 그렇다고)가 붙는다
-- [ ] #16 Final Summary 에 `start`·`end` 동안 사용자가 바로잡은 것이 한 줄씩 남고 원칙 모으기의 입력이 된다. 또는 Claude Code 자동 메모리와 겹쳐 근거가 약하다고 보고 하지 않았으며, 그 이유가 `Implementation Notes`에 있다
-- [ ] #17 `end.md` 3단계 지시문과 `frontend-reviewer`·`api-reviewer`·`supabase-reviewer`(번역본 포함)에 "확신이 낮은 것은 보고하지 않는다"가 없고, 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고하게 한다(`grep -rn '확신이 낮은' plugins`, `grep -rni 'low-confidence' i18n`이 비어 있다)
-- [ ] #18 `task` 스킬 description 의 지금 문구와 트리거 조건만 남긴 문구를 트리거 eval(부를 요청, 부르지 말 요청)로 비교했고, 방법과 결과가 `Implementation Notes`에 있으며, 나은 쪽이 SKILL.md(번역본, `marketplace.json`·README 설명 포함)에 남아 있다
-- [ ] #19 code-review 하나만 쓴 판과 스택 리뷰어를 더한 판을 eval 로 비교한 방법과 결과가 `Implementation Notes`에 있다. `end.md` 3단계 구성은 사용자가 결과를 보고 정한 대로다
+- [x] #1 `start.md` 3단계에 "이 항목의 일을 그 분야 최고 실무자는 어떤 도구와 단계로 하나"를 정하는 단계가 있고, 계획(`ExitPlanMode`)에 넣을 것에 그 도구·단계가 들어가며, 5단계 구현이 그것을 따른다고 적혀 있다
+- [x] #2 리뷰 에이전트 5개(`design-reviewer`, `frontend-evaluator`, `frontend-reviewer`, `api-reviewer`, `supabase-reviewer`)가 그 분야 최고 실무자가 쓰는 도구와 단계를 말한다. 역할 문장("너는 X 다")을 둘지는 리뷰어 하나로 역할 문장이 있는 판과 없는 판을 eval 로 비교해 정했고, 방법과 결과가 `Implementation Notes`에 있다. 지우기로 했으면 `grep -n '^너는' plugins/*/agents/*.md`와 `grep -n '^You are' i18n/en/plugins/*/agents/*.md`가 비어 있다
+- [x] #3 `server-end-check`에 "새로 내려받지 않는다"가 없고 필요한 검사 도구를 설치해 쓸 수 있으며, `api-reviewer`에 "돌리지는 않는다"가 없고 로컬·개발 환경에서는 재현 요청을 직접 돌려 그 결과를 근거로 쓴다(운영·원격 금지는 그대로)
+- [x] #4 `end.md` 4단계에서 지적이 타당한지는 작업 세션이 아닌 쪽이 판정하고, 사용자에게는 타당하다고 판정된 지적만 보인다. 5단계의 `receiving-code-review`는 그대로다
+- [x] #5 Final Summary 형식(`end.md` 6단계, `create.md` 템플릿, `docs/backlog/_template.md`)에 "그대로 둔 지적과 이유"가 있다
+- [x] #6 그대로 둔 지적을 원칙으로 모아 두는 곳이 정해져 있고, `end.md` 3단계 리뷰 지시문이 그 원칙을 입력으로 넣는다. 이 저장소의 그곳에 006 의 포트 지적이 원칙 하나로 적혀 있다
+- [x] #7 `start.md` 6단계에서 UI 가 아닌 AC 도 구현 세션이 스스로 판정해 체크하지 않는다. 바깥 증거(명령 출력 등)나 구현 세션이 아닌 판정자가 확인한 것만 체크한다고 적혀 있다
+- [x] #8 고정 체크리스트(`frontend-reviewer`의 Svelte·React 항목, `start.md`의 Explore 최대 2개·질문 최대 3개, 그 밖에 계획에서 고른 것)마다 있을 때와 없을 때를 비교한 방법과 결과가 `Implementation Notes`에 있고, 지운 것은 비교에서 없어도 나빠지지 않은 것뿐이다. eval 이 `plugins/*/evals/`에 커밋돼 있고 다시 돌리는 명령이 적혀 있다
+- [x] #9 `/task end` 3단계의 리뷰 에이전트가 작업 세션이 Fable 이면 한 단계 낮은 최신 모델로, Opus 이하면 작업 세션과 같은 모델로 돌고, 그 규칙이 `end.md`에 보인다
+- [x] #10 `task` 스킬의 `argument-hint`와 `create.md`에 서베이 형식 `create --survey <목표> [자료…]`가 있다. 자료는 파일·폴더 경로, 명령, URL 이고, 주지 않으면 Claude 가 저장소에서 찾는다(오류 로그, 기존 백로그와 제안함, 사용 데이터 등). `--survey`가 없으면 지금처럼 항목 하나를 쓴다
+- [x] #11 서베이 모드에서는 Claude 가 날것의 자료를 직접 읽고 목표에 맞는 항목 후보를 스스로 고른다. 사용자에게는 후보마다 제목, 고른 근거(자료의 위치), 됐는지 확인할 수단을 한 목록으로 한 번에 보여 준다. 개수는 정해 두지 않고 근거가 있는 것만 올린다
+- [x] #12 사용자가 목록에서 고른 후보만 2단계 규칙대로 항목으로 쓰고 항목마다 따로 커밋한다(`docs(backlog): <번호> <제목>`). 각 항목의 AC 에는 그 확인 수단이 들어간다. 고르지 않은 후보는 쓰지 않는다
+- [x] #13 서베이 모드는 항목을 만들기만 하고 `start`를 부르거나 세션을 띄우지 않는다. `/lead`를 쓰라는 안내가 저장소에 다시 생기지 않았다
+- [x] #14 `task` 스킬 2절에 "질문과 승인은 사용자가 그 세션에서 직접 한다"가 없고, 대신 띄운 세션이 지휘한다고 적혀 있다: 하위 세션의 질문·승인 요청을 띄운 세션이 사용자에게 보여 주고 답을 받아 그 세션에 전한다. 하위 세션이 턴을 끝내면 결과(커밋, 파일)를 확인해 사용자가 묻기 전에 보고한다. 사용자가 하위 세션에서 직접 답한 것도 받아들인다
+- [x] #15 서베이 모드에서 같은 원인으로 보이는 자료는 한 후보로 묶이고 근거 위치가 모두 적힌다. 버그 제보에서 온 후보의 근거에는 기준 브랜치에서 재현했는지(했으면 방법, 못 했으면 그렇다고)가 붙는다
+- [x] #16 Final Summary 에 `start`·`end` 동안 사용자가 바로잡은 것이 한 줄씩 남고 원칙 모으기의 입력이 된다. 또는 Claude Code 자동 메모리와 겹쳐 근거가 약하다고 보고 하지 않았으며, 그 이유가 `Implementation Notes`에 있다
+- [x] #17 `end.md` 3단계 지시문과 `frontend-reviewer`·`api-reviewer`·`supabase-reviewer`(번역본 포함)에 "확신이 낮은 것은 보고하지 않는다"가 없고, 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고하게 한다(`grep -rn '확신이 낮은' plugins`, `grep -rni 'low-confidence' i18n`이 비어 있다)
+- [x] #18 `task` 스킬 description 의 지금 문구와 트리거 조건만 남긴 문구를 트리거 eval(부를 요청, 부르지 말 요청)로 비교했고, 방법과 결과가 `Implementation Notes`에 있으며, 나은 쪽이 SKILL.md(번역본, `marketplace.json`·README 설명 포함)에 남아 있다
+- [x] #19 code-review 하나만 쓴 판과 스택 리뷰어를 더한 판을 eval 로 비교한 방법과 결과가 `Implementation Notes`에 있다. `end.md` 3단계 구성은 사용자가 결과를 보고 정한 대로다
 
-- [ ] #20 만점 동률로 판별력이 없던 비교(Svelte 절, 역할 문장, 리뷰어 구성)를 실제 실패에서 만든 더 어려운 사례로 다시 쟀다. 사례 작성 방식과 출처, 지시 없는 대조군이 실제로 실패하는지 확인한 결과, LLM 채점을 사람 라벨로 보정한 결과, 비교 결과가 `Implementation Notes`에 있다. 대조군이 실패하지 않은 사례는 쓰지 않았다
-- [ ] #21 `task`와 `ui-design` SKILL.md(번역본 포함)에 `!` 셸 줄이 없고(`grep -rn '^- .*!`' plugins i18n`이 비어 있다), 그 상태가 필요한 절차(`start.md`·`end.md` 1단계, `mockup.md`)가 명령으로 직접 본다. 셸이 없는 eval 실행에서 고친 원본 `task` 스킬이 불러와진다
+- [x] #20 만점 동률로 판별력이 없던 비교(Svelte 절, 역할 문장, 리뷰어 구성)를 실제 실패에서 만든 더 어려운 사례로 다시 쟀다. 사례 작성 방식과 출처, 지시 없는 대조군이 실제로 실패하는지 확인한 결과, LLM 채점을 사람 라벨로 보정한 결과, 비교 결과가 `Implementation Notes`에 있다. 대조군이 실패하지 않은 사례는 쓰지 않았다
+- [x] #21 `task`와 `ui-design` SKILL.md(번역본 포함)에 `!` 셸 줄이 없고(`grep -rn '^- .*!`' plugins i18n`이 비어 있다), 그 상태가 필요한 절차(`start.md`·`end.md` 1단계, `mockup.md`)가 명령으로 직접 본다. 셸이 없는 eval 실행에서 고친 원본 `task` 스킬이 불러와진다
 <!-- AC:END -->
 
 ## Definition of Done
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
-- [ ] #3 고친 플러그인마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
+- [x] #3 고친 플러그인마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
 
 <!-- DOD:END -->
 
@@ -230,6 +230,10 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - A/B 비용: $103.39(채점 포함 전 금액, eval 도구의 costUsd 합).
 
 #### 마무리 정리 (start 6단계)
+
+- AC 판정(새 general-purpose 판정 에이전트, 항목 파일과 diff 범위만 넘김, HEAD 4c24786): AC 20개 통과, #21 실패, DoD 3개 통과. 판정 에이전트가 직접 돌린 명령: 검증 명령 EXIT=0, `test-check-repo-rules.sh` 30/30, AC 의 grep 들(#2 `^너는`·`^You are`, #3, #17, #21 `^- .*!\``) 모두 비어 있음.
+  - #21 실패 이유: simplify 가 `mockup.md`의 "루트에 `DESIGN.md`가 있는지 본다"를 지워, 지운 셸 주입 줄 대신 상태를 직접 확인하는 지시가 없어졌다. "있는지(`ls DESIGN.md`) 본다"로 되살렸다(번역본 포함). 고친 뒤 #21 을 체크했다.
+  - #19·#20 은 단서와 함께 통과다. #19: 실제 사례 결과를 받은 뒤 사용자가 따로 정한 기록은 없지만, `end.md` 3단계는 사용자 결정("재기만, 바꾸지 않음")대로 그대로다. #20: 사람 라벨이 5건뿐인 것은 한계로 적혀 있다.
 
 - eval 임시 폴더: 이 항목의 eval 결과 JSON 에 적힌 `%TEMP%\claude-eval-*` 가운데 남아 있던 38개를 지웠다(`--keep-temp`로 남긴 것). 남은 `claude-eval-*`는 없다.
 - `simplify`(재사용·단순화·효율·고칠 깊이 에이전트 넷). 고친 것:
