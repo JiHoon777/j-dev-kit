@@ -185,6 +185,10 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - 대조군(Svelte 절을 뺀 frontend-reviewer, 사례마다 5회, Opus 시험, sonnet 채점): `real-line` 0.80, `real-sky` 0.62, `real-birthday` 0.69. 셋 다 대조군이 실패하고 0% 도 아니어서 쓴다. 비용 $18.06.
   - 5회 모두 FAIL: 이모지 반쪽, 가려진 동안 흉내, "0억 km", 버튼 자리 밀림, 시간대.
 - 채점 보정: 대조군 판정에서 40건(PASS 20, FAIL 20)을 뽑아 사용자 라벨을 받는 중. 판정이 본 글은 보고 전체였다(잘리지 않음).
+- SKILL.md 의 `!` 줄을 지운 뒤(AC #21), 원본 SKILL.md 그대로(사본에서는 `dependencies`와 훅만 뺌) 계획 사례를 1회 돌렸다. "Launching skill: workflow:task", 점수 1.0($0.32).
+- 계획 사례 P(`start-plan-real`, nolmeong 013 시작 전 `d8c75f5`): 정답은 승인된 계획(`ed9250b`)의 핵심 결정 6가지다. 시안은 `c32b56d`의 `docs/design/002-sky-real/project`를 바깥 자료 `sky-prototype/`으로 둔다(사후 기록인 decisions.md 는 뺐다).
+  - 대조군(두 제한을 다 뺀 start.md, 5회): 0.83. 비용 $8.07(1회 약 $1.6).
+  - 제한이 없어도 Explore 는 0회, 질문은 0~3개였다. 대조군이 두 제한을 어긴 적이 없다.
 
 - 2차 비용: $13.55. 1차를 합친 eval 전체 비용: 약 $22.6.
 - 채점 샘플(sonnet, 표결 3회. 도구가 채점 이유는 남기지 않고 본 보고 일부만 남긴다):
