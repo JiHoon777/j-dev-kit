@@ -9,7 +9,7 @@
 
 다시 돌리기:
 
-1. 이 플러그인 폴더를 비교할 판마다 복사한다(예: `with`, `no-explore-limit`, `no-question-limit`). eval 실행은 의존 플러그인을 설치하지 않으니, 사본의 `.claude-plugin/plugin.json`에서 `dependencies`를 지운다. 뺀 사본의 `skills/task/references/start.md`에서 잴 문구를 지운다.
+1. 이 플러그인 폴더를 비교할 판마다 복사한다(예: `with`, `no-explore-limit`, `no-question-limit`). eval 실행은 의존 플러그인을 설치하지 않으니, 사본의 `.claude-plugin/plugin.json`에서 `dependencies`를 지운다. 뺀 사본의 `skills/task/references/start.md`에서 잴 문구를 지운다. `skills/task/SKILL.md`의 `!` 셸 줄은 모든 사본에서 지운다. 셸이 없는 실행에서는 `!` 줄 하나가 실패해도 스킬 로드가 통째로 멈춘다(skills 문서 "A failed command aborts the entire skill invocation").
 2. 사본마다 돌린다. `--model`은 작업 세션의 모델로 바꾼다(모델이 바뀌면 다시 잰다). LLM 채점은 시험받는 모델과 다른 `sonnet`으로 한다. 반복은 사례마다 3회, 문구만 바꾸는 미세 비교(역할 문장 등)는 판마다 5회이고 그 문구가 없는 대조군을 둔다. 두 판이 모두 만점이면 판별력이 없는 것이니 지우지 않는다. 셸 도구는 주지 않는다(Windows 에는 eval 샌드박스가 없다. 사례 프롬프트가 1~2단계를 건너뛰게 한다).
 
 ```bash
