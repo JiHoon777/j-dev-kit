@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: compose-real-line-stack
+description: 리뷰어 구성 비교(code-review + frontend-reviewer). nolmeong 002 한 줄 화면(리뷰 전 300f562). 정답은 리뷰에서 고친 동작 버그 10건(고친 커밋 3d1649b, 5aaa792)
+tags: [compose-real]
+context:
+  scaffold_script: fixture.sh

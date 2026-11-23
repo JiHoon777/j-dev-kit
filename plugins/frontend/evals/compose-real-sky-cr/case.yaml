@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: compose-real-sky-cr
+description: 리뷰어 구성 비교(code-review 만). nolmeong 013 진짜 하늘(리뷰 전 c32b56d). 정답은 리뷰에서 고친 🔴·🟡 8건(고친 커밋 4aeb3af, 0a73b47, f1a7b88). review.diff 에서 docs/design 시안, static/sky 자산, pnpm-lock.yaml 은 뺐다
+tags: [compose-real]
+context:
+  scaffold_script: fixture.sh
