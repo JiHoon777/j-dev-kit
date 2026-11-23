@@ -63,6 +63,7 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - [ ] #18 `task` 스킬 description 의 지금 문구와 트리거 조건만 남긴 문구를 트리거 eval(부를 요청, 부르지 말 요청)로 비교했고, 방법과 결과가 `Implementation Notes`에 있으며, 나은 쪽이 SKILL.md(번역본, `marketplace.json`·README 설명 포함)에 남아 있다
 - [ ] #19 code-review 하나만 쓴 판과 스택 리뷰어를 더한 판을 eval 로 비교한 방법과 결과가 `Implementation Notes`에 있다. `end.md` 3단계 구성은 사용자가 결과를 보고 정한 대로다
 
+- [ ] #20 만점 동률로 판별력이 없던 비교(Svelte 절, 역할 문장, 리뷰어 구성)를 실제 실패에서 만든 더 어려운 사례로 다시 쟀다. 사례 작성 방식과 출처, 지시 없는 대조군이 실제로 실패하는지 확인한 결과, LLM 채점을 사람 라벨로 보정한 결과, 비교 결과가 `Implementation Notes`에 있다. 대조군이 실패하지 않은 사례는 쓰지 않았다
 <!-- AC:END -->
 
 ## Definition of Done
@@ -147,7 +148,7 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 | Svelte 절 | 있음 3회 / 뺌 3회 | 1.0 / 1.0 | $1.26 / $1.54 | 만점 동률, 판별력 없음. 유지 |
 | React 절 | 있음 5회 / 뺌 3회 | 1.0 / 1.0 | $2.42 / $1.35 | 만점 동률, 판별력 없음. 유지 |
 | 역할 문장(대조군: 역할 문장 없음) | 있음 5회 / 없음 5회 | 1.0 / 1.0 | $2.42 / $2.63 | 만점 동률, 판별력 없음. 되살린 역할 문장 유지 |
-| 리뷰어 구성 | code-review 만 3회 / frontend-reviewer 더함 3회 | 1.0 / 0.97 | $1.05 / $1.79 | 탐지는 동률. 더한 판은 1회 맞는 파일(`Fine.tsx`)을 지적했고 비용 1.7배. 세 번 모두 code-review 가 실제로 불려 `review.diff`로 돌았다. 바꿀지는 사용자에게 묻는다 |
+| 리뷰어 구성 | code-review 만 3회 / frontend-reviewer 더함 3회 | 1.0 / 0.97 | $1.05 / $1.79 | 탐지는 동률. 더한 판은 1회 맞는 파일(`Fine.tsx`)을 지적했고 비용 1.7배. 세 번 모두 code-review 가 실제로 불려 `review.diff`로 돌았다. `end.md` 3단계는 바꾸지 않는다(사용자 "추천안대로") |
 | `start.md` Explore 최대 2개·질문 최대 3개 | 지금 / Explore 제한 뺌 / 질문 제한 뺌, 각 3회 | 0.50 / 0.17 / 0.33 | $0.63 / $0.43 / $0.46 | **확인 못 함.** 실행 기록을 보니 9회 모두 `task` 스킬 로드가 실패했다. SKILL.md 의 현재 상태 줄(`git` 셸 명령)이 셸 없는 실행에서 거부되고, 절차 파일도 플러그인 폴더라 읽을 수 없었다. 점수 차이는 제한과 무관하다. 1차 1회(0.83)도 같다. 셸 샌드박스가 있는 macOS·Linux 에서 다시 잰다. 두 제한은 유지 |
 
 - 2차 비용: $13.55. 1차를 합친 eval 전체 비용: 약 $22.6.
