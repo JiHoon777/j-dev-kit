@@ -32,7 +32,8 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
 - **`create` or `start` with `--here`:** remove it and work in this session.
 - **Any other `create` or `start`:** open a sub-session.
   1. If there is no tool that starts a new session the user can open and talk to directly (for example the desktop app's `start_session`), say in one line that the work happens in this session, and follow the procedure.
-  2. For `start`, first find the item in this session ("Find the item" in step 1 of `start.md`). If this item's `w/` branch already exists, do not open a session; tell the user to continue in the session that worked on that branch.
+     - Open a `create` session only when this session is in the base folder on the base branch. If it is inside a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` differ) or on another branch, work in this session and say that the item commit goes onto the current branch. Two sessions sharing one folder mix their commits and index.
+  2. For `start`, first find the item in this session ("Find the item" in step 1 of `start.md`). If this item's `w/` branch already exists, do not open a session; tell the user to continue in the session that worked on that branch. If that session no longer exists, continue the branch in this session as `start.md` says.
   3. Open one session. The user asked for this work, so start it right away instead of proposing it.
 
      | Mode | Session |

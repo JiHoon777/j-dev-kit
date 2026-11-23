@@ -59,7 +59,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 /task start 001 --here                                 # in this session, no sub-session
 ```
 
-- **Sub-sessions:** `create` and `start` open one session by default and only report its link. `create` runs in the same folder; `start` runs in a new worktree off the base branch (on a `w/<item>` branch). Answer questions and approve by opening that session. Invoke `end` in the session that did the work. Without a tool that opens new sessions (outside the desktop app), the work happens in this session. To run several items together, call `start` several times.
+- **Sub-sessions:** `create` and `start` open one session by default and only report its link. `create` runs in the same folder (only from the base branch; from a work branch or a worktree it runs in this session); `start` runs in a new worktree off the base branch (on a `w/<item>` branch). Answer questions and approve by opening that session. If the work session was closed, `start <number>` continues that branch in this session. Invoke `end` in the session that did the work. Without a tool that opens new sessions (outside the desktop app), the work happens in this session. To run several items together, call `start` several times.
 
 - **start:** baseline (one run of the verify command), stack start checks, planning sized to the item (no agents for small items), test-first implementation, cleanup with `simplify`, verification.
 - **end:** stack end checks, review (`code-review` plus `security-review` and stack reviewers when needed, and `design-reviewer` when a screen changed), findings shown as 🔴 must fix / 🟡 consider / ⚪ minor with one question per group, fixes, verification, merge. Pushes only on request.

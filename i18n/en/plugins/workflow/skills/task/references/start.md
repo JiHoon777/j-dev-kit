@@ -16,13 +16,16 @@ If any of these applies, stop and say so. Do not clean it up on your own.
 | --- | --- |
 | The base branch has no commits | Say that a first commit is needed |
 | There are uncommitted changes | Show them and ask what to do |
-| The current branch is not the base branch | If this is a worktree just made for this item (a sub-session), go ahead: the branch has no commits after the base branch. If its name is not `w/<name>` (a prefix the app adds, for example), rename it in step 4. Otherwise ask whether to continue, finish with `/task end`, or discard. If continuing, read the item's `Implementation Plan` and resume from step 5 |
-| This item's `w/` branch already exists and you are not on it | Tell the user to continue in the session that worked on that branch. Other items' `w/` branches belong to other sessions; leave them alone |
+| The current branch is not the base branch | If this is a worktree just made for this item (a sub-session), go ahead: you are in a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` differ) and the branch has no commits after the base branch. If its name is not `w/<name>` (a prefix the app adds, for example), rename it in step 4. Otherwise ask whether to continue, finish with `/task end`, or discard. If continuing, read the item's `Implementation Plan` and resume from step 5 |
+| This item's `w/` branch already exists and you are not on it | If the session that worked on that branch still exists, tell the user to continue there. If it does not, continue here: if the branch is in another worktree (`git worktree list`), move there by giving that path to `EnterWorktree` (if the tool is missing or refuses, run later commands in that folder); otherwise `git switch w/<name>`. Then read the item's `Implementation Plan` and resume from step 5. Other items' `w/` branches belong to other sessions; leave them alone |
 
 Finding the item: look up the argument in `docs/backlog/` (`README.md` and files starting with `_` are not items). If there is no match or several, show the `To Do` items by number and title and let the user pick. Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
 
 ## 2. Baseline and stack checks
 
+0. **Worktree setup:** if this is a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` differ):
+   - If the project needs dependencies installed (for example `package.json` and a lockfile), install them before the baseline. A new worktree has nothing installed, and a baseline taken before installing hides real failures.
+   - If the worktree is inside the base folder (for example `.claude/worktrees/`) and the test, lint or type-check tools read into that folder (many do not look at git's ignore lists), verification in the base folder also runs other items' code. If those tool settings do not leave it out, say so.
 1. **Baseline:** Run the verify command once. Record only what already fails (the command, the names of failing tests/files). This does not block the work; tell the user. `/task end` compares against this to look only at new failures.
 2. **Stack checks:** Call, with the Skill tool, every available skill whose name ends in `-start-check` (e.g. `server:server-start-check`). A check that does not apply returns only "not applicable". What comes back:
    - **Follow:** rules to follow and skills to call during implementation
@@ -57,9 +60,6 @@ Before approval, do not edit files and do not create a branch.
 1. Set up the work branch `w/<item file name without .md>` (`<name>` below).
    - If you are on the base branch: `git switch -c w/<name>`.
    - If you are in a worktree made for this item and the branch name differs: `git branch -m w/<name>`. The verify Stop hook runs only on `w/` branches.
-   - If this is a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` differ):
-     - If the project needs dependencies installed (for example `package.json` and a lockfile), install them here. A new worktree has nothing installed.
-     - If the worktree is inside the base folder (for example `.claude/worktrees/`) and the test, lint or type-check tools read into that folder (many do not look at git's ignore lists), verification in the base folder also runs other items' code. If those tool settings do not leave it out, say so.
    - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5000, item 007 → 5007). Only the ones that are set.
      - Treat these ports as in use and go up by 1 to avoid them: ports something is listening on (`lsof -nP -iTCP:<port> -sTCP:LISTEN`, or `nc -z 127.0.0.1 <port>` if lsof is missing or fails), the `### 포트` of items in progress in other sessions (`In Progress` in `docs/backlog/`), and those items' default ports (base port + their number). This keeps it clear of other items and of other projects' servers. If there is no way to check whether a port is listening, say so.
      - Write the ports into the item file as soon as they are set (2 below), so that another session started at the same time can see them.
