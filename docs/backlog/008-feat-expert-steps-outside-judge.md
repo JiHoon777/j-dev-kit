@@ -185,6 +185,8 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - 대조군(Svelte 절을 뺀 frontend-reviewer, 사례마다 5회, Opus 시험, sonnet 채점): `real-line` 0.80, `real-sky` 0.62, `real-birthday` 0.69. 셋 다 대조군이 실패하고 0% 도 아니어서 쓴다. 비용 $18.06.
   - 5회 모두 FAIL: 이모지 반쪽, 가려진 동안 흉내, "0억 km", 버튼 자리 밀림, 시간대.
 - 채점 보정: 대조군 판정에서 40건(PASS 20, FAIL 20)을 뽑아 사용자 라벨을 받는 중. 판정이 본 글은 보고 전체였다(잘리지 않음).
+  - 묶음 1-1(판정 1~5): 1·3·5 는 사용자 판단과 일치. 2·4 는 사용자 "Maybe"라 보정 계산에서 빼고 애매한 판정으로 둔다. 두 판정 모두 리뷰어가 원인만 짚고 사용자에게 생기는 일은 말하지 않았다. 묶음을 다 받은 뒤 이 모양을 어떻게 볼지 따로 묻는다.
+  - 두 가지를 함께 요구하던 채점 기준 넷(다른 탭, 저장된 생일 범위, 실패 화면, 포커스)을 "둘 중 하나라도 올바르게 짚으면 PASS"로 고쳤다(사용자 결정). 대조군 20건을 sonnet 에이전트로 다시 채점하니 real-birthday 4 의 다른 탭 판정 하나만 FAIL 에서 PASS 로 바뀌었다(라벨 판정 7).
 - SKILL.md 의 `!` 줄을 지운 뒤(AC #21), 원본 SKILL.md 그대로(사본에서는 `dependencies`와 훅만 뺌) 계획 사례를 1회 돌렸다. "Launching skill: workflow:task", 점수 1.0($0.32).
 - 계획 사례 P(`start-plan-real`, nolmeong 013 시작 전 `d8c75f5`): 정답은 승인된 계획(`ed9250b`)의 핵심 결정 6가지다. 시안은 `c32b56d`의 `docs/design/002-sky-real/project`를 바깥 자료 `sky-prototype/`으로 둔다(사후 기록인 decisions.md 는 뺐다).
   - 대조군(두 제한을 다 뺀 start.md, 5회): 0.83. 비용 $8.07(1회 약 $1.6).
