@@ -1,6 +1,6 @@
 ---
 name: task
-description: Use when working through backlog items. create when the user asks to turn work into a backlog item, start when they ask to start or implement an item, end when they ask to review, wrap up, or merge a work branch. create and start open a sub-session by default and work there. Calls the start-check and end-check skills of the enabled stack plugins. Not for requests to just fix something with no mention of an item or branch.
+description: Use when working through backlog items. create when the user asks to turn work into a backlog item, start when they ask to start or implement an item, end when they ask to review, wrap up, or merge a work branch. Not for requests to just fix something with no mention of an item or branch.
 argument-hint: "create <one or two sentences> [--here] | create --survey <goal> [sources…] [--here] | start [backlog number or part of a name] [--here] | end"
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git log *), Bash(git diff *), Bash(ls *)
 metadata:

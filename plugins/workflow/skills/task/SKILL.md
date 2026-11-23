@@ -1,6 +1,6 @@
 ---
 name: task
-description: 백로그 항목으로 일할 때 쓴다. 사용자가 할 일을 백로그 항목으로 만들자고 하면 create, 항목을 시작하거나 구현하자고 하면 start, 작업 브랜치를 리뷰하고 마무리하거나 머지하자고 하면 end. create 와 start 는 기본으로 하위 세션을 띄워 그 세션에서 한다. 켜 둔 스택 플러그인의 start-check, end-check 스킬을 부른다. 항목·브랜치 이야기 없이 바로 고쳐 달라는 요청에는 쓰지 않는다.
+description: 백로그 항목으로 일할 때 쓴다. 사용자가 할 일을 백로그 항목으로 만들자고 하면 create, 항목을 시작하거나 구현하자고 하면 start, 작업 브랜치를 리뷰하고 마무리하거나 머지하자고 하면 end. 항목·브랜치 이야기 없이 바로 고쳐 달라는 요청에는 쓰지 않는다.
 argument-hint: "create <한두 문장> [--here] | create --survey <목표> [자료…] [--here] | start [백로그 번호나 이름 일부] [--here] | end"
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git log *), Bash(git diff *), Bash(ls *)
 metadata:

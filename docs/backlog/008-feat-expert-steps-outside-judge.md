@@ -132,6 +132,12 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 | `frontend-reviewer` React 절 | `reviewer-react` | 아직 | | | | |
 | `start.md` Explore 최대 2개 | `start-plan` | 아직 | | | | |
 | `start.md` 질문 최대 3개 | `start-plan` | 아직 | | | | |
+| `task` description 절차 요약 두 문장(AC #18) | `trigger/*` 5개 사례 | 15/15 | 15/15 | $1.49 | $1.37 | 정확도가 같아 짧은 쪽(트리거 조건만)을 남겼다(공통분모 7) |
+| 역할 문장(AC #2) | `reviewer-react`에 역할 문장을 넣은 판과 뺀 판 | 아직 | | | | |
+| 리뷰어 구성(AC #19) | `compose-code-review` 대 `compose-with-stack` | 아직 | | | | 재기만 하고 사용자에게 묻는다 |
+
+- 후보 1(AC #17)은 eval 없이 문구만 바꿨다. 앞의 Svelte 결과는 바꾸기 전 문구("확신이 낮은 것은 빼고")로 잰 것이다.
+- 트리거 eval: 사본에서 `dependencies`와 Stop 훅을 뺐다. `fix-no` 실행 하나는 `max_turns`(4)에 닿았지만 `task`를 부르지 않아 통과다.
 
 ## Final Summary
 

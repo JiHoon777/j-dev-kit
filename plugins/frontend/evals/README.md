@@ -6,6 +6,7 @@
 | --- | --- |
 | `reviewer-svelte` | `frontend-reviewer`의 "볼 것 (Svelte 5 / SvelteKit)" 절. Svelte 고유 문제 5개를 찾는지, 맞는 파일을 지적하지 않는지 |
 | `reviewer-react` | 같은 에이전트의 "볼 것 (React / Next.js)" 절. React 고유 문제 5개 |
+| `compose-code-review`, `compose-with-stack` | `/task end` 3단계의 리뷰어 구성. `code-review` 하나만 쓴 것과 `frontend-reviewer`를 더한 것이 같은 심은 문제를 얼마나 찾는지(사본 하나로 두 사례를 돌린다). `--tag compose` |
 
 다시 돌리기:
 
