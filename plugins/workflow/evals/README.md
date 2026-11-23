@@ -6,6 +6,7 @@
 | --- | --- |
 | `trigger/*` | `task` 스킬 description. 부를 요청 3개(create, start, end)에서 부르고, 부르지 말 요청 2개(바로 고치기, 설명)에서 부르지 않는지. `--tag trigger` |
 | `start-plan` | `start.md` 3단계의 "`Explore` 에이전트를 최대 2개", "한꺼번에 최대 3개"(질문). 여러 모듈에 걸친 항목에서 꼭 읽을 파일을 짚는지, 코드로 답할 수 있는 것을 묻지 않는지, 계획이 빠짐없는지 |
+| `start-plan-real` | 같은 두 제한을 실제 큰 항목(nolmeong 013, 시작 전 `d8c75f5`)으로. 정답은 사용자가 승인한 계획(`ed9250b`)의 핵심 결정 6가지다. 이 기계의 nolmeong 로컬 저장소에서 `git archive`로 꺼내 만들므로 이 기계에서만 돈다. `--tag real-plan` |
 
 다시 돌리기:
 

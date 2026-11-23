@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: start-plan-real
+description: 실제 큰 항목(nolmeong 013 도감 화면을 실제 하늘로, 시작 전 d8c75f5)의 task start 3단계 계획. 정답은 사용자가 승인한 계획(ed9250b)의 핵심 결정이다. start.md 의 Explore 최대 2개, 질문 최대 3개를 잰다
+tags: [real-plan]
+context:
+  scaffold_script: fixture.sh
