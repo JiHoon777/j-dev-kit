@@ -169,6 +169,20 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
   - `reads-payments-refund`가 9회 모두 떨어졌다. 실행 기록을 보니 네 파일 모두 실제로 Read 했다. 마지막 메시지에 그 경로 문자열이 없었을 뿐이라, 정규식 채점이 틀렸다. `reads-*` 넷을 Read 호출을 보는 과정 채점(`tool_used`)으로 바꿨다. 바꾼 채점으로 보면 세 판 모두 만점 동률이다.
   - 결론: 판별력이 없다. 두 제한은 유지한다. 이 사례는 너무 작아 Explore 가 필요 없다. 실제 큰 항목으로 만든 사례가 필요하다(AC #20 설계에 넣는다).
 
+#### 실제 실패로 만든 사례 (AC #20, 사용자 "추천안대로 진행")
+
+- 방식(원문을 읽고 정함):
+  - 실제 실패에서 만든다(Anthropic "Demystifying evals for AI agents" Step 0·1, Hamel field guide, E4).
+  - 지시 없는 대조군을 5회 넘게 돌려 실제로 실패하는지 본다(obra writing-skills, testing-skills-with-subagents).
+  - 결과는 버그마다 이진 판정하고 부분 점수를 준다. 과정 채점을 하나 둔다(Anthropic Step 5, plugin-evals).
+  - LLM 채점을 사람 라벨로 보정한다(Hamel llm-judge).
+- 사례: nolmeong 의 리뷰 전 커밋. `real-line`(002, 정답 10, 그대로 둘 것 2), `real-sky`(013, 정답 8), `real-birthday`(012, 정답 6). 정답은 고친 커밋이 근거다.
+  - 처음 제안의 "R2 리뷰가 놓쳐 머지 뒤 고친 버그 2건"은 틀렸다. 그 커밋은 리뷰 지적을 이어서 고친 것이었다.
+  - R3 의 `150715c`는 리뷰 뒤 디자인을 되돌리며 생긴 문제라 뺐다.
+- 대조군(Svelte 절을 뺀 frontend-reviewer, 사례마다 5회, Opus 시험, sonnet 채점): `real-line` 0.80, `real-sky` 0.62, `real-birthday` 0.69. 셋 다 대조군이 실패하고 0% 도 아니어서 쓴다. 비용 $18.06.
+  - 5회 모두 FAIL: 이모지 반쪽, 가려진 동안 흉내, "0억 km", 버튼 자리 밀림, 시간대.
+- 채점 보정: 대조군 판정에서 40건(PASS 20, FAIL 20)을 뽑아 사용자 라벨을 받는 중. 판정이 본 글은 보고 전체였다(잘리지 않음).
+
 - 2차 비용: $13.55. 1차를 합친 eval 전체 비용: 약 $22.6.
 - 채점 샘플(sonnet, 표결 3회. 도구가 채점 이유는 남기지 않고 본 보고 일부만 남긴다):
   - PASS 예: `judges-coupon`(Svelte 뺀 판) — 보고가 "클라이언트로 가는 컴포넌트가 `$env/static/private`를 import, 빌드 실패나 비밀 키 노출"을 짚었다. 맞는 판정.
