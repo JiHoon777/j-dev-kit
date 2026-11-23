@@ -93,6 +93,8 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 7. 번역본, version(workflow 0.11.0, frontend 0.8.0, server 0.5.0), README 두 개, `marketplace.json`·`plugin.json` 설명.
 8. `simplify`, 검증 명령, AC 는 grep 출력이나 판정 에이전트로만 체크.
 
+**구현 중 더한 것(사용자 "제안대로 나눠 넣기"):** 9. 리뷰 지시의 "확신이 낮은 것은 보고하지 않는다"를 빼고 확인한 것·확인 못 한 것으로 나눠 보고(AC #17). 10. `task` description 트리거 eval(AC #18). 11. 리뷰어 구성 eval, 재기만 하고 사용자에게 묻는다(AC #19). 12. 역할 문장은 `frontend-reviewer` 하나로 있는 판·없는 판을 eval 로 비교해 정한다(AC #2). eval 은 하나씩 `--max-cost-usd 5`로 돌려 비용을 보고하고 멈춘다.
+
 **성공 기준:** #2·#3·#13 은 grep 이 비어 있다. #5·#6·#9·#10·#14·#15 는 문구 grep. #1·#4·#7·#11·#12·#16 은 판정 에이전트. #8 은 eval 결과와 커밋된 사례. DoD 는 검증 명령 출력.
 
 **가정과 정한 것:** 원칙 파일은 `docs/review-principles.md`. 판정 에이전트는 general-purpose 에 지시문을 준다. 판정 에이전트와 `frontend-evaluator`는 작업 세션과 같은 모델. 서베이 모드도 `create`라 하위 세션 규칙이 같다. 단계들이 같은 파일을 건드려 하위 세션으로 나누지 않는다.
