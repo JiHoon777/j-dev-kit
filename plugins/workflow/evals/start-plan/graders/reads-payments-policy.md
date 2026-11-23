@@ -4,4 +4,4 @@ tool: Read
 input_match: 'payments.{1,2}policy\.ts'
 ---
 
-계획 전에 src/payments/policy.ts 를 읽는다. 경로 구분자는 / 와 JSON 으로 바뀐 \ 둘 다 맞춘다.
+계획 전에 src/payments/policy.ts 를 읽는다. 경로 구분자는 / 와 JSON 에서 두 겹이 된 역슬래시를 둘 다 맞춘다.
