@@ -1,7 +1,7 @@
 ---
 id: '007'
 title: 검증 훅 테스트의 "내용을 못 구함" 시나리오가 Windows 에서도 그 경로를 타게
-status: In Progress
+status: Done
 labels: [fix]
 priority: medium
 dependencies: []
@@ -50,4 +50,6 @@ updated_date: 2026-11-23
 
 ## Final Summary
 
-`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
+- **바뀐 것:** `scripts/test-verify-on-stop.sh`의 `hide_index`가 `chmod 000` 대신 인덱스를 깨뜨려, Windows 에서도 "내용을 못 구함" 경로를 시험한다. 그래도 tree 가 구해지면 준비 실패로 둔다. 훅은 그대로다.
+- **리뷰에서 고친 것:** 없음(리뷰 에이전트를 돌리지 않았다. 사용자가 바로 머지를 요청했다).
+- **미룬 것:** 없음. macOS·Linux 에서는 돌려 보지 않았다.
