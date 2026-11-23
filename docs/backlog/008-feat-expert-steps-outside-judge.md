@@ -28,6 +28,13 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 10. **eval 을 저장소에 남기기:** 모델이 바뀌어도 자체 eval 로 다시 잰다(나델라 50:57).
 11. **사용자가 바로잡은 것도 원칙의 재료로(낮음):** 지난 대화에서 끼어든 순간이 스킬의 재료다(탠 1:00:35). Claude Code 자동 메모리와 겹치면 하지 않는다.
 
+구현 중에 보고서 `.claude/.local/reports/2026-11-23-전문가-스킬-활용.md`(커밋하지 않음) 5절 후보 1·3·5와 2.5절을 더했다(사용자 "제안대로 나눠 넣기").
+
+12. **리뷰어가 미리 거르지 않게:** 리뷰 지시의 "확신이 낮은 것은 보고하지 않는다"를 빼고, 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고하게 한다. 거르기는 #2 의 판정이 한다(공통분모 12).
+13. **description 은 트리거 조건만:** `task` 스킬 description 을 언제 부를지만 남긴 판을 만들어 지금 문구와 트리거 eval 로 비교하고 나은 쪽을 남긴다(공통분모 7).
+14. **리뷰어 구성 재기:** code-review 하나만 쓴 판과 스택 리뷰어를 더한 판을 eval 로 비교한다. 지금은 재기만 하고, 바꿀지는 결과를 보고 사용자에게 묻는다(공통분모 13).
+15. **역할 문장은 재서 정한다:** "너는 X 다"를 지우라는 1차 자료는 Felix 뿐이고 Anthropic 문서는 아직 역할을 권한다(2.5). 도구와 단계는 반드시 더하고, 역할 문장을 지울지는 리뷰어 하나로 역할 문장이 있는 판과 없는 판을 비교해 정한다.
+
 가정: 판정 방법(에이전트, 다른 세션 등), 원칙을 둘 파일, eval 방식과 eval 을 저장소에 남길지, 모델을 정하는 위치는 `/task start` 계획에서 정한다.
 
 이번에 빼는 것: 서베이로 만든 항목을 이어서 시작하거나 여러 항목을 차례로 돌리는 것(`/lead run`). 운영 DB·원격 Supabase 에 닿는 명령을 막는 규칙은 바꾸지 않는다.
@@ -37,7 +44,7 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 <!-- AC:BEGIN -->
 
 - [ ] #1 `start.md` 3단계에 "이 항목의 일을 그 분야 최고 실무자는 어떤 도구와 단계로 하나"를 정하는 단계가 있고, 계획(`ExitPlanMode`)에 넣을 것에 그 도구·단계가 들어가며, 5단계 구현이 그것을 따른다고 적혀 있다
-- [ ] #2 리뷰 에이전트 5개(`design-reviewer`, `frontend-evaluator`, `frontend-reviewer`, `api-reviewer`, `supabase-reviewer`)가 역할 문장으로 시작하지 않고, 그 분야 최고 실무자가 쓰는 도구와 단계를 말한다(`grep -n '^너는' plugins/*/agents/*.md`와 `grep -n '^You are' i18n/en/plugins/*/agents/*.md`가 비어 있다)
+- [ ] #2 리뷰 에이전트 5개(`design-reviewer`, `frontend-evaluator`, `frontend-reviewer`, `api-reviewer`, `supabase-reviewer`)가 그 분야 최고 실무자가 쓰는 도구와 단계를 말한다. 역할 문장("너는 X 다")을 둘지는 리뷰어 하나로 역할 문장이 있는 판과 없는 판을 eval 로 비교해 정했고, 방법과 결과가 `Implementation Notes`에 있다. 지우기로 했으면 `grep -n '^너는' plugins/*/agents/*.md`와 `grep -n '^You are' i18n/en/plugins/*/agents/*.md`가 비어 있다
 - [ ] #3 `server-end-check`에 "새로 내려받지 않는다"가 없고 필요한 검사 도구를 설치해 쓸 수 있으며, `api-reviewer`에 "돌리지는 않는다"가 없고 로컬·개발 환경에서는 재현 요청을 직접 돌려 그 결과를 근거로 쓴다(운영·원격 금지는 그대로)
 - [ ] #4 `end.md` 4단계에서 지적이 타당한지는 작업 세션이 아닌 쪽이 판정하고, 사용자에게는 타당하다고 판정된 지적만 보인다. 5단계의 `receiving-code-review`는 그대로다
 - [ ] #5 Final Summary 형식(`end.md` 6단계, `create.md` 템플릿, `docs/backlog/_template.md`)에 "그대로 둔 지적과 이유"가 있다
@@ -52,6 +59,9 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - [ ] #14 `task` 스킬 2절에 "질문과 승인은 사용자가 그 세션에서 직접 한다"가 없고, 대신 띄운 세션이 지휘한다고 적혀 있다: 하위 세션의 질문·승인 요청을 띄운 세션이 사용자에게 보여 주고 답을 받아 그 세션에 전한다. 하위 세션이 턴을 끝내면 결과(커밋, 파일)를 확인해 사용자가 묻기 전에 보고한다. 사용자가 하위 세션에서 직접 답한 것도 받아들인다
 - [ ] #15 서베이 모드에서 같은 원인으로 보이는 자료는 한 후보로 묶이고 근거 위치가 모두 적힌다. 버그 제보에서 온 후보의 근거에는 기준 브랜치에서 재현했는지(했으면 방법, 못 했으면 그렇다고)가 붙는다
 - [ ] #16 Final Summary 에 `start`·`end` 동안 사용자가 바로잡은 것이 한 줄씩 남고 원칙 모으기의 입력이 된다. 또는 Claude Code 자동 메모리와 겹쳐 근거가 약하다고 보고 하지 않았으며, 그 이유가 `Implementation Notes`에 있다
+- [ ] #17 `end.md` 3단계 지시문과 `frontend-reviewer`·`api-reviewer`·`supabase-reviewer`(번역본 포함)에 "확신이 낮은 것은 보고하지 않는다"가 없고, 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고하게 한다(`grep -rn '확신이 낮은' plugins`, `grep -rni 'low-confidence' i18n`이 비어 있다)
+- [ ] #18 `task` 스킬 description 의 지금 문구와 트리거 조건만 남긴 문구를 트리거 eval(부를 요청, 부르지 말 요청)로 비교했고, 방법과 결과가 `Implementation Notes`에 있으며, 나은 쪽이 SKILL.md(번역본, `marketplace.json`·README 설명 포함)에 남아 있다
+- [ ] #19 code-review 하나만 쓴 판과 스택 리뷰어를 더한 판을 eval 로 비교한 방법과 결과가 `Implementation Notes`에 있다. `end.md` 3단계 구성은 사용자가 결과를 보고 정한 대로다
 
 <!-- AC:END -->
 

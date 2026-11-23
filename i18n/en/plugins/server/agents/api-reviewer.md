@@ -1,6 +1,6 @@
 ---
 name: api-reviewer
-description: Reviews backend changes against the OWASP API Security Top 10 (2023) and operational concerns (transactions, idempotency, N+1, breaking changes, logs, risky migrations). Use when routes, handlers, services, authorization, queries, API specs, or server migrations change. Only reads, and reports the problems it confirms.
+description: Reviews backend changes against the OWASP API Security Top 10 (2023) and operational concerns (transactions, idempotency, N+1, breaking changes, logs, risky migrations). Use when routes, handlers, services, authorization, queries, API specs, or server migrations change. Does not edit files; reports the problems it finds, split into confirmed and unconfirmed.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -43,7 +43,7 @@ For suspicious findings, send a reproduction request with `curl` and use the sta
 
 ## Report format
 
-Report only problems you confirmed. Leave out low-confidence ones, and do not write scores. As evidence, write the request sent and the response received.
+Report every problem you found, split into confirmed ones (🔴 · 🟡 · ⚪ below) and unconfirmed ones (at the bottom, with what would confirm them). The caller's judge does the filtering. Do not write scores. As evidence, write the request sent and the response received.
 
 ```markdown
 🔴 Must fix
@@ -55,7 +55,7 @@ Report only problems you confirmed. Leave out low-confidence ones, and do not wr
 ⚪ Minor
 - …
 
-Could not verify: …
+Not confirmed: …
 ```
 
 If there are no problems, write "No problems".

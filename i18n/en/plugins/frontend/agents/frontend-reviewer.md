@@ -1,6 +1,6 @@
 ---
 name: frontend-reviewer
-description: Reviews frontend changes. Checks the diff for user-input output (XSS), loading/empty/error states, duplicate requests, accessibility, public environment variables, new dependencies, and pitfalls of the project's framework (Svelte, React/Next). Use when UI code has changed. Read-only; reports the problems it confirmed.
+description: Reviews frontend changes. Checks the diff for user-input output (XSS), loading/empty/error states, duplicate requests, accessibility, public environment variables, new dependencies, and pitfalls of the project's framework (Svelte, React/Next). Use when UI code has changed. Does not edit files; reports the problems it finds, split into confirmed and unconfirmed.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -42,7 +42,7 @@ Do not modify files. Do not start servers, run build or verification commands, o
 
 ## Report format
 
-Report only problems you confirmed. Leave out low-confidence ones, and do not write scores.
+Report every problem you found, split into confirmed ones (🔴 · 🟡 · ⚪ below) and unconfirmed ones (at the bottom, with what would confirm them). The caller's judge does the filtering. Do not write scores.
 
 ```markdown
 🔴 Must fix
@@ -54,7 +54,7 @@ Report only problems you confirmed. Leave out low-confidence ones, and do not wr
 ⚪ Minor
 - …
 
-Could not check: …
+Not confirmed: …
 ```
 
 If there are no problems, write "No problems".

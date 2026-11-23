@@ -42,7 +42,7 @@ Agents cannot see this conversation, so put these in the instructions:
 1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
 2. Do not edit files and do not commit. Do not touch remote or production environments. Start servers, install tools, or reproduce locally only when that agent's criteria allow it.
 3. Principles: the contents of `docs/review-principles.md` if it exists. Do not raise findings that go against a principle.
-4. Report: only confirmed problems, as `file:line — problem — how to fix`. Do not report low-confidence ones. Do not give scores.
+4. Report: every problem found, split into confirmed and unconfirmed, as `file:line — problem — how to fix`. Filtering is done by the judge in step 4. Do not give scores.
 5. If the skill cannot be called, do not make something up in its place; report that.
 
 ## 4. Judge, show and ask
