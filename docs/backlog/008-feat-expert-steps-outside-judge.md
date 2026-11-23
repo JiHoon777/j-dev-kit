@@ -130,12 +130,12 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 
 | 체크리스트 | 사례 | with 점수 | without 점수 | with 비용 | without 비용 | 판정 |
 | --- | --- | --- | --- | --- | --- | --- |
-| `frontend-reviewer` Svelte 절 | `reviewer-svelte` (심은 문제 5개 + 맞는 파일 1개) | 1.0, 1.0, 1.0 | 1.0, 1.0, 1.0 | $0.70 | $0.77 (1.1배) | 조건상 지워도 된다. 사용자 답을 받아 정한다 |
-| `frontend-reviewer` React 절 | `reviewer-react` | 아직 | | | | |
+| `frontend-reviewer` Svelte 절 | `reviewer-svelte` (심은 문제 5개 + 맞는 파일 1개) | 1.0, 1.0, 1.0 | 1.0, 1.0, 1.0 | $0.70 | $0.77 (1.1배) | 유지. 만점 동률이라 판별력이 없다. 더 어려운 사례로 다시 재기 전까지 둔다(사용자 "추천안대로", 지웠다가 나빠져 되돌린 obra 사례도 있다) |
+| `frontend-reviewer` React 절 | `reviewer-react` (심은 문제 5개 + 맞는 파일 1개) | 1.0, 1.0, 1.0 | 1.0, 1.0, 1.0 | $1.10 | $0.98 | 유지. 만점 동률이라 판별력이 없다 |
 | `start.md` Explore 최대 2개 | `start-plan` | 아직 | | | | |
 | `start.md` 질문 최대 3개 | `start-plan` | 아직 | | | | |
 | `task` description 절차 요약 두 문장(AC #18) | `trigger/*` 5개 사례 | 15/15 | 15/15 | $1.49 | $1.37 | 정확도가 같아 짧은 쪽(트리거 조건만)을 남겼다(공통분모 7) |
-| 역할 문장(AC #2) | `reviewer-react`에 역할 문장을 넣은 판과 뺀 판 | 아직 | | | | |
+| 역할 문장(AC #2) | `reviewer-react`, 뺀 판(위 React with 와 같은 실행)과 "너는 프론트엔드 리뷰어다."를 넣은 판 | 넣은 판 1.0, 1.0, 1.0 | 뺀 판 1.0, 1.0, 1.0 | $0.93 | $1.10 | 지우지 않는다. 만점 동률이라 판별력이 없어(사용자 "추천안대로") 다섯 에이전트(번역본 포함)에 원래 역할 문장을 되살렸다. 도구와 단계 문장은 그대로 |
 | 리뷰어 구성(AC #19) | `compose-code-review` 대 `compose-with-stack` | 아직 | | | | 재기만 하고 사용자에게 묻는다 |
 
 - 후보 1(AC #17)은 eval 없이 문구만 바꿨다. 앞의 Svelte 결과는 바꾸기 전 문구("확신이 낮은 것은 빼고")로 잰 것이다.
