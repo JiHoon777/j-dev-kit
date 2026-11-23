@@ -8,7 +8,7 @@
 
 ## 1. 시작할 수 있는지
 
-하나라도 해당하면 멈추고 알린다. 스스로 정리하지 않는다.
+`git branch --show-current`, `git status --short`, `git branch --list 'w/*'`, `git log --oneline <기준>..HEAD`로 상태를 본다. 하나라도 해당하면 멈추고 알린다. 스스로 정리하지 않는다.
 
 | 확인 | 해당하면 |
 | --- | --- |

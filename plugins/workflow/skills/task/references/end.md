@@ -2,7 +2,7 @@
 
 작업 브랜치의 변경을 리뷰하고, 사용자가 정한 것을 고치고, 항목을 닫고, 사용자가 고른 방식으로 마무리한다.
 
-프로젝트 CLAUDE.md 에 PR·푸시 규칙이 있으면 따른다. "현재 상태"는 `main`과 비교한 것이다. 기준 브랜치가 다르면 `git log --oneline <기준>..HEAD`, `git diff --stat <기준>...HEAD`로 다시 본다.
+프로젝트 CLAUDE.md 에 PR·푸시 규칙이 있으면 따른다. 시작할 때 `git branch --show-current`, `git status --short`, `git log --oneline <기준>..HEAD`, `git diff --stat <기준>...HEAD`로 상태를 본다.
 
 ## 1. 시작할 수 있는지
 

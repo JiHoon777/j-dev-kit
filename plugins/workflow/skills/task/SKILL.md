@@ -61,14 +61,4 @@ metadata:
 - 모르는 것은 가정하지 말고 말한다. 코드와 문서로 답할 수 있는 것은 묻지 않는다.
 - 항목이 요구하는 것만 한다. 바뀐 줄은 모두 항목으로 거슬러 올라갈 수 있어야 한다.
 - "됐다"고 하기 전에 검증을 새로 돌리고 그 결과를 보여 준다.
-
-## 5. 현재 상태
-
-- 브랜치: !`git branch --show-current 2>/dev/null || echo "(unknown)"`
-- 작업 브랜치: !`git branch --list 'w/*' 2>/dev/null || echo "(none)"`
-- 커밋하지 않은 변경: !`git status --short 2>/dev/null | head -20`
-- 최근 커밋: !`git log --oneline -3 2>/dev/null || echo "(no commits)"`
-- 백로그: !`ls docs/backlog 2>/dev/null || echo "(none)"`
-- 완료: !`ls docs/done 2>/dev/null || echo "(none)"`
-- 이 브랜치의 커밋(`main` 대비): !`git log --oneline main..HEAD 2>/dev/null | head -30`
-- `main` 대비 바뀐 파일: !`git diff --stat main...HEAD 2>/dev/null | tail -30`
+- 브랜치와 변경 같은 현재 상태는 각 절차가 명령으로 직접 본다. 스킬을 불러올 때 셸을 돌리지 않는 것은, Bash 가 막힌 곳에서도 스킬이 불러와지게 하려는 것이다.

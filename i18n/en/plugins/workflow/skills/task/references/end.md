@@ -4,7 +4,7 @@
 
 Review the work branch's changes, fix what the user decides, close the item, and finish the way the user chooses.
 
-If the project CLAUDE.md has PR/push rules, follow them. "Current state" is compared against `main`. If the base branch is different, look again with `git log --oneline <base>..HEAD` and `git diff --stat <base>...HEAD`.
+If the project CLAUDE.md has PR/push rules, follow them. At the start, check the state with `git branch --show-current`, `git status --short`, `git log --oneline <base>..HEAD`, and `git diff --stat <base>...HEAD`.
 
 ## 1. Can we start
 

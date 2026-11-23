@@ -63,14 +63,4 @@ Rules in the project CLAUDE.md take precedence over this skill and superpowers.
 - Do not assume what you do not know; say it. Do not ask what code and docs can answer.
 - Do only what the item requires. Every changed line must trace back to the item.
 - Before saying "done", run verification fresh and show the result.
-
-## 5. Current state
-
-- Branch: !`git branch --show-current 2>/dev/null || echo "(unknown)"`
-- Work branches: !`git branch --list 'w/*' 2>/dev/null || echo "(none)"`
-- Uncommitted changes: !`git status --short 2>/dev/null | head -20`
-- Recent commits: !`git log --oneline -3 2>/dev/null || echo "(no commits)"`
-- Backlog: !`ls docs/backlog 2>/dev/null || echo "(none)"`
-- Done: !`ls docs/done 2>/dev/null || echo "(none)"`
-- Commits on this branch (vs `main`): !`git log --oneline main..HEAD 2>/dev/null | head -30`
-- Files changed vs `main`: !`git diff --stat main...HEAD 2>/dev/null | tail -30`
+- Each procedure checks current state such as branches and changes with commands itself. The skill runs no shell when it loads, so that it still loads where Bash is blocked.

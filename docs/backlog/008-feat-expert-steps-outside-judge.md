@@ -39,6 +39,8 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 
 이번에 빼는 것: 서베이로 만든 항목을 이어서 시작하거나 여러 항목을 차례로 돌리는 것(`/lead run`). 운영 DB·원격 Supabase 에 닿는 명령을 막는 규칙은 바꾸지 않는다.
 
+16. **Bash 가 막혀도 스킬이 불러와지게:** eval 에서 `task` 스킬이 SKILL.md 의 `!` 셸 줄 때문에 아예 불러와지지 않았다. 셸이 막힌 실제 세션(don't ask 모드 등)에서도 같다("A failed command aborts the entire skill invocation", skills 문서). `task`와 `ui-design`의 `!` 줄을 지우고, 그 상태는 절차가 명령으로 직접 본다(사용자 "둘 다 지우기").
+
 ## Acceptance Criteria
 
 <!-- AC:BEGIN -->
@@ -64,6 +66,7 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - [ ] #19 code-review 하나만 쓴 판과 스택 리뷰어를 더한 판을 eval 로 비교한 방법과 결과가 `Implementation Notes`에 있다. `end.md` 3단계 구성은 사용자가 결과를 보고 정한 대로다
 
 - [ ] #20 만점 동률로 판별력이 없던 비교(Svelte 절, 역할 문장, 리뷰어 구성)를 실제 실패에서 만든 더 어려운 사례로 다시 쟀다. 사례 작성 방식과 출처, 지시 없는 대조군이 실제로 실패하는지 확인한 결과, LLM 채점을 사람 라벨로 보정한 결과, 비교 결과가 `Implementation Notes`에 있다. 대조군이 실패하지 않은 사례는 쓰지 않았다
+- [ ] #21 `task`와 `ui-design` SKILL.md(번역본 포함)에 `!` 셸 줄이 없고(`grep -rn '^- .*!`' plugins i18n`이 비어 있다), 그 상태가 필요한 절차(`start.md`·`end.md` 1단계, `mockup.md`)가 명령으로 직접 본다. 셸이 없는 eval 실행에서 고친 원본 `task` 스킬이 불러와진다
 <!-- AC:END -->
 
 ## Definition of Done

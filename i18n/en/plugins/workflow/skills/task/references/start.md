@@ -10,7 +10,7 @@ Run every command from the repository root (`git rev-parse --show-toplevel`). Wh
 
 ## 1. Can we start
 
-If any of these applies, stop and say so. Do not clean it up on your own.
+Check the state with `git branch --show-current`, `git status --short`, `git branch --list 'w/*'`, and `git log --oneline <base>..HEAD`. If any of these applies, stop and say so. Do not clean it up on your own.
 
 | Check | If it applies |
 | --- | --- |
