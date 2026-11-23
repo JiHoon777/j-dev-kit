@@ -151,6 +151,24 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 | 리뷰어 구성 | code-review 만 3회 / frontend-reviewer 더함 3회 | 1.0 / 0.97 | $1.05 / $1.79 | 탐지는 동률. 더한 판은 1회 맞는 파일(`Fine.tsx`)을 지적했고 비용 1.7배. 세 번 모두 code-review 가 실제로 불려 `review.diff`로 돌았다. `end.md` 3단계는 바꾸지 않는다(사용자 "추천안대로") |
 | `start.md` Explore 최대 2개·질문 최대 3개 | 지금 / Explore 제한 뺌 / 질문 제한 뺌, 각 3회 | 0.50 / 0.17 / 0.33 | $0.63 / $0.43 / $0.46 | **확인 못 함.** 실행 기록을 보니 9회 모두 `task` 스킬 로드가 실패했다. SKILL.md 의 현재 상태 줄(`git` 셸 명령)이 셸 없는 실행에서 거부되고, 절차 파일도 플러그인 폴더라 읽을 수 없었다. 점수 차이는 제한과 무관하다. 1차 1회(0.83)도 같다. 셸 샌드박스가 있는 macOS·Linux 에서 다시 잰다. 두 제한은 유지 |
 
+#### 계획 단계 다시 재기 (사용자 "Windows 의 eval 환경에서도 동작하게")
+
+- 원인 확인(1회 진단 3번, 각 $0.06~0.09):
+  - Skill 결과가 `Shell command permission check failed for pattern "!`git branch --show-current …`": Permission to use Bash has been denied.`였다.
+  - `allowed-tools`와 정확히 맞는 단순 명령으로 바꿔도 같았다. eval 에서는 스킬의 `allowed-tools`가 Bash 를 열지 못한다(plugin-evals 문서).
+  - `!` 줄을 모두 뺀 판에서는 스킬이 불러와지고 `references/start.md`도 Read 로 열렸다. 그러니 원인은 SKILL.md 의 `!` 줄이다. 플러그인 폴더 읽기는 막혀 있지 않았다.
+  - 문서: "A failed command aborts the entire skill invocation", "Outside auto mode, when a command's permission check returns anything other than allow, Claude Code aborts the invocation"(skills). 네이티브 Windows 에는 셸 샌드박스가 없고 문서가 권하는 길은 WSL2 뿐이다(plugin-evals, sandboxing).
+  - 그래서 eval 설정만으로는 풀 수 없다. Bash 가 막힌 실제 세션(don't ask 모드 등)에서도 `/task`가 같은 이유로 불러와지지 않는다. SKILL.md 를 고칠지는 사용자에게 묻는다. 이번 실행은 eval 사본에서만 `!` 줄을 뺐다.
+- 채점 기준을 고쳤다.
+  - `plan-complete`: 네 가지(바꿀 파일, 순서, AC 별 확인, 환불 실패 시 취소하지 않는 방법)를 구체적으로 적었다.
+  - `no-needless-questions`: 코드에 답이 있는 것 두 가지와 괜찮은 질문의 예를 적었다.
+  - 이전 9회의 마지막 메시지에 sonnet 에이전트로 다시 적용했다. 다 갖춘 계획 3건은 전에 FAIL 3/3 이었는데 PASS 가 됐다. 멈춘 6건은 FAIL 그대로다. "반올림"을 물은 실행도 B 에서 PASS 가 됐다. 사람 판단과 맞는다.
+- 다시 잰 결과(Opus 시험, sonnet 채점, 각 3회): 지금 판, Explore 제한 뺀 판, 질문 제한 뺀 판 모두 0.83, 0.83, 0.83(각 $1.03~1.04, 합계 $3.11).
+  - 9회 모두 스킬이 불러와졌고 계획이 완결됐다. 질문도 괜찮았다.
+  - Explore 는 어느 판에서도 부르지 않았다. 사례 저장소가 작아 직접 읽었다.
+  - `reads-payments-refund`가 9회 모두 떨어졌다. 실행 기록을 보니 네 파일 모두 실제로 Read 했다. 마지막 메시지에 그 경로 문자열이 없었을 뿐이라, 정규식 채점이 틀렸다. `reads-*` 넷을 Read 호출을 보는 과정 채점(`tool_used`)으로 바꿨다. 바꾼 채점으로 보면 세 판 모두 만점 동률이다.
+  - 결론: 판별력이 없다. 두 제한은 유지한다. 이 사례는 너무 작아 Explore 가 필요 없다. 실제 큰 항목으로 만든 사례가 필요하다(AC #20 설계에 넣는다).
+
 - 2차 비용: $13.55. 1차를 합친 eval 전체 비용: 약 $22.6.
 - 채점 샘플(sonnet, 표결 3회. 도구가 채점 이유는 남기지 않고 본 보고 일부만 남긴다):
   - PASS 예: `judges-coupon`(Svelte 뺀 판) — 보고가 "클라이언트로 가는 컴포넌트가 `$env/static/private`를 import, 빌드 실패나 비밀 키 노출"을 짚었다. 맞는 판정.
