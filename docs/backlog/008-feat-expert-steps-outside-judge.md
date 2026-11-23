@@ -262,6 +262,35 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - 후보 1(AC #17)은 eval 없이 문구만 바꿨다. 앞의 Svelte 결과는 바꾸기 전 문구("확신이 낮은 것은 빼고")로 잰 것이다.
 - 트리거 eval: 사본에서 `dependencies`와 Stop 훅을 뺐다. `fix-no` 실행 하나는 `max_turns`(4)에 닿았지만 `task`를 부르지 않아 통과다.
 
+### 인수인계 (2026-11-23)
+
+다른 컴퓨터의 새 세션은 이 절만 읽고 이어 간다.
+
+- **브랜치:** `w/008-feat-expert-steps-outside-judge`. 받는 법: `git fetch origin && git switch w/008-feat-expert-steps-outside-judge`. 이 기계에서는 워크트리 `.claude/worktrees/008-feat-expert-steps-outside-judge-8e6db5`에 있다.
+- **어디까지 했나:** `/task start` 1~6단계를 마쳤다(simplify 반영, 검증 명령 EXIT=0, `test-check-repo-rules.sh` 30/30, `test-verify-on-stop.sh` 11/11).
+  - AC #1~#21, DoD #1~#3 모두 체크했다. 판정은 구현하지 않은 판정 에이전트가 했다(위 "마무리 정리").
+  - 체크하지 못한 AC 는 없다.
+  - 단서가 붙은 것: #19 는 리뷰어 구성을 재기만 했고 `end.md` 3단계는 바꾸지 않았다. #20 은 사람 라벨이 5건뿐이다.
+- **남은 일:**
+  1. 그 브랜치에서 `/task end`. 리뷰, 판정 에이전트, 4단계 지적 고르기, 고치기, 6단계 Final Summary·원칙·항목 닫기, 7단계 머지 방식 고르기.
+  2. 리뷰 모델: 세션이 Fable 이면 리뷰 에이전트에 `model: opus`, Opus 이하면 주지 않는다.
+  3. `docs/backlog/_handoff-008.md`(먼저 쓴 짧은 인수인계)는 이 절로 옮기고 지웠다.
+  4. 그다음 009, 010 을 시작할 예정이다.
+- **플러그인 버전:** workflow 0.10.0→0.11.0, frontend 0.7.0→0.8.0, server 0.4.2→0.5.0. 머지 전까지 GitHub `main`에는 없다. 설치된 캐시(`~/.claude/plugins/cache/j-dev-kit/…`)도 예전 판이다. 이 브랜치의 스킬을 쓰려면 머지 뒤 `claude plugin marketplace update j-dev-kit`, `claude plugin update <플러그인>@j-dev-kit`.
+- **eval 다시 돌리는 법:** `plugins/frontend/evals/README.md`, `plugins/workflow/evals/README.md`에 있다.
+  - 사본을 만들어 `plugin.json`의 `dependencies`와 Stop 훅을 지운다. 잴 문장을 뺀 사본도 하나 만든다.
+  - 명령: `claude plugin eval <사본> --ablation none --scaffold --trust-plugin --model opus --judge-model sonnet --runs 3 --no-publish --threshold 0 --json <사본>.json`. 필요하면 `--case`/`--tag`, `-j 3`, `--keep-temp`.
+  - 반복은 사례마다 3회, 미세 비교는 판마다 5회와 대조군. 지우는 조건은 뺀 판 점수가 낮지 않고 비용 1.5배 이하.
+  - Windows 에는 eval 샌드박스가 없어 셸 도구를 주면 거부된다. 사례는 셸 없이 돈다.
+  - 비용 감각: 심은 문제 사례 1회 약 $0.2~0.5. 실제 사례 리뷰어 eval 은 한 판(사례 셋 × 5회) 약 $17. 계획 사례 5회 약 $10. 트리거 20사례 약 $7. 이 항목의 실제 사례 A/B 전체는 $103.39.
+- **이 기계에만 있는 것:**
+  - `.claude/.local/evals/008/`: 사본, 결과 JSON·로그, 사람 라벨(`labels-human.json`), 재채점(`regrade-v3.json`), `extract_findings.py`. 결과 요약은 위 eval 절에 있다.
+  - `.claude/.local/reports/`: Felix Rieseberg 대담 비교 등 서베이 보고서.
+  - 공유 노트 폴더(부모 세션): `008-hard-eval-proposal.md`, `008-judge-labels.md`.
+  - `real-*`(frontend)와 `start-plan-real`(workflow) 사례: scaffold 가 `C:/Users/user/Documents/jihoons/nolmeong` 로컬 저장소에서 `git archive`로 커밋을 꺼낸다. 다른 기계에서 돌리려면 nolmeong 을 clone 하고 사례의 fixture 스크립트 안 경로를 그 위치로 바꾼다(커밋하지 않는다). 필요한 커밋: 002·012·013 리뷰 전 커밋, `d8c75f5`, `c32b56d`, `ed9250b`. nolmeong 은 읽기만 한다. `.env` 같은 비밀 값은 사례에 넣지 않는다.
+  - `trigger-real`과 심은 문제 사례는 어느 기계에서나 돈다.
+- **지킬 것:** 운영 DB·원격 Supabase 명령을 막는 규칙은 바꾸지 않는다. 푸시는 사용자가 요청할 때만. 채점 규칙(사용자 결정): 사용자에게 미치는 영향을 말하고 문제라고 단정해야 찾은 것이다. 원인만 짚거나 "확인 필요"만 적으면 못 찾은 것이다.
+
 ## Final Summary
 
 `/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
