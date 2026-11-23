@@ -1,7 +1,7 @@
 ---
 name: task
 description: Use when working through backlog items. create when the user asks to turn work into a backlog item, start when they ask to start or implement an item, end when they ask to review, wrap up, or merge a work branch. create and start open a sub-session by default and work there. Calls the start-check and end-check skills of the enabled stack plugins. Not for requests to just fix something with no mention of an item or branch.
-argument-hint: "create <one or two sentences> [--here] | start [backlog number or part of a name] [--here] | end"
+argument-hint: "create <one or two sentences> [--here] | create --survey <goal> [sources…] [--here] | start [backlog number or part of a name] [--here] | end"
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git log *), Bash(git diff *), Bash(ls *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -41,8 +41,11 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
      | `create` | This folder as is (no worktree) |
      | `start` | A new worktree off the base branch, branch name `w/<item file name without .md>` |
 
-  4. That session cannot see this conversation. The brief is one line, "Invoke the `task` skill with `<mode> <rest of the arguments> --here` and follow its procedure", plus any background the user gave or decisions made in this conversation (only if there are any).
-  5. Report the session link and stop. That work does not happen in this session. The user answers questions and gives approvals in that session directly.
+  4. That session cannot see this conversation. The brief is two lines, "Invoke the `task` skill with `<mode> <rest of the arguments> --here` and follow its procedure" and "Write questions and approval requests (a plan in full) completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any).
+  5. Report the session link. That work does not happen in this session; this session directs it.
+     - When the sub-session ends its turn with a question or an approval request, show it to the user in full, and pass the answer to that session in the user's own words.
+     - When the sub-session ends a turn, check the result (commits, changed files) yourself and report it before the user asks.
+     - If the user answered in the sub-session directly, accept that.
 
 ## 3. Project settings
 

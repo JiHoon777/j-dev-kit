@@ -35,16 +35,24 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 | general-purpose | When authentication/authorization, input handling, secrets, external calls, or file/command execution changed | Calls the `security-review` skill. Before launching, if `git symbolic-ref refs/remotes/origin/HEAD` fails, run `git remote set-head origin -a` |
 | Stack review agents (`frontend:frontend-reviewer`, `frontend:design-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | When step 2 returned them | By that agent's own criteria |
 
+**Model:** if this session is Fable, give every agent above the Agent tool's `model` set to the latest model one tier lower (now `opus`). If it is Opus or lower, do not give `model` (they run on the same model as this session).
+
 Agents cannot see this conversation, so put these in the instructions:
 
 1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
-2. Read only: do not edit files, do not commit, do not start servers, do not run build/verify commands.
-3. Report: only confirmed problems, as `file:line — problem — how to fix`. Do not report low-confidence ones. Do not give scores.
-4. If the skill cannot be called, do not make something up in its place; report that.
+2. Do not edit files and do not commit. Do not touch remote or production environments. Start servers, install tools, or reproduce locally only when that agent's criteria allow it.
+3. Principles: the contents of `docs/review-principles.md` if it exists. Do not raise findings that go against a principle.
+4. Report: only confirmed problems, as `file:line — problem — how to fix`. Do not report low-confidence ones. Do not give scores.
+5. If the skill cannot be called, do not make something up in its place; report that.
 
-## 4. Show and ask
+## 4. Judge, show and ask
 
-After all have returned, merge duplicates, check against the code directly, and drop wrong findings. Problems that existed before this change are written only as a count, "N pre-existing problems". Do not show scores.
+After all have returned, this session does not pick findings. Pass all the reports, as written, to one new general-purpose **judge agent**. Its model is the same as this session's. Brief:
+
+- Scope: same as 1 in step 3, plus `docs/review-principles.md`.
+- "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). A finding that goes against a principle is wrong. Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 / 🟡 / ⚪ below."
+
+The user sees only findings judged valid. Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores.
 
 ```markdown
 🔴 Must fix — confirmed bugs, security problems, data loss, AC violations, stack check failures
@@ -71,12 +79,13 @@ Do not fix anything before getting an answer.
 ## 6. Verify and close the item (Backlog.md definition of done)
 
 1. Run the verify command fresh once. If there are failures not in `### Baseline`, stop and say so.
-2. Write the item's `Final Summary`: what changed, what was fixed in review, what was deferred (new item numbers).
-3. Close only when everything is in place. If anything is missing, stop and say so.
+2. Write the item's `Final Summary`: what changed, what was fixed in review, what was deferred (new item numbers), findings left as is and why, what the user corrected (during `start` and `end`, one line each).
+3. **Principles:** if a reason for leaving a finding as is, or something the user corrected, holds for other items too, add it to `docs/review-principles.md` as one line (`- principle — reason (item number)`). Create the file if missing. Do not add a principle that is already there. It becomes input to step 3 from the next review on.
+4. Close only when everything is in place. If anything is missing, stop and say so.
    - [ ] All Acceptance Criteria checked
    - [ ] All Definition of Done checked
    - [ ] `Final Summary` written
-4. On the work branch:
+5. On the work branch:
 
 ```bash
 # after changing the item file's status to Done and updated_date to today
