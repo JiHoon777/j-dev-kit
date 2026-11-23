@@ -10,7 +10,7 @@
 | `real-line`, `real-sky`, `real-birthday` | 실제 리뷰 실패(nolmeong 002·013·012 의 리뷰 전 커밋). 정답은 리뷰에서 고친 동작 버그이고 고친 커밋이 근거다(각 `case.yaml`). 버그마다 sonnet 판정, `real-line`에는 그대로 두기로 한 것을 🔴 로 올리지 않는지도 본다. `--tag real` |
 | `compose-real-*-cr`, `compose-real-*-stack` | 리뷰어 구성을 실제 사례로. `code-review` 하나만 쓴 것과 `frontend-reviewer`를 더한 것. 정답과 채점은 `real-*`와 같다. `--tag compose-real` |
 
-`real-*`는 이 기계에서만 돈다. scaffold 가 `C:/Users/user/Documents/jihoons/nolmeong` 로컬 저장소에서 `git archive`로 커밋을 꺼내 만든다(그 저장소에는 쓰지 않는다). j-dev-kit 에는 nolmeong 코드를 넣지 않는다. 지시 없는 대조군이 정답을 늘 다 찾는 사례는 판별력이 없으니 쓰지 않는다(008).
+`real-*`와 `compose-real-*`는 nolmeong 로컬 저장소가 있는 기계에서만 돈다. scaffold 가 그 저장소에서 `git archive`로 커밋을 꺼내 만든다(그 저장소에는 쓰지 않는다). 저장소 경로는 `evals/nolmeong-src.local`에 한 줄로 쓴다(예: `echo ~/projects/nolmeong > evals/nolmeong-src.local`. 셸이 `~`를 절대 경로로 펼친다). 이 파일은 커밋하지 않고, 플러그인 폴더를 복사하면 사본에도 따라간다. eval 은 scaffold 에 환경 변수를 넘기지 않으므로 환경 변수로는 줄 수 없다. j-dev-kit 에는 nolmeong 코드를 넣지 않는다. 지시 없는 대조군이 정답을 늘 다 찾는 사례는 판별력이 없으니 쓰지 않는다(008).
 
 다시 돌리기:
 

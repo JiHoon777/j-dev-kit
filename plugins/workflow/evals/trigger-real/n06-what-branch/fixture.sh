@@ -58,6 +58,6 @@ labels: [fix]
 J
 git add -A && git commit -qm base
 git switch -q -c w/002-fix-qty-total
-sed -i 's/sum + l.price/sum + l.price * l.qty/' src/cart.ts
+sed 's/sum + l.price/sum + l.price * l.qty/' src/cart.ts > src/cart.ts.new && mv src/cart.ts.new src/cart.ts # GNU·BSD sed 둘 다
 git commit -qam "fix: 합계에 수량 곱하기"
 git switch -q main

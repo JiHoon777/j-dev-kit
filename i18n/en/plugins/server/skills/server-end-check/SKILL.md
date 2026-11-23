@@ -19,7 +19,7 @@ Called by `/task end`. Runs commands and returns only the results. Review that r
 
 ## 1. Checks (only when applicable)
 
-Run database commands only against a local or development DB. If it looks like production, do not run them and tell the user. If a needed check tool is missing, install and use it: pin the version, and use a way that does not change project files or global installs (`npx -y <package>@<version>`, `go run <module>@<version>`, `docker run --rm <image>:<tag>`). If it cannot be installed, write "tool not installed".
+Run database commands only against a local or development DB. If it looks like production, do not run them and tell the user. If a needed check tool is missing, install and use it: pin the version, and use a way that does not change project files or global installs. You may install only the tools this document names (oasdiff: `go run github.com/oasdiff/oasdiff@<version>` or `docker run --rm tufin/oasdiff:<tag>`; Supabase CLI: `npx -y supabase@<version>`) and tools the project already lists as dependencies. For any other tool, show the user its name and source and ask before installing. If it cannot be installed, write "tool not installed".
 
 ### Missing migrations and order
 

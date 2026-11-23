@@ -100,5 +100,6 @@ Do not hand-pick sources one at a time. Take the goal and all the sources, and C
 2. **Pick candidates:** pick only what fits the goal. There is no set number; list only those with evidence. Do not list ones that overlap existing items (step 1).
    - Group sources that look like the same cause into one candidate, and list every evidence location.
    - For a candidate that comes from a bug report, try to reproduce it on the base branch. Attach how it was reproduced, or that it could not be, to the evidence.
+     - In this folder, reproduce only in ways that just read. If it needs installs or builds, do it in a temporary worktree (`git worktree add <temp path> <base>`) and remove it when done (`git worktree remove <temp path>`). When done, check that `git status --short` is empty.
 3. **Show them at once:** show one list with, per candidate, the title, the evidence (where in the sources: `file:line`, command, URL), and a way to check it is done (command, screen, number), and let the user pick.
 4. **Write:** write only the picked candidates, by the step 2 rules. Put the way to check into that item's Acceptance Criteria. Show the written items together and get approval once (step 3). Then, per item, recount the number and write it as in step 4, and commit it separately. Do not write candidates that were not picked.

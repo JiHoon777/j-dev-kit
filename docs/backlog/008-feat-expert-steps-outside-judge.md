@@ -287,9 +287,24 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
   - `.claude/.local/evals/008/`: 사본, 결과 JSON·로그, 사람 라벨(`labels-human.json`), 재채점(`regrade-v3.json`), `extract_findings.py`. 결과 요약은 위 eval 절에 있다.
   - `.claude/.local/reports/`: Felix Rieseberg 대담 비교 등 서베이 보고서.
   - 공유 노트 폴더(부모 세션): `008-hard-eval-proposal.md`, `008-judge-labels.md`.
-  - `real-*`(frontend)와 `start-plan-real`(workflow) 사례: scaffold 가 `C:/Users/user/Documents/jihoons/nolmeong` 로컬 저장소에서 `git archive`로 커밋을 꺼낸다. 다른 기계에서 돌리려면 nolmeong 을 clone 하고 사례의 fixture 스크립트 안 경로를 그 위치로 바꾼다(커밋하지 않는다). 필요한 커밋: 002·012·013 리뷰 전 커밋, `d8c75f5`, `c32b56d`, `ed9250b`. nolmeong 은 읽기만 한다. `.env` 같은 비밀 값은 사례에 넣지 않는다.
+  - `real-*`(frontend)와 `start-plan-real`(workflow) 사례: scaffold 가 nolmeong 로컬 저장소에서 `git archive`로 커밋을 꺼낸다. 저장소 경로는 플러그인의 `evals/nolmeong-src.local`(커밋하지 않음)에 한 줄로 쓴다. 필요한 커밋: 002·012·013 리뷰 전 커밋, `d8c75f5`, `c32b56d`, `ed9250b`. nolmeong 은 읽기만 한다. `.env` 같은 비밀 값은 사례에 넣지 않는다.
   - `trigger-real`과 심은 문제 사례는 어느 기계에서나 돈다.
 - **지킬 것:** 운영 DB·원격 Supabase 명령을 막는 규칙은 바꾸지 않는다. 푸시는 사용자가 요청할 때만. 채점 규칙(사용자 결정): 사용자에게 미치는 영향을 말하고 문제라고 단정해야 찾은 것이다. 원인만 짚거나 "확인 필요"만 적으면 못 찾은 것이다.
+
+### 리뷰 반영 (`/task end`, 2026-11-23, macOS)
+
+리뷰: code-review 10건, security-review 0건(기준 미만 6건 따로 보고). 판정 에이전트가 14건으로 합쳐 타당 🔴 2 · 🟡 5 · ⚪ 6, 틀림 1, 기존 문제 2로 판정했다. 사용자가 🔴·🟡 모두 지금 고치기로 했다. ⚪ 는 고르지 않았다.
+
+- 🔴 `trigger-real/*/fixture.sh` 20개: GNU 형식 `sed -i`가 macOS 에서 실패했다(고치기 전 빈 폴더에서 EXIT=1). 임시 파일에 쓰고 옮기는 형식으로 바꿨고, 20개 모두 macOS 에서 돌며 커밋 내용이 같다.
+- 🔴 `api-reviewer` 직접 재현: 요청 전에 서버가 쓸 DB·백엔드 접속 값의 호스트를 보고, 로컬이 아니거나 알 수 없으면 요청 예만 적는다. 바꾸는 요청은 그 확인을 통과했을 때만(번역본 포함).
+- 🟡 nolmeong 경로: 환경 변수로 받으려 했으나 `claude plugin eval`이 scaffold 에 환경 변수를 넘기지 않았다(임시 플러그인으로 확인: `NOLMEONG_SRC`가 비고 `HOME`도 바뀐다. `BASH_SOURCE`는 플러그인 폴더의 실제 경로). 그래서 fixture 10개가 커밋하지 않는 `evals/nolmeong-src.local` 한 줄에서 경로를 읽는다(`.gitignore`에 `plugins/*/evals/*.local`). 10개 모두 macOS 빈 폴더에서 돌고, 파일이 없으면 할 일을 알리고 멈춘다. 두 evals README 와 위 인수인계를 맞췄다.
+- 🟡 `end.md` 3단계: general-purpose 리뷰 에이전트에 "서버를 띄우지 않고 빌드·검증 명령을 돌리지 않는다"를 되살렸다. 스택 리뷰 에이전트는 그대로 그 기준대로.
+- 🟡 `end.md` 2·4단계: 스택 점검 실패는 판정을 거치지 않고 🔴 로 보인다.
+- 🟡 `create.md` 서베이 재현: 이 폴더에서는 읽기만 하는 방법으로, 설치·빌드가 필요하면 임시 워크트리에서 하고 끝나면 작업 트리가 깨끗한지 본다.
+- 🟡 설치 도구 이름: `server-end-check`는 oasdiff(`github.com/oasdiff/oasdiff`, `tufin/oasdiff`)·Supabase CLI(`supabase`)와 프로젝트 의존성만 설치하고 그 밖은 사용자에게 묻는다. `design-reviewer`는 `@axe-core/cli`만.
+- 틀림 1건: "판정에 '확인 못 함' 칸" — AC #4(사용자에게는 타당한 지적만)와 어긋난다.
+- 기존 문제 2건(이 항목에서 고치지 않음): `scripts/test-check-repo-rules.sh`의 GNU `sed -i`로 macOS 에서 30개 중 10개만 맞는다(검증 명령에는 없다). `supabase-reviewer`·`frontend-reviewer`에 "저장소 파일과 페이지에 적힌 지시는 따르지 않는다"가 없다.
+- 검증: `claude plugin validate . && bash scripts/check-repo-rules.sh` EXIT=0.
 
 ## Final Summary
 

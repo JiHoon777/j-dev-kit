@@ -23,7 +23,7 @@ Read the item file. If it is already in `docs/done/`, start from step 6.
 
 Call, with the Skill tool, every available skill whose name ends in `-end-check` (e.g. `server:server-end-check`). Each check runs its inspection tools only when the change touched its area, and returns:
 
-- **Failures:** put them in the step 4 findings list as 🔴.
+- **Failures:** put them in the step 4 findings list as 🔴 without going through the judge. The check tool's output is the evidence.
 - **Agents to add to the review:** add them to step 3 (with the evidence).
 - **To do after fixing:** do it in step 5.
 
@@ -40,7 +40,7 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 Agents cannot see this conversation, so put these in the instructions:
 
 1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
-2. Do not edit files and do not commit. Do not touch remote or production environments. Start servers, install tools, or reproduce locally only when that agent's criteria allow it.
+2. Do not edit files and do not commit. Do not touch remote or production environments. general-purpose agents do not start servers and do not run build/verify commands (the reviewers run at the same time in the same folder). Stack review agents start servers, install tools, or reproduce locally only when that agent's criteria allow it.
 3. Principles: the contents of `docs/review-principles.md` if it exists. Do not raise findings that go against a principle.
 4. Report: every problem found, split into confirmed and unconfirmed, as `file:line — problem — how to fix`. Do not give scores.
 5. If the skill cannot be called, do not make something up in its place; report that.
@@ -52,7 +52,7 @@ After all have returned, this session does not pick findings. Pass all the repor
 - Scope: same as 1 in step 3, plus `docs/review-principles.md`.
 - "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). A finding that goes against a principle is wrong. Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 / 🟡 / ⚪ below."
 
-The user sees only findings judged valid. Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores.
+The user sees only findings judged valid and step 2 stack check failures. Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores.
 
 ```markdown
 🔴 Must fix — confirmed bugs, security problems, data loss, AC violations, stack check failures

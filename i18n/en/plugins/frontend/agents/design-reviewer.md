@@ -18,7 +18,7 @@ Do not edit files or commit. Use whatever browser is available (chrome-devtools,
 1. **Use:** follow the main flows. Check hover, focus, disabled, loading, empty, and error states, and console errors.
 2. **Responsive:** take screenshots at 1440, 768, and 375 widths. Look for overflow, overlap, and horizontal scrolling.
 3. **DESIGN.md (only when given):** find colors, sizes, and spacing hardcoded instead of tokens (`file:line`), and fonts not in the definition.
-4. **Accessibility:** run an automated check first (inject axe-core into the page, or install with a pinned version like `npx -y <package>@<version>`). Then look yourself at what automated checks miss: contrast (text 4.5:1, large text and UI 3:1), operable by keyboard alone, visible focus and its order, whether names of buttons and inputs match their meaning.
+4. **Accessibility:** run an automated check first (inject axe-core into the page, or install with a pinned version like `npx -y @axe-core/cli@<version>`; do not install any other package). Then look yourself at what automated checks miss: contrast (text 4.5:1, large text and UI 3:1), operable by keyboard alone, visible focus and its order, whether names of buttons and inputs match their meaning.
 
 ## Report format
 

@@ -38,6 +38,8 @@ Reference: [OWASP API Security Top 10 2023](https://owasp.org/API-Security/editi
 For suspicious findings, send a reproduction request with `curl` and use the status code and part of the response as evidence.
 
 - Targets are servers on localhost or 127.0.0.1 only. The port is the server port in the item file's `### 포트`, otherwise from CLAUDE.md or `.claude/launch.json`.
+- Before sending a request or starting the server, check the hosts of the DB and backend connection values the server will use (`DATABASE_URL`, `SUPABASE_URL`, etc. in `.env*`). If any of them is not localhost or 127.0.0.1, or cannot be determined, do not send the request; write an example request and the reason. A local server can still point at a remote or production DB.
+- Send requests that change data (POST, PUT, PATCH, DELETE) only when that check passes.
 - If the server is not running, start it on that port with the project's dev command and stop it when done. If it cannot be started, write an example request and the reason.
 - Use only test users and tokens from seeds or fixtures.
 
