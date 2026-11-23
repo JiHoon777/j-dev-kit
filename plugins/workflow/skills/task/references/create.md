@@ -55,7 +55,7 @@ updated_date: YYYY-MM-DD
 
 ## Final Summary
 
-`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
+`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.
 ```
 
 ## 1. 무엇을 왜 하는지
