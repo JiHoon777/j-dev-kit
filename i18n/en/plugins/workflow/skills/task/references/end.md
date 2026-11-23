@@ -34,10 +34,11 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 | general-purpose | Always | Calls the `code-review` skill. Target is the current branch. No `--fix`, no `--comment`, no effort level given |
 | general-purpose | When authentication/authorization, input handling, secrets, external calls, or file/command execution changed | Calls the `security-review` skill. Before launching, if `git symbolic-ref refs/remotes/origin/HEAD` fails, run `git remote set-head origin -a` |
 | Stack review agents (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | When step 2 returned them | By that agent's own criteria |
+| `workflow:design-reviewer` | When a screen (components, pages, styles) changed | In a browser: DESIGN.md tokens (if one is at the root), responsiveness, accessibility. Before launching it, this session starts the dev server (on the web port in the item's `### 포트`, if there is one). If it cannot be started, leave it out and say so in step 4 |
 
 Agents cannot see this conversation, so put these in the instructions:
 
-1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
+1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them. For `design-reviewer`, the screen URL, the DESIGN.md path (if any), and the code paths of the changed screens.
 2. Read only: do not edit files, do not commit, do not start servers, do not run build/verify commands.
 3. Report: only confirmed problems, as `file:line — problem — how to fix`. Do not report low-confidence ones. Do not give scores.
 4. If the skill cannot be called, do not make something up in its place; report that.
@@ -65,7 +66,7 @@ Do not fix anything before getting an answer.
 - Call the `superpowers:receiving-code-review` skill and follow it (check findings against the code; for wrong findings, give the reason and do not apply them).
 - For fixes that change behavior, write a failing test first.
 - Do step 2's "To do after fixing" for the fixed parts (e.g. browser-check only the fixed screens). If a fix touched a stack check's area, call that `*-end-check` again.
-- For "later", read `${CLAUDE_SKILL_DIR}/references/create.md` and create a new item following its steps 2-4 (`/task` can only be invoked by the user, so do not call it with the Skill tool). The user already chose "later", so for step 3's approval, show only the item's content and get approval.
+- For "later", invoke the `task` skill with `create <the finding and its evidence> --here` to make a new item. The user already chose "later", so for create step 3's approval, show only the item's content and get approval.
 - Write what was done and seen in `Implementation Notes` and commit.
 
 ## 6. Verify and close the item (Backlog.md definition of done)
@@ -92,7 +93,7 @@ Call the `superpowers:finishing-a-development-branch` skill and follow it. This 
 
 - The verify command just passed in step 6. The base branch is the one from project settings.
 - If no worktree was used, there is no worktree to remove.
-- If this session worked in the `.claude/worktrees/<name>` worktree that `/task start` made, this line takes precedence over the skill's matching steps for merging and cleanup. The base branch is in the base folder (the first line of `git worktree list`), so run the merge there, like `git -C <base folder> merge …`. Before merging, check that the base folder is on the base branch (`git -C <base folder> branch --show-current`) and clean (`status --short`); if not, stop and say so. Clean up only when a local merge was chosen; if a PR or keeping the branch was chosen, leave the worktree. After merging, move the session back to the base folder (`ExitWorktree` with keep if it entered with `EnterWorktree`; if it only ran commands in that folder, run later commands in the base folder) and clean up with `git worktree remove .claude/worktrees/<name>` and `git branch -d w/<name>`. If the session was first opened inside the worktree and cannot go back, do not remove it; say those two commands can be run from the base folder.
+- If this session worked in a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` differ, for example a sub-session `start` opened), this line takes precedence over the skill's matching steps for merging and cleanup. The base branch is in the base folder (the first line of `git worktree list`), so run the merge there, like `git -C <base folder> merge …`. Before merging, check that the base folder is on the base branch (`git -C <base folder> branch --show-current`) and clean (`status --short`); if not, stop and say so. The session is inside that worktree, so do not remove the worktree or the branch from this session. If a local merge was chosen, say that archiving the session lets the app clean up the worktree, and otherwise running `git worktree remove <worktree path>` and `git branch -d w/<name>` in the base folder does it. If a PR or keeping it as is was chosen, leave the worktree.
 - If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so.
 - If the base branch has no upstream, skip `git pull`.
 - Push only when the user asks.

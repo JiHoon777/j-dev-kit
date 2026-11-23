@@ -32,10 +32,11 @@
 | general-purpose | 항상 | `code-review` 스킬을 부른다. 대상은 현재 브랜치. `--fix`, `--comment` 없이, 노력 수준은 주지 않는다 |
 | general-purpose | 인증·인가, 입력 처리, 비밀 값, 외부 호출, 파일·명령 실행이 바뀌었을 때 | `security-review` 스킬을 부른다. 띄우기 전에 `git symbolic-ref refs/remotes/origin/HEAD`가 실패하면 `git remote set-head origin -a` |
 | 스택 리뷰 에이전트 (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | 2단계가 돌려줬을 때 | 그 에이전트의 기준대로 |
+| `workflow:design-reviewer` | 화면(컴포넌트, 페이지, 스타일)이 바뀌었을 때 | 브라우저에서 DESIGN.md 토큰(루트에 있으면), 반응형, 접근성. 띄우기 전에 이 세션이 개발 서버를 띄운다(항목 `### 포트`에 웹 포트가 있으면 그 포트). 띄울 수 없으면 빼고 4단계에 그렇다고 적는다 |
 
 에이전트는 이 대화를 볼 수 없으니 지시문에 넣는다:
 
-1. 범위: `git diff <기준>...HEAD`, 항목 파일 경로, CLAUDE.md. 스택 리뷰 에이전트에게는 점검이 함께 돌려준 근거도.
+1. 범위: `git diff <기준>...HEAD`, 항목 파일 경로, CLAUDE.md. 스택 리뷰 에이전트에게는 점검이 함께 돌려준 근거도. `design-reviewer`에게는 화면 URL, DESIGN.md 경로(있으면), 바뀐 화면의 코드 경로.
 2. 읽기만 한다: 파일을 고치지 않고, 커밋하지 않고, 서버를 띄우지 않고, 빌드·검증 명령을 돌리지 않는다.
 3. 보고: 확인한 문제만, `file:line — 문제 — 고칠 방법`. 확신이 낮은 것은 보고하지 않는다. 점수는 쓰지 않는다.
 4. 스킬을 부를 수 없으면 대신 지어내지 말고 그렇다고 보고한다.
@@ -63,7 +64,7 @@
 - `superpowers:receiving-code-review` 스킬을 부르고 따른다(지적을 코드에서 확인하고, 틀린 지적은 이유를 대고 적용하지 않는다).
 - 동작을 바꾸는 수정은 실패하는 테스트를 먼저 쓴다.
 - 2단계의 "고친 뒤 할 것"을 고친 부분에 대해 한다(예: 고친 화면만 브라우저 확인). 수정이 스택 점검 영역을 건드렸으면 그 `*-end-check`를 다시 부른다.
-- "나중"은 `${CLAUDE_SKILL_DIR}/references/create.md`를 읽고 그 2~4단계대로 새 항목을 만든다(`/task`는 사용자만 부를 수 있어 Skill 도구로 부르지 않는다). 사용자가 이미 "나중"을 골랐으니 3단계의 승인은 항목 내용만 보여 주고 받는다.
+- "나중"은 `task` 스킬을 `create <지적과 근거> --here`로 불러 새 항목을 만든다. 사용자가 이미 "나중"을 골랐으니 create 3단계의 승인은 항목 내용만 보여 주고 받는다.
 - 한 것과 본 것을 `Implementation Notes`에 적고 커밋한다.
 
 ## 6. 검증하고 항목 닫기 (Backlog.md definition of done)
@@ -90,7 +91,7 @@ git status --short   # 비어 있어야 한다
 
 - 검증 명령은 6단계에서 방금 통과했다. 기준 브랜치는 프로젝트 설정의 것이다.
 - 워크트리를 쓰지 않았으면 지울 워크트리가 없다.
-- 이 세션이 `/task start`가 딴 `.claude/worktrees/<이름>` 워크트리에서 일했으면, 머지와 정리는 이 줄이 스킬의 해당 단계보다 우선한다. 기준 브랜치는 기준 폴더(`git worktree list`의 첫 줄)에 있으니 머지는 `git -C <기준 폴더> merge …`처럼 거기서 돌린다. 머지 전에 기준 폴더가 기준 브랜치에 있고(`git -C <기준 폴더> branch --show-current`) 깨끗한지(`status --short`) 보고, 아니면 멈추고 알린다. 정리는 로컬 머지를 골랐을 때만 한다. PR 이나 그대로 두기를 골랐으면 워크트리를 남긴다. 머지했으면 세션을 기준 폴더로 돌리고(`EnterWorktree`로 들어왔으면 `ExitWorktree`의 keep, 그 폴더에서 명령만 돌렸으면 이후 명령을 기준 폴더에서) `git worktree remove .claude/worktrees/<이름>`과 `git branch -d w/<이름>`으로 정리한다. 세션을 그 워크트리 안에서 처음 열어 돌아갈 수 없으면 지우지 않고, 기준 폴더에서 그 두 명령을 돌리면 된다고 알린다.
+- 이 세션이 워크트리에서 일했으면(`git rev-parse --path-format=absolute --git-dir --git-common-dir`의 두 줄이 다르면, 예: `start`가 띄운 하위 세션), 머지와 정리는 이 줄이 스킬의 해당 단계보다 우선한다. 기준 브랜치는 기준 폴더(`git worktree list`의 첫 줄)에 있으니 머지는 `git -C <기준 폴더> merge …`처럼 거기서 돌린다. 머지 전에 기준 폴더가 기준 브랜치에 있고(`git -C <기준 폴더> branch --show-current`) 깨끗한지(`status --short`) 보고, 아니면 멈추고 알린다. 세션이 그 워크트리 안에 있으니 워크트리와 브랜치는 이 세션에서 지우지 않는다. 로컬 머지를 골랐으면, 세션을 보관하면 앱이 워크트리를 정리하고, 그렇지 않으면 기준 폴더에서 `git worktree remove <워크트리 경로>`와 `git branch -d w/<이름>`을 돌리면 된다고 알린다. PR 이나 그대로 두기를 골랐으면 워크트리를 남긴다.
 - PR 을 만들 수 없으면(CLAUDE.md 에 그렇게 적혀 있거나 `gh auth status`가 실패하면) 그렇다고 말한다.
 - 기준 브랜치에 upstream 이 없으면 `git pull`을 건너뛴다.
 - 푸시는 사용자가 요청할 때만.

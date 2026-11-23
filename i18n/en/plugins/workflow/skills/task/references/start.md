@@ -6,7 +6,7 @@ Plan **one** backlog item, get approval, and implement it. `/task end` does the 
 
 Requested item: the arguments after `start`.
 
-Run every command from the repository root (`git rev-parse --show-toplevel`). After moving into a worktree, that is the worktree's root.
+Run every command from the repository root (`git rev-parse --show-toplevel`). When working in a worktree, that is the worktree's root.
 
 ## 1. Can we start
 
@@ -16,7 +16,8 @@ If any of these applies, stop and say so. Do not clean it up on your own.
 | --- | --- |
 | The base branch has no commits | Say that a first commit is needed |
 | There are uncommitted changes | Show them and ask what to do |
-| A `w/` branch already exists, or the current branch is not the base branch | Ask whether to continue, finish with `/task end`, or discard. If continuing, switch to that branch, read the item's `Implementation Plan`, and resume from step 5. When the worktree setting is on, leave out other items' `w/` branches (the ones in their own worktrees) from this check. If this item's branch is in a worktree, do not switch branches; move into that worktree and continue there |
+| The current branch is not the base branch | If this is a worktree just made for this item (a sub-session), go ahead: the branch has no commits after the base branch. If its name is not `w/<name>` (a prefix the app adds, for example), rename it in step 4. Otherwise ask whether to continue, finish with `/task end`, or discard. If continuing, read the item's `Implementation Plan` and resume from step 5 |
+| This item's `w/` branch already exists and you are not on it | Tell the user to continue in the session that worked on that branch. Other items' `w/` branches belong to other sessions; leave them alone |
 
 Finding the item: look up the argument in `docs/backlog/` (`README.md` and files starting with `_` are not items). If there is no match or several, show the `To Do` items by number and title and let the user pick. Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
 
@@ -53,16 +54,14 @@ Before approval, do not edit files and do not create a branch.
 
 ## 4. Record
 
-1. Create the work branch `w/<item file name without .md>` (`<name>` below).
-   - If the worktree setting is on and you are outside a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` are the same):
-     1. If the file `git rev-parse --git-path info/exclude` points to lacks `.claude/worktrees/`, add it (create the folder if missing), so it does not show up as uncommitted changes in the base folder.
-     2. `git worktree add .claude/worktrees/<name> -b w/<name> <base branch>`
-     3. Move the session there by giving that path to the `EnterWorktree` tool. If the tool is missing or refuses, run every later command in that folder. The session itself then sits in the base folder, so the verify Stop hook does not run for this item; be sure to run step 6's verification in that worktree. Do 2 and 3 of this step 4 and everything from step 5 in that worktree.
-     4. If the project needs dependencies installed (for example `package.json` and a lockfile), install them in that worktree. A new worktree has nothing installed.
-     5. If the test, lint or type-check tools read into `.claude/worktrees/` (many do not look at git's ignore lists), verification in the base folder also runs other items' code. If those tool settings do not leave out `.claude/worktrees/`, say so.
-   - Otherwise (setting off, or already in a worktree): `git switch -c w/<name>`
+1. Set up the work branch `w/<item file name without .md>` (`<name>` below).
+   - If you are on the base branch: `git switch -c w/<name>`.
+   - If you are in a worktree made for this item and the branch name differs: `git branch -m w/<name>`. The verify Stop hook runs only on `w/` branches.
+   - If this is a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` differ):
+     - If the project needs dependencies installed (for example `package.json` and a lockfile), install them here. A new worktree has nothing installed.
+     - If the worktree is inside the base folder (for example `.claude/worktrees/`) and the test, lint or type-check tools read into that folder (many do not look at git's ignore lists), verification in the base folder also runs other items' code. If those tool settings do not leave it out, say so.
    - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5000, item 007 → 5007). Only the ones that are set.
-     - Treat these ports as in use and go up by 1 to avoid them: ports something is listening on (`lsof -nP -iTCP:<port> -sTCP:LISTEN`, or `nc -z 127.0.0.1 <port>` if lsof is missing or fails), the `### 포트` of items in progress in other worktrees (`In Progress` in `docs/backlog/`), and those items' default ports (base port + their number). This keeps it clear of other items and of other projects' servers. If there is no way to check whether a port is listening, say so.
+     - Treat these ports as in use and go up by 1 to avoid them: ports something is listening on (`lsof -nP -iTCP:<port> -sTCP:LISTEN`, or `nc -z 127.0.0.1 <port>` if lsof is missing or fails), the `### 포트` of items in progress in other sessions (`In Progress` in `docs/backlog/`), and those items' default ports (base port + their number). This keeps it clear of other items and of other projects' servers. If there is no way to check whether a port is listening, say so.
      - Write the ports into the item file as soon as they are set (2 below), so that another session started at the same time can see them.
 2. Item file: `status: In Progress`, `updated_date` today, the approved plan in `Implementation Plan`, the baseline under `### Baseline` in `Implementation Notes`, the ports you set under `### 포트` (one per line, like `- 웹: 5007`).
 3. Commit: `chore(backlog): <number> start`
@@ -72,7 +71,7 @@ Before approval, do not edit files and do not create a branch.
 - Call the `superpowers:test-driven-development` skill and follow it.
 - Follow the stack checks' **Follow**.
 - Do not delete or weaken existing tests to make them pass. If you think a test is wrong, stop and ask.
-- Do only what is in the Acceptance Criteria. Do not polish or refactor surrounding code. If other work seems needed, say so, and if agreed, create a separate item following steps 2-4 of `${CLAUDE_SKILL_DIR}/references/create.md`.
+- Do only what is in the Acceptance Criteria. Do not polish or refactor surrounding code. If other work seems needed, say so, and if agreed, invoke the `task` skill with `create <that work> --here` to make a separate item.
 - When one AC is done, verify it and check it off right away. Write what changed from the plan in `Implementation Notes`. If the scope grows, stop and ask.
 - Commit to the work branch at each meaningful step. Do not commit to the base branch and do not push.
 

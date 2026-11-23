@@ -7,7 +7,6 @@ Claude Code 플러그인 마켓플레이스 저장소다. 내용은 마크다운
 - 기준 브랜치: main
 - 검증 명령: `claude plugin validate . && bash scripts/check-repo-rules.sh`
 - 문서 언어: 한국어
-- 동시 작업 세션: 2
 
 ## 저장소 규칙
 - 원문은 한국어(`plugins/`)이고 번역본은 `i18n/en/`이다. 원문을 고치면 번역본도 고친다.
