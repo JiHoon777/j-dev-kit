@@ -19,8 +19,8 @@ updated_date: 2026-11-23
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 Windows(Git Bash)에서 `bash scripts/test-verify-on-stop.sh`가 모두 맞는다
-- [ ] #2 두 "내용을 못 구함" 시나리오에서 훅이 실제로 내용을 구하지 못한다(빈 tree)
+- [x] #1 Windows(Git Bash)에서 `bash scripts/test-verify-on-stop.sh`가 모두 맞는다
+- [x] #2 두 "내용을 못 구함" 시나리오에서 훅이 실제로 내용을 구하지 못한다(빈 tree)
 
 <!-- AC:END -->
 
@@ -28,7 +28,7 @@ updated_date: 2026-11-23
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
 
 <!-- DOD:END -->
 
@@ -37,6 +37,12 @@ updated_date: 2026-11-23
 사용자가 대화에서 진행을 요청함(2026-11-23). `hide_index`를 `chmod 000` 대신 `.git/index`를 깨진 내용으로 덮게 바꾼다. 깨진 인덱스로는 `git add`·`write-tree`가 실패해 어느 OS 에서나 내용을 못 구한다.
 
 ## Implementation Notes
+
+### 한 것
+
+- `hide_index`: `chmod 000` 대신 `.git/index`를 깨진 내용으로 덮고, 그래도 `git write-tree`가 되면 준비 실패로 둔다.
+- Windows(Git Bash)에서 11개 중 11개 맞음. 훅 사본에 tree 를 찍는 줄을 넣어 돌려, 두 "내용을 못 구함" 시나리오만 `tree=[]`이고 나머지는 내용을 구하는 것을 봤다(저장소의 훅은 그대로).
+- macOS·Linux 에서는 돌려 보지 않았다. 깨진 인덱스로 `write-tree`가 실패하는 것은 git 동작이라 같아야 한다.
 
 ### Baseline
 

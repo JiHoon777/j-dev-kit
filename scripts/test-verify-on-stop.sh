@@ -40,7 +40,9 @@ verify_fails() { echo fail > .verify-result; }
 verify_passes() { rm -f .verify-result; }
 change_code() { echo "b" >> src.txt; }
 revert_code() { git checkout -q -- src.txt; }
-hide_index() { chmod 000 .git/index; } # 인덱스를 못 읽게 해 내용(tree)을 구하지 못하는 경우를 만든다
+# 인덱스를 깨뜨려 내용(tree)을 구하지 못하는 경우를 만든다. chmod 000 은 Windows 에서 읽기를 막지 못한다.
+# 그래도 tree 가 구해지면 준비 실패로 둔다(그 경로를 시험하지 못하니까).
+hide_index() { echo broken > .git/index && ! git write-tree > /dev/null 2>&1; }
 
 pass=0 total=0
 # scenario <설명> <기대 마지막 종료 코드> <단계...>
