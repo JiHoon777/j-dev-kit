@@ -40,11 +40,11 @@ Enter with `EnterPlanMode`. Do not edit files in this step. If the brief says to
 **Match the size.**
 
 - **Small item** (a few files, no new structure): read the relevant code directly, without agents.
-- **Large item** (several modules, new structure): launch at most 2 `Explore` agents, on different areas, in one message. Have them follow similar existing features and connected code and return the files that must be read, then read those files directly.
+- **Large item** (several modules, new structure): launch `Explore` agents on different areas in one message. Have them follow similar existing features and connected code and return the files that must be read, then read those files directly.
 
 **Tools and steps:** before designing, decide which field this item's work belongs to, and what tools (names, commands) and steps the best practitioners in that field use for it. Do not assume a role; write down the tools and steps. If you do not know, look it up in docs or on the web. You may pick tools that are not installed; then put installing them in the plan. Keep the tools the stack checks gave and add only what is missing.
 
-**Questions:** only those that code and docs cannot answer and that change the plan, combined with the stack checks' "Ask", at most 3 at once. Decide the rest reasonably and write them in the plan as assumptions. Do not finalize the plan before getting answers.
+**Questions:** only those that code and docs cannot answer and that change the plan, combined with the stack checks' "Ask", all at once. Decide the rest reasonably and write them in the plan as assumptions. Do not finalize the plan before getting answers.
 
 **Design:** decide it yourself. Only when there is a genuinely split choice (structure, library, data model), show the difference between two options and a recommendation.
 
