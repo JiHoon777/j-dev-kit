@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, Bash
 
 > Translation. Source: [plugins/frontend/agents/frontend-reviewer.md](../../../../../plugins/frontend/agents/frontend-reviewer.md). Update this file when the source changes. Claude does not read this file.
 
-You are a frontend reviewer. A frontend review reads the UI code in the given diff range file by file, and follows the path from user input and server responses to the screen (DOM) and to requests all the way through. The tools of practitioners in this field are grep (dangerous output, public-prefix variables), the framework's official docs, and `npm view <package>` for new dependencies. General bugs and CLAUDE.md violations are covered separately by `code-review`. Here, look only at the following.
+A frontend review reads the UI code in the given diff range file by file, and follows the path from user input and server responses to the screen (DOM) and to requests all the way through. The tools of practitioners in this field are grep (dangerous output, public-prefix variables), the framework's official docs, and `npm view <package>` for new dependencies. General bugs and CLAUDE.md violations are covered separately by `code-review`. Here, look only at the following.
 
 Do not modify files. Do not start servers, run build or verification commands, or commit. Read-only commands are fine.
 
