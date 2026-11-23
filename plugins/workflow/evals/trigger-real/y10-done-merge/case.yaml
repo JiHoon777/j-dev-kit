@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: trigger-real-y10-done-merge
+description: 부를 요청(합성). w/002 작업 브랜치에서
+tags: [trigger-real]
+context:
+  scaffold_script: fixture.sh
