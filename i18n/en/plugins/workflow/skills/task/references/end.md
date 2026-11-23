@@ -33,12 +33,11 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 | --- | --- | --- |
 | general-purpose | Always | Calls the `code-review` skill. Target is the current branch. No `--fix`, no `--comment`, no effort level given |
 | general-purpose | When authentication/authorization, input handling, secrets, external calls, or file/command execution changed | Calls the `security-review` skill. Before launching, if `git symbolic-ref refs/remotes/origin/HEAD` fails, run `git remote set-head origin -a` |
-| Stack review agents (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | When step 2 returned them | By that agent's own criteria |
-| `workflow:design-reviewer` | When a screen (components, pages, styles) changed | In a browser: DESIGN.md tokens (if one is at the root), responsiveness, accessibility. Before launching it, this session starts the dev server (on the web port in the item's `### 포트`, if there is one). If it cannot be started, leave it out and say so in step 4 |
+| Stack review agents (`frontend:frontend-reviewer`, `frontend:design-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | When step 2 returned them | By that agent's own criteria |
 
 Agents cannot see this conversation, so put these in the instructions:
 
-1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them. For `design-reviewer`, the screen URL, the DESIGN.md path (if any), and the code paths of the changed screens.
+1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
 2. Read only: do not edit files, do not commit, do not start servers, do not run build/verify commands.
 3. Report: only confirmed problems, as `file:line — problem — how to fix`. Do not report low-confidence ones. Do not give scores.
 4. If the skill cannot be called, do not make something up in its place; report that.

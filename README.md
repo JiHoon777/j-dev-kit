@@ -6,8 +6,8 @@ Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하
 
 | 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, 검증 Stop 훅, 화면 리뷰를 맡는 `design-reviewer` | `superpowers` |
-| `frontend` | Svelte·React 점검, `frontend-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
+| `workflow` | `/task create`, `/task start`, `/task end`, 검증 Stop 훅 | `superpowers` |
+| `frontend` | Svelte·React 점검, DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | 서버·Supabase 점검(마이그레이션, API 스펙, 키), `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설치한다.
@@ -65,14 +65,14 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 - **포트:** CLAUDE.md `## 작업 설정`에 `- 웹 포트: 5000`, `- 서버 포트: 6000`을 두면 항목마다 `기준 포트 + 항목 번호`(항목 007 → 5007, 6007)를 항목의 `### 포트`에 적고, 개발 서버를 띄우는 점검과 `design-reviewer` 리뷰가 그 포트를 쓴다. 그 포트를 이미 누가 쓰고 있으면 1씩 올린다. 여러 프로젝트를 함께 한다면 프로젝트마다, 그리고 웹과 서버끼리 기준 포트를 1000씩 떨어뜨린다(예: 프로젝트 A 웹 5000·서버 6000, 프로젝트 B 웹 7000·서버 8000). 항목 번호가 세 자리라 겹치지 않는다. Supabase·DB 포트는 나누지 않는다.
 - **워크트리:** 하위 세션의 워크트리가 저장소 안에 생기면(예: `.claude/worktrees/`) 테스트·린트 도구 설정에서 그 폴더를 빼 둔다. 머지한 뒤 세션을 보관하면 앱이 워크트리를 정리한다.
 - **브라우저 확인:** UI 가 바뀌면 구현한 세션이 아니라 `frontend-evaluator` 에이전트가 실행 중인 화면에서 Acceptance Criteria 를 하나씩 판정한다.
+- **디자인 (frontend):** 따로 부르지 않아도 필요할 때만 끼어든다. 새 화면이나 다시 디자인하는 항목이면 `start`가 계획 전에 Claude Code 디자인 캔버스로 시안을 만들고(1개 또는 여러 개, 사용자가 캔버스에서 고른다) 고른 안을 계획과 항목에 적는다. UI 항목인데 루트 `DESIGN.md`가 없으면 이 항목에서 만들지 묻고(안 쓰려면 CLAUDE.md `## 작업 설정`에 `- DESIGN.md: 안 씀`), 토큰을 바꾸는 항목이면 DESIGN.md 갱신을 계획에 넣는다. 만든 DESIGN.md 는 CLAUDE.md 의 `@DESIGN.md`로 늘 읽힌다. 항목 없이 "로그인 화면 시안 만들어 줘"라고 해도 `ui-design`이 돈다. 캔버스를 못 쓰면 저장소 밖 임시 `variants.html`로 대신한다.
 
 ## 구조
 
 ```
 plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
-plugins/workflow/agents/            design-reviewer.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
-plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md, frontend-evaluator.md
+plugins/frontend/                   skills/frontend-{start,end}-check, ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
 plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
 scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, 설명 일치, README 목록, version 올리기)
@@ -97,7 +97,7 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 | 증상 | 해결 |
 | --- | --- |
 | `supabase@j-dev-kit`을 찾을 수 없다 | `server`로 합쳤다. `enabledPlugins`에서 지우고 `server@j-dev-kit`을 설치한다. |
-| `architecture@j-dev-kit`, `design@j-dev-kit`을 찾을 수 없다 | 지웠다. `enabledPlugins`에서 지운다. 화면 리뷰는 `workflow`의 `design-reviewer`로 옮겼다. |
+| `architecture@j-dev-kit`, `design@j-dev-kit`을 찾을 수 없다 | 지웠다. `enabledPlugins`에서 지운다. DESIGN.md·시안은 `frontend`의 `ui-design`, 화면 리뷰는 `frontend`의 `design-reviewer`로 옮겼다. |
 | `Dependency "…" is not installed` | 지워진 의존 플러그인을 같은 `--scope`로 설치한다. |
 | 멈출 때 검증 명령이 돈다 | 검증 훅이다. 항목의 Definition of Done 이 체크돼 있고 코드가 마지막 통과 뒤에 바뀌었을 때만 돈다. CLAUDE.md 에 `검증 명령:` 줄이 없으면 돌지 않는다. |
 | 스택 점검이 하나도 안 돈다 | 플러그인이 꺼져 있거나 CLAUDE.md 의 `stack:`에 빠져 있다. |
@@ -108,4 +108,4 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 
 검증 훅, `frontend-evaluator`, `design-reviewer`: Claude Code [hooks](https://code.claude.com/docs/en/hooks.md)(꼭 지킬 것은 지침이 아니라 훅으로), Anthropic [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps)(만든 쪽과 따로 둔 평가자가 실행 중인 앱을 직접 써 본다).
 
-`design-reviewer`: WCAG 2.2, [Google DESIGN.md](https://github.com/google-labs-code/design.md), [OneRedOak/claude-code-workflows](https://github.com/OneRedOak/claude-code-workflows) `design-review`(폭별 실제 화면 리뷰).
+`ui-design`·`design-reviewer`: [Google DESIGN.md](https://github.com/google-labs-code/design.md), WCAG 2.2, Claude Code [artifacts](https://code.claude.com/docs/en/artifacts.md). 아이디어를 빌린 스킬: [emilkowalski/skills](https://github.com/emilkowalski/skills) `prototype`(이름과 축, 3~5개, 고를 때까지 멈춤), [impeccable](https://github.com/pbakaus/impeccable)(축 목록, 정체성 고정), [gstack](https://github.com/garrytan/gstack) `design-shotgun`(헤드라인 바꾸기 테스트), [OneRedOak/claude-code-workflows](https://github.com/OneRedOak/claude-code-workflows) `design-review`(폭별 실제 화면 리뷰).

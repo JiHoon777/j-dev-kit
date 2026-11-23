@@ -8,8 +8,8 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 
 | Plugin | Contains | Also installs |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, the verify Stop hook, `design-reviewer` for screen review | `superpowers` |
-| `frontend` | Svelte and React checks, `frontend-reviewer`, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
+| `workflow` | `/task create`, `/task start`, `/task end`, the verify Stop hook | `superpowers` |
+| `frontend` | Svelte and React checks, `ui-design` for DESIGN.md and canvas mockups, `frontend-reviewer`, `design-reviewer` for screen review, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | Server and Supabase checks (migrations, API spec, keys), `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 If you use Supabase, install `server` even if you call it straight from the frontend.
@@ -67,14 +67,14 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 - **Ports:** with `- 웹 포트: 5000` (web port) and `- 서버 포트: 6000` (server port) under `## 작업 설정` (work settings) in CLAUDE.md, each item gets `base port + item number` (item 007 → 5007, 6007) written under the item's `### 포트`, and the checks that start a dev server and the `design-reviewer` review use those ports. If a port is already in use, it goes up by 1. If you work on several projects together, keep base ports 1000 apart per project and between web and server (for example project A web 5000, server 6000; project B web 7000, server 8000). Item numbers are three digits, so they do not overlap. Supabase and database ports are not split.
 - **Worktrees:** if a sub-session's worktree is created inside the repository (for example `.claude/worktrees/`), leave that folder out of test and lint tool settings. After merging, archiving the session lets the app clean up the worktree.
 - **Browser check:** when the UI changes, the `frontend-evaluator` agent, not the implementing session, judges each Acceptance Criterion on the running screen.
+- **Design (frontend):** steps in only when needed, without being invoked. For an item that adds or redesigns a screen, `start` makes mockups on the Claude Code design canvas before planning (one or several; the user picks on the canvas) and writes the chosen one into the plan and the item. For a UI item with no root `DESIGN.md`, it asks whether to make one in this item (to opt out, `- DESIGN.md: 안 씀` under `## 작업 설정` in CLAUDE.md), and for an item that changes tokens it puts a DESIGN.md update in the plan. Once made, DESIGN.md is always read through `@DESIGN.md` in CLAUDE.md. Saying "make mockups for the login screen" without an item also runs `ui-design`. Without the canvas, a temporary `variants.html` outside the repo stands in.
 
 ## Layout
 
 ```
 plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
-plugins/workflow/agents/            design-reviewer.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)
-plugins/frontend/                   skills/frontend-{start,end}-check, agents/frontend-reviewer.md, frontend-evaluator.md
+plugins/frontend/                   skills/frontend-{start,end}-check, ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
 plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
 i18n/en/                            English translations (Claude does not read them)
 scripts/check-repo-rules.sh         repository rule check (translation pairs and updates, matching descriptions, README lists, version bumps)
@@ -99,7 +99,7 @@ Then open a new session. Maintainers bump `version` in `plugin.json` for each ch
 | Symptom | Fix |
 | --- | --- |
 | `supabase@j-dev-kit` cannot be found | It was merged into `server`. Remove it from `enabledPlugins` and install `server@j-dev-kit`. |
-| `architecture@j-dev-kit` or `design@j-dev-kit` cannot be found | They were removed. Remove them from `enabledPlugins`. Screen review moved to `design-reviewer` in `workflow`. |
+| `architecture@j-dev-kit` or `design@j-dev-kit` cannot be found | They were removed. Remove them from `enabledPlugins`. DESIGN.md and mockups moved to `ui-design` in `frontend`, and screen review to `design-reviewer` in `frontend`. |
 | `Dependency "…" is not installed` | Install the removed dependency plugin with the same `--scope`. |
 | The verify command runs when Claude stops | That is the verify hook. It runs only when the item's Definition of Done is checked and the code changed since the last pass. Without a `verify command:` line in CLAUDE.md it does not run. |
 | No stack checks run | The plugin is disabled, or it is missing from `stack:` in CLAUDE.md. |
@@ -110,4 +110,4 @@ Then open a new session. Maintainers bump `version` in `plugin.json` for each ch
 
 Verify hook, `frontend-evaluator`, `design-reviewer`: Claude Code [hooks](https://code.claude.com/docs/en/hooks.md) (rules that must hold go in hooks, not instructions), Anthropic [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps) (an evaluator kept apart from the builder uses the running app itself).
 
-`design-reviewer`: WCAG 2.2, [Google DESIGN.md](https://github.com/google-labs-code/design.md), [OneRedOak/claude-code-workflows](https://github.com/OneRedOak/claude-code-workflows) `design-review` (real-screen review per width).
+`ui-design` and `design-reviewer`: [Google DESIGN.md](https://github.com/google-labs-code/design.md), WCAG 2.2, Claude Code [artifacts](https://code.claude.com/docs/en/artifacts.md). Ideas borrowed from: [emilkowalski/skills](https://github.com/emilkowalski/skills) `prototype` (name and axis, 3–5 mockups, stop until the user picks), [impeccable](https://github.com/pbakaus/impeccable) (axis list, identity lock), [gstack](https://github.com/garrytan/gstack) `design-shotgun` (headline swap test), [OneRedOak/claude-code-workflows](https://github.com/OneRedOak/claude-code-workflows) `design-review` (live review per width).

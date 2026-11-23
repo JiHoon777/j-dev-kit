@@ -24,7 +24,8 @@ updated_date: 2026-11-23
 <!-- AC:BEGIN -->
 
 - [ ] #1 `architecture`, `design` 플러그인, `lead`·`until-done` 스킬, `backlog-scout`·`trend-scout` 에이전트가 원문·번역본·marketplace·README·`.claude/settings.json`에서 모두 없어졌다
-- [ ] #2 `design-reviewer`가 workflow 에이전트로 있고, `/task end`가 UI 가 바뀌었을 때 리뷰에 넣는다
+- [ ] #2 `design-reviewer`가 frontend 에이전트로 있고, 화면이 바뀌었을 때 `frontend-end-check`가 `/task end` 리뷰에 넣으라고 돌려준다
+- [ ] #7 frontend 에 `ui-design` 스킬(DESIGN.md 만들기·갱신, 캔버스 시안)이 있고, `frontend-start-check`가 새 화면·다시 디자인하는 항목이면 계획 전에 시안을, DESIGN.md 가 없거나 토큰이 바뀌면 DESIGN.md 를 돌려준다. 사용자가 따로 부르지 않아도 된다
 - [ ] #3 `/task create <내용>`과 `/task start <번호>`는 세션 도구가 있으면 하위 세션을 띄우고 링크만 알린다(start 는 워크트리, `w/<항목>` 브랜치). 그 세션이 절차를 따른다
 - [ ] #4 `--here`를 붙이거나 세션 도구가 없으면 지금 세션에서 절차를 따른다
 - [ ] #5 `task` 스킬에 `disable-model-invocation`이 없고, description 이 언제 쓰는지 말한다. 절차 안의 "Skill 도구로 부르지 않는다" 우회가 없다
@@ -69,6 +70,14 @@ updated_date: 2026-11-23
 - `create` 하위 세션은 기준 폴더의 기준 브랜치에서만 띄운다. 작업 브랜치·워크트리에서는 이 세션에서 한다.
 
 미룸 없음. 리뷰용 개발 서버를 끄지 않는 것(🟡)은 사용자가 그대로 두기로 했다(포트는 항목마다 다르다).
+
+### 디자인을 frontend 로 (사용자 결정, 2026-11-23)
+
+- `design-reviewer`를 workflow 에서 frontend 로 옮겼다. `frontend-end-check`가 화면이 바뀌면 리뷰에 넣으라고 돌려주고, `end.md`의 따로 둔 줄은 지웠다. workflow 는 다시 스택과 무관하다.
+- 지운 `/ui`의 system·mockup 절차를 frontend `ui-design` 스킬로 되살렸다(Claude 가 알아서 부를 수 있다). `/ui review`는 되살리지 않았다.
+- 시안 기록은 저장소에 파일로 남기지 않고 계획과 항목에 적는다(`docs/design/`, `decisions.md` 없음). 캔버스가 원본이다.
+- `frontend-start-check`: 새 화면·다시 디자인이면 "계획 전에 할 것"으로 시안, DESIGN.md 가 없으면 만들지 묻기(`- DESIGN.md: 안 씀`으로 끄기), 토큰을 바꾸면 DESIGN.md 갱신을 플랜에. `start.md` 2단계에 "계획 전에 할 것"을 더했다(플랜 모드에서는 캔버스를 만들 수 없어서).
+- frontend 0.7.0.
 
 ## Final Summary
 

@@ -1,6 +1,6 @@
 ---
 name: frontend-start-check
-description: 프론트엔드 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 프레임워크를 감지하고, 구현 중 지킬 것(frontend-design, 프레임워크 규칙, 브라우저 확인)과 플랜에 넣을 것을 돌려준다. 프레임워크별 내용은 references(svelte.md, react.md)에 있다.
+description: 프론트엔드 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 프레임워크를 감지하고, 구현 중 지킬 것(frontend-design, 프레임워크 규칙, 브라우저 확인), 계획 전에 할 것(시안), 플랜에 넣을 것(DESIGN.md)을 돌려준다. 프레임워크별 내용은 references(svelte.md, react.md)에 있다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -26,7 +26,7 @@ metadata:
 
 이 항목에 해당하는 것만 돌려준다.
 
-- **새 화면이나 다시 디자인:** `frontend-design` 스킬을 부르고 따른다. 색과 글꼴은 프로젝트의 디자인 토큰 안에서 고르고, 새로 더하려면 먼저 묻는다. 승인된 디자인이나 CLAUDE.md 의 제품 원칙이 있으면 그것이 먼저다. 기존 화면을 그대로 옮기는 항목에는 부르지 않는다.
+- **새 화면이나 다시 디자인:** `frontend-design` 스킬을 부르고 따른다. 색과 글꼴은 프로젝트의 디자인 토큰 안에서 고르고, 새로 더하려면 먼저 묻는다. 항목에 고른 시안이 있거나 CLAUDE.md 에 제품 원칙이 있으면 그것이 먼저다. 기존 화면을 그대로 옮기는 항목에는 부르지 않는다.
 - **새 웹 기능·UI 패턴을 고를 때**(다이얼로그, 팝오버, 레이아웃, 폼 검증 등): `modern-web-guidance` 스킬이 있으면 부른다.
 - **브라우저 확인**(UI 가 바뀌면, 구현 마무리에): 구현한 세션이 직접 판정하지 않고 `frontend:frontend-evaluator` 에이전트에 맡긴다.
   - 개발 서버를 띄운다(`.claude/launch.json`이 있으면 그것). 작업 브랜치 항목의 `### 포트`에 웹 포트가 있으면 `.claude/launch.json`의 포트보다 그것을 쓴다(launch.json 은 고치지 않는다. 그 포트가 다르면 launch.json 대신 개발 명령을 직접 띄운다). 개발 명령이 포트를 받는 방식(예: Vite `--port`, 위치 인자, `PORT` 환경 변수)을 스크립트에서 확인해 그 포트로 띄우고, 실제로 그 포트에서 듣는지(`lsof -nP -iTCP:<포트> -sTCP:LISTEN`) 확인한 뒤 화면 URL 에 쓴다. 백엔드 서버도 띄워야 하면 같은 방식으로 서버 포트에 띄우고, 웹이 백엔드 주소를 받는 곳(프록시 대상, `VITE_API_URL` 같은 환경 변수)도 파일을 고치지 않고 명령 인자나 환경 변수로 그 서버 포트를 가리키게 한다. 빌드에서만 보이는 변경(서비스 워커, 정적 생성)은 빌드 후 미리보기.
@@ -36,9 +36,11 @@ metadata:
   - 에이전트가 "브라우저 도구 없음"이라고 하면 직접 확인한다(`chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저): 각 Acceptance Criteria 를 사용자처럼 따라가고, 콘솔 오류와 실패한 요청(4xx/5xx)이 없어야 한다. 직접 했다고 `Implementation Notes`에 적는다. 직접도 할 수 없으면 멈추고 알린다.
 - reference 의 프레임워크 규칙.
 
-## 2. 플랜에 넣을 것 / 물을 것
+## 2. 계획 전에 할 것 / 플랜에 넣을 것 / 물을 것
 
-- 새 화면이나 다시 디자인하는 항목인데 디자인·명세가 없으면 물을 것으로.
+- **시안:** 새 화면이나 다시 디자인하는 항목인데 항목에 고른 시안이 없으면, 계획 전에 할 것으로 `frontend:ui-design` 스킬을 `mockup <화면>`으로 부른다. 사용자가 시안 없이 가자고 하면 건너뛴다. 기존 화면을 그대로 옮기는 항목에는 넣지 않는다.
+- **DESIGN.md 가 없을 때:** UI 를 바꾸는 항목인데 루트에 `DESIGN.md`가 없고 CLAUDE.md 에 `- DESIGN.md: 안 씀`이 없으면, 이 항목에서 만들지 물을 것으로. 만들기로 하면 플랜에 넣을 것: 구현 첫 단계에 `frontend:ui-design` 스킬을 `system`으로 부른다. 안 쓰기로 하면 다시 묻지 않게 CLAUDE.md `## 작업 설정`에 `- DESIGN.md: 안 씀`을 적자고 제안한다.
+- **토큰을 바꿀 때:** 색, 글꼴, 간격 같은 디자인 토큰을 바꾸는 항목이고 `DESIGN.md`가 있으면, 플랜에 넣을 것: `frontend:ui-design` 스킬을 `system`으로 불러 DESIGN.md 를 갱신한다.
 - reference 가 더하는 것.
 
 ## 돌려줄 형식
@@ -48,6 +50,9 @@ metadata:
 감지: svelte 5 (references/svelte.md 읽음)
 
 #### 지킬 것
+- …
+
+#### 계획 전에 할 것
 - …
 
 #### 플랜에 넣을 것

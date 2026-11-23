@@ -31,12 +31,11 @@
 | --- | --- | --- |
 | general-purpose | 항상 | `code-review` 스킬을 부른다. 대상은 현재 브랜치. `--fix`, `--comment` 없이, 노력 수준은 주지 않는다 |
 | general-purpose | 인증·인가, 입력 처리, 비밀 값, 외부 호출, 파일·명령 실행이 바뀌었을 때 | `security-review` 스킬을 부른다. 띄우기 전에 `git symbolic-ref refs/remotes/origin/HEAD`가 실패하면 `git remote set-head origin -a` |
-| 스택 리뷰 에이전트 (`frontend:frontend-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | 2단계가 돌려줬을 때 | 그 에이전트의 기준대로 |
-| `workflow:design-reviewer` | 화면(컴포넌트, 페이지, 스타일)이 바뀌었을 때 | 브라우저에서 DESIGN.md 토큰(루트에 있으면), 반응형, 접근성. 띄우기 전에 이 세션이 개발 서버를 띄운다(항목 `### 포트`에 웹 포트가 있으면 그 포트). 띄울 수 없으면 빼고 4단계에 그렇다고 적는다 |
+| 스택 리뷰 에이전트 (`frontend:frontend-reviewer`, `frontend:design-reviewer`, `server:api-reviewer`, `server:supabase-reviewer`) | 2단계가 돌려줬을 때 | 그 에이전트의 기준대로 |
 
 에이전트는 이 대화를 볼 수 없으니 지시문에 넣는다:
 
-1. 범위: `git diff <기준>...HEAD`, 항목 파일 경로, CLAUDE.md. 스택 리뷰 에이전트에게는 점검이 함께 돌려준 근거도. `design-reviewer`에게는 화면 URL, DESIGN.md 경로(있으면), 바뀐 화면의 코드 경로.
+1. 범위: `git diff <기준>...HEAD`, 항목 파일 경로, CLAUDE.md. 스택 리뷰 에이전트에게는 점검이 함께 돌려준 근거도.
 2. 읽기만 한다: 파일을 고치지 않고, 커밋하지 않고, 서버를 띄우지 않고, 빌드·검증 명령을 돌리지 않는다.
 3. 보고: 확인한 문제만, `file:line — 문제 — 고칠 방법`. 확신이 낮은 것은 보고하지 않는다. 점수는 쓰지 않는다.
 4. 스킬을 부를 수 없으면 대신 지어내지 말고 그렇다고 보고한다.

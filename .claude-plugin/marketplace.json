@@ -13,7 +13,7 @@
     {
       "name": "workflow",
       "source": "./plugins/workflow",
-      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Claude invokes it on its own when you ask to add, start or finish a backlog item. create and start open a sub-session by default (start in its own worktree on a w/ branch), where you answer questions and approve; end runs in that work session. --here, or no session tool, runs it in the current session. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins and the design-reviewer agent when a screen changed. A Stop hook re-runs the verify command when an item is marked done, also after another Stop hook such as /goal has blocked. Web and server ports are split per item.",
+      "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Claude invokes it on its own when you ask to add, start or finish a backlog item. create and start open a sub-session by default (start in its own worktree on a w/ branch), where you answer questions and approve; end runs in that work session. --here, or no session tool, runs it in the current session. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins. A Stop hook re-runs the verify command when an item is marked done, also after another Stop hook such as /goal has blocked. Web and server ports are split per item.",
       "dependencies": [
         "superpowers@anthropic-plugin-directory"
       ]
@@ -21,7 +21,7 @@
     {
       "name": "frontend",
       "source": "./plugins/frontend",
-      "description": "Frontend checks for /task start and /task end (Svelte and React references), the frontend-reviewer agent, and the frontend-evaluator agent that verifies acceptance criteria in the browser.",
+      "description": "Frontend checks for /task start and /task end (Svelte and React references), the ui-design skill (DESIGN.md and Claude Code design canvas mockups, brought in by the start check when an item adds or redesigns a screen or needs DESIGN.md), the frontend-reviewer and design-reviewer agents for review, and the frontend-evaluator agent that verifies acceptance criteria in the browser.",
       "dependencies": [
         "workflow",
         "typescript-lsp@anthropic-plugin-directory",

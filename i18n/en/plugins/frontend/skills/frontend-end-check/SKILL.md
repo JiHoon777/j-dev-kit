@@ -1,6 +1,6 @@
 ---
 name: frontend-end-check
-description: Wrap-up check for frontend projects. Called by the end mode of the workflow plugin's task skill. Only when frontend code has changed, checks for leftover debug code and the lockfile and runs the framework's check tools, then returns frontend-reviewer to include in the review and the browser check to do after fixes.
+description: Wrap-up check for frontend projects. Called by the end mode of the workflow plugin's task skill. Only when frontend code has changed, checks for leftover debug code and the lockfile and runs the framework's check tools, then returns frontend-reviewer and design-reviewer to include in the review and the browser check to do after fixes.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -29,6 +29,8 @@ Called by `/task end`. Runs commands and returns only the results. The review th
 
 If UI code changed, `frontend:frontend-reviewer`. Pass the list of changed UI files and the detected framework as the basis.
 
+If a screen (components, pages, styles) changed, also `frontend:design-reviewer`. Pass the screen URL, the root `DESIGN.md` path (if any), and the changed screen files as the basis. Get the URL by starting the dev server the way section 3 says. If it cannot be started, leave it out and say so.
+
 ## 3. After fixes
 
 If fixing review findings changed the UI, hand the fixed screens to the `frontend:frontend-evaluator` agent to check. Also what the reference adds.
@@ -47,6 +49,7 @@ Checks: 1 failed (rest passed)
 
 #### Agents to include in the review
 - `frontend:frontend-reviewer` — basis: src/routes/login/+page.svelte, … (svelte)
+- `frontend:design-reviewer` — basis: http://localhost:5007/login, DESIGN.md, src/routes/login/+page.svelte
 
 #### After fixes
 - Check the fixed screens with `frontend:frontend-evaluator`

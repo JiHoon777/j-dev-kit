@@ -1,6 +1,6 @@
 {
   "name": "workflow",
-  "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Claude invokes it on its own when you ask to add, start or finish a backlog item. create and start open a sub-session by default (start in its own worktree on a w/ branch), where you answer questions and approve; end runs in that work session. --here, or no session tool, runs it in the current session. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins and the design-reviewer agent when a screen changed. A Stop hook re-runs the verify command when an item is marked done, also after another Stop hook such as /goal has blocked. Web and server ports are split per item.",
+  "description": "Backlog-driven work loop as one skill: /task create, /task start, /task end. Claude invokes it on its own when you ask to add, start or finish a backlog item. create and start open a sub-session by default (start in its own worktree on a w/ branch), where you answer questions and approve; end runs in that work session. --here, or no session tool, runs it in the current session. Scales planning to task size, verifies once before done, and reviews with code-review plus the stack reviewers of enabled plugins. A Stop hook re-runs the verify command when an item is marked done, also after another Stop hook such as /goal has blocked. Web and server ports are split per item.",
   "version": "0.10.0",
   "author": {
     "name": "JiHoon777"

@@ -1,6 +1,6 @@
 ---
 name: frontend-end-check
-description: 프론트엔드 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 프론트엔드 코드가 바뀌었을 때만 남은 디버그 코드와 lockfile 을 확인하고 프레임워크 검사 도구를 돌린 뒤, 리뷰에 넣을 frontend-reviewer 와 고친 뒤 할 브라우저 확인을 돌려준다.
+description: 프론트엔드 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 프론트엔드 코드가 바뀌었을 때만 남은 디버그 코드와 lockfile 을 확인하고 프레임워크 검사 도구를 돌린 뒤, 리뷰에 넣을 frontend-reviewer·design-reviewer 와 고친 뒤 할 브라우저 확인을 돌려준다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -27,6 +27,8 @@ metadata:
 
 UI 코드가 바뀌었으면 `frontend:frontend-reviewer`. 근거로 바뀐 UI 파일 목록과 감지한 프레임워크를 넘긴다.
 
+화면(컴포넌트, 페이지, 스타일)이 바뀌었으면 `frontend:design-reviewer`도. 근거로 화면 URL, 루트 `DESIGN.md` 경로(있으면), 바뀐 화면 파일을 넘긴다. URL 은 3절의 방식으로 개발 서버를 띄워 얻는다. 띄울 수 없으면 넣지 않고 그렇다고 적는다.
+
 ## 3. 고친 뒤 할 것
 
 리뷰 지적을 고쳐 UI 가 바뀌었으면, 고친 화면을 `frontend:frontend-evaluator` 에이전트에 맡겨 확인한다. reference 가 더하는 것도.
@@ -45,6 +47,7 @@ UI 코드가 바뀌었으면 `frontend:frontend-reviewer`. 근거로 바뀐 UI �
 
 #### 리뷰에 넣을 에이전트
 - `frontend:frontend-reviewer` — 근거: src/routes/login/+page.svelte, … (svelte)
+- `frontend:design-reviewer` — 근거: http://localhost:5007/login, DESIGN.md, src/routes/login/+page.svelte
 
 #### 고친 뒤 할 것
 - 고친 화면을 `frontend:frontend-evaluator`로 확인

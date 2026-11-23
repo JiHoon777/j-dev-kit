@@ -29,6 +29,7 @@ Finding the item: look up the argument in `docs/backlog/` (`README.md` and files
 1. **Baseline:** Run the verify command once. Record only what already fails (the command, the names of failing tests/files). This does not block the work; tell the user. `/task end` compares against this to look only at new failures.
 2. **Stack checks:** Call, with the Skill tool, every available skill whose name ends in `-start-check` (e.g. `server:server-start-check`). A check that does not apply returns only "not applicable". What comes back:
    - **Follow:** rules to follow and skills to call during implementation
+   - **Before planning:** work to finish before the plan (for example mockups). Do it before going to step 3
    - **Put in the plan:** only when it applies to this item
    - **Ask:** only when there is something it cannot decide
 

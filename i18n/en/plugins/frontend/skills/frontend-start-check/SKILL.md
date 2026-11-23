@@ -1,6 +1,6 @@
 ---
 name: frontend-start-check
-description: Pre-work check for frontend projects. Called by the start mode of the workflow plugin's task skill. Detects the framework and returns what to follow during implementation (frontend-design, framework rules, browser check) and what to put in the plan. Framework-specific content lives in references (svelte.md, react.md).
+description: Pre-work check for frontend projects. Called by the start mode of the workflow plugin's task skill. Detects the framework and returns what to follow during implementation (frontend-design, framework rules, browser check), what to do before planning (mockups), and what to put in the plan (DESIGN.md). Framework-specific content lives in references (svelte.md, react.md).
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -28,7 +28,7 @@ Called by `/task start`. Does not modify anything and runs almost no commands. R
 
 Return only what applies to this item.
 
-- **New screen or redesign:** invoke the `frontend-design` skill and follow it. Choose colors and fonts within the project's design tokens; ask first before adding new ones. If there is an approved design or product principles in CLAUDE.md, those come first. Do not invoke it for items that move an existing screen as-is.
+- **New screen or redesign:** invoke the `frontend-design` skill and follow it. Choose colors and fonts within the project's design tokens; ask first before adding new ones. If the item has a chosen mockup or CLAUDE.md has product principles, those come first. Do not invoke it for items that move an existing screen as-is.
 - **When choosing a new web feature or UI pattern** (dialog, popover, layout, form validation, etc.): invoke the `modern-web-guidance` skill if available.
 - **Browser check** (when the UI changes, at the end of implementation): the implementing session does not judge it itself; hand it to the `frontend:frontend-evaluator` agent.
   - Start the dev server (`.claude/launch.json` if present). If the work branch item has a web port under `### 포트`, use it over the port in `.claude/launch.json` (do not edit launch.json; if its port differs, start the dev command directly instead). Check in the script how the dev command takes a port (for example Vite `--port`, a positional argument, or the `PORT` environment variable), start it on that port, confirm it is actually listening there (`lsof -nP -iTCP:<port> -sTCP:LISTEN`), and then use it in the screen URL. If a backend server is needed too, start it on the server port the same way, and point the place where the web app takes the backend address (proxy target, an environment variable like `VITE_API_URL`) at that server port through command arguments or environment variables, without editing files. For changes visible only in a build (service worker, static generation), preview after building.
@@ -38,9 +38,11 @@ Return only what applies to this item.
   - If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser): walk through each Acceptance Criterion as a user would, with no console errors and no failed requests (4xx/5xx). Write in `Implementation Notes` that you did it yourself. If you cannot do that either, stop and say so.
 - The framework rules from the reference.
 
-## 2. To put in the plan / To ask
+## 2. Before planning / To put in the plan / To ask
 
-- If the item is a new screen or redesign and there is no design or spec, make it a question to ask.
+- **Mockups:** if the item adds or redesigns a screen and has no chosen mockup, return as "before planning": invoke the `frontend:ui-design` skill with `mockup <screen>`. Skip it if the user wants to go without one. Do not add it for items that move an existing screen as-is.
+- **No DESIGN.md:** if the item changes UI, there is no root `DESIGN.md`, and CLAUDE.md has no `- DESIGN.md: 안 씀` (not used), ask whether to make it in this item. If yes, put in the plan: invoke the `frontend:ui-design` skill with `system` as the first implementation step. If not, suggest writing `- DESIGN.md: 안 씀` under `## 작업 설정` in CLAUDE.md so it is not asked again.
+- **Token changes:** if the item changes design tokens such as colors, fonts or spacing and `DESIGN.md` exists, put in the plan: invoke the `frontend:ui-design` skill with `system` to update DESIGN.md.
 - What the reference adds.
 
 ## Return format
@@ -50,6 +52,9 @@ Return only what applies to this item.
 Detected: svelte 5 (read references/svelte.md)
 
 #### To follow
+- …
+
+#### Before planning
 - …
 
 #### To put in the plan
