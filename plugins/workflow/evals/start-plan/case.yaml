@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: start-plan
+description: task start 3단계(계획)가 여러 모듈에 걸친 항목에서 꼭 읽을 파일을 짚고, 코드로 답할 수 있는 것은 묻지 않는지 본다. start.md 의 Explore 최대 2개, 질문 최대 3개를 잰다.
+tags: [checklist-start-limits]
+context:
+  scaffold_script: fixture.sh

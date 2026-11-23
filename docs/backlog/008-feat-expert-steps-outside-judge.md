@@ -102,6 +102,27 @@ Felix Rieseberg 대담(영상 youtu.be/D-SVFneJ_Nk, 정리 글 maily.so/josh/pos
 - eval 위치: 플러그인 폴더에 커밋(다음 모델 때 다시 돌리기). 비용: Svelte 하나를 `--max-cost-usd 5`로 먼저.
 - 플랜 모드: 승인이 부모 세션을 거쳐 와서 플랜 모드 도구를 쓰지 않고 계획을 마지막 메시지로 올렸다.
 
+### 구현하며 정한 것
+
+- AC #16: Final Summary 에 "사용자가 바로잡은 것"을 넣었다. Claude Code 자동 메모리는 사용자 기계에만 남고 커밋되지 않으며 리뷰 에이전트의 입력이 아니다. 저장소의 원칙 파일은 공유되고 리뷰 지시문에 들어간다. 겹치는 것은 사용자 수준 피드백이 메모리에도 남을 수 있다는 정도라서, 템플릿 한 줄로 넣었다.
+- `end.md` 3단계 지시문의 "서버를 띄우지 않고"는 `api-reviewer`의 로컬 재현과 부딪혀 "그 에이전트의 기준이 허락할 때만"으로 바꿨다(AC #3).
+- `check-repo-rules.sh`: 번역본 짝·갱신 검사에서 `plugins/*/evals/`를 뺐다. `test-check-repo-rules.sh`에 시나리오 2개를 더했고, 고치기 전에는 둘 다 실패, 고친 뒤 29개 모두 맞음. `.gitignore`에 `plugins/*/evals/results/`.
+
+### eval (AC #8)
+
+방법: `claude plugin eval`(v2.1.326)을 `--ablation none --scaffold --model opus --runs 3`로, 같은 사례를 체크리스트가 있는 사본(`with`)과 뺀 사본(`without`)에 돌린다. 사본은 `.claude/.local/evals/008/`(커밋하지 않음). 사례는 `plugins/frontend/evals/`, `plugins/workflow/evals/`에 커밋했고, 다시 돌리는 명령은 각 `evals/README.md`에 있다. 지우는 조건: 없앤 판의 점수가 낮지 않고 비용이 1.5배를 넘지 않음.
+
+실행하며 고친 것:
+- Windows 에는 eval 샌드박스가 없어 셸 도구를 준 실행이 시작 전에 거부됐다(비용 0). 셸을 빼고 fixture 가 `review.diff`를 남기게 했다.
+- 사본의 `dependencies`(workflow 등)가 eval 환경에 없어 플러그인이 로드되지 않았다(`plugin_errors: dependency-unsatisfied`). 그 실행들은 에이전트를 못 불러 0.17점이었다. 사본의 `dependencies`를 지우고 다시 돌렸다.
+
+| 체크리스트 | 사례 | with 점수 | without 점수 | with 비용 | without 비용 | 판정 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `frontend-reviewer` Svelte 절 | `reviewer-svelte` (심은 문제 5개 + 맞는 파일 1개) | 1.0, 1.0, 1.0 | 1.0, 1.0, 1.0 | $0.70 | $0.77 (1.1배) | 조건상 지워도 된다. 사용자 답을 받아 정한다 |
+| `frontend-reviewer` React 절 | `reviewer-react` | 아직 | | | | |
+| `start.md` Explore 최대 2개 | `start-plan` | 아직 | | | | |
+| `start.md` 질문 최대 3개 | `start-plan` | 아직 | | | | |
+
 ## Final Summary
 
 `/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
