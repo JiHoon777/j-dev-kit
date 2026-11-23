@@ -1,7 +1,7 @@
 ---
 id: '006'
 title: /task 하나로 줄이고 create·start 는 하위 세션에서, Claude 가 알아서 부르게
-status: To Do
+status: In Progress
 labels: [chore]
 priority: medium
 dependencies: []
@@ -43,11 +43,21 @@ updated_date: 2026-11-23
 
 ## Implementation Plan
 
-만들 때는 비워 둔다. `/task start`가 승인된 계획을 적는다.
+사용자가 대화에서 승인한 계획(2026-11-23).
+
+1. 지우기: `plugins/architecture/`, `plugins/design/`(리뷰어는 옮김), `workflow/skills/lead/`, `workflow/skills/until-done/`, `workflow/agents/{backlog,trend}-scout.md`와 각 번역본.
+2. `plugins/design/agents/design-reviewer.md` → `plugins/workflow/agents/design-reviewer.md`(번역본도). `/ui review`가 아니라 `/task end`가 부른다고 고친다.
+3. `task/SKILL.md`: `disable-model-invocation` 지우고 description 을 언제 쓰는지로. 1절에 "어디서 하나"(하위 세션 / `--here`). 2절에서 워크트리 설정 지움.
+4. `create.md`·`start.md`: 하위 세션을 띄우는 단계와 그 세션에 줄 지시문. `start.md` 4단계의 손으로 하는 워크트리 절차 지움. 번호는 쓰기 직전에 다시 확인.
+5. `end.md`: 3단계 리뷰에 UI 가 바뀌면 `workflow:design-reviewer`. 5단계 "나중"은 `task` 스킬을 `create --here`로. 7단계의 워크트리 문구를 도구가 딴 워크트리에 맞춤.
+6. frontend 의 가리키는 문구(`/ui review`, `/lead`), README 두 개, marketplace.json, plugin.json(workflow 0.10.0, frontend 올림), `.claude/settings.json`, backlog README.
+7. 검증 명령, 지운 것을 가리키는 곳 grep.
 
 ## Implementation Notes
 
-작업하며 알게 된 것, 계획에서 바뀐 것.
+### Baseline
+
+`claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(실패 없음).
 
 ## Final Summary
 
