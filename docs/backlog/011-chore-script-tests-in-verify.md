@@ -1,7 +1,7 @@
 ---
 id: '011'
 title: 바뀐 스크립트의 테스트를 검증이 돌리고, 두 벌인 port_open 이 같은지 검사
-status: To Do
+status: In Progress
 labels: [chore]
 priority: medium
 dependencies: ['009']
@@ -29,7 +29,8 @@ updated_date: 2026-11-24
 - [ ] #1 기준 브랜치 대비 `plugins/` 아래 `.sh` 파일이나 `scripts/check-repo-rules.sh`가 바뀌었으면, 검증 명령이 그 스크립트의 짝 테스트 `scripts/test-<스크립트 이름>.sh`를 돌린다. 테스트가 하나라도 틀리면 검증이 실패한다. 바뀐 스크립트가 없으면 테스트를 돌리지 않는다
 - [ ] #2 바뀐 스크립트에 짝 테스트가 없으면 검증이 그 스크립트 경로와 이유를 적고 실패한다
 - [ ] #3 `pick-port.sh`와 `dev-server.sh`의 `port_open` 함수 본문이 다르면 `check-repo-rules.sh`가 두 파일을 적고 실패한다
-- [ ] #4 `scripts/test-check-repo-rules.sh`에 #1~#3 의 경우(바뀐 스크립트의 테스트 통과·실패, 바뀐 스크립트 없음, 짝 테스트 없음, port_open 같음·다름)가 있고 통과한다
+- [ ] #4 `scripts/test-check-repo-rules.sh`에 #1~#3·#5 의 경우(바뀐 스크립트의 테스트 통과·실패, 바뀐 스크립트 없음, 짝 테스트 없음, 짝 테스트만 바뀜, port_open 같음·다름)가 있고 통과한다
+- [ ] #5 기준 브랜치 대비 짝 테스트 파일(`scripts/test-*.sh`)만 바뀌어도 검증 명령이 그 테스트를 돌리고, 틀리면 검증이 실패한다
 
 <!-- AC:END -->
 
@@ -45,11 +46,37 @@ updated_date: 2026-11-24
 
 ## Implementation Plan
 
-만들 때는 비워 둔다. `/task start`가 승인된 계획을 적는다.
+승인: 2026-11-24, 부모 세션을 거쳐 사용자("추천안대로 승인"). 질문 1(짝 테스트만 바뀌어도 돌리기)은 추천대로 AC #5 로 더했다.
+
+1. **무엇을 하나:** `scripts/check-repo-rules.sh`에 검사 6(바뀐 스크립트와 바뀐 짝 테스트의 테스트 돌리기)과 검사 7(두 `port_open` 본문 비교)을 더한다. 플러그인 스크립트와 훅 설정은 고치지 않는다.
+2. **도구와 단계:** bash, git. 바뀐 파일은 기존 4번 검사처럼 `git diff --name-only --no-renames <merge-base>`와 추적하지 않는 파일. 본문은 `sed -n '/^port_open() {$/,/^}$/p'`로 뽑아 비교한다. 테스트 먼저 쓰고 틀리는 것을 본 뒤 검사를 고친다.
+3. **바꿀 파일과 순서**
+   1. `scripts/test-check-repo-rules.sh`(먼저)
+      - 가짜 저장소 기준 커밋에 `plugins/alpha/scripts/tool.sh`와 짝 `scripts/test-tool.sh`, 실제 경로의 `pick-port.sh`·`dev-server.sh`(같은 작은 `port_open`, 위 주석은 다름)와 가짜 짝 테스트, 가짜 `scripts/check-repo-rules.sh`와 짝을 둔다.
+      - `scenario()`의 문구가 `!`로 시작하면 출력에 없어야 한다.
+      - 시나리오: 테스트 통과, 테스트 실패, 마크다운만 바뀜(테스트 안 돌림), 짝 없음, `scripts/check-repo-rules.sh` 바뀜, 짝 테스트만 바뀜(돌림)·그 테스트가 틀림, evals 의 `fixture.sh`만 바뀜, 스크립트 지움, port_open 같음(주석만)·다름·없음.
+   2. `scripts/check-repo-rules.sh`
+      - 7: 두 파일의 본문이 없으면 "port_open 을 찾지 못함: <파일>", 다르면 "port_open 다름: <파일1>, <파일2>"로 실패한다.
+      - 6: 바뀐 `plugins/**/*.sh`(evals 제외)와 `scripts/check-repo-rules.sh`는 짝 `scripts/test-<이름>.sh`, 바뀐 `scripts/test-*.sh`는 그 자신. 지금 있는 파일만. 짝이 없으면 "짝 테스트 없음: <경로>"로 실패한다. 테스트마다 한 번 돌려 "테스트 통과: <테스트>" 또는 출력 마지막 20줄 뒤에 "테스트 실패: <테스트> (<바뀐 파일>)". 다른 검사 뒤 맨 마지막에 돈다.
+      - 맨 위 주석과 기준 브랜치 없음 문구를 맞춘다.
+   3. README 두 개: `check-repo-rules.sh` 설명(README.md:81, README.en.md:83)과 검사 문단(README.md:97, README.en.md:99).
+   4. 정리(`simplify`) → 검증 → 판정 에이전트 → 커밋.
+4. **성공 기준:** AC #1·#2·#3·#5 는 `bash scripts/test-check-repo-rules.sh`의 해당 시나리오 "맞음", #4 는 "N 개 중 N 개 맞음"과 판정 에이전트. 실제 저장소의 검증 명령 출력에 "테스트 통과: scripts/test-check-repo-rules.sh". DoD #2·#3 은 `plugins/`를 고치지 않아 해당 없음(`git diff --stat main...HEAD`).
+5. **스택 점검:** frontend·server 모두 해당 없음.
+6. **가정과 정한 것**
+   - `plugins/*/evals/` 아래 `fixture.sh`는 뺀다(eval 준비 파일, 짝 테스트 없음).
+   - 플러그인 스크립트 주석은 그대로 둔다. 그래서 플러그인 버전을 올리지 않고, 010 과 버전 번호가 겹치지 않는다.
+   - 짝은 파일 이름만으로 찾는다.
+   - Stop 훅의 기본 timeout 은 공식 문서로 확인해 가장 오래 걸리는 테스트와 비교해 적는다. 기본값이 더 짧으면 훅 설정을 고치지 않고 멈춰 부모 세션에 알린다.
+   - 010 과 겹치는 파일은 README 두 개(고치는 줄이 다르다).
 
 ## Implementation Notes
 
 작업하며 알게 된 것, 계획에서 바뀐 것.
+
+### Baseline
+
+- `claude plugin validate . && bash scripts/check-repo-rules.sh`: 통과. 실패 없음(2026-11-24, main 2dba1aa).
 
 ## Final Summary
 
