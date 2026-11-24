@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: survey-outside
-description: 합성 사례(013). URL 없이 목표만 준 서베이가 바깥(GitHub Actions 공식 문서·변경 기록)을 찾아 읽는지, 후보마다 출처와 [직접]/[검색] 표시가 있는 보고서를 남기는지, 이미 있는 항목(001 Node 버전 올리기)과 겹치는 후보를 거르는지 본다. 저장소 안에는 오류 로그·이슈가 없어 안쪽만 보면 근거가 얇다
+description: 합성 사례(013). URL 없이 목표만 준 서베이의 바깥 조사, 보고서와 출처 표시, 이미 있는 항목(001)과 겹치는 후보 거르기
 expected_outcome: |
   웹을 검색하거나 읽어 GitHub Actions 쪽 변경(예: 오래된 actions 버전과 그 런타임 지원 종료, actions/cache v1·v2 서비스 종료, ubuntu-20.04 러너 이미지 종료)을 찾는다.
   `.claude/.local/reports/` 아래에 보고서를 쓰고, 후보마다 출처(URL)와 [직접]/[검색] 표시를 단다.

@@ -9,7 +9,7 @@
 | `trigger-real/*` | `task` description. 지난 세션의 실제 요청(부르지 말 것 10, 부를 것 3), 사용자 말투로 쓴 합성 요청(부를 것 7, 사용자가 라벨을 확인했다), 012 에서 더한 합성 요청(비슷하지만 아닌 부르지 말 것 3, 처음 보는 서베이 표현 2, 라벨은 description 문장 기준). `--tag trigger-real` |
 | `start-plan-real` | `start.md` 3단계 계획을 실제 큰 항목(nolmeong 013, 시작 전 `d8c75f5`)으로. 정답은 사용자가 승인한 계획(`ed9250b`)의 핵심 결정 6가지다. 묻기만 하고 기본안이 없으면 정답으로 치지 않고, 답이 계획을 바꾸지 않는 질문은 감점한다(012 A7). nolmeong 로컬 저장소에서 `git archive`로 꺼내 만들므로 그 저장소가 있는 기계에서만 돈다. 저장소 경로는 커밋하지 않는 `evals/nolmeong-src.local`에 한 줄로 쓴다(frontend evals README 참고). `--tag real-plan` |
 | `create-many`, `create-few` | 합성 사례. `create` 1단계의 질문(사용자만 정할 결정을 묻는가, 저장소에 답이 있는 것을 묻지 않는가, 답이 항목을 바꾸는가). `--tag b4` |
-| `survey-outside` | 합성 사례(013). URL 없이 목표만 준 `create --survey`가 바깥을 검색·읽는지(기록의 `WebSearch`·`WebFetch`), 보고서를 `.claude/.local/reports/`에 쓰는지, 후보마다 출처와 [직접]/[검색] 표시가 있는지, 이미 있는 항목(001 Node 버전)과 겹치는 후보를 거르는지. eval 실행은 `.claude/` 아래 쓰기를 막아(허용 규칙으로도 안 풀린다) 보고서는 그 경로로 Write 를 불렀는지로 보고, 내용은 기록(`focus: trace`)에서 그 Write 내용과 후보 표로 채점한다(파일 이름이 날짜로 바뀌고, 채점의 파일 `focus`는 glob 을 받지 않는다). 사례 형식(`expected_outcome`, 번호 붙인 채점 파일, `focus: trace`·`weight: 1`)은 `skill-creator`의 `references/schemas.md`를 따른다. 웹·파일 쓰기가 필요해 `--allow-tools WebSearch WebFetch Write`를 붙인다. `--tag survey` |
+| `survey-outside` | 합성 사례(013). URL 없이 목표만 준 `create --survey`가 바깥을 검색·읽는지, 보고서를 `.claude/.local/reports/`에 쓰는지, 후보마다 출처와 [직접]/[검색] 표시가 있는지, 이미 있는 항목(001)과 겹치는 후보를 거르는지. `--allow-tools WebSearch WebFetch Write`. `--tag survey` |
 | `start-plan` | 스모크용. 스킬이 불러와지고 계획까지 가는지 본다. 008 에서 세 판 모두 만점이라 결정 근거로 쓰지 않는다 |
 | `end-fix-real` | 스모크용. `end.md` 5단계 리뷰 수정(nolmeong 002 리뷰 직전 `2b5627e`, 고친 커밋 `3d1649b`·`5aaa792`). 프롬프트가 고칠 방법을 다 적어 9회 모두 다 고쳤고 위임판이 위임을 한 번만 해, 위임 결정의 근거로 쓰지 않는다(위임은 사용자 방침으로 정했다, 010). Edit·Write 가 필요해 `--allow-tools Edit Write`를 붙인다. `--tag real-fix` |
 
@@ -25,6 +25,13 @@ claude plugin eval <사본> --ablation none --scaffold --trust-plugin --model op
 ```
 
 3. JSON 의 `cases[].arms.with[]`(실행마다 `score`, `graders[].passed`, `costUsd`, `turns`)로 판을 견준다. 결과 폴더 `evals/results/`는 커밋하지 않는다.
+
+eval 러너에 대해 알아 둘 것(013 에서 확인):
+
+- `.claude/` 아래 쓰기를 막는다(dontAsk 모드, `--allow-tools 'Write(.claude/**)'`로도 안 풀린다). 그 경로에 쓰는 절차는 파일 대신 기록의 Write 호출로 채점한다.
+- 채점의 파일 `focus: {source: file, path}`는 glob 을 받지 않는다. 이름이 바뀌는 파일은 `file_exists`(glob 을 받는다)나 `focus: trace`로 본다.
+- 하위 에이전트의 도구 호출도 기록(trace)에 남는다.
+- 사례 형식(`expected_outcome`, 번호 붙인 채점 파일, `focus: trace`·`weight: 1`)은 `skill-creator`의 `references/schemas.md`를 따른다.
 
 판정: frontend evals README 의 판정 규칙과 같다.
 
