@@ -89,17 +89,36 @@ Show the content before writing. If asked for changes, make them and show it aga
 ## 4. Save
 
 1. Write the file, and if the project has a format command, run it until it passes.
-2. Commit the item file and the deleted note line, plus any files newly created in step 0: `docs(backlog): <number> <title>`. Do not include other changes. If they are left behind, `/task start` stops at "There are uncommitted changes". Do not push.
+2. Commit the item file and the deleted note line, plus any files newly created in step 0: `docs(backlog): <number> <title>`. For the first item from survey mode, include the report too. Do not include other changes. If they are left behind, `/task start` stops at "There are uncommitted changes". Do not push.
 3. Report the path and number, and say that to start, use `/task start <number>` (or "start it").
 
-## Survey mode (`create --survey <goal> [sources…]`)
+## Survey mode (`create --survey <goal> [sources…] [--internal]`)
 
-Do not hand-pick sources one at a time. Take the goal and all the sources, and Claude chooses what becomes an item. Only create items; do not call `start` or open sessions.
+Do not hand-pick sources one at a time. Take the goal, and Claude researches inside (the repository) and outside and chooses what becomes an item. Only create items; do not call `start` or open sessions. There is no set number of candidates.
 
-1. **Read the sources:** sources are file or folder paths, commands (their output is the source), and URLs. If none were given, look in the repository: error logs, `docs/backlog/` and `docs/done/`, the notes in the README, the issue list if available (`gh issue list`), usage data. Read the raw material yourself rather than taking a summary. Run only commands that read.
-2. **Pick candidates:** pick only what fits the goal. There is no set number; list only those with evidence. Do not list ones that overlap existing items (step 1).
-   - Group sources that look like the same cause into one candidate, and list every evidence location.
+1. **Split the goal:** write the goal as one outcome sentence ("what has to get better for this to count as done") and a few research questions, and set an angle (inside, outside) for each question. A narrow goal gets fewer questions and angles. Show this in a few lines and go on to 2 without waiting for approval. If the user steps in to change it, follow them.
+2. **Gather sources:** even when no sources are given, look both inside and outside.
+   - Inside: error logs, `docs/backlog/` and `docs/done/`, the notes in the README, the issue list if available (`gh issue list`), usage data.
+   - Outside: the official docs, changelogs and issues of the tools and libraries in use, other tools and precedents that do the same job, and writing and talks by practitioners in the field.
+   - Sources the user gave (file or folder paths, command output, URLs) are a starting point and do not narrow the scope. Leave out the outside only when the user says so with `--internal` or in words.
+   - Start searches with short, broad queries and then narrow. Put official docs, the original author's writing and the repository source ahead of summary articles.
+   - Gather in parallel: open one subagent (general-purpose) per angle, in one message. Put in the prompt: the goal and the research questions it owns, the output format (the notes below), the sources to use (that angle's from the inside and outside lists above), and the boundaries (read only; write nothing but the notes file; run only commands that read; do not widen beyond its angle).
+   - Each agent writes a note per source to `.claude/.local/survey/<date>-<short name>/<angle>.md` and returns only the path. A note: what was looked at, a short quote from the source, the location (`file:line`, command, URL), the date read, and **[direct]** (opened and read the source) or **[search]** (saw only a search-result summary).
+   - Read the raw material. For each claim used as evidence for a candidate, the main session opens that source again to check it. If it cannot be opened, mark it **[search]** or drop it from the evidence. Run only commands that read.
+3. **Pick candidates:** in the order notes → categories → counts.
+   - Group the notes into categories across sources. Build the categories from the notes, not by fitting them into a frame set in advance. Group sources that look like the same cause into one category, and list every evidence location.
+   - Count the evidence for each category.
+   - Stop gathering when newly read sources no longer add a category. If they do, read more toward that category (2).
+   - List as candidates only the categories that fit the goal. Write a candidate as a problem or need, not a solution, with the solution in one line under it. Add one line each for size (how much evidence, in how many places) and how directly it reaches the goal. Do not build a scoring formula.
    - For a candidate that comes from a bug report, try to reproduce it on the base branch. Attach how it was reproduced, or that it could not be, to the evidence.
      - In this folder, reproduce only in ways that just read. If it needs installs or builds, do it in a temporary worktree (`git worktree add <temp path> <base>`) and remove it when done (`git worktree remove <temp path>`). When done, check that `git status --short` is empty.
-3. **Show them at once:** show one list with, per candidate, the title, the evidence (where in the sources: `file:line`, command, URL), and a way to check it is done (command, screen, number), and let the user pick.
-4. **Write:** write only the picked candidates, by the step 2 rules. Put the way to check into that item's Acceptance Criteria. Show the written items together and get approval once (step 3). Then, per item, recount the number and write it as in step 4, and commit it separately. Do not write candidates that were not picked.
+4. **Filter:** before showing the candidates, hand one new general-purpose **judge agent**, not this session, only the candidate list, the notes file paths, and the `docs/backlog/` and `docs/done/` paths. The model is the same as this session. Prompt: "Do not edit files. For each candidate, check whether the evidence supports the claim (open the source), whether it overlaps an existing item or something already fixed, and whether the source is primary, and write pass / drop with the reason. If unsure, do not pass it." Do not throw away dropped candidates; keep them under "Not proposed" with the reason.
+5. **Report:** write it to `.claude/.local/reports/<date>-<short name>.md`.
+   - The date checked and the marks (**[direct]**, **[search]**)
+   - A summary of conclusions
+   - A candidate table: problem or need, one-line solution, evidence (location and [direct]/[search]), size, how directly it reaches the goal, a way to check it is done (command, screen, number)
+   - Not proposed, with reasons
+   - What could not be read
+6. **Show them at once:** show the report path and the candidate table, and let the user pick.
+7. **Write:** write only the picked candidates, by the step 2 rules. Put the way to check into that item's Acceptance Criteria. Show the written items together and get approval once (step 3). Then, per item, recount the number and write it as in step 4, and commit it separately. Do not write candidates that were not picked.
+   - If any candidate was picked, move the report to `docs/backlog/references/`, put its path as evidence in each item's Description, and include the report in the first item's commit. If none was picked, leave the report in `.claude/.local/reports/`.
