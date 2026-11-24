@@ -116,7 +116,7 @@ updated_date: 2026-11-24
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 (A1) `frontend-reviewer`(원문·번역본)에 일반 접근성 항목이 없고, 코드의 UI·접근성은 `web-design-guidelines` 규칙으로 본다고 적혀 있다. XSS·상태·중복 요청·비밀 값·새 의존성 항목은 남아 있다
+- [ ] #1 (A1) `frontend-reviewer`와 `web-design-guidelines`를 실제 사례로 비교한 결과가 `Implementation Notes`에 있고, 비교에서 나빠졌으므로 `frontend-reviewer`(원문·번역본)의 접근성·억지로 끈 검사 항목은 그대로이며 `web-design-guidelines`를 쓰는 곳과 README 의 설치 안내가 없다. XSS·상태·중복 요청·비밀 값·새 의존성 항목은 남아 있다(2026-11-24 바꿈, 사용자의 말: "바꾸지 않기")
 - [ ] #2 (A1) `design-reviewer`(원문·번역본)가 보는 것이 브라우저로 열어야 보이는 것(폭별 스크린샷, axe, 대비 측정, 키보드, 상태·콘솔, DESIGN.md 토큰)뿐이고, `frontend-reviewer`와 같은 항목을 함께 보지 않는다(재지 않고 바꾼 것이라고 `Implementation Notes`에 적혀 있다)
 - [ ] #3 (A2) Svelte 기본 규칙(runes, Svelte 4 문법, autofixer, 문서 찾기)은 공식 `svelte` 스킬에서 온다. 들여오는 방법(의존 플러그인, 교차 마켓플레이스 허용, README 안내 가운데 고른 것)과, 그 방법으로 실제로 설치되고 `/task start`·`/task end` 중에 공식 스킬이 불리는지 확인한 결과가 `Implementation Notes`에 있다
 - [ ] #4 (A2) `svelte.md`(start·end, 원문·번역본)와 `frontend-reviewer` Svelte 절에 남은 규칙이 SvelteKit 규칙(`$env/*/private`, `adapter-static`, `fail()`, `load` 권한, `{@html}`)과 "기준 브랜치 대비 새로 생긴 autofixer issues 만 실패"뿐이다. `$derived`·`$effect`·Svelte 4 문법 같은 Svelte 기본 규칙은 없다
@@ -421,5 +421,11 @@ updated_date: 2026-11-24
 - `real-*`에서는 같음(위 A1·A2 표). 그래서 **A2 를 적용했다**: `frontend-reviewer` Svelte 절(원문·번역본)은 `svelte-core-bestpractices`를 부르는 줄과 SvelteKit 규칙(`$env/*/private`, `load` 권한, `fail()`, `adapter-static`)만 남겼다(`{@html}`은 공통 항목 1 에 있다). `frontend-start-check/references/svelte.md`는 공식 스킬(`svelte-code-writer`, `svelte-core-bestpractices`)을 부르는 것, 기존 코드의 autofixer 문제는 고치지 않는 것, SvelteKit 규칙, 설치를 묻는 것만 남겼다. `frontend-end-check/references/svelte.md`는 "새로 생긴 `issues`만 실패"를 그대로 두고 autofixer 를 공식 플러그인 것이라고 적었다.
 - 008 의 "Svelte 절 유지"는 판별력 없는 사례(`reviewer-svelte` 만점 동률)와 Svelte 정답이 없는 `real-*`로 정한 것이었다. 이번 결과로 바뀌었다(위 판정 규칙의 재적용과도 같은 방향).
 - 들여오는 방법(AC #3): 의존 플러그인으로 두지 않고 README "있으면 쓰는 것"의 `/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte`로 둔다(위 "들여오는 방법"). 이 기계에는 `svelte@svelte` 1.0.11 이 설치돼 있다(`~/.claude/plugins/installed_plugins.json`). `/task end` 쪽: 위 eval 에서 `frontend-reviewer`가 25회 모두 `svelte-core-bestpractices`를 Skill 도구로 불렀다. `/task start` 쪽: 1회용 시험(커밋 안 함, `.claude/.local/012/arms/startcheck`)에서 `frontend-start-check`를 부르고 그 "지킬 것"을 따라 nolmeong `bb04515`의 `src/routes/sky/+page.svelte`를 고치게 하자 3회 모두 `svelte-code-writer`나 `svelte-core-bestpractices`를 Skill 도구로 불렀다(`tool_used` 3/3). eval 사본에 넣은 스킬이라 이름은 `frontend:`로 붙는다.
+
+### A1: 바꾸지 않음 (2026-11-24, 부모 세션이 전한 사용자의 말: "바꾸지 않기")
+
+- 위 A1·A2 의 `real-*` 표대로 A1 판(접근성·억지로 끈 검사 항목을 빼고 `web-design-guidelines`를 부름)은 세 사례 평균 0.659 → 0.587 로 나빠졌다(차이 0.072 > 표준오차 합 0.050). 스킬은 15번 모두 불렀는데도 동작 버그를 덜 찾았다: 한 줄 한글 Enter 3/5 → 0/5, 다시 읽어 주기 5/5 → 2/5, 생일 별 기다림 3/5 → 0/5, 하늘 포커스 2/5 → 0/5, 날씨 실패 5/5 → 3/5.
+- 그래서 `frontend-reviewer`의 접근성(4)·억지로 끈 검사(7) 항목을 그대로 두고, `web-design-guidelines`는 쓰는 곳이 없어 README 두 개의 설치 안내를 지웠다. `design-reviewer`(원문·번역본)의 "코드만 읽어도 보이는 문제는 `frontend-reviewer`와 `web-design-guidelines`가 본다"를 "`frontend-reviewer`가 본다"로 고쳤다. AC #1 을 이에 맞게 고쳤다.
+- `design-reviewer`의 범위 바꾸기(브라우저로 열어야 보이는 것만)는 그대로다(재지 않고 바꿨다).
 
 ## Final Summary
