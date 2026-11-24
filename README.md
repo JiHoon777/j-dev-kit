@@ -6,9 +6,9 @@ Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하
 
 | 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, 검증 Stop 훅 | `superpowers` |
-| `frontend` | Svelte·React 점검, DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
-| `server` | 서버·Supabase 점검(마이그레이션, API 스펙, 키), `api-reviewer`, `supabase-reviewer` | `workflow` |
+| `workflow` | `/task create`, `/task start`, `/task end`, 검증 Stop 훅, 항목 포트 고르기·기준 브랜치 테스트 확인 스크립트 | `superpowers` |
+| `frontend` | Svelte·React 점검(개발 서버 띄우기·diff 검사 스크립트), DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
+| `server` | 서버·Supabase 점검(마이그레이션, API 스펙, 키. 설정 키·키는 스크립트), `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설치한다.
 
@@ -62,10 +62,10 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 
 - **create --survey:** 목표와 자료(경로, 명령, URL. 없으면 저장소에서 찾는다)를 받아 Claude 가 날것을 직접 읽고 항목 후보를 고른다. 같은 원인은 한 후보로 묶고, 버그 제보는 기준 브랜치에서 재현해 본다. 후보마다 근거와 확인 수단을 한 목록으로 보여 주고, 고른 것만 항목으로 쓴다. `start`는 부르지 않는다.
 - **start:** 기준선(검증 명령 한 번), 스택 시작 점검, 크기에 맞춘 계획(작은 항목은 에이전트 없이), 그 분야 최고 실무자의 도구와 단계 정하기, 테스트 먼저 구현, `simplify`로 정리, 검증. AC 는 바깥 증거(명령 출력)나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다.
-- **end:** 스택 종료 점검, 리뷰(`code-review` + 필요할 때 `security-review`·스택 리뷰어·화면이 바뀌면 `design-reviewer`), 지적의 타당성은 작업 세션이 아닌 판정 에이전트가 가리고 타당한 것만 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 구분별로 묻기, 고치기, 검증, 머지. 푸시는 요청할 때만.
+- **end:** 스택 종료 점검, 리뷰(`code-review` + 필요할 때 `security-review`·스택 리뷰어·화면이 바뀌면 `design-reviewer`), 지적의 타당성은 작업 세션이 아닌 판정 에이전트가 가리고 타당한 것만 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 구분별로 묻기, 고치기, 검증, 머지. 푸시는 요청할 때만. 리뷰 전에 이 브랜치의 새 테스트를 기준 브랜치의 소스에 대고도 돌려, 고친 코드 없이도 통과하면 🟡 로 넣는다. 전에도 고친 종류이거나 여러 곳에 나온 지적(🔁)은 린트 규칙·테스트·타입으로 막는 새 항목도 고를 수 있다.
 - **리뷰 원칙:** 그대로 두기로 한 지적과 사용자가 바로잡은 것은 Final Summary 에 남고, 다른 항목에도 통하면 `docs/review-principles.md`에 원칙 한 줄로 모여 다음 리뷰의 입력이 된다.
 - **검증 훅:** `w/` 브랜치에서 항목의 Definition of Done 을 체크하고 멈추면, 훅이 CLAUDE.md 의 `검증 명령:`을 직접 돌린다. 실패하면 출력과 함께 되돌려 보내는데, 같은 내용으로는 한 번뿐이다. 코드가 그대로면 다시 돌리지 않는다. `/goal` 같은 다른 Stop 훅이 멈춤을 막은 뒤에도 돈다. 스킬이 이미 돌린 검증과 겹쳐 단계마다 한 번 더 돌 수 있다. Windows 에서는 Git Bash 가 필요하다.
-- **포트:** CLAUDE.md `## 작업 설정`에 `- 웹 포트: 5000`, `- 서버 포트: 6000`을 두면 항목마다 `기준 포트 + 항목 번호`(항목 007 → 5007, 6007)를 항목의 `### 포트`에 적고, 개발 서버를 띄우는 점검과 `design-reviewer` 리뷰가 그 포트를 쓴다. 그 포트를 이미 누가 쓰고 있으면 1씩 올린다. 여러 프로젝트를 함께 한다면 프로젝트마다, 그리고 웹과 서버끼리 기준 포트를 1000씩 떨어뜨린다(예: 프로젝트 A 웹 5000·서버 6000, 프로젝트 B 웹 7000·서버 8000). 항목 번호가 세 자리라 겹치지 않는다. Supabase·DB 포트는 나누지 않는다.
+- **포트:** CLAUDE.md `## 작업 설정`에 `- 웹 포트: 5000`, `- 서버 포트: 6000`을 두면 항목마다 `기준 포트 + 항목 번호`(항목 007 → 5007, 6007)를 항목의 `### 포트`에 적고, 개발 서버를 띄우는 점검과 `design-reviewer` 리뷰가 그 포트를 쓴다. 포트는 `pick-port.sh`가 고른다. 지금 듣는 포트와 다른 진행 중 항목(다른 `w/` 브랜치 포함)의 포트는 1씩 올려 피한다. 개발 서버는 `dev-server.sh`가 그 포트로 띄우고 듣는지 확인한다. 여러 프로젝트를 함께 한다면 프로젝트마다, 그리고 웹과 서버끼리 기준 포트를 1000씩 떨어뜨린다(예: 프로젝트 A 웹 5000·서버 6000, 프로젝트 B 웹 7000·서버 8000). 항목 번호가 세 자리라 겹치지 않는다. Supabase·DB 포트는 나누지 않는다.
 - **워크트리:** 하위 세션의 워크트리가 저장소 안에 생기면(예: `.claude/worktrees/`) 테스트·린트 도구 설정에서 그 폴더를 빼 둔다. 머지한 뒤 세션을 보관하면 앱이 워크트리를 정리한다.
 - **브라우저 확인:** UI 가 바뀌면 구현한 세션이 아니라 `frontend-evaluator` 에이전트가 실행 중인 화면에서 Acceptance Criteria 를 하나씩 판정한다.
 - **디자인 (frontend):** 따로 부르지 않아도 필요할 때만 끼어든다. 새 화면이나 다시 디자인하는 항목이면 `start`가 계획 전에 Claude Code 디자인 캔버스로 시안을 만들고(1개 또는 여러 개, 사용자가 캔버스에서 고른다) 고른 안을 계획과 항목에 적는다. UI 항목인데 루트 `DESIGN.md`가 없으면 이 항목에서 만들지 묻고(안 쓰려면 CLAUDE.md `## 작업 설정`에 `- DESIGN.md: 안 씀`), 토큰을 바꾸는 항목이면 DESIGN.md 갱신을 계획에 넣는다. 만든 DESIGN.md 는 CLAUDE.md 의 `@DESIGN.md`로 늘 읽힌다. 항목 없이 "로그인 화면 시안 만들어 줘"라고 해도 `ui-design`이 돈다. 캔버스를 못 쓰면 저장소 밖 임시 `variants.html`로 대신한다.
@@ -73,14 +73,15 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 ## 구조
 
 ```
-plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
+plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md + scripts/pick-port.sh, base-tests.sh
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
-plugins/frontend/                   skills/frontend-{start,end}-check, ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
-plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
+plugins/frontend/                   skills/frontend-{start,end}-check(scripts/dev-server.sh, diff-check.sh), ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
+plugins/server/                     skills/server-{start,end}-check(scripts/config-check.sh), agents/api-reviewer.md, supabase-reviewer.md
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
 scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, 설명 일치, README 목록, version 올리기, 스킬의 셸 주입 줄)
 scripts/test-check-repo-rules.sh    검사 스크립트의 시나리오 테스트
 scripts/test-verify-on-stop.sh      검증 훅의 시나리오 테스트
+scripts/test-{pick-port,base-tests,dev-server,diff-check,config-check}.sh  플러그인 스크립트의 시나리오 테스트
 ```
 
 - 원문은 한국어(`plugins/`), 번역본은 `i18n/en/`. 원문을 고치면 번역본도 고친다.
