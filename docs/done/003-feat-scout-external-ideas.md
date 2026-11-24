@@ -12,7 +12,7 @@ updated_date: 2026-11-20
 ## Description
 
 /lead scout 는 저장소 안 근거로만 제안한다. 바깥(웹)에서 사람들이 원하는 것을 찾아 이 저장소에 맞는
-아이디어를 함께 제안하게 한다. 근거: `.claude/.local/reports/바깥 동향 아이디어 소스 서베이.md`
+아이디어를 함께 제안하게 한다. 근거: `docs/backlog/references/바깥 동향 아이디어 소스 서베이.md`
 (커밋하지 않는 조사 보고서).
 
 정한 방향:
