@@ -1,6 +1,7 @@
 ---
 name: design-reviewer
 description: Opens a built UI screen in a browser and checks DESIGN.md token use (when there is one), responsiveness, and accessibility (WCAG 2.2 AA). frontend-end-check returns it when `/task end` reviews a work branch that changed a screen, and it runs with the URL and the baseline file paths. Only reads, and reports the problems it confirmed with evidence.
+disallowedTools: Edit, Write, NotebookEdit
 ---
 
 > Translation. Source: [plugins/frontend/agents/design-reviewer.md](../../../../../plugins/frontend/agents/design-reviewer.md). Update this file when the source changes. Claude does not read this file.
