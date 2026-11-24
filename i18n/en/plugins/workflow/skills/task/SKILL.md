@@ -24,7 +24,7 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
 | `end` | Review, fix, wrap up, merge | `${CLAUDE_SKILL_DIR}/references/end.md` |
 
 - If the first word is none of the three, show this table and ask. When invoked from a request rather than typed by the user, pick the mode and arguments that fit the request.
-- After section 2 decides where to work, if the work happens in this session, read only the chosen mode's procedure file, all the way through, with the Read tool, and follow it as written.
+- After section 2 decides where to work, if the work happens in this session, read only the chosen mode's procedure file, all the way through, with the Read tool, and follow it as written. `<task-scripts>` in the procedure files is `${CLAUDE_SKILL_DIR}/scripts`.
 
 ## 2. Where to work
 
