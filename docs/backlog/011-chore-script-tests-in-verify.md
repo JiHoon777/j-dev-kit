@@ -26,11 +26,11 @@ updated_date: 2026-11-24
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 기준 브랜치 대비 `plugins/` 아래 `.sh` 파일이나 `scripts/check-repo-rules.sh`가 바뀌었으면, 검증 명령이 그 스크립트의 짝 테스트 `scripts/test-<스크립트 이름>.sh`를 돌린다. 테스트가 하나라도 틀리면 검증이 실패한다. 바뀐 스크립트가 없으면 테스트를 돌리지 않는다
-- [ ] #2 바뀐 스크립트에 짝 테스트가 없으면 검증이 그 스크립트 경로와 이유를 적고 실패한다
-- [ ] #3 `pick-port.sh`와 `dev-server.sh`의 `port_open` 함수 본문이 다르면 `check-repo-rules.sh`가 두 파일을 적고 실패한다
-- [ ] #4 `scripts/test-check-repo-rules.sh`에 #1~#3·#5 의 경우(바뀐 스크립트의 테스트 통과·실패, 바뀐 스크립트 없음, 짝 테스트 없음, 짝 테스트만 바뀜, port_open 같음·다름)가 있고 통과한다
-- [ ] #5 기준 브랜치 대비 짝 테스트 파일(`scripts/test-*.sh`)만 바뀌어도 검증 명령이 그 테스트를 돌리고, 틀리면 검증이 실패한다
+- [x] #1 기준 브랜치 대비 `plugins/` 아래 `.sh` 파일이나 `scripts/check-repo-rules.sh`가 바뀌었으면, 검증 명령이 그 스크립트의 짝 테스트 `scripts/test-<스크립트 이름>.sh`를 돌린다. 테스트가 하나라도 틀리면 검증이 실패한다. 바뀐 스크립트가 없으면 테스트를 돌리지 않는다
+- [x] #2 바뀐 스크립트에 짝 테스트가 없으면 검증이 그 스크립트 경로와 이유를 적고 실패한다
+- [x] #3 `pick-port.sh`와 `dev-server.sh`의 `port_open` 함수 본문이 다르면 `check-repo-rules.sh`가 두 파일을 적고 실패한다
+- [x] #4 `scripts/test-check-repo-rules.sh`에 #1~#3·#5 의 경우(바뀐 스크립트의 테스트 통과·실패, 바뀐 스크립트 없음, 짝 테스트 없음, 짝 테스트만 바뀜, port_open 같음·다름)가 있고 통과한다
+- [x] #5 기준 브랜치 대비 짝 테스트 파일(`scripts/test-*.sh`)만 바뀌어도 검증 명령이 그 테스트를 돌리고, 틀리면 검증이 실패한다
 
 <!-- AC:END -->
 
@@ -38,9 +38,9 @@ updated_date: 2026-11-24
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
-- [ ] #3 고친 플러그인마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
+- [x] #3 고친 플러그인마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
 
 <!-- DOD:END -->
 
@@ -77,6 +77,29 @@ updated_date: 2026-11-24
 ### Baseline
 
 - `claude plugin validate . && bash scripts/check-repo-rules.sh`: 통과. 실패 없음(2026-11-24, main 2dba1aa).
+
+### 계획에서 바뀐 것
+
+- 시나리오는 12개를 더했다(계획 10개 + AC #5 의 짝 테스트만 바뀜 통과·틀림 2개). 문구 검사는 `has` 도우미로 묶고, `!`로 시작하면 없어야 하는 문구로 본다.
+- 변경이 작아(검사 스크립트 약 40줄, 테스트 약 40줄) `simplify`는 부르지 않았다.
+
+### 검증과 판정
+
+- 테스트 먼저: 검사를 고치기 전 `bash scripts/test-check-repo-rules.sh`는 "42 개 중 33 개 맞음"(새 시나리오 9개 틀림, 없어야 할 문구 3개와 기존 30개는 맞음). 고친 뒤 "42 개 중 42 개 맞음".
+- 실제 저장소: 검증 명령 종료 0. 출력 끝은 "✔ Validation passed / 테스트 통과: scripts/test-check-repo-rules.sh / 저장소 규칙 검사 통과". 이 브랜치가 검사 스크립트를 바꿔서 짝 테스트가 돌았다.
+- 줄 끝: `.gitattributes`가 `* text=auto eol=lf`이고 두 `port_open` 파일은 `i/lf w/lf`라 본문 비교가 CRLF 에 흔들리지 않는다.
+- 판정 에이전트(general-purpose, 항목 파일과 `git diff main...HEAD`만 받음): AC #1~#5, DoD #1~#3 모두 통과. 스스로 시나리오 테스트(42/42)와 검증 명령(종료 0)을 다시 돌렸다. DoD #2·#3 은 `git diff --stat main...HEAD -- plugins i18n .claude-plugin`가 비어 해당 없음.
+
+### Stop 훅 시간 제한
+
+- 공식 문서(https://code.claude.com/docs/en/hooks): `command` 훅의 기본 `timeout`은 600초다. 30초 예외는 `UserPromptSubmit`이고 Stop 은 600초에 든다. 시간 제한에 닿은 훅은 취소된다. `plugins/workflow/hooks/hooks.json`의 Stop 훅에는 `timeout`이 없다.
+- 이 Windows 에서 잰 시간(초, 다른 실행이 없을 때): `test-base-tests.sh` 284, 검증 명령 전체(이 브랜치처럼 검사 스크립트가 바뀐 경우) 154.
+- 다른 테스트와 겹쳐 돌 때 잰 시간(참고, 실제보다 길다): pick-port 46, base-tests 445, dev-server 23, diff-check 39, config-check 99, verify-on-stop 66, check-repo-rules 254. 합 972.
+- 비교
+  - 스크립트 하나가 바뀐 경우는 기본 600초 안이다. 가장 긴 `base-tests.sh`만 바뀌면 검증은 약 290초다(겹쳐 돌면 약 450초).
+  - 여러 스크립트를 한 브랜치에서 함께 고치면 테스트가 차례로 돌아 600초를 넘을 수 있다. `base-tests.sh`와 `check-repo-rules.sh`만 함께 바뀌어도 단독 기준 약 440초다. 모두 바뀌면 단독 기준으로도 약 700초 이상으로 본다.
+  - 넘으면 훅이 취소된다. 그러면 검증 없이 멈출 수 있다.
+- 훅 설정은 고치지 않았다. 010 이나 새 항목에서 다룰지는 사용자가 정한다(부모 세션에 알림).
 
 ## Final Summary
 
