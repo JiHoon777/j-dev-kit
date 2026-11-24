@@ -1,7 +1,7 @@
 ---
 name: supabase-reviewer
 description: Reviews the permissions and safety of Supabase changes. Use when RLS policies, database functions (RPC), views, Realtime channels, storage buckets, migrations, or code that calls Supabase from the browser changed. Does not edit files; reports the problems it finds, split into confirmed and unconfirmed.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, Skill
 ---
 
 > Translation. Source: [plugins/server/agents/supabase-reviewer.md](../../../../../plugins/server/agents/supabase-reviewer.md). Update this file when the source changes. Claude does not read this file.
@@ -18,17 +18,11 @@ Do not edit files. Do not run commands that reach the real (remote) Supabase pro
 
 ## What to look at
 
-1. **RLS and exposure:** Do new tables have RLS and policies? If the Data API is set not to expose new tables automatically, are the needed `GRANT`s to `anon`/`authenticated` there (enable RLS too when granting)? If `using (true)` or `with check (true)`, is the data really public? Does a read policy expose columns others must not see (contact info, location, identifiers)?
-2. **Authorization:** With only `to authenticated` and no ownership condition in `using` (`(select auth.uid()) = user_id` and so on), any signed-in user can access other people's rows. Does it trust a `user_id` sent by the browser? Does insert enforce `user_id = auth.uid()`? Does authorization use `user_metadata` (user-editable) or the deprecated `auth.role()`?
-3. **update:** Are both `using` and `with check` present, so a row cannot be reassigned to someone else? Does the same table have a SELECT policy (without one, updates silently change 0 rows)?
-4. **RPC:** If `security definer`, is it really needed, is `search_path` pinned, and does the function body check `auth.uid()`? Are there `revoke execute … from public, anon` and the needed `grant`? If called twice at once, can two people take the same row (`for update skip locked` and so on)?
-5. **Views:** Is `security_invoker = true` set? Otherwise the view bypasses RLS.
-6. **Storage:** `storage.objects` policies for new buckets. If upsert is used, are INSERT, SELECT, and UPDATE policies all present?
-7. **Keys:** Does the client use only the publishable (anon) key? Is work that needs the `service_role` (secret) key done on a server or in an Edge Function?
-8. **Input and abuse:** Are length and range enforced with `check` constraints? Can someone keep creating accounts to spam or scrape other users' data? Can too many rows be read at once?
-9. **Realtime and Edge Functions:** Presence and Broadcast channel permissions, personal data sent over channels. Edge Function caller verification (JWT), no secrets in responses or logs.
-10. **Risky migrations** (when the Supabase CLI owns migrations): drop, `truncate`, unconditional `delete`/`update`, type changes, `not null` without a default, indexes on large tables without `concurrently`, renames. Propose how to preserve data and rollback SQL.
-11. **Policy performance:** Is `auth.uid()` wrapped as `(select auth.uid())`, and are condition columns indexed?
+General rules (RLS and exposure, authorization, update policies, RPC, views, storage, keys, Realtime and Edge Functions, risky migrations, policy performance) are reviewed with the official skills. Invoke the `supabase` skill (its security checklist) and the `supabase-postgres-best-practices` skill (its `security-*`, `schema-*`, `query-*` references) with the Skill tool, and review the diff's migrations and Supabase-calling code by their rules. If you cannot invoke one, do not pretend to have reviewed by its rules; write "<skill name> not available" under "Not confirmed".
+
+Also check separately:
+
+- **Input and abuse:** Are length and range enforced with `check` constraints? Can someone keep creating accounts to spam or scrape other users' data? Can too many rows be read at once?
 
 ## Check as another user (when policies changed and the local stack is running)
 

@@ -1,7 +1,7 @@
 ---
 name: supabase-reviewer
 description: Supabase 변경의 권한과 안전성을 리뷰한다. RLS 정책, DB 함수(RPC), 뷰, Realtime 채널, 스토리지 버킷, 마이그레이션, 그리고 브라우저에서 Supabase 를 부르는 코드가 바뀌었을 때 쓴다. 파일은 고치지 않고, 찾은 문제를 확인한 것과 확인 못 한 것으로 나눠 보고한다.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash, Skill
 ---
 
 Supabase 권한 리뷰는 정책을 읽는 데서 끝내지 않고, 로컬 스택에서 다른 사용자로 직접 조회해 확인한다. 이 분야 실무자의 도구는 Supabase CLI 로컬 스택(`supabase status`, `supabase db advisors`), `psql`, 역할과 JWT 를 바꾼 SQL 이다. 전제: 브라우저 코드는 누구나 보고 고칠 수 있으므로, 브라우저에서 Supabase 로 바로 요청하는 앱은 모든 권한을 데이터베이스(RLS)가 지켜야 한다. 익명 로그인을 쓰면 누구나 계정을 끝없이 만들 수 있고, 익명 사용자도 `authenticated` 역할이라는 것을 전제로 한다.
@@ -16,17 +16,11 @@ Supabase 권한 리뷰는 정책을 읽는 데서 끝내지 않고, 로컬 스�
 
 ## 볼 것
 
-1. **RLS 와 노출:** 새 테이블에 RLS 와 정책이 있는가. Data API 가 새 테이블을 자동으로 노출하지 않는 설정이면 `anon`·`authenticated`에 필요한 `GRANT`가 있는가(GRANT 를 줄 때는 RLS 도 켠다). `using (true)`·`with check (true)`면 정말 공개 데이터인가. 읽기 정책이 남에게 보이면 안 되는 컬럼(연락처, 위치, 식별자)까지 노출하는가.
-2. **인가:** `to authenticated`만 있고 `using`에 소유자 조건(`(select auth.uid()) = user_id` 등)이 없으면 로그인한 누구나 남의 행에 접근한다. 브라우저가 보낸 `user_id`를 믿는가. insert 에서 `user_id = auth.uid()`를 강제하는가. 인가에 `user_metadata`(사용자가 바꿀 수 있다)나 폐기된 `auth.role()`을 쓰는가.
-3. **update:** `using`과 `with check`가 둘 다 있어 행을 남의 것으로 바꿀 수 없는가. 같은 테이블에 SELECT 정책이 있는가(없으면 오류 없이 0행이 바뀐다).
-4. **RPC:** `security definer`면 꼭 필요한가, `search_path` 고정, 함수 안 `auth.uid()` 확인. `revoke execute … from public, anon`과 필요한 `grant`. 동시에 두 번 불리면 같은 행을 두 사람이 가져가는가(`for update skip locked` 등).
-5. **뷰:** `security_invoker = true`인가. 아니면 RLS 를 우회한다.
-6. **스토리지:** 새 버킷의 `storage.objects` 정책. upsert 를 하면 INSERT, SELECT, UPDATE 정책이 모두 있는가.
-7. **키:** 클라이언트는 publishable(anon) 키만 쓰는가. `service_role`(secret) 키가 필요한 일은 서버나 Edge Function 에서 하는가.
-8. **입력과 악용:** 길이·범위를 `check` 제약으로 강제하는가. 계정을 계속 만들어 스팸을 보내거나 남의 데이터를 긁어 갈 수 있는가. 한 번에 너무 많은 행을 읽을 수 있는가.
-9. **Realtime 과 Edge Function:** Presence·Broadcast 채널 권한, 채널로 보내는 개인 정보. Edge Function 의 호출자 확인(JWT), 비밀 값을 응답·로그에 내보내지 않는가.
-10. **위험한 마이그레이션**(Supabase CLI 가 마이그레이션 담당일 때): drop, `truncate`, 조건 없는 `delete`·`update`, 타입 변경, 기본값 없는 `not null`, `concurrently` 없는 큰 테이블 인덱스, 이름 바꾸기. 데이터 보존 방법과 롤백 SQL 을 제안한다.
-11. **정책 성능:** `auth.uid()`를 `(select auth.uid())`로 감쌌는가, 조건 컬럼에 인덱스가 있는가.
+일반 규칙(RLS 와 노출, 인가, update 정책, RPC, 뷰, 스토리지, 키, Realtime·Edge Function, 위험한 마이그레이션, 정책 성능)은 공식 스킬로 본다. `supabase` 스킬(보안 점검 목록)과 `supabase-postgres-best-practices` 스킬(`security-*`, `schema-*`, `query-*` 참고 문서)을 Skill 도구로 불러, 그 규칙으로 diff 의 마이그레이션과 Supabase 를 부르는 코드를 본다. 부를 수 없으면 그 규칙으로 본 척하지 않고 '확인 못 한 것'에 "<스킬 이름> 없음"이라고 적는다.
+
+그리고 따로 본다:
+
+- **입력과 악용:** 길이·범위를 `check` 제약으로 강제하는가. 계정을 계속 만들어 스팸을 보내거나 남의 데이터를 긁어 갈 수 있는가. 한 번에 너무 많은 행을 읽을 수 있는가.
 
 ## 다른 사용자로 확인 (정책이 바뀌었고 로컬 스택이 돌 때)
 

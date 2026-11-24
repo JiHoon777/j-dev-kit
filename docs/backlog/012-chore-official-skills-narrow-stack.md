@@ -372,4 +372,39 @@ updated_date: 2026-11-24
 - A1+A2: 차이 0.014 < 0.053, 같음. A1 만 뺀 판이 나빠진 것과 맞지 않아 잡음이 크다고 본다. 판정은 묶음마다 따로 한 비교로 한다.
 - 판별력 없는 채점(네 판 모두 0/5): 궤도 0 억 km, 이모지 반쪽, 가려진 동안 흉내, 버튼 자리 밀림. 네 판 모두 5/5: 실패 화면, 실시간 카드, 숨긴 뒤 포커스, 이름 숨기기, 그대로 둘 것 둘.
 
+### 결과: A4 와 trigger-real (2026-11-24, Opus 시험, sonnet 채점 3표)
+
+판: 지금(볼 것 1~11 이 있는 `supabase-reviewer`, 9 가 있는 `api-reviewer`), A4(1~11 을 지우고 `supabase`·`supabase-postgres-best-practices`를 부르는 판, `api-reviewer` 9 는 `supabase-postgres-best-practices`로). 실행 기록으로 보면 A4 판은 25회 모두 두 스킬(`api-seeded`는 하나)을 Skill 도구로 불렀다.
+
+| 사례 | 지금 | A4 | 판정 |
+| --- | --- | --- | --- |
+| `real-todak-002`(실제, 10회) | 0.600 ± 0 (se 0) | 0.560 ± 0.084 (se 0.027) | 차이 0.040 > 0.027, 나빠짐 |
+| `supabase-seeded`(합성, 5회) | 0.957 ± 0.039 | 0.971 ± 0.039 | 같음 |
+| `api-seeded`(합성, 5회) | 0.800 ± 0.183 (se 0.082) | 0.733 ± 0.149 (se 0.067) | 같음 |
+
+`real-todak-002`는 처음 5회에서 차이가 표준오차 합과 같아(0.040) 5회씩 더 돌렸다.
+
+**항목마다 지웠는지 남겼는지** (승인 조건: 실제·합성 모두에서 나빠지지 않을 때만 지운다. 채점 기준별 통과 수는 지금 → A4):
+
+| 항목 | 근거 | 결정 |
+| --- | --- | --- |
+| 1 RLS 와 노출 | 합성 `finds-no-rls` 5/5 → 5/5, 실제 `keep-public-read` 10/10 → 10/10 | 지움(공식 스킬) |
+| 2 인가 | 합성 `finds-user-metadata` 5/5 → 5/5 | 지움 |
+| 3 update | 합성 `finds-update-no-check` 4/5 → 5/5 | 지움 |
+| 4 RPC | 합성 `finds-rpc-definer` 5/5 → 5/5 | 지움 |
+| 5 뷰 | 합성 `finds-view-invoker` 5/5 → 5/5 | 지움 |
+| 6 스토리지 | 합성 `finds-storage-upsert` 5/5 → 5/5 | 지움 |
+| 7 키 | 합성 `finds-secret-in-client` 5/5 → 5/5 | 지움 |
+| 8 입력과 악용 | 실제 `finds-doc-constraints` 10/10 → 8/10(나빠짐), 합성 `finds-feedback-length` 5/5 → 5/5 | **남김** |
+| 9 Realtime 과 Edge Function | 합성 `finds-presence-pii` 5/5 → 5/5, `finds-edge-function` 5/5 → 5/5 | 지움 |
+| 10 위험한 마이그레이션 | 합성 `finds-drop-column` 5/5 → 5/5 | 지움 |
+| 11 정책 성능 | 합성 `finds-policy-perf` 3/5 → 3/5 | 지움 |
+| api-reviewer 9 쿼리 | 합성 `finds-n-plus-one` 2/5 → 1/5, `finds-unbounded` 5/5 → 5/5, 사례 점수 같음 | 지움(`supabase-postgres-best-practices`로) |
+
+- 실제 사례는 항목 8(제약)과 1(공개 읽기)만 채점한다. 2~7, 9~11 은 합성 사례로만 근거가 있다(합성은 쉬울 수 있다. 대부분 두 판 모두 5/5 라 판별력이 낮다).
+- 실제 사례의 `finds-retry-timeout`·`finds-shape-check`는 두 판 모두 0/10 이라 판별력이 없다.
+- 남긴 것: 두 사용자로 SQL 확인, 원격·운영 명령 금지, RLS 전제, 항목 8. `supabase-reviewer`·`api-reviewer`(원문·번역본)에 `Skill` 도구를 더했다.
+
+**trigger-real** (지금 description, 25개 요청 × 3회): 모두 맞혔다(1.0). 새로 더한 비슷하지만 아닌 요청 셋(작업 브랜치에서 커밋·푸시, 원인만, 바로 고쳐 줘)은 부르지 않았고, 처음 보는 서베이 표현 둘은 불렀다. 008 의 description 결정은 그대로다.
+
 ## Final Summary
