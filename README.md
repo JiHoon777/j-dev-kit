@@ -94,7 +94,7 @@ claude plugin marketplace update j-dev-kit
 claude plugin update <플러그인>@j-dev-kit --scope project
 ```
 
-그다음 세션을 새로 연다. 관리자는 바뀐 플러그인의 `plugin.json` `version`을 올리고 CLAUDE.md 의 검증 명령(`claude plugin validate .`과 `scripts/check-repo-rules.sh`)을 돌린 뒤 푸시한다. 검사 스크립트는 `plugins/`의 마크다운에 `i18n/en/` 번역본이 없거나, `plugin.json`과 `marketplace.json`의 플러그인 설명이 다르거나, `marketplace.json`의 플러그인이 README 두 개의 표에 없거나, `main`(없으면 `origin/main`) 대비 원문만 고치고 번역본은 그대로이거나, 바뀐 플러그인의 `version`이 그대로이거나 내려갔거나, `pick-port.sh`와 `dev-server.sh`의 `port_open` 본문이 다르면 실패한다. 버전이 같으면 업데이트되지 않는다. 또 `main` 대비 바뀐 스크립트(`plugins/`의 `.sh`(evals 제외)와 검사 스크립트)의 짝 테스트 `scripts/test-<이름>.sh`와 바뀐 짝 테스트를 돌려, 틀리거나 짝이 없으면 실패한다. 테스트 하나가 1분 안팎(`test-base-tests.sh`는 5분 안팎) 걸린다.
+그다음 세션을 새로 연다. 관리자는 바뀐 플러그인의 `plugin.json` `version`을 올리고 CLAUDE.md 의 검증 명령(`claude plugin validate .`과 `scripts/check-repo-rules.sh`)을 돌린 뒤 푸시한다. 검사 스크립트는 `plugins/`의 마크다운에 `i18n/en/` 번역본이 없거나, `plugin.json`과 `marketplace.json`의 플러그인 설명이 다르거나, `marketplace.json`의 플러그인이 README 두 개의 표에 없거나, `main`(없으면 `origin/main`) 대비 원문만 고치고 번역본은 그대로이거나, 바뀐 플러그인의 `version`이 그대로이거나 내려갔거나, `pick-port.sh`와 `dev-server.sh`의 `port_open` 본문이 다르면 실패한다. 버전이 같으면 업데이트되지 않는다. 또 `main` 대비 바뀐 스크립트(`plugins/`의 `.sh`(evals 제외)와 검사 스크립트)의 짝 테스트 `scripts/test-<이름>.sh`와 바뀐 짝 테스트를 돌려, 틀리거나 짝이 없으면 실패한다. 테스트 하나가 1분 안팎(`test-check-repo-rules.sh`는 2~3분, `test-base-tests.sh`는 5분 안팎) 걸리고, `CHECK_TESTS_TIMEOUT`초(기본 540)를 넘으면 끊고 실패한다.
 
 ## 문제 해결
 

@@ -9,6 +9,7 @@ trap 'rm -rf "$tmp"' EXIT
 export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com
 export GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com
 export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.autocrlf GIT_CONFIG_VALUE_0=false # 줄 끝 경고 끄기
+export CHECK_TESTS_TIMEOUT=3 # 가짜 짝 테스트는 바로 끝난다. 시간 초과 시나리오만 이것에 걸린다
 
 # 가짜 저장소: alpha·beta 는 marketplace 와 README 에 있고, gamma 는 없다.
 plugin() { # 이름
@@ -133,6 +134,10 @@ s_script_deleted()   { git rm -q plugins/alpha/scripts/tool.sh; bump alpha; }
 s_port_comment()     { sed -i 's/^# frontend 쪽$/# frontend 쪽, 고침/' "$dev_server"; }
 s_port_diff()        { sed -i 's/return 2/return 1/' "$dev_server"; }
 s_port_missing()     { sed -i 's/^port_open() {$/port_check() {/' "$dev_server"; }
+s_test_hangs()       { echo 'sleep 30' >> scripts/test-tool.sh; }
+s_test_reads_stdin() { echo '# 고침' >> plugins/alpha/scripts/tool.sh; bump alpha # 첫 테스트가 표준 입력을 읽어도
+                       echo 'cat > /dev/null' >> scripts/test-tool.sh             # 뒤에 바뀐 것의 테스트가 돈다
+                       echo 'exit 1' > scripts/test-pick-port.sh; }
 
 pass=0 total=0
 has() { printf '%s\n' "$out" | grep -qF -- "$1"; }
@@ -203,6 +208,8 @@ scenario "스크립트 지움 → 테스트 안 돌림"       0 s_script_deleted
 scenario "port_open 같고 주석만 다름 → 통과"    0 s_port_comment      "테스트 통과: scripts/test-dev-server.sh"
 scenario "port_open 다름 → 실패"                1 s_port_diff         "port_open 다름: $pick_port, $dev_server"
 scenario "port_open 없음 → 실패"                1 s_port_missing      "port_open 을 찾지 못함: $dev_server"
+scenario "짝 테스트가 멈춤 → 시간 초과로 실패"  1 s_test_hangs        "테스트 실패(3초 시간 초과): scripts/test-tool.sh"
+scenario "테스트가 표준 입력 읽음 → 뒤도 돌림"  1 s_test_reads_stdin  "테스트 실패: scripts/test-pick-port.sh"
 
 echo "$total 개 중 $pass 개 맞음"
 [ "$pass" = "$total" ]

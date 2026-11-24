@@ -8,7 +8,7 @@
 # 3. 원문 마크다운을 고쳤으면 번역본도 고쳤다.
 # 4. 바뀐 플러그인은 plugin.json 의 version 을 올렸다(내리지 않았다).
 # 6. 바뀐 스크립트(plugins/ 의 .sh, evals 제외. 이 스크립트)의 짝 테스트 scripts/test-<이름>.sh 와
-#    바뀐 짝 테스트를 돌려 통과한다. 짝이 없으면 실패. 오래 걸리니 맨 마지막에 돈다.
+#    바뀐 짝 테스트를 돌려 통과한다. 짝이 없거나 시간 제한(CHECK_TESTS_TIMEOUT)을 넘으면 실패. 오래 걸리니 맨 마지막에 돈다.
 # 저장소 루트에서 돈다. 어기면 이유를 적고 1로 끝난다.
 # 이 스크립트를 고치면 6이 scripts/test-check-repo-rules.sh 를 돌린다.
 
@@ -135,6 +135,10 @@ for p in $(printf '%s\n' "$changed" | grep '^plugins/' | cut -d/ -f2 | sort -u);
 done
 
 # 6. 바뀐 스크립트의 짝 테스트 (지운 파일은 뺀다. 같은 테스트는 한 번만)
+# 테스트 하나는 CHECK_TESTS_TIMEOUT 초(기본 540)가 지나면 끊는다. Stop 훅의 기본 시간 제한(600초)보다 짧게 두어
+# 멈춘 테스트가 훅째 취소되지 않고 실패로 남게 한다. timeout 명령이 없으면(macOS 기본) 끊지 않는다.
+limit=${CHECK_TESTS_TIMEOUT:-540}
+tmo=$(command -v timeout || command -v gtimeout)
 ran=' '
 while IFS= read -r f; do
   [ -f "$f" ] || continue
@@ -150,11 +154,16 @@ while IFS= read -r f; do
   fi
   [[ $ran == *" $t "* ]] && continue
   ran+="$t "
-  if t_out=$(bash "$t" 2>&1); then
+  # 표준 입력은 막는다. 테스트가 읽으면 이 루프의 남은 목록을 먹는다
+  if [ -n "$tmo" ]; then t_out=$("$tmo" -k 5 "$limit" bash "$t" 2>&1 < /dev/null); else t_out=$(bash "$t" 2>&1 < /dev/null); fi
+  rc=$?
+  if [ "$rc" = 0 ]; then
     echo "테스트 통과: $t"
   else # Stop 훅은 마지막 40줄만 보여 주니 요약 줄을 맨 뒤에
     printf '%s\n' "$t_out" | tail -n 20 | sed 's/^/    /'
-    echo "테스트 실패: $t ($f 가 바뀜)"
+    late=
+    [ "$rc" = 124 ] && [ -n "$tmo" ] && late="(${limit}초 시간 초과)"
+    echo "테스트 실패$late: $t ($f 가 바뀜)"
     fail=1
   fi
 done < <(printf '%s\n' "$changed" | grep -vE "$evals_re")
