@@ -123,7 +123,7 @@ updated_date: 2026-11-24
 - [ ] #5 (A2) `grep -rn 'svelte-file-editor' plugins i18n`의 결과가 "쓰지 않는다"는 문장뿐이거나 비어 있다
 - [ ] #6 (A3) `react.md`(원문·번역본)와 `frontend-reviewer` React 절에 우리가 쓴 일반 React 규칙(훅 규칙, 파생 state, 정리 함수, 인덱스 `key` 등)이 없고, React 는 `vercel-react-best-practices`(·`vercel-composition-patterns`), React Router 는 `react-router` 스킬, Next.js 는 `AGENTS.md`와 설치된 버전의 문서로 본다고 적혀 있다. 설치돼 있지 않으면 설치할지 묻는다. 리뷰어에 `'use client'`·서버 액션 안전 장치가 남아 있다. README 두 개 "있으면 쓰는 것"에 버전을 고정한 설치 명령이 있다. `reviewer-react`·`compose-code-review`·`compose-with-stack` eval 폴더는 없다(재지 않고 들였다고 `Implementation Notes`에 적혀 있다)
 - [ ] #7 (A4) `supabase-reviewer`(원문·번역본)에 로컬 DB 에서 두 사용자로 SQL 을 직접 확인하기, 원격·운영 명령 금지, RLS 전제, 공식 Supabase 스킬 규칙으로 본다는 문장이 있다. `supabase-reviewer` "볼 것" 1~11 과 `api-reviewer` 9(쿼리·인덱스)마다 지웠는지 남겼는지와 그 근거(A6 eval 결과)가 `Implementation Notes`에 목록으로 있고, 두 파일은 그 목록대로다
-- [ ] #8 (A5) `config-check.sh`가 읽는 형태가 Node 형태(`process.env`, `import.meta.env`)뿐이고, `scripts/test-config-check.sh`에 다른 언어 시나리오가 없으며 테스트가 모두 통과한다
+- [ ] #8 (A5) `config-check.sh`가 읽는 형태가 Node 형태(`process.env`, `import.meta.env`)와 Supabase Edge Functions 의 `Deno.env.get`(승인 때 남기기로 함)뿐이고, `scripts/test-config-check.sh`에 다른 언어를 읽는 시나리오가 없으며(다른 언어 형태를 보지 않는지 확인하는 줄만 있다) 테스트가 모두 통과한다 (2026-11-24 바꿈: 승인 조건 2)
 - [ ] #9 (A5) `server-start-check`·`server-end-check`(원문·번역본)의 감지와 마이그레이션 담당이 Node 도구와 Supabase CLI 만 말하고, `grep -rni 'oasdiff\|openapi' plugins i18n README.md README.en.md .claude-plugin`이 비어 있다. server `plugin.json`·`marketplace.json`·README 설명에 "any server language"와 API 스펙 검사가 없다
 - [ ] #10 (A6) A1·A2·A4 마다 지금 판과 바꾼 판을 실제 사례(Svelte·UI 는 nolmeong `real-*`, Supabase 는 새로 만든 실제 사례)로 비교한 방법과 결과가 `Implementation Notes`에 있다. 새 Supabase 사례가 `plugins/server/evals/`에 커밋되어 있다. 바꾼 묶음은 비교에서 나빠지지 않은 것뿐이고, 나빠진 묶음은 바꾸지 않았다고 적혀 있다
 - [ ] #11 (A7) `plugins/frontend/evals/README.md`·`plugins/workflow/evals/README.md`가 스킬을 고칠 때의 측정 방법으로 `skill-creator`를 가리키고, `skill-creator`와 겹치는 설명이 없다. 실제 사례 eval 폴더와 그 사례에만 있는 설명은 남아 있다. `skill-creator` 원문에서 무엇이 겹친다고 봤는지, `skill-creator`가 실제 사례 eval 을 대신하는지에 대한 판단과 근거가 `Implementation Notes`에 있다
@@ -448,5 +448,21 @@ updated_date: 2026-11-24
 - 원칙과 부딪히는 지적을 리뷰어가 따로 묶기(효율): B2 의 뜻(판정이 거른다)과 다르다.
 - evals README 의 "008 결정에 다시 적용한 것" 문단을 Notes 로만 옮기기: 부모 세션이 전한 지시가 README 와 Notes 둘 다에 적으라고 했다.
 - `design-reviewer` description 줄이기: 에이전트를 고르는 데 쓰는 글이라 그대로 뒀다.
+
+### A7: 사례마다 다섯 관점 (2026-11-24, 위 점검을 풀어 적음)
+
+근거는 `skill-creator` 원문(SKILL.md 의 기준선·assertion·benchmark·analyst 절, `agents/grader.md`의 eval 비판, `agents/analyzer.md`의 "늘 통과하는 채점" 찾기)이다.
+
+| 사례 | 대조군 | 채점 기준 | 반복 | 판별력 | 채점 보정 | 판정 → 한 것 |
+| --- | --- | --- | --- | --- | --- | --- |
+| `reviewer-svelte` | 절을 뺀 사본(옛 판 스냅숏과 같은 꼴), 맞다 | `finds-*` 정규식은 파일·줄만 맞으면 통과(겉만 맞음), `judges-*` LLM 이 보완 | 3 | 두 판 모두 1.0, 없음 | 없음 | 결정 근거로 쓰지 않음 → README 에 스모크용으로 적음(다시 돌리지 않음) |
+| `real-line`·`real-sky`·`real-birthday` | 문구를 뺀 판, 맞다 | 버그마다 이진 LLM 채점, 이름이 보는 것을 드러냄. 정답에 Svelte 절 해당이 없음 | 5 | 늘 0/5 인 채점 넷(위 A1·A2 표), 판 차이가 표준편차 안 | 008 에서 40건 라벨(사람 5, Claude 35), 권장 30~50 의 사람 라벨에 못 미침 | 고칠 것 → 판정에 잡음 문턱을 넣고(사용자 결정), Svelte 절은 Svelte 고유 실제 사례 `real-svelte-*`로 따로 잼. `real-*`는 나빠지지 않는지 보는 데만 씀 |
+| `compose-real-*-cr`·`-stack` | code-review 만 / + frontend-reviewer. 리뷰어 수와 내용이 함께 바뀜 | 과정 채점이 stack 에만 점수로 들어감. `keep-*`가 🔴 없는 보고 형식에서 늘 통과 | 3 | 생일은 두 판 같음 | 이 형식으로는 안 함 | 고칠 것 → 고침(아래 "compose-real 다시") |
+| `trigger-real` | 옛·새 description | `tool_used Skill`, 결정적 | 3(질의당 3회와 같음) | 20개 중 19개가 두 판 같음 | 결정적이라 필요 없음, 라벨은 사용자 확인 | 고칠 것(작게) → 비슷하지만 아닌 요청 셋과 처음 보는 서베이 표현 둘을 더해 다시 돌림(25/25) |
+| `start-plan` | 세 판 | `reads-*` tool_used, LLM 둘 | 3 | 세 판 만점 | 9건 재채점(비공식) | 결정 근거로 쓰지 않음 → README 에 스모크용으로 적음 |
+| `start-plan-real` | 두 제한 있음 / 하나씩 뺌 / 둘 다 뺌, 맞다 | `plans-*`가 질문으로만 다뤄도 PASS(질문이 많을수록 점수↑) | 5 | 두 제한이 한 번도 걸리지 않음 | `plans-*` 라벨 없음 | 고칠 것 → 채점을 고쳐(기본안 없는 질문은 FAIL, 답이 계획을 바꾸지 않는 질문 감점) 다시 돌림(같음, 008 결정 그대로) |
+| `end-fix-real` | 직접 / 위임 / Sonnet 직접 | 파일 채점은 객관적이나 프롬프트가 고칠 방법을 다 적음, `not_contains` 정규식은 겉만 맞아도 통과 | 3 | 9회 모두 다 고침, 위임판은 3회 중 1회만 위임 | `fix-exports`만 고침 | 위임 결정 근거로 쓰지 않음(결정은 사용자 방침) → README 에 스모크용으로 적음 |
+
+공통으로 빠졌던 것(판마다 평균 ± 표준편차, 채점 기준별 늘 통과·늘 실패 따로 보기)은 012 의 모든 결과 표에 넣었다(`.claude/.local/012/summarize.py`). 사람이 출력 전체를 보는 단계와 채점자의 eval 비판 단계는 넣지 않았다(012 결정은 채점 수치와 실행 기록으로 했다).
 
 ## Final Summary

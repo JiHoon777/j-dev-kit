@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: compose-real-birthday-gp
+description: 리뷰어 구성 비교(code-review + 체크리스트 없는 일반 리뷰어, 리뷰어 수만 늘린 대조군). nolmeong 012 생일 우주(리뷰 전 e7b45fd). 정답은 리뷰에서 고친 6건(고친 커밋 3fa2eb5). 리뷰 뒤 디자인을 되돌리며 생긴 문제(150715c 등)는 뺐다
+tags: [compose-real]
+context:
+  scaffold_script: fixture.sh
