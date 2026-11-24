@@ -8,7 +8,7 @@ Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end`, 검증 Stop 훅, 항목 포트 고르기·기준 브랜치 테스트 확인 스크립트 | `superpowers` |
 | `frontend` | Svelte·React 점검(개발 서버 띄우기·diff 검사 스크립트), DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
-| `server` | Node 서버·Supabase 점검(마이그레이션, 키. 설정 키·키는 스크립트), `api-reviewer`, `supabase-reviewer` | `workflow` |
+| `server` | Node 서버·Supabase 점검(마이그레이션, 키. 설정 키·키는 스크립트), 일반 규칙은 공식 Supabase 스킬로 보는 `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설치한다.
 

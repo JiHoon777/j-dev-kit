@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "description": "Backend and Supabase checks for /task start and /task end (Node.js servers and Supabase: migrations, RLS, keys; config keys, committed value files and keys checked by a script) and the api-reviewer and supabase-reviewer agents.",
+  "description": "Backend and Supabase checks for /task start and /task end (Node.js servers and Supabase: migrations, RLS, keys; config keys, committed value files and keys checked by a script) and the api-reviewer and supabase-reviewer agents, which hand general Supabase and Postgres rules to the official Supabase skills.",
   "version": "0.7.0",
   "author": {
     "name": "JiHoon777"

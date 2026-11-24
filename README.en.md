@@ -10,7 +10,7 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end`, the verify Stop hook, scripts that pick item ports and check tests against the base branch | `superpowers` |
 | `frontend` | Svelte and React checks (scripts that start the dev server and check the diff), `ui-design` for DESIGN.md and canvas mockups, `frontend-reviewer`, `design-reviewer` for screen review, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
-| `server` | Node server and Supabase checks (migrations, keys; config keys and keys by a script), `api-reviewer`, `supabase-reviewer` | `workflow` |
+| `server` | Node server and Supabase checks (migrations, keys; config keys and keys by a script), `api-reviewer` and `supabase-reviewer`, which use the official Supabase skills for general rules | `workflow` |
 
 If you use Supabase, install `server` even if you call it straight from the frontend.
 
