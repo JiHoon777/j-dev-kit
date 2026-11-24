@@ -38,7 +38,7 @@ When an OpenAPI spec exists and changed:
 
 ### Config keys, value files, keys
 
-Run `bash ${CLAUDE_SKILL_DIR}/scripts/config-check.sh <base>`. Each line it prints is a failure: an environment variable newly read in added lines is missing from `.env.example`, a committed value file such as `.env`, or a key in added lines (`sb_secret_`, a JWT whose role is not anon, a secret key name in a public-prefixed environment variable). The script compares names only and writes only file names for keys. So that key values never enter the conversation, use only that output as evidence.
+Run `bash ${CLAUDE_SKILL_DIR}/scripts/config-check.sh <base>`. Each line it prints is a failure: an environment variable newly read in added lines is missing from `.env.example`, a committed value file such as `.env`, or a key in added lines (`sb_secret_`, a JWT whose role is not anon, a secret key name in a public-prefixed environment variable). If it exits with 2, record the reason in its error output as "could not check". The script compares names only and writes only file names for keys. So that key values never enter the conversation, use only that output as evidence.
 
 ### Supabase
 

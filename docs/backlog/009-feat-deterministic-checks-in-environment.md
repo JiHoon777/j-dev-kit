@@ -39,14 +39,14 @@ Lauren Tan(pstack) 영상과 Satya Nadella 영상, 그리고 두 영상을 옮�
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 빈 포트 고르기, 개발 서버를 그 포트로 띄우고 듣는지 확인하기, 추가된 줄의 `console.log`·`debugger`·`.only(`와 lockfile 검사가 스킬 폴더 안 스크립트로 있고, `start.md` 4단계와 `frontend-start-check`·`frontend-end-check`의 해당 자리에는 그 스크립트를 돌려 출력을 쓰라는 말만 남았다(`grep -rn 'lsof' plugins/ i18n/`이 비어 있다)
-- [ ] #8 `server-end-check`의 새 환경 변수가 `.env.example`에 없는지, 값 파일(`.env` 등)이 커밋됐는지, 키 패턴 검사가 스킬 폴더 안 스크립트로 있고 실패만 `파일:줄 — 이유`(키는 파일 이름만)로 출력한다. `server-end-check` 해당 자리에는 그 스크립트를 돌려 실패를 돌려준다는 말만 남았다. 이 스크립트도 #2 처럼 테스트가 있다
-- [ ] #2 #1 의 스크립트마다 `scripts/`에 테스트가 있고, `lsof`·`nc`가 없는 이 Windows(Git Bash)에서 통과한다. 포트를 확인할 방법이 없으면 스크립트가 그렇다고 출력하고 0 이 아닌 값으로 끝난다
-- [ ] #3 `end.md` 4단계에서, 받아들여 고칠 지적이 이전 항목의 Final Summary "리뷰에서 고친 것"에 같은 종류로 있거나 이번 리뷰에서 여러 곳에 나오면, 그 지적에 "린트 규칙·테스트·타입으로 막기(새 항목)" 선택지가 붙는다고 적혀 있다. 한 번뿐인 지적에는 붙지 않는다
-- [ ] #4 그 선택지를 고르면 `end.md` 5단계가 "나중"과 같이 `task` 스킬을 `create <지적과 근거, 막을 수단> --here`로 불러 항목을 만든다고 적혀 있다
-- [ ] #5 `/task end`가 이번 브랜치에서 더하거나 바꾼 테스트를 기준 브랜치의 소스에 대고 돌리고, 거기서도 통과하는 테스트를 🟡 "고친 것을 증명하지 못함"으로 지적 목록에 넣는다고 `end.md`에 적혀 있다. 그렇게 돌릴 수 없으면 "확인 못 함"으로 적고 넘어간다
-- [ ] #6 #5 의 확인이 #1 처럼 스크립트로 있고, 그 스크립트의 테스트가 "기준 브랜치에서도 통과하는 테스트"와 "기준 브랜치에서는 실패하는 테스트"를 구별하는 것을 보인다
-- [ ] #7 `plugins/frontend/agents/design-reviewer.md`와 번역본의 frontmatter 에 `disallowedTools: Edit, Write, NotebookEdit`이 있다
+- [x] #1 빈 포트 고르기, 개발 서버를 그 포트로 띄우고 듣는지 확인하기, 추가된 줄의 `console.log`·`debugger`·`.only(`와 lockfile 검사가 스킬 폴더 안 스크립트로 있고, `start.md` 4단계와 `frontend-start-check`·`frontend-end-check`의 해당 자리에는 그 스크립트를 돌려 출력을 쓰라는 말만 남았다(`grep -rn 'lsof' plugins/ i18n/`이 비어 있다)
+- [x] #8 `server-end-check`의 새 환경 변수가 `.env.example`에 없는지, 값 파일(`.env` 등)이 커밋됐는지, 키 패턴 검사가 스킬 폴더 안 스크립트로 있고 실패만 `파일:줄 — 이유`(키는 파일 이름만)로 출력한다. `server-end-check` 해당 자리에는 그 스크립트를 돌려 실패를 돌려준다는 말만 남았다. 이 스크립트도 #2 처럼 테스트가 있다
+- [x] #2 #1 의 스크립트마다 `scripts/`에 테스트가 있고, `lsof`·`nc`가 없는 이 Windows(Git Bash)에서 통과한다. 포트를 확인할 방법이 없으면 스크립트가 그렇다고 출력하고 0 이 아닌 값으로 끝난다
+- [x] #3 `end.md` 4단계에서, 받아들여 고칠 지적이 이전 항목의 Final Summary "리뷰에서 고친 것"에 같은 종류로 있거나 이번 리뷰에서 여러 곳에 나오면, 그 지적에 "린트 규칙·테스트·타입으로 막기(새 항목)" 선택지가 붙는다고 적혀 있다. 한 번뿐인 지적에는 붙지 않는다
+- [x] #4 그 선택지를 고르면 `end.md` 5단계가 "나중"과 같이 `task` 스킬을 `create <지적과 근거, 막을 수단> --here`로 불러 항목을 만든다고 적혀 있다
+- [x] #5 `/task end`가 이번 브랜치에서 더하거나 바꾼 테스트를 기준 브랜치의 소스에 대고 돌리고, 거기서도 통과하는 테스트를 🟡 "고친 것을 증명하지 못함"으로 지적 목록에 넣는다고 `end.md`에 적혀 있다. 그렇게 돌릴 수 없으면 "확인 못 함"으로 적고 넘어간다
+- [x] #6 #5 의 확인이 #1 처럼 스크립트로 있고, 그 스크립트의 테스트가 "기준 브랜치에서도 통과하는 테스트"와 "기준 브랜치에서는 실패하는 테스트"를 구별하는 것을 보인다
+- [x] #7 `plugins/frontend/agents/design-reviewer.md`와 번역본의 frontmatter 에 `disallowedTools: Edit, Write, NotebookEdit`이 있다
 
 <!-- AC:END -->
 
@@ -54,9 +54,9 @@ Lauren Tan(pstack) 영상과 Satya Nadella 영상, 그리고 두 영상을 옮�
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
-- [ ] #3 고친 플러그인마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
+- [x] #3 고친 플러그인마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
 
 <!-- DOD:END -->
 
@@ -166,6 +166,64 @@ frontend, server 모두 해당 없음(`stack: 없음`).
 ### 포트
 
 없음(CLAUDE.md 에 웹·서버 포트 설정 없음).
+
+### 계획에서 바뀐 것
+
+- **포트 확인에 netstat 을 먼저 쓴다:** 정리 리뷰가 이 기계에서 쟀다. 닫힌 포트에 bash `/dev/tcp`로 붙으면 2초쯤 걸리고(Windows 가 루프백 연결을 다시 시도한다), dev-server 의 60초 제한이 실제로는 10분 가까이 됐다.
+  - 확인 방법은 `netstat -an` 한 번(0.17초)을 먼저 쓰고, 없으면 `/dev/tcp`(두 주소에 함께), 그다음 `nc`를 쓴다.
+  - netstat 의 상태 낱말(LISTEN)은 언어마다 달라 보지 않는다. 상대 주소가 빈 TCP 줄(`0.0.0.0:0`, `[::]:0`, `*.*`, `:::*` 등)을 듣는 줄로 본다.
+  - `/dev/tcp` 지원 여부는 `LC_ALL=C` 오류 문구로 본다.
+  - 대기 시간은 `SECONDS` 마감 시각으로 잰다.
+- **base-tests 는 git 대신 떠 둔 사본으로 되돌린다:** 이 기계는 `core.autocrlf=true`다. `git checkout HEAD -- 파일`이 LF 파일을 CRLF 로 다시 써서, 테스트가 "작업 트리가 달라졌다"를 잡았다. 기준 판으로 바꿀 때는 `git restore --source=<기준> --worktree`로 인덱스를 건드리지 않는다.
+- **dev-server 의 끄기 명령은 쓸 때 정한다:** Git Bash 에서는 `exec`가 같은 PID 로 새 Windows 프로세스를 띄워 winpid 가 바뀐다. 띄울 때 한 번만 정하면 `exec`하는 명령이 꺼지지 않는다(테스트 7이 잡았다).
+- **config-check:** 추가된 줄은 awk 한 번으로 본다.
+  - 6천 줄 diff 기준 20초에서 3초로 줄었다.
+  - `sb_secret_`는 뒤에 키 문자가 10개 넘게 이어질 때만 키로 본다(낱말만 적은 문서는 걸리지 않게).
+- **diff-check:** "확인 못 함"(node 없음)은 표준 오류로 보낸다. 표준 출력에는 실패만 남는다.
+- **frontend-end-check 의 개발 서버 문단:** frontend-start-check 의 그 항목을 읽고 따르게 했다. 같은 문단이 원문·번역본 4곳에 있던 것을 2곳으로 줄였다.
+- **eval:** 계획대로 돌리지 않았다(비용 $0).
+
+### 정리 (simplify)
+
+재사용·단순화·효율·깊이 네 에이전트의 지적 중 고친 것: 위 "계획에서 바뀐 것"의 netstat·SECONDS·git restore·awk 한 번·stderr·문단 한 곳, pick-port 의 항목 읽기를 awk 한 번으로, end.md 나중·막기 줄 합치기, server-end-check 제목, start.md 문장 줄이기, 같은 사례 13번을 1번으로, 죽은 변수·정규식 갈래.
+
+건너뛴 것:
+- 테스트 하네스를 공용 파일로 합치기: 기존 test-* 도 파일마다 둔다.
+- 플러그인 사이에 `port_open` 합치기: 플러그인은 따로 설치된다. 두 곳 주석에 "같은 함수, 고치면 둘 다"를 적었다.
+- 끄기 명령을 한 번만 정하기: 위 winpid 이유.
+- JSON 을 인자로 넘기기: Git Bash 가 `/`로 시작하는 인자를 경로로 바꿀 수 있다.
+- 새 테스트를 검증 명령에 넣기와 두 `port_open`이 같은지 검사하기: 이 항목 밖이다(아래 제안).
+
+### 확인 (바깥 증거)
+
+이 Windows(Git Bash, `lsof`·`nc` 없음)에서 새로 돌린 출력:
+
+```
+test-pick-port: 15 개 중 15 개 맞음
+test-dev-server: 9 개 중 9 개 맞음
+test-diff-check: 15 개 중 15 개 맞음
+test-config-check: 17 개 중 17 개 맞음
+test-base-tests: 12 개 중 12 개 맞음
+test-check-repo-rules: 30 개 중 30 개 맞음
+test-verify-on-stop: 11 개 중 11 개 맞음
+claude plugin validate . && bash scripts/check-repo-rules.sh → ✔ Validation passed, 저장소 규칙 검사 통과
+grep -rn 'lsof' plugins/ i18n/ → 없음
+```
+
+- 테스트마다 스크립트를 망가뜨려 테스트가 잡는지 봤다.
+  - pick-port: 포트 칸 밖의 숫자까지 읽게 바꿨더니 1건 틀림.
+  - base-tests: 기준 판으로 되돌리지 않게 바꿨더니 5건 틀림.
+- dev-server 테스트 뒤에 남은 서버는 없었다(`netstat`).
+- AC #3·#4·#5 와 나머지는 구현하지 않은 general-purpose 판정 에이전트가 판정했다. 항목 경로와 `git diff main...HEAD` 범위만 넘겼고, 판정은 AC #1~#8, DoD #1~#3 모두 통과다.
+  - 판정이 짚은 두 문장(end.md 의 `HEAD 에서 실패` 처리, server-end-check 의 끝 값 2)은 고쳤다.
+
+### 알아 둘 것
+
+- 이 저장소에서 `diff-check.sh`·`config-check.sh`를 돌리면 스크립트와 테스트 안의 패턴 문자열(`console.log`, `sb_secret_…`)이 걸린다. 패턴 검사라 생기는 오탐이다. 이 저장소는 `stack: 없음`이라 점검이 돌지 않는다.
+- 새 테스트는 한 번에 1분 안팎이다(Windows 의 프로세스 비용). 검증 명령에는 넣지 않았다.
+- 제안(새 항목 후보):
+  - 검증 명령이나 check-repo-rules 가 `scripts/test-*.sh`를 돌린다(바뀐 스크립트의 테스트만이라도).
+  - 두 `port_open` 본문이 같은지 검사한다.
 
 ## Final Summary
 

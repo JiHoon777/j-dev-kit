@@ -36,7 +36,7 @@ OpenAPI 스펙이 있고 바뀌었을 때:
 
 ### 설정 키·값 파일·키
 
-`bash ${CLAUDE_SKILL_DIR}/scripts/config-check.sh <기준>`을 돌린다. 출력한 줄이 실패다: 추가된 줄에서 새로 읽는 환경 변수가 `.env.example`에 없음, 커밋된 `.env` 같은 값 파일, 추가된 줄의 키(`sb_secret_`, role 이 anon 이 아닌 JWT, 공개 접두사 환경 변수의 비밀 키 이름). 스크립트는 이름만 비교하고 키는 파일 이름만 쓴다. 키 값이 대화에 들어오지 않게, 근거에도 그 출력만 쓴다.
+`bash ${CLAUDE_SKILL_DIR}/scripts/config-check.sh <기준>`을 돌린다. 출력한 줄이 실패다: 추가된 줄에서 새로 읽는 환경 변수가 `.env.example`에 없음, 커밋된 `.env` 같은 값 파일, 추가된 줄의 키(`sb_secret_`, role 이 anon 이 아닌 JWT, 공개 접두사 환경 변수의 비밀 키 이름). 끝 값이 2 면 오류 출력의 이유를 "확인 못 함"으로 적는다. 스크립트는 이름만 비교하고 키는 파일 이름만 쓴다. 키 값이 대화에 들어오지 않게, 근거에도 그 출력만 쓴다.
 
 ### Supabase
 

@@ -32,7 +32,7 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 - Settle, from the project (CLAUDE.md, package.json scripts, test config), the command that runs one test file, with `{}` in place of the file (for example `pnpm vitest run {}`, `pytest {}`, `bash {}`).
 - `bash <task-scripts>/base-tests.sh <base> '<that command>'`. If the project's test files cannot be picked by name, add the files at the end.
 - Put each `기준에서도 통과: <file>` (also passes on base) line of the output into the step 4 findings list as 🟡 "does not prove the fix — passes without the fixed code", without going through the judge. The script output is the evidence.
-- If the command cannot be settled, or the exit value is 2 (including `HEAD 에서 실패` lines, fails on HEAD), write "could not check" and the reason in `Implementation Notes` and move on.
+- If the command cannot be settled or the exit value is 2, write "could not check" and the reason in `Implementation Notes`; for each `HEAD 에서 실패: <file>` (fails on HEAD) line, whatever the exit value, write that test as "could not check"; then move on.
 
 ## 3. Review (agents, in parallel in one message)
 
