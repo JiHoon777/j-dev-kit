@@ -82,7 +82,7 @@ Before approval, do not edit files and do not create a branch.
 
 ## 6. Wrap up
 
-1. **Clean up:** Ask the user whether to look for cleanups with `simplify`. If yes, call the `simplify` skill once. That skill fixes what it finds right away, but here it only finds and stops before fixing. If no, go to 2.
+1. **Clean up:** Ask the user whether to look for cleanups with `simplify`. If yes, commit any uncommitted changes first, then call the `simplify` skill once. That skill fixes what it finds right away, so pass "find only, do not fix" as its argument and stop before fixing. If files changed anyway (`git status --short`), revert those fixes and treat them only as findings. If no, go to 2.
    - Dedup what was found and show it as `file:line — what — cost (duplication, waste, harder to maintain)`. Findings whose fix would change behavior or reach outside the changed code are only shown, marked "skipped" with the reason.
    - Ask once: "fix all / pick which to fix / leave as is". If nothing was found, move on without asking.
    - Fix only what was picked. Revert any fix that changes behavior.
