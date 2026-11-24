@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: survey-outside
+description: 합성 사례(013). URL 없이 목표만 준 서베이가 바깥(GitHub Actions 공식 문서·변경 기록)을 찾아 읽는지, 후보마다 출처와 [직접]/[검색] 표시가 있는 보고서를 남기는지, 이미 있는 항목(001 Node 버전 올리기)과 겹치는 후보를 거르는지 본다. 저장소 안에는 오류 로그·이슈가 없어 안쪽만 보면 근거가 얇다
+tags: [survey]
+context:
+  scaffold_script: fixture.sh
