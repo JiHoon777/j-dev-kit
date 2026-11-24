@@ -1,12 +1,12 @@
 ---
 id: '009'
 title: 정해진 절차는 스크립트로, 되풀이되는 지적은 자동 검사로, 테스트는 고치기 전 코드에서 확인 (네 자료 1~4)
-status: To Do
+status: In Progress
 labels: [feat]
 priority: medium
 dependencies: []
 created_date: 2026-11-23
-updated_date: 2026-11-23
+updated_date: 2026-11-24
 ---
 
 ## Description
@@ -62,11 +62,110 @@ Lauren Tan(pstack) 영상과 Satya Nadella 영상, 그리고 두 영상을 옮�
 
 ## Implementation Plan
 
-만들 때는 비워 둔다. `/task start`가 승인된 계획을 적는다.
+승인: 2026-11-24 (사용자 "진행", 부모 세션 경유)
+
+### 1. 무엇을 하나
+네 가지를 한다. 기계적인 절차 다섯 개(빈 포트 고르기, 개발 서버 띄우고 듣는지 확인, 프론트엔드 diff 검사, 서버 설정 키·키 검사, 새 테스트를 고치기 전 코드에 대고 돌리기)를 테스트가 있는 bash 스크립트로 옮긴다. `end.md`에 되풀이되는 지적을 "막기(새 항목)"로 올리는 선택지를 더한다. 기준 브랜치에서도 통과하는 테스트는 🟡 로 넣는다. `design-reviewer`에 `disallowedTools`를 단다.
+이번에 빼는 것: 항목 파일의 "이번에 빼는 것" 그대로. eval 도 돌리지 않는다(6 참고).
+
+### 2. 도구와 단계
+- 분야: 셸 스크립트로 개발 도구 만들기. 도구는 bash(Git Bash·macOS·Linux 공통), git, 포트 확인용 bash `/dev/tcp`(없으면 `nc`), `timeout`.
+- 단계: 스크립트마다 테스트를 먼저 쓴다. 테스트는 `scripts/test-*.sh`이고 기존 방식(임시 가짜 저장소, 시나리오, "N 개 중 N 개 맞음")을 따른다. 그다음 스크립트를 쓰고, 마크다운을 바꾸고, 번역본을 고친다.
+- 설치할 것: 없음. 이 기계에서 확인한 것:
+  - `lsof`·`nc`·`ss`·`jq`는 없다. `/dev/tcp`, `node`, `python`, `base64`, `timeout`, `netstat`은 있다.
+  - Node 가 `localhost`를 `::1`에만 묶는 것을 확인했다. 그래서 127.0.0.1 만 보면 놓친다.
+  - 백그라운드로 띄운 서버는 명령이 끝나도 산다.
+
+### 3. 바꿀 파일과 순서 (각각 테스트 먼저)
+1. **design-reviewer** (AC #7): 원문과 번역본 frontmatter 에 `disallowedTools: Edit, Write, NotebookEdit`.
+2. **pick-port** (AC #1, #2)
+   - `plugins/workflow/skills/task/scripts/pick-port.sh <기준 포트> <항목 번호>`를 만든다.
+     - 후보는 기준 포트 + 번호다. 지금 듣는 포트, 다른 `w/*` 브랜치에서 진행 중인 항목의 `### 포트`와 그 기본 포트는 피하고 1씩 올린다.
+     - 포트 확인은 `/dev/tcp`로 127.0.0.1 과 ::1 을 본다. 안 되면 `nc`를 쓴다.
+     - 확인할 방법이 없으면 항목만 피한 포트와 "확인할 방법 없음"을 출력하고 2 로 끝난다.
+   - 테스트: `scripts/test-pick-port.sh`. 시험용 서버는 node, 없으면 python.
+   - 확인 방법 목록은 환경 변수 `PORT_CHECK_METHODS`로 바꿀 수 있다. 테스트가 "방법 없음"을 흉내 낼 때 쓴다.
+   - `task` SKILL.md 1절에 "절차 파일의 `<task-scripts>`는 `${CLAUDE_SKILL_DIR}/scripts`" 한 줄을 넣는다.
+   - `start.md` 4단계의 lsof·nc 문장을 "스크립트를 돌려 나온 포트를 쓰고, 0 이 아니면 이유를 알린다"로 바꾼다.
+3. **dev-server** (AC #1, #2)
+   - `plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh <포트> [<명령…>]`를 만든다.
+     - 포트를 이미 누가 쓰면 실패한다.
+     - 명령을 받으면 로그 파일로 백그라운드에 띄우고 듣기를 기다린다(기본 60초). 성공하면 URL, PID, LOG, 끄는 명령을 출력한다. Windows 에서는 `/proc/<pid>/winpid`로 `taskkill //PID … //T //F`를 알려 준다.
+     - 명령 없이 부르면 듣는지만 확인한다. launch.json·preview_start 로 띄웠을 때 쓴다.
+     - 프로세스가 먼저 끝나면 로그 끝을 보이고 1 로 끝난다. 시간이 다 되면 끄고 1 로 끝난다. 확인할 방법이 없으면 2 로 끝난다.
+   - 테스트: `scripts/test-dev-server.sh`.
+   - `frontend-start-check` 1절과 `frontend-end-check` 3절의 긴 문단을 줄인다. 남는 것은 판단 부분(어느 포트, launch.json 은 안 고침, 명령이 포트를 받는 방식, 백엔드와 그 주소, 빌드 미리보기)과 "스크립트로 띄워 출력의 URL 을 쓴다"는 말이다. end-check 는 `${CLAUDE_SKILL_DIR}/../frontend-start-check/scripts/dev-server.sh`를 쓴다(같은 플러그인).
+4. **diff-check** (AC #1, #2)
+   - `plugins/frontend/skills/frontend-end-check/scripts/diff-check.sh <기준>`를 만든다.
+     - `git diff -U0`의 추가된 줄에 `console.log`·`debugger`·`.only(`가 있으면 `파일:줄 — 이유`를 출력한다. `*.md`는 뺀다.
+     - 바뀐 package.json 마다 의존성 필드를 node 로 기준과 비교한다. 바뀌었는데 그 폴더나 상위 폴더의 lockfile(npm·pnpm·yarn·bun)이 그대로면 실패다.
+     - 실패만 출력하고 1 로 끝난다. node 가 없으면 lockfile 은 "확인 못 함"이다.
+   - 테스트: `scripts/test-diff-check.sh`.
+   - `frontend-end-check` 1절은 "스크립트를 돌려 나온 줄이 실패"와 reference 검사만 남긴다.
+5. **config-check** (AC #8)
+   - `plugins/server/skills/server-end-check/scripts/config-check.sh <기준>`를 만든다.
+     - 추가된 줄에서 새로 읽는 환경 변수(Node·Vite·Deno·Bun·Python·Go·Rust·Java·Ruby·PHP 의 흔한 형태)가 추적하는 `.env.example`·`.env.sample`에 없으면 `파일:줄 — 이유`를 출력한다. `NODE_ENV`, `CI`는 뺀다.
+     - 커밋된 값 파일은 기존 정규식 그대로 본다.
+     - 키 검사 세 가지는 파일 이름만 출력한다:
+       - `sb_secret_`
+       - `eyJ` 토큰. 가운데 부분만 디코드해 role 이 anon 이 아니면 실패다.
+       - 공개 접두사 환경 변수 이름에 SERVICE_ROLE·SECRET 이 들어 있으면 실패다.
+     - 값은 출력하지 않는다.
+   - 테스트: `scripts/test-config-check.sh`. 키가 출력에 나오지 않는 것도 확인한다.
+   - `server-end-check`의 "설정 키"와 Supabase "키" 자리는 "스크립트를 돌려 나온 줄을 실패로"만 남긴다. 클라이언트 코드에서 service_role 을 쓰는지는 판단이라 `supabase-reviewer` 7번이 이미 본다.
+6. **base-tests** (AC #5, #6)
+   - `plugins/workflow/skills/task/scripts/base-tests.sh <기준> '<테스트 파일 하나를 돌리는 명령, 파일 자리에 {}>' [파일…]`를 만든다.
+     - 작업 트리가 깨끗해야 한다.
+     - 바뀐 파일을 이름 규칙(`*.test.*`, `*.spec.*`, `test_*.py`, `*_test.*`, `test-*.sh`, `tests/`·`__tests__/` 폴더)으로 테스트와 그 밖으로 나눈다.
+     - 테스트를 HEAD 에서 먼저 돌린다. 실패하면 "HEAD 에서 실패"로 판단하지 않는다.
+     - 그다음 테스트 밖 파일만 merge-base 판으로 되돌리고(브랜치에서 더한 파일은 잠시 지움) 다시 돌린다. 결과를 "기준에서도 통과" 또는 "기준에서 실패"로 출력한다.
+     - 끝나면(중단돼도 trap 으로) HEAD 로 되돌리고 `git status`가 비었는지 확인한다.
+     - 끝 값: 0 모두 기준에서 실패, 1 기준에서도 통과한 것 있음, 2 돌릴 수 없음.
+     - 테스트만 바꾼 브랜치는 건너뛴다.
+   - 테스트: `scripts/test-base-tests.sh`. 가짜 저장소에서 버그를 고친 브랜치에 "기준에서 실패하는 테스트"와 "기준에서도 통과하는 테스트"를 둬 둘을 구별하고, 원래대로 돌아오는지 본다.
+   - `end.md` 2단계 끝에 넣는다. 스택 점검 뒤, 리뷰 전에 돌린다(파일을 잠시 바꾸니 리뷰어와 동시에 돌지 않게). 명령은 프로젝트 설정에서 정한다. "기준에서도 통과"는 판정 없이 🟡 "고친 것을 증명하지 못함"이 된다. 돌릴 수 없으면 "확인 못 함"으로 적는다.
+7. **end.md 4·5단계** (AC #3, #4)
+   - 판정 에이전트 지시에 하나를 더한다. 타당한 지적이 `docs/done/` Final Summary 의 "리뷰에서 고친 것"에 같은 종류로 있거나 이번 보고서에서 여러 곳에 나오면 🔁 와 근거를 붙인다.
+   - 질문에 덧붙인다: 🔁 지적에만 "린트 규칙·테스트·타입으로 막기(새 항목)"를 더 고를 수 있다. 한 번뿐인 지적에는 붙지 않는다.
+   - 5단계: "막기"를 고르면 "나중"과 같이 `task` 스킬을 `create <지적과 근거, 막을 수단> --here`로 부른다. 지적 자체는 고른 대로 고친다.
+8. **번역본, version, 설명**
+   - 고친 마크다운의 번역본 7개를 고친다.
+   - version 을 올린다: workflow 0.11.0→0.12.0, frontend 0.8.0→0.9.0, server 0.5.0→0.6.0.
+   - 설명에 스크립트 한 구절을 더한다. plugin.json·marketplace.json·README 두 개의 표와 구조 목록을 맞춘다.
+   - 스크립트 머리에 "고치면 scripts/test-X.sh 를 돌린다"를 적는다.
+
+### 4. 성공 기준
+- AC #1: 세 스크립트가 있다. `grep -rn 'lsof' plugins/ i18n/`이 비어 있다. 스크립트도 lsof 를 쓰지 않는다.
+- AC #2: 테스트 셋의 출력이 "N 개 중 N 개 맞음"이다. "확인할 방법 없음"이면 0 이 아닌 값으로 끝나는 시나리오도 들어 있다.
+- AC #8: `test-config-check.sh`가 통과한다. server-end-check 를 grep 으로 확인한다.
+- AC #6: `test-base-tests.sh`가 두 경우를 구별한다.
+- AC #7: frontmatter 를 grep 으로 확인한다.
+- AC #3·#4·#5: 문장이라 새 general-purpose 판정 에이전트가 판정한다(항목 경로와 diff 범위만 넘긴다).
+- DoD: 검증 명령, check-repo-rules(번역본·version), README·marketplace grep.
+
+### 5. 스택 점검
+frontend, server 모두 해당 없음(`stack: 없음`).
+
+### 6. 가정과 정한 것
+- **스크립트 언어·위치:** bash 로 쓰고 쓰는 스킬 폴더의 `scripts/`에 둔다. 출력은 한국어다. 번역본은 마크다운만 만든다(스크립트는 하나).
+- **lsof 를 쓰지 않음:** AC #1 의 grep 이 스크립트까지 덮는다. `/dev/tcp`는 macOS·Linux bash 에도 있고, `0.0.0.0`·`::`·localhost 에 묶은 서버를 다 찾는다.
+- **pick-port 가 다른 `w/*` 브랜치를 읽음:** 다른 세션의 `In Progress`는 그 세션 브랜치에만 있어 기준 폴더의 `docs/backlog`에는 보이지 않는다(005 의 미룬 것). 그래서 브랜치의 항목 파일을 `git show`로 읽는다. 지금 문장대로는 실제로 피하지 못한다.
+- **base-tests 를 제자리에서 돌림:** 임시 워크트리는 의존성 설치가 다시 필요하다. 그래서 제자리에서 테스트 밖 파일만 잠시 되돌리고, 리뷰어보다 먼저 돌려 동시 실행을 피한다.
+  - 판단 단위는 테스트 파일이다. 한 파일 안의 테스트 하나는 가려내지 못한다.
+  - 테스트가 소스 안에 있는 언어(Rust 등)는 가려내지 못해 "확인 못 함"이 된다.
+- **되풀이 판단:** 판정 에이전트가 이미 보고서와 코드를 보니 같이 맡긴다.
+- **eval 없음:** 바뀌는 것은 대부분 결정적인 스크립트이고, 테스트가 판정한다. `end.md`에 더한 문장을 잴 end eval 이 없다. 새로 만들면 실행마다 수 달러가 든다(008 의 사례는 하나에 $1~3). 예상 비용은 $0 이다. 원하면 따로 넣는다.
+- **질문:** 없음. 위 가정을 바꾸고 싶으면 승인 때 말하면 된다.
 
 ## Implementation Notes
 
-작업하며 알게 된 것, 계획에서 바뀐 것.
+### Baseline
+
+- `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과. `scripts/test-check-repo-rules.sh` 30/30, `scripts/test-verify-on-stop.sh` 11/11.
+
+### 포트
+
+없음(CLAUDE.md 에 웹·서버 포트 설정 없음).
 
 ## Final Summary
 
