@@ -82,7 +82,11 @@ Before approval, do not edit files and do not create a branch.
 
 ## 6. Wrap up
 
-1. **Clean up:** If the change is not small, call the `simplify` skill once. This skill finds places in the changed code to reuse or simplify and fixes them directly. Revert any fix that changes behavior. Write one line on what was cleaned up.
+1. **Clean up:** Ask the user whether to look for cleanups with `simplify`. If yes, call the `simplify` skill once. That skill fixes what it finds right away, but here it only finds and stops before fixing. If no, go to 2.
+   - Dedup what was found and show it as `file:line — what — cost (duplication, waste, harder to maintain)`. Findings whose fix would change behavior or reach outside the changed code are only shown, marked "skipped" with the reason.
+   - Ask once: "fix all / pick which to fix / leave as is". If nothing was found, move on without asking.
+   - Fix only what was picked. Revert any fix that changes behavior.
+   - Write one line on what was fixed and what was left as is.
 2. **Verify:** Call the `superpowers:verification-before-completion` skill and follow it. Run the verify command fresh and show the result. If there are failures not in the baseline, fix them.
 3. **Browser check:** Do it if the stack checks' Follow includes a browser check and the UI changed. If there is no tool for it, do not skip; stop and say so. Write what was done and seen in `Implementation Notes`.
 4. **AC judgment:** the implementing session does not judge and check off ACs by itself. Check off only those that have one of these:
