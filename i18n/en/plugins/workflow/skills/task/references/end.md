@@ -80,6 +80,10 @@ Do not fix anything before getting an answer.
 
 - Call the `superpowers:receiving-code-review` skill and follow it (check findings against the code; for wrong findings, give the reason and do not apply them).
 - For fixes that change behavior, write a failing test first.
+- Fixes that need judgment (changing the design, spanning several files, or with no settled way to fix) are made by this session itself. The session that made the change knows its context best.
+- Mechanical fixes, where the finding states exactly where and what to change and no judgment is left, are collected and handed to one agent (Agent tool `model: sonnet`, `effort: high`). Settled work goes fine with a smaller model. The prompt includes that list of findings, the item file path, "for fixes that change behavior, write a failing test first", and "do not fix anything outside the list and do not commit".
+- Do not judge the fixes by the fixer's report. Run the verify command, and for each fixed finding have a new general-purpose judge agent, given only the item file path, the list of fixed findings and `git diff`, return fixed / not fixed with evidence (`file:line`). For UI, `frontend-evaluator` from "To do after fixing" below judges.
+- If the same finding is still there after three fixes, stop fixing and tell the user the finding and what you tried. A person rethinking the approach beats repeating the same fix.
 - Do step 2's "To do after fixing" for the fixed parts (e.g. browser-check only the fixed screens). If a fix touched a stack check's area, call that `*-end-check` again.
 - For "later" and "block", invoke the `task` skill with `create <the finding and its evidence> --here` to make a new item. For "block", also pass the means to block it (lint rule, test or type), and fix the finding itself as the user chose. The user already chose, so for create step 3's approval, show only the item's content and get approval.
 - Write what was done and seen in `Implementation Notes` and commit.

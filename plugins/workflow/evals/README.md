@@ -6,6 +6,7 @@
 | --- | --- |
 | `trigger-real/*` | `task` description. 지난 세션의 실제 요청(부르지 말 것 10, 부를 것 3)과 사용자 말투로 쓴 합성 요청(부를 것 7). 사용자가 라벨을 확인했다. `--tag trigger-real` |
 | `start-plan` | `start.md` 3단계 계획. 여러 모듈에 걸친 항목에서 꼭 읽을 파일을 짚는지, 코드로 답할 수 있는 것을 묻지 않는지, 계획이 빠짐없는지 |
+| `end-fix-real` | `end.md` 5단계에서 기계적인 리뷰 수정을 `model: sonnet` 에이전트에 넘기는 것과 작업 세션이 직접 고치는 것(010). nolmeong 002 리뷰 직전(`2b5627e`)에서, 실제로 고친 커밋(`3d1649b`, `5aaa792`)이 근거인 지적 12개를 고친다. 지적마다 고친 파일 내용을 sonnet 이 판정하고, 테스트 먼저 쓰기(2개)와 지적 밖 변경을 하지 않기도 본다. `used-sonnet`은 위임판에만 둔다(대조판 사본에서는 지운다). Edit·Write 가 필요해 `--allow-tools Edit Write`를 붙인다. `--tag real-fix` |
 | `start-plan-real` | 같은 계획 단계를 실제 큰 항목(nolmeong 013, 시작 전 `d8c75f5`)으로. 정답은 사용자가 승인한 계획(`ed9250b`)의 핵심 결정 6가지다. nolmeong 로컬 저장소에서 `git archive`로 꺼내 만들므로 그 저장소가 있는 기계에서만 돈다. 저장소 경로는 커밋하지 않는 `evals/nolmeong-src.local`에 한 줄로 쓴다(frontend evals README 참고). `--tag real-plan` |
 
 008 에서 두 계획 사례로 `start.md`의 "Explore 최대 2개", "질문 최대 3개"를 재고 지웠다. 다시 재려면 넣은 사본에 그 문구를 되살린다.

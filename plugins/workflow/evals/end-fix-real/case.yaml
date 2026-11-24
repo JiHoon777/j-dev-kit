@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: end-fix-real
+description: nolmeong 002 한 줄 화면의 리뷰 지적 가운데 위치와 고칠 내용이 정해진 12개를 /task end 5단계로 고치기(리뷰 전 2b5627e). 정답은 그 지적을 실제로 고친 커밋 3d1649b, 5aaa792
+tags: [real-fix]
+context:
+  scaffold_script: fixture.sh
