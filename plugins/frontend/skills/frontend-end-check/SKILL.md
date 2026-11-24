@@ -19,8 +19,7 @@ metadata:
 
 ## 1. 검사
 
-- `git diff <기준>...HEAD -U0`의 추가된 줄에 `console.log`, `debugger`, `.only(`가 있으면 실패.
-- package.json 의존성이 바뀌었는데 lockfile 이 바뀌지 않았으면 실패.
+- `bash ${CLAUDE_SKILL_DIR}/scripts/diff-check.sh <기준>`을 돌린다. 출력한 줄이 실패다(추가된 줄의 `console.log`·`debugger`·`.only(`, lockfile 없이 바뀐 의존성). 끝 값 2 는 그 줄을 "확인 못 함"으로 적는다.
 - reference 의 검사.
 
 ## 2. 리뷰에 넣을 에이전트

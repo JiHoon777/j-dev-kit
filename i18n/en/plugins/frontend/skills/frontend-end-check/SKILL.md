@@ -21,8 +21,7 @@ Called by `/task end`. Runs commands and returns only the results. The review th
 
 ## 1. Checks
 
-- If added lines in `git diff <base>...HEAD -U0` contain `console.log`, `debugger`, `.only(`, fail.
-- If package.json dependencies changed but the lockfile did not, fail.
+- Run `bash ${CLAUDE_SKILL_DIR}/scripts/diff-check.sh <base>`. Each line it prints is a failure (`console.log`, `debugger`, `.only(` in added lines, dependencies changed without the lockfile). On exit value 2, record those lines as "could not check".
 - The reference's checks.
 
 ## 2. Agents to include in the review
