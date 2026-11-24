@@ -117,6 +117,17 @@ frontend·server start check: CLAUDE.md `stack: 없음` → 해당 없음.
 
 - `claude plugin validate . && bash scripts/check-repo-rules.sh`: 통과 (main af09fc4, 2026-11-25)
 
+### 계획에서 바뀐 것
+
+- 보고서 내용 채점: eval 의 파일 `focus: {source: file, path}`는 glob 을 받지 않고 정해진 경로만 연다(claude 2.1.319 바이너리의 grader 코드에서 확인). 보고서 이름이 날짜·이름으로 바뀌므로, 보고서가 있는지는 `file_exists`(glob 지원) `.claude/.local/reports/*.md`로, 출처와 [직접]/[검색] 표시는 마지막 메시지의 후보 표(`report-sources`, llm)로 본다.
+- `llm` 채점의 대상 키는 `target`이 아니라 `focus`다(`regex`만 `target`).
+- 바깥을 빼는 플래그는 `--internal`. `SKILL.md`와 번역본의 `argument-hint`에만 더했고 `description`(트리거 문장)은 그대로다.
+
+### eval 실행
+
+- 이 맥의 셸에서 `claude` CLI 가 로그인돼 있지 않다(`claude auth status` → `loggedIn: false`, 샌드박스 밖에서도 같음). eval 러너가 "Not logged in · Please run /login"으로 바로 끝나 두 판 측정을 아직 못 했다.
+- 사본: 지금 판은 `git archive main plugins/workflow`(af09fc4)에 새 사례를 넣은 것, 고친 판은 이 브랜치의 `plugins/workflow`. 둘 다 `dependencies`와 `hooks/`를 뺐다.
+
 ## Final Summary
 
 `/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.
