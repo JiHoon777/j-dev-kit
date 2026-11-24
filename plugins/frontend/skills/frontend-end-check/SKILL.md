@@ -19,7 +19,7 @@ metadata:
 
 ## 1. 검사
 
-- `bash ${CLAUDE_SKILL_DIR}/scripts/diff-check.sh <기준>`을 돌린다. 출력한 줄이 실패다(추가된 줄의 `console.log`·`debugger`·`.only(`, lockfile 없이 바뀐 의존성). 끝 값 2 는 그 줄을 "확인 못 함"으로 적는다.
+- `bash ${CLAUDE_SKILL_DIR}/scripts/diff-check.sh <기준>`을 돌린다. 출력한 줄이 실패다(추가된 줄의 `console.log`·`debugger`·`.only(`, lockfile 없이 바뀐 의존성). "확인 못 함"이 붙은 줄은 실패가 아니라 확인 못 한 것으로 적는다.
 - reference 의 검사.
 
 ## 2. 리뷰에 넣을 에이전트

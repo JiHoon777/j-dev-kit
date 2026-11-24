@@ -21,7 +21,7 @@ Called by `/task end`. Runs commands and returns only the results. The review th
 
 ## 1. Checks
 
-- Run `bash ${CLAUDE_SKILL_DIR}/scripts/diff-check.sh <base>`. Each line it prints is a failure (`console.log`, `debugger`, `.only(` in added lines, dependencies changed without the lockfile). On exit value 2, record those lines as "could not check".
+- Run `bash ${CLAUDE_SKILL_DIR}/scripts/diff-check.sh <base>`. Each line it prints is a failure (`console.log`, `debugger`, `.only(` in added lines, dependencies changed without the lockfile). A line marked "확인 못 함" (could not check) is not a failure; record it as not checked.
 - The reference's checks.
 
 ## 2. Agents to include in the review
