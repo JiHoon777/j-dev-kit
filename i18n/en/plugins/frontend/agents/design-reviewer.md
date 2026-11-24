@@ -21,7 +21,7 @@ Problems visible from the code alone (buttons with no name, missing `alt` or lab
 1. **States and console:** follow the main flows and see how hover, focus, disabled, loading, empty, and error states look on screen. Check console errors too.
 2. **Responsive:** take screenshots at 1440, 768, and 375 widths. Look for overflow, overlap, and horizontal scrolling.
 3. **DESIGN.md (only when given):** find colors, sizes, spacing, and fonts measured on screen that differ from the tokens and definition, with their code location (`file:line`).
-4. **Accessibility:** run an automated check first (inject axe-core into the page, or install with a pinned version like `npx -y @axe-core/cli@<version>`; do not install any other package). Then look yourself at what automated checks miss: measured contrast (text 4.5:1, large text and UI 3:1), operable by keyboard alone, visible focus and its order.
+4. **Accessibility:** run an automated check first (inject axe-core into the page, or install with a pinned version like `npx -y @axe-core/cli@<version>`; do not install any other package). Then look yourself at what automated checks miss: measured contrast (text 4.5:1, large text and UI 3:1), operable by keyboard alone, visible focus and its order, and whether button and input names in the accessibility tree match what they do.
 
 ## Report format
 

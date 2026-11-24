@@ -9,6 +9,8 @@ Read by `frontend-start-check` when package.json has `react`. Add the following 
 - When creating or changing components, invoke the `vercel-react-best-practices` skill and follow it. If you change how components are put together (composition, props design), also `vercel-composition-patterns`.
 - If there is `react-router`, invoke the `react-router` skill and follow it.
 - If there is `next`, read the `AGENTS.md` that Next generated and the installed version's docs it points to as the reference for APIs. Do not guess an API you do not know.
+- Do not import secrets or server-only modules in client components (`'use client'`). Server actions and route handlers perform input validation and authorization checks.
+- Do not insert values written by other people with `dangerouslySetInnerHTML`.
 
 ## To ask
 

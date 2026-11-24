@@ -574,4 +574,26 @@ AC 판정 에이전트가 "A4 묶음은 실제 사례에서 나빠졌는데 항�
 - 옛 실제 사례(`real-line`·`real-sky`·`real-birthday`)에서 늘 0/5 인 채점 기준 넷이 왜 늘 실패하는지는 확인하지 않았다. 리뷰어가 못 찾는 어려운 문제인지, 채점 문구가 잘못된 것인지는 사례를 열어 봐야 안다. 그 사례로 다른 것을 잴 때 함께 고친다.
 - `simplify`에서 건너뛴 것: 실제 사례 fixture 를 공용 스크립트로 모으기, 포트 고르기를 `dev-server.sh`로 옮기기, 테스트 러너에게 테스트 목록 묻기.
 
+### `/task end` (2026-11-24, 맥)
+
+설치된 절차는 workflow 0.13.0 이다. 리뷰어에게 원칙을 넘기는 문장과 base-tests 빈 결과 처리만 이 브랜치의 새 `end.md`를 따랐다.
+
+- **스택 점검:** frontend·server 둘 다 CLAUDE.md `stack: 없음`이라 해당 없음. 스택 리뷰어 없음.
+- **테스트가 고친 것을 증명하나:** `BASE_TESTS_TIMEOUT=2400 bash base-tests.sh main 'bash {}'`. 파일을 잠시 되돌리므로 리뷰어와 겹치지 않게 HEAD 를 분리한 임시 워크트리에서 돌렸다.
+  - `scripts/test-base-tests.sh`, `scripts/test-config-check.sh`: 기준에서 실패(고친 것을 증명함).
+  - `plugins/workflow/evals/create-many/graders/asks-live-or-test.md`: 확인 못 함. eval 채점 문서인데 이름 규칙 `[._-](test|spec)\.`(main 부터 있던 규칙, 확장자를 가리지 않음)에 걸려 골라졌고 HEAD 에서 실패했다. 테스트가 아니다.
+- **리뷰:** `code-review`(지적 10), `security-review`(취약점 없음, 원칙과 부딪히는 참고 2). 판정 에이전트 결과: 🔴 0, 🟡 4(모두 🔁 — 일반 규칙을 지우거나 옮기면서 남길 것까지 빠진 같은 종류), ⚪ 1, 판정에서 뺀 것 7(승인된 계획·AC 대로), 기존 문제 2.
+- **사용자 답**(부모 세션이 전한 말): "추천대로 지금 고치기" — 🟡 4 와 ⚪ 1 을 지금 고치고, 막기(새 항목)는 만들지 않는다.
+- **고친 것:**
+  1. `api-reviewer` 9(원문·번역본): Postgres 가 아니면 반복문 안의 쿼리(N+1), 인덱스 없는 새 조건, 제한 없는 전체 스캔을 본다. Postgres 경로는 잰 판 그대로다.
+  2. `frontend-start-check/references/react.md`(원문·번역본): 안전 장치를 되살렸다(`'use client'`에서 비밀 값·서버 전용 모듈 import 금지, 서버 액션·라우트 핸들러의 입력 검증·권한 확인, `dangerouslySetInnerHTML` 금지). 항목:33 이 "우리 것"으로 분류한 것이다.
+  3. `frontend-end-check` 3절(원문·번역본): 옮겨 적을 때 빠진 세 가지를 넣었다(위치 인자 포트, 백엔드를 서버 포트에 띄우고 웹이 파일을 고치지 않고 가리키게, 빌드에서만 보이는 변경은 빌드 뒤 미리보기).
+  4. `base-tests.sh` 도우미 분류: 테스트 폴더 아래의 `.d.ts`, `tests/`·`test/` 아래 `pages/`·`factories/`·`types/` 폴더와 `constants.*`를 도우미로 본다. 테스트 먼저(`dir_aux` 사례, 실패 확인 뒤 고침).
+     - 고친 뒤 판정이 새 문제를 찾았다: 도우미 폴더 조건이 경로 어디서나 맞아 `src/pages/__tests__/home.js` 같은 진짜 테스트를 뺐다(원래 있던 `utils/`·`helpers/`도 같은 구조). 도우미 폴더 조건을 테스트 폴더 아래로 좁히고 `src_dir_test` 사례를 더했다.
+     - 다시 판정이 `src/__tests__/constants.js`(Jest 는 `__tests__` 아래 파일을 모두 돌린다)가 빠지는 것을 찾아 `constants.*`도 `tests/`·`test/` 아래로 좁혔다. `scripts/test-base-tests.sh` 19 개 중 19 개 맞음.
+     - 그대로 둔 것: `test/pages/home.js`, `tests/unit/types/guards.js`처럼 `tests/`·`test/` 아래 `pages`·`types` 폴더의 이름 규칙 없는 테스트는 도우미로 빠진다. page object 를 빼라는 요구와 맞바꾼 것이고, 그 파일만 바뀌었으면 "바뀐 테스트 없음"(끝 값 2, 판단 못 함)으로 끝나 잘못 통과시키지는 않는다. 다른 테스트가 함께 바뀌었으면 그 파일만 빠진다. `tests/__tests__/constants.js`처럼 두 테스트 폴더가 겹친 경로도 같다.
+  5. `design-reviewer` 4(원문·번역본): 접근성 트리에서 버튼과 입력의 이름이 뜻에 맞는지 본다(A1 을 바꾸지 않아 범위를 나눌 때의 전제가 바뀌었다).
+- 버전은 이 브랜치에서 이미 올렸다(workflow 0.14.0, frontend 0.11.0, server 0.7.0). README·`marketplace.json` 설명에 닿는 변경은 없다.
+- 고친 뒤 판정은 새 general-purpose 판정 에이전트가 했다(첫 판정 다섯 지적 모두 고쳐짐 + 새 문제 하나, 다시 판정 고쳐짐 + 작은 것 둘).
+
 ## Final Summary

@@ -3,7 +3,8 @@
 # 명령의 {} 자리에 테스트 파일 경로가 들어간다(예: 'pnpm vitest run {}', 'pytest {}', 'bash {}').
 # 테스트 파일을 주지 않으면 <기준>...HEAD 에서 더하거나 바꾼 테스트 파일을 이름으로 고른다
 # (*.test.*, *.spec.*, *_test.*, *-test.*, test_*.py, test-*.sh, *_spec.rb, 그리고 __tests__/·tests/·test/ 아래의 JS·TS 파일.
-#  그 폴더 아래라도 fixtures·helpers·utils·mocks·support·testdata 폴더와 _·setup·helper·util·fixture 가 든 이름은 도우미로 본다).
+#  그 폴더 아래의 fixtures·helpers·utils·mocks·support·testdata 폴더, tests/·test/ 아래의 pages·factories·types 폴더와 constants.*,
+#  _로 시작하거나 setup·helper·util·fixture 가 든 이름, 타입 선언 *.d.ts 는 도우미로 본다).
 # 고른 테스트가 없으면: 테스트 밖 파일(문서 *.md 빼고)이 바뀌었으면 "바뀐 테스트 없음."을 쓰고 2(판단 못 함), 문서만 바뀌었으면 0.
 # 1. 테스트를 HEAD 그대로 돌린다. 여기서 실패하면 "HEAD 에서 실패"로 적고 판단하지 않는다.
 # 2. 테스트 밖의 바뀐 파일만 기준 판으로 잠시 되돌리고(브랜치에서 더한 파일은 뺀다) 다시 돌린다.
@@ -32,7 +33,7 @@ for r in "$ref" "origin/$ref"; do base=$(git merge-base "$r" HEAD 2> /dev/null) 
 run_re='(^|/)[^/]*[._-](test|spec)\.[^/]+$|(^|/)test_[^/]*\.py$|(^|/)test-[^/]*\.sh$|_spec\.rb$'
 aux_dirs='fixtures?|__fixtures__|testdata|mocks?|__mocks__' # 테스트 쪽 도우미 폴더
 dir_re='(^|/)(__tests__|tests?)/([^/]+/)*[^/]+\.[cm]?[jt]sx?$'
-helper_re="(^|/)($aux_dirs|helpers?|utils?|support)/|(^|/)_[^/]*\$|(^|/)[^/]*(setup|helper|util|fixture)[^/]*\$"
+helper_re="(^|/)(__tests__|tests?)/([^/]+/)*($aux_dirs|helpers?|utils?|support)/|(^|/)tests?/([^/]+/)*((pages?|factories|types)/|constants?\.[^/]+$)|(^|/)_[^/]*\$|(^|/)[^/]*(setup|helper|util|fixture)[^/]*\$|\.d\.[cm]?ts\$" # 도우미 폴더는 테스트 폴더 아래일 때만
 is_test() { [[ $1 =~ $run_re ]] || { [[ $1 =~ $dir_re ]] && ! [[ $1 =~ $helper_re ]]; }; }
 test_re="(^|/)(tests?|__tests__|spec|$aux_dirs)/|$run_re"
 test_re+='|(^|/)(conftest\.py|pytest\.ini|setupTests\.[^/]+|[^/]*\.setup\.[^/]+|(vitest|jest|playwright|cypress|karma)\.config\.[^/]+|\.mocharc[^/]*)$'

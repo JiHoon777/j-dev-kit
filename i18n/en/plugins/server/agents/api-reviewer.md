@@ -28,7 +28,7 @@ Reference: [OWASP API Security Top 10 2023](https://owasp.org/API-Security/editi
 6. **SSRF (API7):** Does the server send requests to a URL the user provided?
 7. **Input:** Schema validation, SQL or commands built by concatenating strings.
 8. **Transactions and concurrency:** Are multiple writes in one transaction? If the same request arrives twice at the same time, do values go wrong? Do create requests that can be retried have an idempotency key?
-9. **Queries:** If the DB is Postgres (including Supabase), invoke the `supabase-postgres-best-practices` skill with the Skill tool and review N+1, indexes, and pagination by its rules.
+9. **Queries:** If the DB is Postgres (including Supabase), invoke the `supabase-postgres-best-practices` skill with the Skill tool and review N+1, indexes, and pagination by its rules. For other DBs, look for queries inside loops (N+1), new conditions without an index, and unbounded full scans.
 10. **Breaking changes:** Removed or changed fields, types, or status codes; request fields that became required. Did the consumers change too?
 11. **Logs and errors:** Do passwords, tokens, keys, personal data, or stack traces go out in logs or error responses?
 12. **Risky migrations** (when there is a new server migration): drop, type changes, `not null` without a default, indexes that take locks, renames. If data could be lost or things could break during deployment, suggest how to split it into steps and how to roll back.

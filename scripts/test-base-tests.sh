@@ -44,6 +44,14 @@ dir_test() { # tests/ 아래 테스트와 도우미·fixture. 도우미를 테�
 ok && [ "$(add 2 3)" = 5 ]
 ' > tests/login.js
 }
+dir_aux() { # tests/ 아래의 테스트가 아닌 파일(page object, factory, 상수, 타입 선언). 고르면 HEAD 에서 실패(2)다
+  mkdir -p tests/e2e/pages tests/factories tests/types &&
+    for f in tests/e2e/pages/login-page.ts tests/factories/user.js tests/constants.ts tests/global.d.ts tests/types/user.ts; do echo 'exit 1' > "$f"; done
+}
+src_dir_test() { # 도우미 이름의 소스 폴더(pages, utils) 아래 __tests__ 는 진짜 테스트다
+  mkdir -p src/pages/__tests__ src/utils/__tests__ src/__tests__ &&
+    for f in src/pages/__tests__/home.js src/utils/__tests__/constantTime.js src/__tests__/constants.js; do printf '. ./lib.sh\n[ "$(add 2 3)" = 5 ]\n' > "$f"; done
+}
 docs_only() { echo '# 문서' > README.md; }
 delete_old() { git rm -q old.sh; }
 commit() { git add -A && git commit -qm change; }
@@ -101,7 +109,10 @@ check "고를 테스트 파일을 인자로 준다" 1 "기준에서도 통과: t
 check "테스트만 바꾼 브랜치 → 건너뜀, 0" 0 "테스트 밖 변경 없음. 건너뛴다." test_echo commit -- main 'bash {}'
 check "소스만 바뀌고 테스트를 못 찾음 → 판단 못 함, 2" 2 "바뀐 테스트 없음." fix_add commit -- main 'bash {}'
 check "문서만 바뀌고 테스트 없음 → 0" 0 "문서만 바뀜. 건너뛴다." docs_only commit -- main 'bash {}'
-check "__tests__/·tests/ 아래 파일을 고르고 도우미·fixture 는 고르지 않는다" 0 "기준에서 실패: src/__tests__/login.js|기준에서 실패: tests/login.js"   fix_add jest_test dir_test commit -- main 'bash {}'
+check "__tests__/·tests/ 아래 파일을 고르고 도우미·fixture·page object·상수·타입은 고르지 않는다" 0 "기준에서 실패: src/__tests__/login.js|기준에서 실패: tests/login.js" \
+  fix_add jest_test dir_test dir_aux commit -- main 'bash {}'
+check "소스의 pages/·utils/ 아래 __tests__ 와 __tests__/constants.js 는 고른다" 0 "기준에서 실패: src/pages/__tests__/home.js|기준에서 실패: src/utils/__tests__/constantTime.js|기준에서 실패: src/__tests__/constants.js" \
+  fix_add src_dir_test commit -- main 'bash {}'
 check "커밋하지 않은 변경 → 돌리지 않고 2" 2 - fix_add test_add commit dirty -- main 'bash {}'
 check "명령에 {} 가 없음 → 사용법, 2" 2 - fix_add test_add commit -- main 'bash test-add.sh'
 check "기준 브랜치 없음 → 2" 2 - fix_add test_add commit -- nope 'bash {}'
