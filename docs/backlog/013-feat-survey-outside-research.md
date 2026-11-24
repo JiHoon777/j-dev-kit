@@ -138,6 +138,29 @@ frontend·server start check: CLAUDE.md `stack: 없음` → 해당 없음.
 - 하위 에이전트의 도구 호출도 기록(trace)에 남는다(시험 사례로 확인).
 - 사본: 지금 판은 `git archive main plugins/workflow`(af09fc4)에 새 사례를 넣은 것, 고친 판은 이 브랜치의 `plugins/workflow`. 둘 다 `dependencies`와 `hooks/`를 뺐다.
 
+### eval 결과 (survey-outside, 2026-11-25)
+
+모델 opus(Opus 5.5), 채점 sonnet, 각 5회. 비용은 Max 구독이라 실제 청구가 아니라 API 요금 환산값이다.
+
+| 판 | 점수 평균 ± 표준편차 (표준오차) | 01 웹 검색 | 02 보고서 Write | 03 출처·[직접]/[검색] | 04 001 겹침 거름 | 실행당 비용(환산) | 실행당 시간 | 웹 호출 수 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 지금 판(main af09fc4) | 0.45 ± 0.11 (0.05) | 5/5 | 0/5 | 0/5 | 4/5 | $0.89 | 67초 | 1~5 |
+| 고친 판(이 브랜치) | 0.75 ± 0.00 (0.00) | 5/5 | 0/5 | 5/5 | 5/5 | $3.03 | 385초 | 34~70 |
+
+판정 규칙(README): 차이 0.30 > 표준오차 합 0.05 → 고친 판이 높다. 고친 판이 낮지 않으므로 AC #7 의 "물어 정하기"는 해당 없다.
+
+분석(skill-creator 의 analyst 관점, 기록을 직접 읽음):
+- 01 은 판을 가르지 못한다. 목표 문장에 "GitHub Actions 쪽 변경"이 있어 지금 판도 웹을 찾았다(1~5회). 양은 크게 다르다(고친 판 34~70회).
+- 02 는 두 판 모두 0 이다. 고친 판은 하위 에이전트가 메모를 `.claude/.local/survey/`에 쓰다 eval 권한에 막혔고(실행마다 3번 거부), 그 뒤 메인 세션은 보고서 Write 를 시도하지 않고 "저장하지 못했다"며 보고서 내용을 마지막 메시지에 그대로 적었다. eval 환경 탓이라 이 채점으로는 잴 수 없다.
+- 03 의 차이는 고친 절차가 요구하는 표시([직접]/[검색])에서 온다. 지금 판도 출처 URL 은 달았다.
+- 판정 에이전트가 너무 엄격하다: `checkout@v3`·`setup-node@v3`의 node16 런타임 후보를 고친 판은 5번 중 4번 "깨진다는 1차 출처가 없다"며 떨어뜨렸다(지금 판은 4번 후보로 냈다, 1번은 "근거가 약해" 뺐지만 넣을지 물음). 1번 실행은 공식 공지(cache v1·v2 "workflow failure", upload-artifact v3 사용 불가)가 있는 후보까지 떨어뜨려 바로 고를 후보가 1건이었다. 떨어진 것은 모두 "제안하지 않는 것"에 이유와 함께 남았다.
+
+다시 돌리기(두 사본: 지금 판은 `git archive main plugins/workflow`, 고친 판은 이 브랜치의 `plugins/workflow`. 둘 다 `dependencies`·`hooks/`를 빼고 같은 `evals/survey-outside`를 넣는다):
+
+```bash
+claude plugin eval <사본>/workflow --ablation none --scaffold --trust-plugin --model opus --judge-model sonnet --runs 5 --tag survey --no-publish --threshold 0 -j 2 --allow-tools WebSearch WebFetch Write --json <사본>.json
+```
+
 ## Final Summary
 
 `/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.
