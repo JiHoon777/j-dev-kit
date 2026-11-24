@@ -465,4 +465,42 @@ updated_date: 2026-11-24
 
 공통으로 빠졌던 것(판마다 평균 ± 표준편차, 채점 기준별 늘 통과·늘 실패 따로 보기)은 012 의 모든 결과 표에 넣었다(`.claude/.local/012/summarize.py`). 사람이 출력 전체를 보는 단계와 채점자의 eval 비판 단계는 넣지 않았다(012 결정은 채점 수치와 실행 기록으로 했다).
 
+### AC #3: 실제 svelte 플러그인으로 확인 (2026-11-24)
+
+AC 판정 에이전트가 앞의 확인은 eval 사본 `skills/`에 넣은 복사본(`frontend:` 이름)이라 실제 플러그인 확인이 아니라고 했다. 그래서 다시 확인했다.
+
+- 설치: 이 기계에는 README "있으면 쓰는 것"의 방법(`/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte`)으로 `svelte@svelte` 1.0.11 이 설치돼 있다(`~/.claude/plugins/installed_plugins.json`, 캐시 `~/.claude/plugins/cache/svelte/svelte/1.0.11`).
+- 호출: 그 설치 폴더를 손대지 않고 eval 사본 안에 복사하고(eval 은 대상 플러그인 폴더 밖을 싣지 못한다), 사례의 `plugins: ["../..", "../../svelte-plugin"]`로 이 브랜치의 frontend 와 함께 실었다. 플러그인 이름이 `svelte`라 스킬은 `svelte:` 이름이다. 각 3회(1회용, 커밋 안 함, `.claude/.local/012/arms/realsvelte`).
+  - `/task start` 쪽(`frontend-start-check`를 부르고 "지킬 것"을 따라 nolmeong `bb04515`의 `.svelte` 파일을 고침): 3/3 이 `svelte:svelte-code-writer`와 `svelte:svelte-core-bestpractices`를 불렀다.
+  - `/task end` 쪽(`frontend-reviewer`로 `real-svelte-001` 리뷰): 3/3 이 `svelte:svelte-core-bestpractices`를 불렀다.
+  - 전체 `/task start`·`/task end` 흐름 안에서 돌리지는 않았다. 그 흐름이 부르는 두 자리(시작 점검, 리뷰어)를 따로 돌렸다. svelte MCP 서버는 eval 이 띄우지 않았다(스킬만 확인).
+- 처음 시도에서 `plugins:`에 svelte 폴더만 적었더니 시험 대상 frontend 가 실리지 않아(`plugins:`가 대상을 대신한다) 둘 다 적었다.
+
+### A4: 최종 판 다시 재기 (2026-11-24)
+
+AC 판정 에이전트가 "A4 묶음은 실제 사례에서 나빠졌는데 항목 단위로 나눠 바꿨고, 바꾼 최종 판은 재지 않았다"고 했다. 묶음(볼 것 1~11 을 모두 공식 스킬로)은 나빠졌으니 그대로 바꾸지 않았고, 승인 조건("리뷰어 항목을 지우는 결정은 실제·합성 모두에서 나빠지지 않을 때만")을 항목마다 적용해 나빠진 항목 8 만 남긴 판을 만들었다. 그 최종 판(지금 커밋의 `supabase-reviewer`·`api-reviewer`, 정리 뒤)을 같은 사례로 다시 쟀다.
+
+| 사례 | 지금 판(볼 것 1~11) | 최종 판(8 만 남김) | 판정 |
+| --- | --- | --- | --- |
+| `real-todak-002`(실제, 10회) | 0.600 ± 0 | 0.600 ± 0 | 같음(`finds-doc-constraints` 10/10 → 10/10) |
+| `supabase-seeded`(합성, 5회) | 0.957 ± 0.039 | 0.957 ± 0.039 | 같음 |
+| `api-seeded`(합성, 5회) | 0.800 ± 0.183 | 0.867 ± 0.183 | 같음 |
+
+최종 판은 두 사례 모두에서 나빠지지 않았다.
+
+### compose-real 다시 (2026-11-24, A7 "고칠 것", Opus 시험, sonnet 채점 3표, 판·사례마다 3회)
+
+고친 것: 과정 채점을 세 판 모두 `code-review` 호출 하나로 같게, 보고에 🔴·🟡·⚪ 를 붙이게 해 `keep-*`가 판별하게, 리뷰어 수만 늘린 대조군 `-gp`(`code-review` + 체크리스트 없는 general-purpose 리뷰어)를 더했다. 리뷰어는 지금 커밋의 `frontend-reviewer`(공식 svelte 스킬을 사본에 넣음). 실행 기록으로 `-stack`은 9회 모두 `frontend-reviewer`를, `-gp`는 9회 모두 general-purpose 에이전트를 불렀다.
+
+| 사례 | code-review 만(`-cr`) | + 일반 리뷰어(`-gp`) | + frontend-reviewer(`-stack`) |
+| --- | --- | --- | --- |
+| birthday | 0.810 ± 0.082 | 0.857 ± 0 | 0.857 ± 0 |
+| line | 0.590 ± 0.089 | 0.872 ± 0.089 | 0.872 ± 0.044 |
+| sky | 0.556 ± 0.111 | 0.741 ± 0.128 | 0.704 ± 0.064 |
+| 평균(표준오차) | 0.652 (0.032) | 0.823 (0.030) | 0.811 (0.015) |
+
+- `-stack`과 `-gp`는 차이 0.012 < 표준오차 합 0.045 로 같음, 둘 다 `-cr`보다 낫다. 008 의 "리뷰어를 더하면 0.597 → 0.804"는 리뷰어 수 효과였고, `frontend-reviewer` 체크리스트 고유의 효과는 이 사례로는 보이지 않는다.
+- 008 의 결정("`end.md` 3단계 구성은 바꾸지 않는다, 재기만")은 바뀌지 않는다(지금 구성은 대조군보다 나쁘지 않다). 다만 `frontend-reviewer`를 일반 리뷰어로 바꿀 수 있는지는 이 항목 밖의 후속 후보로 남긴다(사용자에게 알린다).
+- `keep-card-not-saved`·`keep-no-list-limit`는 세 판 모두 3/3 이었다(심각도를 붙여도 🔴 로 올리지 않았다).
+
 ## Final Summary
