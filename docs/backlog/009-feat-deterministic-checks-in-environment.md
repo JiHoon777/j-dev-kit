@@ -217,6 +217,30 @@ grep -rn 'lsof' plugins/ i18n/ → 없음
 - AC #3·#4·#5 와 나머지는 구현하지 않은 general-purpose 판정 에이전트가 판정했다. 항목 경로와 `git diff main...HEAD` 범위만 넘겼고, 판정은 AC #1~#8, DoD #1~#3 모두 통과다.
   - 판정이 짚은 두 문장(end.md 의 `HEAD 에서 실패` 처리, server-end-check 의 끝 값 2)은 고쳤다.
 
+### 리뷰 반영 (/task end)
+
+- 리뷰: `code-review`·`security-review`. 보안 취약점은 없었다.
+- 판정: 판정 에이전트가 타당 10건(🔴 1, 🟡 4, ⚪ 5), 기존 문제 2건, 틀림 0건으로 판정했다.
+- 사용자가 고른 것: 🔴·🟡 는 지금 고친다. ⚪ 는 그대로 둔다.
+- 리뷰 전에 이 브랜치 자신의 새 테스트 5개를 `base-tests.sh`로 기준 소스에 대고 돌렸다. 모두 "기준에서 실패"(고친 것을 증명함)였고 끝 값은 0, 작업 트리는 깨끗하게 돌아왔다. 6분이 걸렸다.
+
+고친 것. 재현한 경우를 실패하는 테스트로 먼저 쓰고 고쳤다.
+
+- 🔴 config-check: Vite 가 늘 정의하는 `import.meta.env.DEV`·`PROD`·`MODE`·`SSR`·`BASE_URL`을 보지 않는다(`import.meta.env.` 형태일 때만). 테스트: Vite 사례가 고치기 전 exit 1 → 고친 뒤 0. `process.env.MODE`는 그대로 잡는다.
+- 🟡 config-check: 예시·샘플 파일에서는 키 값 검사(`sb_secret_`, JWT)를 건너뛴다. 공개 접두사 이름 검사는 그대로다. 테스트: 고치기 전 exit 1 → 0.
+- 🟡 base-tests 도우미 분류: HEAD 판으로 두는 테스트 쪽 파일을 늘렸다.
+  - 폴더: `fixtures/`·`testdata/`·`mocks/`·`__mocks__/`
+  - 파일: `conftest.py`, `pytest.ini`, `setupTests.*`, `*.setup.*`, `(vitest|jest|playwright|cypress|karma).config.*`, `.mocharc*`, `test_utils`·`test-helpers` 같은 이름
+  - 그 밖의 도우미는 `BASE_TESTS_KEEP`(경로 정규식)으로 더한다. end.md 에도 적었다.
+  - 테스트: 루트 `test_utils.sh`를 쓰는 테스트가 이전 판에서는 "기준에서 실패"(틀림), 새 판에서는 "기준에서도 통과"로 나왔다. `BASE_TESTS_KEEP` 사례는 고치기 전에 틀렸다.
+- 🟡 base-tests 기준 판 바꾸기:
+  - `git restore`에 경로를 `--pathspec-from-file`(NUL 구분)로 넘긴다.
+  - 사본 뜨기·빼기·restore 중 하나라도 실패하면 판정하지 않고 되돌린 뒤 2로 끝낸다.
+  - 테스트: 경로 800개(약 50K자) 사례가 고치기 전에는 "Argument list too long" 뒤 "기준에서도 통과"(틀림), 고친 뒤에는 "기준에서 실패"로 나왔다.
+- 🟡 base-tests 시간 제한: 테스트 하나는 `BASE_TESTS_TIMEOUT`초(기본 600)가 지나면 `timeout -k 5`로 끊는다. `timeout`·`gtimeout`이 없으면 끊지 않는다. 기준에서 끊긴 것은 `기준에서 실패: <파일> (N초 시간 초과)`로 적는다. 테스트: 기준에서 멈추는 테스트가 고치기 전에는 30초를 넘겼고(기대는 30초 안), 고친 뒤에는 3초에 끊겼다.
+- 결과: `test-config-check` 20/20, `test-base-tests` 16/16. 검증 명령은 통과했다.
+- 그 밖에(부모 세션이 전한 사용자 결정): 이 항목의 근거 보고서 경로를 `docs/backlog/references/`로 바꿨다.
+
 ### 알아 둘 것
 
 - 이 저장소에서 `diff-check.sh`·`config-check.sh`를 돌리면 스크립트와 테스트 안의 패턴 문자열(`console.log`, `sb_secret_…`)이 걸린다. 패턴 검사라 생기는 오탐이다. 이 저장소는 `stack: 없음`이라 점검이 돌지 않는다.
