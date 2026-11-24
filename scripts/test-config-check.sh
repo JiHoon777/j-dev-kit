@@ -59,6 +59,9 @@ check "새 키와 .env.example 을 함께 고침 → 통과" 0 - "NEW_ONE" "echo
 check "원래 있던 줄의 키는 보지 않는다" 0 - "OLD_VAR" "echo '// 다른 줄' >> src/server.ts"
 check "NODE_ENV·CI 는 보지 않는다" 0 - "—" "echo 'if (process.env.NODE_ENV && process.env.CI) {}' > src/env.ts"
 check "마크다운은 보지 않는다" 0 - "—" "echo '\`process.env.DOC_ONLY\`' > NOTES.md"
+check "Vite 가 늘 정의하는 import.meta.env 값은 보지 않는다" 0 - "—" \
+  "echo 'if (import.meta.env.DEV || import.meta.env.PROD || import.meta.env.SSR) console.info(import.meta.env.MODE, import.meta.env.BASE_URL)' > src/vite.ts"
+check "process.env 의 같은 이름은 그대로 본다" 1 "src/dev.ts:1 — 새 환경 변수 MODE 이 .env.example 에 없음" - "echo 'process.env.MODE' > src/dev.ts"
 langs='process.env["L1"]
 import.meta.env.VITE_L2
 os.environ["L3"]
@@ -88,6 +91,7 @@ check "커밋된 .env.local → 실패" 1 "apps/api/.env.local — 값 파일이
 # 키 (파일 이름만, 값은 내지 않는다)
 check "sb_secret_ 키 → 파일 이름만" 1 "src/admin.ts — sb_secret_ 키" "$secret" "echo 'const k = \"$secret\"' > src/admin.ts"
 check "키 없이 sb_secret_ 낱말만 → 통과" 0 - "—" "echo '찾는 패턴: sb_secret_|eyJ' > docs.txt"
+check "예시 파일의 자리표시자 키는 보지 않는다" 0 - "—" "echo 'SUPABASE_SECRET_KEY=sb_secret_your_secret_key' >> .env.example && echo 'SUPABASE_SECRET_KEY=$service_jwt' >> apps/api/.env.sample"
 check "service_role JWT → 파일 이름만" 1 "seed/seed.ts — JWT 토큰(role: service_role)" "$service_jwt" "mkdir -p seed && echo 'const k = \"$service_jwt\"' > seed/seed.ts"
 check "anon JWT → 통과" 0 - "—" "echo 'const k = \"$anon_jwt\"' > src/client.ts"
 check "공개 접두사 환경 변수에 비밀 키 이름 → 실패" 1 "src/web.ts — 공개 접두사 환경 변수에 비밀 키 이름(NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY)" - \

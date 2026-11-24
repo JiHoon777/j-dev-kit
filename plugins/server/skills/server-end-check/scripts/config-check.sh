@@ -2,9 +2,11 @@
 # 설정 키·값 파일·키 검사: bash config-check.sh <기준 브랜치>
 # 실패만 한 줄씩 쓴다. 키 값은 쓰지 않는다.
 # - <기준>...HEAD 의 추가된 줄(마크다운 빼고)에서 새로 읽는 환경 변수가 추적하는 .env.example·.env.sample 어디에도 없으면
-#   `파일:줄 — 새 환경 변수 <이름> 이 .env.example 에 없음` (NODE_ENV, CI 는 보지 않는다)
+#   `파일:줄 — 새 환경 변수 <이름> 이 .env.example 에 없음` (NODE_ENV, CI 와 Vite 가 늘 정의하는 import.meta.env 의
+#   DEV·PROD·MODE·SSR·BASE_URL 은 보지 않는다)
 # - 추적하는 값 파일(.env, .env.local 같은 것. .example·.sample 은 뺀다): `파일 — 값 파일이 커밋됨`
-# - 추가된 줄의 키(파일 이름만): sb_secret_ 키, role 이 anon 이 아닌 JWT, 공개 접두사 환경 변수에 비밀 키 이름(마크다운 빼고)
+# - 추가된 줄의 키(파일 이름만): sb_secret_ 키, role 이 anon 이 아닌 JWT(이 둘은 예시·샘플 파일에서 보지 않는다),
+#   공개 접두사 환경 변수에 비밀 키 이름(마크다운 빼고)
 # 실패가 있으면 1, 없으면 출력 없이 0.
 # 저장소 루트에서 돈다. 이 스크립트를 고치면 scripts/test-config-check.sh 를 돌린다.
 
@@ -39,15 +41,18 @@ known=$(
 found=$(
   ENV_RE="(process\.env|import\.meta\.env|Bun\.env)\.[A-Za-z_][A-Za-z0-9_]*|(process\.env\[|Deno\.env\.get\(|os\.environ\[|os\.environ\.get\(|getenv\(|Getenv\(|LookupEnv\(|env::var\(|ENV\[|ENV\.fetch\(|[\$]_ENV\[)[[:space:]]*[\"'][A-Za-z_][A-Za-z0-9_]*" \
   EXAMPLE_RE=$example_re KNOWN=$known awk '
-    BEGIN { n = split(ENVIRON["KNOWN"], k, "\n"); for (i = 1; i <= n; i++) known[k[i]] = 1; known["NODE_ENV"] = known["CI"] = 1 }
+    BEGIN {
+      n = split(ENVIRON["KNOWN"], k, "\n"); for (i = 1; i <= n; i++) known[k[i]] = 1; known["NODE_ENV"] = known["CI"] = 1
+      split("DEV PROD MODE SSR BASE_URL", v, " "); for (i in v) vite[v[i]] = 1 # Vite 가 늘 정의하는 import.meta.env 값
+    }
     {
       t1 = index($0, "\t"); f = substr($0, 1, t1 - 1); rest = substr($0, t1 + 1)
       t2 = index(rest, "\t"); ln = substr(rest, 1, t2 - 1); line = substr(rest, t2 + 1)
-      md = (f ~ /\.md$/)
-      # 키
-      s = line
+      md = (f ~ /\.md$/); example = (f ~ ENVIRON["EXAMPLE_RE"])
+      # 키 값 (예시·샘플 파일의 값은 자리표시자라 보지 않는다)
+      s = example ? "" : line
       while (match(s, /sb_secret_[A-Za-z0-9_-]+/)) { if (RLENGTH >= 20) print "K\t" f " — sb_secret_ 키"; s = substr(s, RSTART + RLENGTH) }
-      s = line
+      s = example ? "" : line
       while (match(s, /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/)) {
         t = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH); d = index(t, ".")
         if (d > 13 && length(t) - d >= 10) print "J\t" f "\t" substr(t, d + 1)
@@ -58,13 +63,13 @@ found=$(
         print "K\t" f " — 공개 접두사 환경 변수에 비밀 키 이름(" substr(s, RSTART, RLENGTH) ")"; s = substr(s, RSTART + RLENGTH)
       }
       # 새 환경 변수 (.env.example 같은 파일 자신은 뺀다)
-      if (f ~ ENVIRON["EXAMPLE_RE"]) next
+      if (example) next
       split("", seen)
       s = line
       while (match(s, ENVIRON["ENV_RE"])) {
         m = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
-        sub(/.*[."\047]/, "", m)
-        if ((m in known) || (m in seen)) continue
+        form = m; sub(/.*[."\047]/, "", m)
+        if ((m in known) || (m in seen) || (form ~ /^import\.meta\.env\./ && m in vite)) continue
         seen[m] = 1
         print "E\t" f ":" ln " — 새 환경 변수 " m " 이 .env.example 에 없음"
       }
