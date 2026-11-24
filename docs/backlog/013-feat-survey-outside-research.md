@@ -1,7 +1,7 @@
 ---
 id: '013'
 title: 서베이 모드가 바깥을 기본으로 조사하고 보고서를 남긴다
-status: To Do
+status: In Progress
 labels: [feat]
 priority: high
 dependencies: []
@@ -50,11 +50,72 @@ updated_date: 2026-11-25
 
 ## Implementation Plan
 
-만들 때는 비워 둔다. `/task start`가 승인된 계획을 적는다.
+### 1. 무엇을 하나
+
+`create.md` 서베이 절을 "목표 쪼개기 → 안쪽·바깥 각도별 병렬 수집(메모 파일) → 메모·범주·세기·포화 → 판정 에이전트 거르기 → 보고서 → 고르기 → 쓰기"로 바꾸고, URL 없이 목표만 준 서베이의 동작 eval 을 더해 지금 판과 비교한다.
+
+이번에 빼는 것(항목 그대로): 정기 실행, 서베이 결과로 `start`·세션 띄우기, 후보 수 상한, 점수 공식. SKILL.md `description`(트리거 문장)은 바꾸지 않는다(트리거 eval 을 다시 잴 일이 생기므로).
+
+### 2. 도구와 단계
+
+이 일은 "에이전트 절차 문서(스킬) 설계 + 그 효과 측정"이다. 실무자 방식: 근거 보고서(`docs/backlog/references/2026-11-25-서베이-모드-전문가-조사.md`)의 Anthropic 멀티 에이전트 리서치(위임 지시문 네 요소, 넓게→좁게, 1차 출처, 결과는 파일), Hamel 오류 분석(메모→범주→세기→포화), Torres(후보는 문제·필요, 크기·목표 영향, 공식 없음), `/dedupe`(별도 거짓 양성 거르기)를 절차에 옮긴다. 측정은 저장소 README 방식 그대로 `claude plugin eval`(판 두 개, `--runs 5`, `--judge-model sonnet`, 판정 규칙: 평균 차이 < 두 표준오차 합이면 "같음"). 설치할 것 없음.
+
+확인한 eval 기능(claude-code-guide 답, 공개 문서 URL 없음 → 첫 실행의 결과 JSON 으로 다시 확인): 채점 `regex`(target `trace` 가능), `file_exists`(에이전트가 만든 파일, glob), `llm`(target `{source: file, path}`로 만든 파일 내용). `WebSearch`·`WebFetch`·`Write`는 `--allow-tools`가 필요하다.
+
+### 3. 바꿀 파일과 순서
+
+먼저 eval(테스트)을 쓰고, 지금 판으로 돌려 기준 점수를 잰 뒤 절차를 고친다.
+
+1. **eval 사례 `plugins/workflow/evals/survey-outside/`** (새로)
+   - `fixture.sh`: 작은 Node 저장소. `.github/workflows/ci.yml`이 `actions/checkout@v3`, `actions/setup-node@v3`(node 16), `actions/cache@v2`를 쓴다. 백로그에 `001-chore-ci-node-version.md`(To Do, "CI 의 Node 버전을 22 로 올린다")가 있다. 오류 로그·이슈는 없다(안쪽만 보면 근거가 얇다).
+   - `prompt.md`: `task` 스킬을 `create --survey CI 가 GitHub Actions 쪽 변경으로 깨지기 전에 고칠 것 찾기 --here`로. 셸 없음, 후보를 보여 주고 고르게 하는 데서 멈춘다(항목은 쓰지 않는다). `allowed_tools: [Skill, Agent, Read, Grep, Glob, WebSearch, WebFetch, Write]`.
+   - `graders/`:
+     - `searched-outside.md` — `regex`, target `trace`, `WebSearch|WebFetch` 호출이 있다.
+     - `report-written.md` — `file_exists` `.claude/.local/reports/*.md`.
+     - `report-sources.md` — `llm`, 보고서 파일 내용: 후보마다 출처(URL 이나 `file:line`)와 [직접]/[검색] 표시가 있다. (`{source: file}`가 glob 을 못 받으면 마지막 메시지의 후보 표로 채점하고 Notes 에 적는다.)
+     - `no-overlap.md` — `llm`, 마지막 메시지: Node 버전 올리기를 새 후보로 올리지 않았다(빼거나 "제안하지 않는 것"에 001 과 겹친다고 적었다).
+   - `case.yaml`: `tags: [survey]`, scaffold.
+2. **지금 판 측정:** main(`af09fc4`)의 `plugins/workflow`를 scratchpad 에 복사(dependencies·hooks 제거, 새 사례 폴더 넣기)해 돌린다:
+   `claude plugin eval <사본> --ablation none --scaffold --trust-plugin --model opus --judge-model sonnet --runs 5 --tag survey --no-publish --threshold 0 -j 2 --allow-tools WebSearch WebFetch Write --json <사본>.json` (백그라운드). 첫 실행에서 subagent 의 웹 호출이 trace 에 보이는지, 파일 채점 경로가 되는지 확인하고 채점을 맞춘다.
+3. **`plugins/workflow/skills/task/references/create.md` 서베이 절 다시 쓰기** — 인자 `create --survey <목표> [자료…] [--internal]`.
+   - 0 목표 쪼개기: 결과 한 문장 + 조사 질문, 질문마다 각도(안쪽·바깥). 노력은 목표 크기에 맞춘다. 몇 줄로 보여 주고 승인을 기다리지 않고 진행한다(AC #2).
+   - 1 자료 모으기: 안쪽(오류 로그, backlog·done, README 메모, `gh issue list`, 사용 데이터)과 바깥(쓰는 도구·라이브러리의 공식 문서·변경 기록·이슈, 같은 일을 하는 도구·선례, 그 분야 실무자의 글·발표)을 자료를 주지 않아도 모두 찾는다. 준 자료·URL 은 출발점이고 범위를 좁히지 않는다. 바깥은 사용자가 `--internal`이나 그런 말을 할 때만 뺀다. 검색은 짧고 넓게 시작해 좁히고 1차 출처를 요약 글보다 앞에(AC #1). 각도마다 하위 에이전트를 한 메시지에서 병렬로 띄우고, 지시문에 목표·출력 형식·쓸 출처·경계(읽기만, 메모 파일 말고는 쓰지 않음, 맡은 각도 밖으로 넓히지 않음)를 넣는다. 자료마다 메모(무엇, 짧은 인용, 위치·URL, 읽은 날짜, [직접]/[검색])를 `.claude/.local/survey/<날짜>-<이름>/<각도>.md`에 쓰고 경로만 돌려준다(AC #3).
+   - 2 후보 고르기: 메모 → 범주(메모에서 만들고 미리 정한 틀에 끼우지 않는다) → 범주마다 근거 수 세기. 새 자료가 범주를 더하지 않으면 수집을 멈추고, 더하면 그쪽을 더 읽는다. 후보는 문제·필요로 적고 해법은 한 줄, 크기(근거 수)와 목표에 닿는 정도를 붙인다. 공식 없음, 개수 없음. 근거로 쓰는 주장은 메인 세션이 원문을 다시 열어 확인한다(AC #3·#4). 같은 원인 묶기, 버그 재현 규칙은 그대로.
+   - 3 거르기: 새 general-purpose 판정 에이전트에 후보 목록, 메모 경로, `docs/backlog/`·`docs/done/`만 넘긴다. 지시문: 파일을 고치지 않는다. 후보마다 근거가 주장을 받치나(원문을 연다), 이미 있는 항목·이미 고쳐진 것과 겹치나, 출처가 1차인가 → 통과/탈락과 이유. 애매하면 통과로 두지 않는다. 탈락은 "제안하지 않는 것"에 이유와(AC #5). (`end.md`의 판정 에이전트 방식과 같다)
+   - 4 보고서: `.claude/.local/reports/<날짜>-<이름>.md`에 확인 날짜, 표기, 결론 요약, 후보 표(문제·필요, 해법 한 줄, 근거와 [직접]/[검색], 크기, 목표에 닿는 정도, 확인 수단), 제안하지 않는 것과 이유, 읽지 못한 것.
+   - 5 한 번에 보여 주기: 보고서 경로와 후보 표를 보이고 고르게 한다.
+   - 6 쓰기: 지금 4와 같고, 더해서 고른 후보가 있으면 보고서를 `docs/backlog/references/`로 옮겨 첫 항목 커밋에 넣고 항목마다 Description 에 그 경로를 적는다. 고른 것이 없으면 `.claude/.local/reports/`에 둔다(AC #6). "항목만 만들고 `start`·세션을 띄우지 않는다, 개수는 정하지 않는다"는 그대로(AC #8).
+   - 4단계 커밋 규칙("다른 변경은 넣지 않는다")에 보고서 예외를 한 줄.
+4. **번역본** `i18n/en/plugins/workflow/skills/task/references/create.md` 같은 내용. `SKILL.md`와 번역본의 `argument-hint`에 `[--internal]` 추가(description 은 그대로).
+5. **고친 판 측정:** 2와 같은 명령으로 이 워크트리 판 사본을 돌린다. 비교·명령을 Implementation Notes 에 적는다. 고친 판이 낮으면 멈추고 묻는다(AC #7).
+6. **README·버전:** `plugins/workflow/evals/README.md` 표에 `survey-outside` 줄과 `--allow-tools` 메모. workflow `plugin.json` `version` 0.15.1 → 0.16.0, `description`의 서베이 문장 갱신, `marketplace.json` 같은 문장, `README.md`·`i18n/en/README.md`의 create --survey 설명(65줄 근처)과 참고 줄에 Anthropic 리서치·Hamel·Torres 출처.
+
+### 4. 성공 기준 (AC 마다 확인)
+
+- #1~#6, #8: `grep`으로 `create.md`(와 번역본)의 해당 문구를 보이고 출력을 Notes 에 남긴 뒤, 새 general-purpose 판정 에이전트(항목 경로와 `git diff main...HEAD`만)가 AC 별로 판정한다.
+- #7: eval 사례가 커밋돼 있고, 두 판의 grader 별 통과율·평균 ± 표준오차·costUsd(API 환산값)·다시 돌리는 명령이 Notes 에 있다. 판정은 판정 에이전트.
+- DoD: `claude plugin validate . && bash scripts/check-repo-rules.sh` 새로 돌려 통과(기준선: 통과).
+
+### 5. 스택 점검
+
+frontend·server start check: CLAUDE.md `stack: 없음` → 해당 없음.
+
+### 6. 가정과 정한 것
+
+- 바깥을 빼는 플래그는 `--internal`. "바깥은 보지 마" 같은 말로도 뺀다.
+- 조사 질문 수·에이전트 수에 숫자를 두지 않는다(008 이 고정 상한을 지운 방향). 목표가 좁으면 각도가 하나여도 된다(그래도 하위 에이전트가 수집).
+- 메모는 `.claude/.local/survey/`(커밋 안 함), 보고서는 고르기 전에 `.claude/.local/reports/`에 먼저 쓰고 고르면 옮긴다.
+- 판정 에이전트 모델은 이 세션과 같다(end.md 와 같음).
+- eval 은 `--model opus`, 5회, `-j 2`. 비용은 Max 구독이라 costUsd 는 API 환산값으로만 적는다. 웹 검색이 있어 회당 시간·비용이 크면 3회로 줄이고 Notes 에 적는다.
+- 지금 판은 보고서를 쓰지 않으니 `report-*` 채점은 지금 판이 떨어지는 것이 정상이다. 비교는 grader 별로도 적는다.
 
 ## Implementation Notes
 
 작업하며 알게 된 것, 계획에서 바뀐 것.
+
+### Baseline
+
+- `claude plugin validate . && bash scripts/check-repo-rules.sh`: 통과 (main af09fc4, 2026-11-25)
 
 ## Final Summary
 
