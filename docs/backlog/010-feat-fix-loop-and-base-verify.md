@@ -27,6 +27,8 @@ updated_date: 2026-11-24
 
 6. **하위 세션의 모델과 노력(사용자가 start 중에 더함, 2026-11-24):** 사용자의 말은 "지금 start, create 로 하위 세션 띄울때 Fable 은 한 버전 아래의 최신 Opus 높음 으로 띄어지도록 하고, 그 아래는 똑같이 띄어지도록" → "010에 더해"다. 대상은 `task` `SKILL.md` 2절 3 과 번역본이다. 이 세션이 Fable 이면 `start_session`에 `model`을 한 단계 낮은 최신 모델로, `effort`를 `high`로 준다. Opus 이하면 둘 다 주지 않아 이어받는다. `end.md` 3단계 리뷰 모델 규칙과 같은 말투로 쓴다. `start_session`은 노력을 이 세션과 같거나 낮게만 받는다. 그래서 Fable 세션의 노력이 `high`보다 낮으면 이어받게 두고 그렇다고 알린다.
 
+7. **Stop 훅 시간 제한(사용자가 start 중에 더함, 2026-11-24):** 사용자의 말은 "그렇게 하기"다. 부모 세션이 "011 리뷰를 시작하고, 훅 시간 제한은 010 에 더할까요?"라고 물은 데 대한 답이다. command 훅의 기본 timeout 은 600초이고, 닿으면 훅이 취소된다. 011 이 머지되면 검증 명령이 바뀐 스크립트의 짝 테스트까지 돌린다. 011 이 잰 값으로 test-base-tests 하나가 284초이고, 여러 스크립트를 함께 고치면 600초를 넘을 수 있다. 그래서 `plugins/workflow/hooks/hooks.json` Stop 훅에 `timeout`을 넣는다.
+
 008·009 와 겹치는 곳(묶지 않는다. 함께 돌리고 충돌은 머지 때 푼다):
 
 - `end.md`: 008 이 3단계 리뷰 모델(한 단계 낮추기)과 4단계 판정(작업 세션 밖으로)을 고친다. 이 항목의 5는 그 판정을 거친 지적을 5단계에서 누가 고치는지다. 009 도 4단계 선택지("자동 검사로 막기")와 5단계("나중"처럼 새 항목 만들기), 기준 브랜치에서 테스트 확인을 더한다. eval 방식은 008 #8 을 따른다.
@@ -78,6 +80,7 @@ updated_date: 2026-11-24
 - [ ] #5 `end.md` 5단계(원문·번역본)에 다음이 적혀 있다: 판단이 필요한 수정은 작업 세션이 직접 고친다. 위치와 고칠 내용이 정해진 기계적인 수정은 모아 에이전트 하나(`model: sonnet`, 노력 높음)에 지적 목록, 항목 파일, "동작을 바꾸면 실패하는 테스트 먼저" 규칙과 함께 맡길 수 있고, 맡길지는 작업 세션이 정한다(예: 수가 적거나 같은 파일을 함께 고쳐야 하면 직접). 고친 뒤 판정은 검증 명령과 판정 에이전트(UI 는 `frontend-evaluator`)로 한다. 같은 지적이 세 번 고쳐도 남으면 멈추고 사용자에게 넘긴다. 작업 세션이 고친 판과 Sonnet 이 고친 판의 비교 방법과 결과(먼저 하나를 `--max-cost-usd 5`로 돌린 것 포함)가 `Implementation Notes`에 있다(start 중 사용자 결정으로 "결과가 나쁘면 위임 없이"를 "맡길지는 작업 세션 재량"으로 바꿈)
 - [ ] #6 `start.md` 6단계 4(원문·번역본)의 "실패는 고치고 다시 판정받는다"에, 같은 AC 가 세 번 고쳐도 실패하면 멈추고 실패한 AC 와 시도한 것을 사용자에게 알린다고 적혀 있다(start 계획에서 사용자가 더함)
 - [ ] #7 `task` `SKILL.md`(원문·번역본) 2절 3 에 하위 세션의 모델·노력 규칙이 있다: 이 세션이 Fable 이면 한 단계 낮은 최신 모델과 `effort: high`를 준다. 노력이 `high`보다 낮은 세션이면 이어받게 두고 알린다. Opus 이하면 둘 다 이어받는다(start 중에 사용자가 더함)
+- [ ] #8 `plugins/workflow/hooks/hooks.json`의 Stop 훅에 `timeout`(초)이 기본값 600보다 크게(1800) 있고, 값과 이유가 `Implementation Notes`에 있다(start 중에 사용자가 더함)
 
 <!-- AC:END -->
 
@@ -260,6 +263,20 @@ updated_date: 2026-11-24
 - `start_session` 도구 설명을 확인했다. `model`은 "Same family or cheaper than yours; anything higher is ignored. Omit to inherit yours."이고, `effort`는 "reasoning effort at or below yours. Omit to inherit."이다.
 - 그 설명대로 `SKILL.md` 2절 3 표 아래에 규칙을 넣었다(원문·번역본). `model`에는 id 를 받으니 `claude-opus-5-5`를 함께 적었다.
 - 이 세션은 Opus 5.5 로 돌고 있어 Fable 세션에서 실제로 띄워 보지는 못했다.
+
+### AC #8 Stop 훅 시간 제한 (start 중에 더함)
+
+- 범위에 더함: 2026-11-24, 사용자 "그렇게 하기"(부모 세션이 전함).
+- 문서 확인(https://code.claude.com/docs/en/hooks, claude-code-guide 에이전트가 읽음):
+  - 공통 필드 표에 "`timeout` | no | Seconds before canceling."이 있고, 기본값은 "600 for `command`"다.
+  - 닿으면 "cancels a `command` … hook that reaches its `timeout`, discarding the hook's output"이다.
+  - 일반 command 훅의 상한은 문서에 없다.
+  - Stop 훅이 시간 초과로 취소될 때 Claude 를 막는지는 문서에 없다. exit 2 가 아니니 막지 않고 멈출 것으로 본다(추론, 재지 않음).
+- 값은 1800초(30분)로 정했다.
+  - 011 이 잰 test-base-tests 284초에, 스크립트 테스트를 모두 돌리면 약 700초 이상이 든다. 그 두 배를 넘게 잡았다.
+  - 너무 길면 실패한 검증이 멈추지 않는 동안 세션이 묶이지만, 훅은 DoD 를 체크한 `w/` 브랜치에서 내용이 바뀌었을 때만 돈다.
+- `hooks.json`의 `description`도 "the base branch's verify command … (waiting up to 30 minutes)"로 맞췄다. README 두 개의 검증 훅 설명에 한 구절을 더했다.
+- 훅 테스트(`scripts/test-verify-on-stop.sh`)는 스크립트만 돌리고 hooks.json 은 읽지 않는다. 그래서 확인은 JSON 을 읽어 값을 꺼낸 출력(`timeout = 1800`)과 판정 에이전트로 한다.
 
 ### 정리(simplify)
 

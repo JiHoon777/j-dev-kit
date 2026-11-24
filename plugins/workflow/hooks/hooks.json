@@ -1,12 +1,13 @@
 {
-  "description": "On a w/* work branch, when the item's Definition of Done is checked, run the project's verify command before Claude stops and send it back if it fails, once per working-tree content, even after another Stop hook such as /goal has blocked.",
+  "description": "On a w/* work branch, when the item's Definition of Done is checked, run the base branch's verify command before Claude stops (waiting up to 30 minutes) and send it back if it fails, once per working-tree content, even after another Stop hook such as /goal has blocked.",
   "hooks": {
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/verify-on-stop.sh\""
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/verify-on-stop.sh\"",
+            "timeout": 1800
           }
         ]
       }
