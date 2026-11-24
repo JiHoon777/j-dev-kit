@@ -15,7 +15,7 @@ metadata:
 - CLAUDE.md 에 frontend 가 빠진 `stack:` 줄이 있으면 "해당 없음".
 - `git diff --name-only <기준>...HEAD`에 프론트엔드 코드(컴포넌트, 페이지, 스타일, 클라이언트 로직, package.json)가 없으면 "프론트엔드 변경 없음"만 돌려준다.
 - 볼 package.json 은 바뀐 파일이 속한 앱·패키지의 것이다(모노레포면 루트가 아니다). 거기에 프런트엔드 프레임워크(react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro)가 없으면 "해당 없음".
-- 그 package.json 에 `svelte`가 있으면 `${CLAUDE_SKILL_DIR}/references/svelte.md`를 Read 도구로 끝까지 읽는다. React 는 따로 돌릴 검사가 없다(훅 린트와 빌드는 검증 명령에 들어 있어야 한다).
+- 그 package.json 에 `svelte`가 있으면 `${CLAUDE_SKILL_DIR}/references/svelte.md`를 Read 도구로 끝까지 읽는다.
 
 ## 1. 검사
 
@@ -32,7 +32,7 @@ UI 코드가 바뀌었으면 `frontend:frontend-reviewer`. 근거로 바뀐 UI �
 
 리뷰 지적을 고쳐 UI 가 바뀌었으면, 고친 화면을 `frontend:frontend-evaluator` 에이전트에 맡겨 확인한다. reference 가 더하는 것도.
 
-- 개발 서버를 띄운다: `${CLAUDE_SKILL_DIR}/../frontend-start-check/SKILL.md`를 읽고 1절 "브라우저 확인"의 개발 서버 항목대로 한다. 그 항목의 스크립트 경로는 frontend-start-check 폴더 기준이다.
+- 개발 서버를 띄운다. 포트는 작업 브랜치 항목의 `### 포트`에 있는 웹 포트, 없으면 `.claude/launch.json`의 포트다(launch.json 은 고치지 않는다). launch.json 으로 그 포트에 띄울 수 있으면 그것으로 띄우고 `bash ${CLAUDE_SKILL_DIR}/../frontend-start-check/scripts/dev-server.sh <포트>`로 듣는지 확인한다. 아니면 개발 명령이 포트를 받는 방식(예: Vite `--port`, `PORT` 환경 변수)을 package.json 스크립트에서 확인해 `bash ${CLAUDE_SKILL_DIR}/../frontend-start-check/scripts/dev-server.sh <포트> <그 포트로 띄우는 명령…>`으로 띄운다. 출력의 `URL:`을 화면 URL 로 쓰고, 0 이 아닌 값으로 끝나면 출력한 이유를 알린다.
 - 에이전트에 항목 파일 경로, 화면 URL, 뷰포트, 고친 지적 목록을 넘긴다. 어떻게 고쳤는지는 넘기지 않는다.
 - 뷰포트는 CLAUDE.md 에 정한 것, 없으면 데스크톱. 반응형 레이아웃을 고쳤으면 휴대폰(375×812)도.
 - "실패"는 다시 고친다. 같은 지적이 세 번 고쳐도 실패하면 더 고치지 않고 멈추고, 실패한 지적과 시도한 것을 사용자에게 알린다. 같은 고치기를 되풀이하기보다 사람이 접근을 다시 보는 편이 낫다. 에이전트가 "브라우저 도구 없음"이라고 하면 직접 확인하고(`chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저) 직접 했다고 적는다. 직접도 할 수 없으면 멈추고 알린다.

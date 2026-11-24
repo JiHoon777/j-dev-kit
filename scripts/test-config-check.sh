@@ -54,7 +54,7 @@ check() {
 check "아는 키만 읽음 → 출력 없이 0" 0 - "—" "echo 'const u = process.env.DATABASE_URL, k = process.env.API_KEY' > src/db.ts"
 check "새 키가 .env.example 에 없음 → 파일:줄" 1 "src/pay.ts:2 — 새 환경 변수 STRIPE_SECRET 이 .env.example 에 없음" - \
   "printf 'import x from \"y\"\nconst s = process.env.STRIPE_SECRET\n' > src/pay.ts"
-check "하위 폴더의 .env.example 에 있는 키 → 통과" 0 - "INNER_KEY" "echo 'os.getenv(\"INNER_KEY\")' > apps/api/main.py"
+check "하위 폴더의 .env.example 에 있는 키 → 통과" 0 - "INNER_KEY" "echo 'process.env.INNER_KEY' > apps/api/main.ts"
 check "새 키와 .env.example 을 함께 고침 → 통과" 0 - "NEW_ONE" "echo 'process.env.NEW_ONE' > src/n.ts && echo 'NEW_ONE=' >> .env.example"
 check "원래 있던 줄의 키는 보지 않는다" 0 - "OLD_VAR" "echo '// 다른 줄' >> src/server.ts"
 check "NODE_ENV·CI 는 보지 않는다" 0 - "—" "echo 'if (process.env.NODE_ENV && process.env.CI) {}' > src/env.ts"
@@ -62,26 +62,27 @@ check "마크다운은 보지 않는다" 0 - "—" "echo '\`process.env.DOC_ONLY
 check "Vite 가 늘 정의하는 import.meta.env 값은 보지 않는다" 0 - "—" \
   "echo 'if (import.meta.env.DEV || import.meta.env.PROD || import.meta.env.SSR) console.info(import.meta.env.MODE, import.meta.env.BASE_URL)' > src/vite.ts"
 check "process.env 의 같은 이름은 그대로 본다" 1 "src/dev.ts:1 — 새 환경 변수 MODE 이 .env.example 에 없음" - "echo 'process.env.MODE' > src/dev.ts"
-langs='process.env["L1"]
+forms='process.env["L1"]
 import.meta.env.VITE_L2
-os.environ["L3"]
-os.environ.get("L4")
-os.getenv("L5")
-os.Getenv("L6")
-env::var("L7")
-System.getenv("L8")
-ENV["L9"]
-ENV.fetch("L10")
-Deno.env.get("L11")
-Bun.env.L12
-$_ENV["L13"]'
+Deno.env.get("L3")'
 lines=
-for n in 1 2 3 4 5 6 7 8 9 10 11 12 13; do
+for n in 1 2 3; do
   name=L$n; [ $n = 2 ] && name=VITE_L2
-  lines+="${lines:+|}src/langs.txt:$n — 새 환경 변수 $name 이 .env.example 에 없음"
+  lines+="${lines:+|}src/forms.ts:$n — 새 환경 변수 $name 이 .env.example 에 없음"
 done
-check "언어별 읽는 형태 13가지 → 줄마다 파일:줄" 1 "$lines" - "cat > src/langs.txt <<'EOF'
-$langs
+check "Node·Vite·Deno(Supabase Edge Functions) 형태 → 줄마다 파일:줄" 1 "$lines" - "cat > src/forms.ts <<'EOF'
+$forms
+EOF"
+others='os.environ["O1"]
+os.getenv("O2")
+os.Getenv("O3")
+env::var("O4")
+System.getenv("O5")
+ENV.fetch("O6")
+Bun.env.O7
+$_ENV["O8"]'
+check "Node 밖의 서버 언어 형태는 보지 않는다" 0 - "—" "cat > src/others.txt <<'EOF'
+$others
 EOF"
 
 # 값 파일

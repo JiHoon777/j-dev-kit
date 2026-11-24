@@ -7,8 +7,8 @@ Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하
 | 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end`, 검증 Stop 훅, 항목 포트 고르기·기준 브랜치 테스트 확인 스크립트 | `superpowers` |
-| `frontend` | Svelte·React 점검(개발 서버 띄우기·diff 검사 스크립트), DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
-| `server` | 서버·Supabase 점검(마이그레이션, API 스펙, 키. 설정 키·키는 스크립트), `api-reviewer`, `supabase-reviewer` | `workflow` |
+| `frontend` | Svelte·SvelteKit 점검(개발 서버 띄우기·diff 검사 스크립트), DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
+| `server` | Node 서버·Supabase 점검(마이그레이션, 키. 설정 키·키는 스크립트), `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설치한다.
 
@@ -45,7 +45,7 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 | Svelte 공식 | `/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte` |
 | Chrome DevTools | `/plugin marketplace add ChromeDevTools/chrome-devtools-mcp`, `/plugin install chrome-devtools-mcp@chrome-devtools-plugins` |
 | modern-web-guidance | `/plugin marketplace add GoogleChrome/modern-web-guidance`, `/plugin install modern-web-guidance@googlechrome` |
-| Vercel react-best-practices | `npx -y skills@1.7.5 add vercel-labs/agent-skills` |
+| web-design-guidelines (Vercel agent-skills) | `npx -y skills@1.7.5 add vercel-labs/agent-skills` |
 | Supabase 공식 | `/plugin install supabase@anthropic-plugin-directory` (같이 오는 MCP 는 `/mcp`에서 끈다) |
 
 ## 사용법

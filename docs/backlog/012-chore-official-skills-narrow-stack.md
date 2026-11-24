@@ -255,4 +255,43 @@ updated_date: 2026-11-24
 - `svelte@svelte`: plugin.json 의존성이 풀리지 않으면(사용자가 `svelte` 마켓플레이스를 더하지 않았으면) 설치는 되지만 우리 플러그인이 로드되지 않는다(code.claude.com/docs/en/plugins/dependencies, troubleshooting). 그래서 README 안내로 둔다.
 - `web-design-guidelines`: 플러그인이 없다(vercel-labs/agent-skills 에 `.claude-plugin/` 없음, `npx skills add`로만 설치). README 안내로 둔다.
 
+### 1단계: 재지 않는 것 (2026-11-24)
+
+- **B3** `base-tests.sh`: 테스트를 먼저 넣고 실패를 봤다(`bash scripts/test-base-tests.sh` → "19 개 중 15 개 맞음". 새 사례 넷이 "바뀐 테스트 없음."으로 0 이 나와 틀림). 고친 뒤 "19 개 중 19 개 맞음".
+  - 새 사례: 소스만 바뀌고 테스트를 못 찾음 → 2, 문서만 바뀜 → 0("문서만 바뀜. 건너뛴다."), `src/__tests__/login.js`를 고름, `tests/login.js`를 고르고 `tests/helpers/x.js`(고르면 기준에서도 통과 → 1)·`tests/fixtures/data.js`(고르면 HEAD 에서 실패 → 2)는 고르지 않음.
+  - 도우미를 가르는 방법(계획 가정): `__tests__/`·`tests/`·`test/` 아래의 JS·TS 파일만 더 고르고, 그 아래라도 `fixtures`·`helpers`·`utils`·`mocks`·`support`·`testdata` 폴더와 `_`·`setup`·`helper`·`util`·`fixture`가 든 이름은 뺀다.
+- **A5** `config-check.sh`: `scripts/test-config-check.sh`의 13가지 언어 사례를 Node·Vite·Deno 3가지(실패해야 함)와 다른 서버 언어 8가지(보지 않아야 함)로 바꾸고, 하위 폴더 사례를 `process.env`로 바꿨다. 고치기 전 "21 개 중 20 개 맞음"(다른 언어 8 줄이 나옴), 고친 뒤 "21 개 중 21 개 맞음". `Deno.env.get`은 승인대로 남겼다(Supabase Edge Functions).
+- **A5** 문서: `server-start-check` 감지를 package.json 의 Node HTTP 서버 의존성으로, 마이그레이션 담당을 Node 도구와 Supabase CLI 로. `server-end-check`의 API 스펙 절·oasdiff 설치·근거, `api-reviewer` 10 의 oasdiff 문장을 지웠다. `grep -rni 'oasdiff\|openapi' plugins i18n README.md README.en.md .claude-plugin` 결과 없음.
+- **B6**: 예시 "건너뜀: oasdiff 없음"을 지웠다(원문·번역본).
+- **A3**: `react.md` 둘, eval 폴더 셋(`reviewer-react`, `compose-code-review`, `compose-with-stack`), 프레임워크 표의 줄, `frontend-end-check`의 React 문장, `frontend-reviewer` React 절과 description 의 "React/Next", README·`marketplace.json`·`plugin.json`의 React, evals README 의 두 줄을 지웠다. README 의 "Vercel react-best-practices" 줄은 같은 설치 명령(`vercel-labs/agent-skills`)의 web-design-guidelines 줄로 바꿨다(5단계에서 다시 본다). `grep -rni react plugins i18n --include=*.md`에 남은 것은 감지 목록과 공개 접두사뿐이다.
+- **B1·A1(design-reviewer)**: 보고 형식을 다른 리뷰어 셋의 문장으로, 볼 것을 브라우저로 열어야 보이는 것(화면의 상태와 콘솔, 폭별 스크린샷, 화면에서 잰 DESIGN.md 토큰, axe·잰 대비·키보드·포커스)으로 좁혔다. 코드에서 보이는 것은 `frontend-reviewer`와 `web-design-guidelines`가 본다고 적었다. **재지 않고 바꿨다**(eval 환경에서 브라우저를 쓸 수 없다).
+- **B2**: `end.md` 3단계 3 을 "원칙에 어긋나 보이는 지적도 보고하되, 어느 원칙과 부딪히는지 함께 적는다"로. 4단계 "원칙에 어긋나는 지적은 틀림이다"는 그대로.
+- **B3** `end.md` 2단계: `바뀐 테스트 없음.` + 끝 값 2 를 4단계에서 "확인 못 함 — 이 브랜치의 테스트를 찾지 못했다(이름 규칙 밖이면 파일을 붙여 다시 돌린다)"로 보인다.
+- **B7**: `frontend-end-check` 3절이 `frontend-start-check/SKILL.md`를 읽지 않고, 포트 규칙과 `dev-server.sh`를 부르는 명령을 그 자리에 적는다.
+- 버전: workflow 0.14.0, frontend 0.11.0, server 0.7.0.
+
+### A7: eval 사례 점검 (2026-11-24)
+
+새 general-purpose 에이전트가 `skill-creator` 원문(SKILL.md, agents/grader·analyzer·comparator, references/schemas, scripts/run_eval.py)에 비춰 사례를 점검했다(파일 안 고침). 요지는 `.claude/.local/012/a7-audit.md`.
+
+| 사례 | 판정 | 핵심 |
+| --- | --- | --- |
+| `reviewer-svelte` | 결정 근거로 쓰지 말 것 | 두 판 모두 1.0(008). `finds-*` 정규식은 파일·줄만 맞으면 통과 |
+| `real-line`·`real-sky`·`real-birthday` | 고칠 것 | 정답 24개 중 Svelte 절에 해당하는 것 0개라 Svelte 절(008)과 A2 를 직접 재지 못한다. A1 은 접근성 정답 8개라 쓸 만하다. 008 결정 둘(Svelte 절 -0.002 로 유지, 역할 문장 +0.017 로 삭제)은 표준편차 0.03~0.17 안의 차이로 갈렸다 |
+| `compose-real-*` | 고칠 것 | 리뷰어 수와 내용이 함께 바뀐다, 과정 채점이 한쪽 점수에만 들어간다, `keep-*`가 🔴 없는 형식에서 늘 통과 |
+| `trigger-real` | 고칠 것(작게) | 부르지 말 것 n07~n10 이 비슷하지만 아닌 요청이 아니다. 서베이 문구는 실패한 질의 하나로 넣고 같은 질의로 확인했다 |
+| `start-plan` | 결정 근거로 쓰지 말 것 | 세 판 만점 |
+| `start-plan-real` | 고칠 것 | `plans-*`가 질문으로 다룬 것도 PASS 라 질문이 많을수록 점수가 오른다. 008 의 "질문 최대 3개" 삭제 쪽으로 기울어 있다 |
+| `end-fix-real` | 위임 결정 근거로 쓰지 말 것 | 프롬프트가 고칠 방법을 다 적었고 9회 모두 다 고쳤다. 결정은 사용자 방침이었다 |
+
+판단: `skill-creator`는 측정 방법(기준선, 채점 품질, 분석, 사람 검토)의 기준이고 `claude plugin eval` 실제 사례 eval 을 대신하지 못한다. 근거: 서브에이전트에 스킬 경로를 주는 실행이라 플러그인 로드·네임스페이스 에이전트·Skill 도구·의존성·훅·`allowed_tools`를 시험하지 않는다(008 의 `!` 셸 줄 실패와 의존성 미충족은 그 경로로 보이지 않는다). 재는 대상이 SKILL.md 하나이고 scaffold·`tool_used`·파일 채점·judge 모델·`costUsd`가 없다. `run_eval.py`는 파이프에 `select.select`를 써 네이티브 Windows 에서 돌지 않을 가능성이 높다(실행 확인 안 함).
+
+### eval 진행 (2026-11-24)
+
+- 계획과 달라진 것: A7 점검 결과를 기다리지 않고 A6 실행을 먼저 시작했다(아래). 점검이 판정 방법이나 사례를 바꾸면 다시 돌린다.
+- Supabase 실제 사례 `plugins/server/evals/real-todak-002/`: todak 002 리뷰 전 `b902a6a`, 기준 `ecc333d`. 정답 셋(재시도·시간 제한, 응답 모양 검사, `document`·`format_version` 제약)과 그대로 둘 것 하나(공개 읽기 `using (true)`를 🔴 로 올리지 않기). 항목 파일에 리뷰 전부터 적혀 있던 둘(SSR 뒤 브라우저가 다시 부르기, `service_role` 권한)은 리뷰어가 옮겨 적기만 해도 맞으니 정답에서 뺐다. 지금 판 1회 시험: 0.6(제약·공개 읽기 통과, 재시도·모양 검사 놓침).
+- 합성 사례(실제 리뷰 아님) `plugins/server/evals/supabase-seeded/`(볼 것 1~11 에 실수 하나씩, 12개 채점 + 맞게 쓴 `case_sources`), `api-seeded/`(api-reviewer 9 의 실수 둘). todak 010 모양을 따라 지어 썼다.
+- `web-design-guidelines` 원문 두 파일(SKILL.md 2,077 바이트, `references/command.md` 8,055 바이트)을 raw.githubusercontent.com 에서 `.claude/.local/012/ext/`로 받았다(eval 사본에만 넣는다, 커밋 안 함). `command.md`의 SHA-256 이 SKILL.md 에 고정된 `d246b026…0234`와 같다.
+- 실행 중: frontend 네 판(지금, A1, A2, A1+A2) × `real-*` 3 × 5회, server 두 판(지금, A4) × 사례 3 × 5회. Opus 시험, sonnet 채점(3표), `.claude/.local/012/results/`.
+
 ## Final Summary

@@ -21,7 +21,7 @@
     {
       "name": "frontend",
       "source": "./plugins/frontend",
-      "description": "Frontend checks for /task start and /task end (Svelte and React references, scripts that start the dev server on the item port and check added lines for debug code and dependency changes for the lockfile), the ui-design skill (DESIGN.md and Claude Code design canvas mockups, brought in by the start check when an item adds or redesigns a screen or needs DESIGN.md), the frontend-reviewer and design-reviewer agents for review, and the frontend-evaluator agent that verifies acceptance criteria in the browser.",
+      "description": "Frontend checks for /task start and /task end (Svelte and SvelteKit references, scripts that start the dev server on the item port and check added lines for debug code and dependency changes for the lockfile), the ui-design skill (DESIGN.md and Claude Code design canvas mockups, brought in by the start check when an item adds or redesigns a screen or needs DESIGN.md), the frontend-reviewer and design-reviewer agents for review, and the frontend-evaluator agent that verifies acceptance criteria in the browser.",
       "dependencies": [
         "workflow",
         "typescript-lsp@anthropic-plugin-directory",
@@ -31,7 +31,7 @@
     {
       "name": "server",
       "source": "./plugins/server",
-      "description": "Backend and Supabase checks for /task start and /task end (any server language and Supabase: migrations, API contract, RLS, keys; config keys, committed value files and keys checked by a script) and the api-reviewer and supabase-reviewer agents.",
+      "description": "Backend and Supabase checks for /task start and /task end (Node.js servers and Supabase: migrations, RLS, keys; config keys, committed value files and keys checked by a script) and the api-reviewer and supabase-reviewer agents.",
       "dependencies": [
         "workflow"
       ]

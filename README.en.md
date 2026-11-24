@@ -9,8 +9,8 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 | Plugin | Contains | Also installs |
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end`, the verify Stop hook, scripts that pick item ports and check tests against the base branch | `superpowers` |
-| `frontend` | Svelte and React checks (scripts that start the dev server and check the diff), `ui-design` for DESIGN.md and canvas mockups, `frontend-reviewer`, `design-reviewer` for screen review, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
-| `server` | Server and Supabase checks (migrations, API spec, keys; config keys and keys by a script), `api-reviewer`, `supabase-reviewer` | `workflow` |
+| `frontend` | Svelte and SvelteKit checks (scripts that start the dev server and check the diff), `ui-design` for DESIGN.md and canvas mockups, `frontend-reviewer`, `design-reviewer` for screen review, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
+| `server` | Node server and Supabase checks (migrations, keys; config keys and keys by a script), `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 If you use Supabase, install `server` even if you call it straight from the frontend.
 
@@ -47,7 +47,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 | Official Svelte | `/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte` |
 | Chrome DevTools | `/plugin marketplace add ChromeDevTools/chrome-devtools-mcp`, `/plugin install chrome-devtools-mcp@chrome-devtools-plugins` |
 | modern-web-guidance | `/plugin marketplace add GoogleChrome/modern-web-guidance`, `/plugin install modern-web-guidance@googlechrome` |
-| Vercel react-best-practices | `npx -y skills@1.7.5 add vercel-labs/agent-skills` |
+| web-design-guidelines (Vercel agent-skills) | `npx -y skills@1.7.5 add vercel-labs/agent-skills` |
 | Official Supabase | `/plugin install supabase@anthropic-plugin-directory` (turn off its bundled MCP in `/mcp`) |
 
 ## Usage

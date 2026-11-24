@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: supabase-seeded
+description: 합성 사례(실제 리뷰 아님). todak 010 모양의 작업본·공개 함수·이력·편집 화면에 supabase-reviewer 볼 것 1~11 의 실수를 하나씩 심고, 맞게 쓴 case_sources 를 둔다
+tags: [seeded]
+context:
+  scaffold_script: fixture.sh

@@ -35,11 +35,10 @@ known=$(
 
 # 추가된 줄은 awk 한 번으로 본다(줄마다 프로세스를 띄우면 Windows 에서 느리다). 내는 줄:
 #   E<TAB>새 환경 변수 실패  K<TAB>키 실패  J<TAB>파일<TAB>JWT 가운데 부분(role 은 아래에서 디코드)
-# 환경 변수를 읽는 형태: process.env.X, import.meta.env.X, Bun.env.X, process.env["X"], Deno.env.get("X"), os.environ["X"],
-# os.environ.get("X"), getenv("X")(Python·PHP·C·Java), os.Getenv/LookupEnv("X")(Go), env::var("X")(Rust), ENV["X"], ENV.fetch("X")(Ruby), $_ENV["X"]
+# 환경 변수를 읽는 형태(Node·Vite 와 Supabase Edge Functions 의 Deno): process.env.X, import.meta.env.X, process.env["X"], Deno.env.get("X")
 # 정규식과 이름 목록은 이스케이프를 건드리지 않게 환경 변수로 넘긴다
 found=$(
-  ENV_RE="(process\.env|import\.meta\.env|Bun\.env)\.[A-Za-z_][A-Za-z0-9_]*|(process\.env\[|Deno\.env\.get\(|os\.environ\[|os\.environ\.get\(|getenv\(|Getenv\(|LookupEnv\(|env::var\(|ENV\[|ENV\.fetch\(|[\$]_ENV\[)[[:space:]]*[\"'][A-Za-z_][A-Za-z0-9_]*" \
+  ENV_RE="(process\.env|import\.meta\.env)\.[A-Za-z_][A-Za-z0-9_]*|(process\.env\[|Deno\.env\.get\()[[:space:]]*[\"'][A-Za-z_][A-Za-z0-9_]*" \
   EXAMPLE_RE=$example_re KNOWN=$known awk '
     BEGIN {
       n = split(ENVIRON["KNOWN"], k, "\n"); for (i = 1; i <= n; i++) known[k[i]] = 1; known["NODE_ENV"] = known["CI"] = 1

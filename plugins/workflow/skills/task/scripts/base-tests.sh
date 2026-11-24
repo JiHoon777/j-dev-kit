@@ -2,7 +2,9 @@
 # 이 브랜치의 테스트가 고친 것을 증명하는지: bash base-tests.sh <기준 브랜치> '<테스트 파일 하나를 돌리는 명령>' [테스트 파일…]
 # 명령의 {} 자리에 테스트 파일 경로가 들어간다(예: 'pnpm vitest run {}', 'pytest {}', 'bash {}').
 # 테스트 파일을 주지 않으면 <기준>...HEAD 에서 더하거나 바꾼 테스트 파일을 이름으로 고른다
-# (*.test.*, *.spec.*, *_test.*, *-test.*, test_*.py, test-*.sh, *_spec.rb).
+# (*.test.*, *.spec.*, *_test.*, *-test.*, test_*.py, test-*.sh, *_spec.rb, 그리고 __tests__/·tests/·test/ 아래의 JS·TS 파일.
+#  그 폴더 아래라도 fixtures·helpers·utils·mocks·support·testdata 폴더와 _·setup·helper·util·fixture 가 든 이름은 도우미로 본다).
+# 고른 테스트가 없으면: 테스트 밖 파일(문서 *.md 빼고)이 바뀌었으면 "바뀐 테스트 없음."을 쓰고 2(판단 못 함), 문서만 바뀌었으면 0.
 # 1. 테스트를 HEAD 그대로 돌린다. 여기서 실패하면 "HEAD 에서 실패"로 적고 판단하지 않는다.
 # 2. 테스트 밖의 바뀐 파일만 기준 판으로 잠시 되돌리고(브랜치에서 더한 파일은 뺀다) 다시 돌린다.
 #    테스트 쪽 파일은 HEAD 판 그대로 둔다: 위 이름, tests/·__tests__/·spec/·fixtures/·testdata/·mocks/ 폴더,
@@ -11,7 +13,7 @@
 #    테스트 하나는 BASE_TESTS_TIMEOUT 초(기본 600)가 지나면 끊는다(timeout 명령이 있을 때). 기준에서 끊긴 테스트는 기준에서 실패다.
 #    "기준에서 실패"는 고친 것을 증명한다. "기준에서도 통과"는 증명하지 못한다.
 # 3. 끝나면(중단돼도) 작업 트리를 HEAD 로 되돌린다.
-# 끝 값: 0 모두 기준에서 실패(또는 볼 것 없음), 1 기준에서도 통과한 테스트가 있음, 2 판단 못 함(돌릴 수 없음, HEAD 에서 실패).
+# 끝 값: 0 모두 기준에서 실패(또는 볼 것 없음), 1 기준에서도 통과한 테스트가 있음, 2 판단 못 함(돌릴 수 없음, HEAD 에서 실패, 소스가 바뀌었는데 테스트를 못 찾음).
 # 파일을 잠시 바꾸니 같은 폴더에서 다른 일(리뷰 에이전트 등)이 돌지 않을 때 돌린다. 커밋하지 않은 변경이 있으면 돌리지 않는다.
 # 저장소 루트에서 돈다. 이 스크립트를 고치면 scripts/test-base-tests.sh 를 돌린다.
 
@@ -28,6 +30,10 @@ for r in "$ref" "origin/$ref"; do base=$(git merge-base "$r" HEAD 2> /dev/null) 
 [ -z "$(git status --porcelain)" ] || { echo "커밋하지 않은 변경이 있어 돌리지 않았다. 커밋한 뒤 돌린다." >&2; exit 2; }
 
 run_re='(^|/)[^/]*[._-](test|spec)\.[^/]+$|(^|/)test_[^/]*\.py$|(^|/)test-[^/]*\.sh$|_spec\.rb$'
+# 테스트 폴더 아래의 JS·TS 파일(Jest __tests__, node --test test/). 도우미·fixture 는 뺀다
+dir_re='(^|/)(__tests__|tests?)/([^/]+/)*[^/]+\.[cm]?[jt]sx?$'
+helper_re='(^|/)(fixtures?|__fixtures__|helpers?|utils?|mocks?|__mocks__|support|testdata)/|(^|/)_[^/]*$|(^|/)[^/]*(setup|helper|util|fixture)[^/]*$'
+is_test() { [[ $1 =~ $run_re ]] || { [[ $1 =~ $dir_re ]] && ! [[ $1 =~ $helper_re ]]; }; }
 test_re="(^|/)(tests?|__tests__|spec|fixtures?|__fixtures__|testdata|mocks?|__mocks__)/|$run_re"
 test_re+='|(^|/)(conftest\.py|pytest\.ini|setupTests\.[^/]+|[^/]*\.setup\.[^/]+|(vitest|jest|playwright|cypress|karma)\.config\.[^/]+|\.mocharc[^/]*)$'
 test_re+='|(^|/)test[-_](utils?|helpers?|support)[^/]*$'
@@ -39,10 +45,19 @@ if [ "$#" -gt 0 ]; then
   targets=("$@")
 else
   while IFS=$'\t' read -r st f; do
-    [ "$st" != D ] && [[ $f =~ $run_re ]] && targets+=("$f")
+    [ "$st" != D ] && is_test "$f" && targets+=("$f")
   done <<< "$changed"
 fi
-[ "${#targets[@]}" -gt 0 ] || { echo "바뀐 테스트 없음."; exit 0; }
+if [ "${#targets[@]}" = 0 ]; then # 볼 테스트가 없는 것을 통과로 두지 않는다
+  docs=0
+  while IFS=$'\t' read -r st f; do
+    [ -n "$f" ] && ! [[ $f =~ $test_re ]] || continue
+    [[ $f == *.md ]] && { docs=1; continue; }
+    echo "바뀐 테스트 없음."; exit 2
+  done <<< "$changed"
+  [ "$docs" = 1 ] && { echo "문서만 바뀜. 건너뛴다."; exit 0; }
+  echo "테스트 밖 변경 없음. 건너뛴다."; exit 0
+fi
 
 sources=() added=() in_base=()
 nl=$'\n'

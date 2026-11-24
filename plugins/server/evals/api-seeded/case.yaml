@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: api-seeded
+description: 합성 사례(실제 리뷰 아님). supabase-seeded 와 같은 코드에서 api-reviewer 볼 것 9(쿼리)의 실수 둘
+tags: [seeded]
+context:
+  scaffold_script: fixture.sh

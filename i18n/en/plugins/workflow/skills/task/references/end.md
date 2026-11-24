@@ -32,7 +32,8 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 - Settle, from the project (CLAUDE.md, package.json scripts, test config), the command that runs one test file, with `{}` in place of the file (for example `pnpm vitest run {}`, `pytest {}`, `bash {}`).
 - `bash <task-scripts>/base-tests.sh <base> '<that command>'`. If the project's test files cannot be picked by name, add the files at the end, and if there are test helpers outside the naming rules (for example `src/testing/`), prefix `BASE_TESTS_KEEP='<path regex>'`.
 - Put each `기준에서도 통과: <file>` (also passes on base) line of the output into the step 4 findings list as 🟡 "does not prove the fix — passes without the fixed code", without going through the judge. The script output is the evidence.
-- If the command cannot be settled or the exit value is 2, write "could not check" and the reason in `Implementation Notes`; for each `HEAD 에서 실패: <file>` (fails on HEAD) line, whatever the exit value, write that test as "could not check"; then move on.
+- If the output is `바뀐 테스트 없음.` (no changed tests) and the exit value is 2 (source changed but no tests were found), show the user in step 4 "could not check — no tests found on this branch (if they are outside the naming rules, add the files and run again)". If there are test files outside the naming rules, add them and run again.
+- If the command cannot be settled or the exit value is 2 for another reason, write "could not check" and the reason in `Implementation Notes`; for each `HEAD 에서 실패: <file>` (fails on HEAD) line, whatever the exit value, write that test as "could not check"; then move on.
 
 ## 3. Review (agents, in parallel in one message)
 
@@ -48,7 +49,7 @@ Agents cannot see this conversation, so put these in the instructions:
 
 1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
 2. Do not edit files and do not commit. Do not touch remote or production environments. general-purpose agents do not start servers and do not run build/verify commands (the reviewers run at the same time in the same folder). Stack review agents start servers, install tools, or reproduce locally only when that agent's criteria allow it.
-3. Principles: the contents of `docs/review-principles.md` if it exists. Do not raise findings that go against a principle.
+3. Principles: the contents of `docs/review-principles.md` if it exists. Report findings that seem to go against a principle too, and say which principle they clash with.
 4. Report: every problem found, split into confirmed and unconfirmed, as `file:line — problem — how to fix`. Do not give scores.
 5. If the skill cannot be called, do not make something up in its place; report that.
 
@@ -59,7 +60,7 @@ After all have returned, this session does not pick findings. Pass all the repor
 - Scope: same as 1 in step 3, plus `docs/review-principles.md`.
 - "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). A finding that goes against a principle is wrong. Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 / 🟡 / ⚪ below. If the same kind as a valid finding is in the Final Summary `리뷰에서 고친 것` (fixed in review) of an item in `docs/done/`, or it appears in several places across these reports, mark it 🔁 with the evidence (item number or locations)."
 
-The user sees only findings judged valid and step 2 stack check failures and test check results. Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores. If the verify command line changed in `git diff <base>...HEAD -- CLAUDE.md`, show apart from the findings "This branch changed the verify command (old → new). Until the merge, the verify Stop hook judges with the base branch's command". It changes what judges the work, so a person looks at it.
+The user sees only findings judged valid and step 2 stack check failures and test check results (including "could not check — no tests found"). Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores. If the verify command line changed in `git diff <base>...HEAD -- CLAUDE.md`, show apart from the findings "This branch changed the verify command (old → new). Until the merge, the verify Stop hook judges with the base branch's command". It changes what judges the work, so a person looks at it.
 
 ```markdown
 🔴 Must fix — confirmed bugs, security problems, data loss, AC violations, stack check failures

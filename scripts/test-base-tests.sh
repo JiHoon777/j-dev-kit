@@ -34,6 +34,17 @@ many_sources() {
     git add -A && git commit -qm many && git switch -q w/001-fix-add && git merge -q --no-edit main &&
     for i in $(seq -w 800); do echo b > "$d/file-$i.txt"; done
 }
+jest_test() { mkdir -p src/__tests__ && printf '. ./lib.sh
+[ "$(add 2 3)" = 5 ]
+' > src/__tests__/login.js; }   # Jest 의 __tests__ 규칙
+dir_test() { # tests/ 아래 테스트와 도우미·fixture. 도우미를 테스트로 고르면 기준에서도 통과(1), fixture 를 고르면 HEAD 에서 실패(2)다
+  mkdir -p tests/helpers tests/fixtures && echo 'ok() { :; }' > tests/helpers/x.js && echo 'exit 1' > tests/fixtures/data.js &&
+    printf '. tests/helpers/x.js
+. ./lib.sh
+ok && [ "$(add 2 3)" = 5 ]
+' > tests/login.js
+}
+docs_only() { echo '# 문서' > README.md; }
 delete_old() { git rm -q old.sh; }
 commit() { git add -A && git commit -qm change; }
 dirty() { echo dirty >> lib.sh; }
@@ -88,7 +99,10 @@ check "HEAD 에서도 실패하는 테스트는 판단하지 않는다 → 2" 2 
   fix_add test_add test_bad commit -- main 'bash {}'
 check "고를 테스트 파일을 인자로 준다" 1 "기준에서도 통과: test-echo.sh" fix_add test_add test_echo commit -- main 'bash {}' test-echo.sh
 check "테스트만 바꾼 브랜치 → 건너뜀, 0" 0 "테스트 밖 변경 없음. 건너뛴다." test_echo commit -- main 'bash {}'
-check "바뀐 테스트 없음 → 0" 0 "바뀐 테스트 없음." fix_add commit -- main 'bash {}'
+check "소스만 바뀌고 테스트를 못 찾음 → 판단 못 함, 2" 2 "바뀐 테스트 없음." fix_add commit -- main 'bash {}'
+check "문서만 바뀌고 테스트 없음 → 0" 0 "문서만 바뀜. 건너뛴다." docs_only commit -- main 'bash {}'
+check "__tests__/ 아래 파일을 테스트로 고른다" 0 "기준에서 실패: src/__tests__/login.js" fix_add jest_test commit -- main 'bash {}'
+check "tests/ 아래 파일을 고르고 도우미·fixture 는 고르지 않는다" 0 "기준에서 실패: tests/login.js" fix_add dir_test commit -- main 'bash {}'
 check "커밋하지 않은 변경 → 돌리지 않고 2" 2 - fix_add test_add commit dirty -- main 'bash {}'
 check "명령에 {} 가 없음 → 사용법, 2" 2 - fix_add test_add commit -- main 'bash test-add.sh'
 check "기준 브랜치 없음 → 2" 2 - fix_add test_add commit -- nope 'bash {}'

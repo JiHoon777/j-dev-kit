@@ -16,7 +16,7 @@ Called by `/task start`. Does not edit anything. Returns only what fits this ite
 
 If CLAUDE.md has a `stack:` line without server, "Not applicable". If none of the following exist, also "Not applicable".
 
-- **Server code:** an HTTP server framework dependency or a server entry point (routes, handlers)
+- **Server code:** a Node HTTP server dependency in package.json (express, fastify, hono, koa, @nestjs/core, etc.) or a server entry point (routes, handlers)
 - **Supabase:** `supabase/config.toml`, or an `@supabase/` package in package.json
 
 In a monorepo, decide which service this item touches. If unclear, put it under questions.
@@ -25,8 +25,8 @@ In a monorepo, decide which service this item touches. If unclear, put it under 
 
 Pick a single tool for schema changes. Use the first that matches.
 
-1. Both a server-side migration tool (an ORM or migration tool's config file or migration folder) and `supabase/migrations/` exist → put "Which one is the source of truth?" under questions. Until answered, the server tool.
-2. A server migration tool exists → the server tool (even if the DB is Supabase).
+1. Both a Node migration tool (the config file or migration folder of prisma, drizzle-kit, knex, etc.) and `supabase/migrations/` exist → put "Which one is the source of truth?" under questions. Until answered, the server tool.
+2. A Node migration tool exists → that tool (even if the DB is Supabase).
 3. A `supabase/` folder exists → Supabase CLI.
 4. None → no migrations.
 

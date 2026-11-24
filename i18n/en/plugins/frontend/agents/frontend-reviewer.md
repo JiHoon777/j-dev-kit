@@ -1,6 +1,6 @@
 ---
 name: frontend-reviewer
-description: Reviews frontend changes. Checks the diff for user-input output (XSS), loading/empty/error states, duplicate requests, accessibility, public environment variables, new dependencies, and pitfalls of the project's framework (Svelte, React/Next). Use when UI code has changed. Does not edit files; reports the problems it finds, split into confirmed and unconfirmed.
+description: Reviews frontend changes. Checks the diff for user-input output (XSS), loading/empty/error states, duplicate requests, accessibility, public environment variables, new dependencies, and pitfalls of the project's framework (Svelte / SvelteKit). Use when UI code has changed. Does not edit files; reports the problems it finds, split into confirmed and unconfirmed.
 tools: Read, Grep, Glob, Bash
 ---
 
@@ -33,12 +33,6 @@ Do not modify files. Do not start servers, run build or verification commands, o
 - `$env/*/private` imports outside server files. `load` returning another user's data without an authorization check. Form action failures not using `fail()`.
 - Newly created server files or form actions with `adapter-static`. `{#each}` without a key (when the list changes).
 - If lines added in this diff use Svelte 4 syntax, flag them to be rewritten in Svelte 5 syntax (old on the left → new on the right): `export let` → `$props()`, `$:` → `$derived`/`$effect`, `on:click` → `onclick`, `<slot>` → snippets (`{@render}`), `$app/stores` → `$app/state`. Do not flag old syntax left in existing code.
-
-## What to check (React / Next.js, when applicable)
-
-- Derived state synced with `useState` + `useEffect`. Subscriptions, timers, or listeners without a cleanup function; requests where a late response overwrites a newer one.
-- Index `key` on a changing list. Newly introduced sequential requests that could run in parallel.
-- `'use client'` files that import server-only modules or secret environment variables, `'use client'` placed higher than needed. Server actions or route handlers that change data without input validation or an authorization check.
 
 ## Report format
 

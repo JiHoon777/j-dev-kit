@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: real-todak-002
+description: todak 002 공개본 읽기(리뷰 전 b902a6a, 기준 ecc333d). 정답은 리뷰에서 나와 고친 커밋 cf61e36 이나 010 항목("002 의 리뷰에서 넘어온 것")이 근거인 Supabase 지적 3건과, 그대로 둘 공개 읽기 1건
+tags: [real]
+context:
+  scaffold_script: fixture.sh

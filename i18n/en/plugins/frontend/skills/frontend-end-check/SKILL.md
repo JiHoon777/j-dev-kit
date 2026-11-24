@@ -17,7 +17,7 @@ Called by `/task end`. Runs commands and returns only the results. The review th
 - If CLAUDE.md has a `stack:` line without frontend, "Not applicable".
 - If `git diff --name-only <base>...HEAD` contains no frontend code (components, pages, styles, client logic, package.json), return only "No frontend changes".
 - The package.json to look at is that of the app or package the changed files belong to (in a monorepo, not the root). If it has no frontend framework (react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro), "Not applicable".
-- If that package.json has `svelte`, read `${CLAUDE_SKILL_DIR}/references/svelte.md` to the end with the Read tool. React has no separate checks to run (hook lint and build should be in the verification commands).
+- If that package.json has `svelte`, read `${CLAUDE_SKILL_DIR}/references/svelte.md` to the end with the Read tool.
 
 ## 1. Checks
 
@@ -34,7 +34,7 @@ If a screen (components, pages, styles) changed, also `frontend:design-reviewer`
 
 If fixing review findings changed the UI, hand the fixed screens to the `frontend:frontend-evaluator` agent to check. Also what the reference adds.
 
-- Start the dev server: read `${CLAUDE_SKILL_DIR}/../frontend-start-check/SKILL.md` and follow the dev server item under "Browser check" in section 1. The script path in that item is relative to the frontend-start-check folder.
+- Start the dev server. The port is the web port under `### 포트` in the work branch item, or else the port in `.claude/launch.json` (do not edit launch.json). If launch.json can start it on that port, start it that way and confirm it is listening with `bash ${CLAUDE_SKILL_DIR}/../frontend-start-check/scripts/dev-server.sh <port>`. Otherwise check in the package.json scripts how the dev command takes a port (for example Vite `--port`, a `PORT` environment variable) and start it with `bash ${CLAUDE_SKILL_DIR}/../frontend-start-check/scripts/dev-server.sh <port> <command that starts it on that port…>`. Use the `URL:` in the output as the screen URL, and if it ends with a non-zero value, report the reason it printed.
 - Pass the agent the item file path, the screen URL, the viewport and the list of fixed findings. Do not pass how they were fixed.
 - Viewport: the one set in CLAUDE.md, otherwise desktop. If you fixed a responsive layout, also mobile (375×812).
 - Fix a "fail" again. If the same finding still fails after three fixes, stop fixing and tell the user which finding failed and what you tried. A person rethinking the approach beats repeating the same fix. If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser) and write that you did it yourself. If you cannot do that either, stop and say so.
