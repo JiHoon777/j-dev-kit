@@ -38,12 +38,14 @@ else
 fi
 [ "${#targets[@]}" -gt 0 ] || { echo "바뀐 테스트 없음."; exit 0; }
 
-sources=()
+sources=() added=() in_base=()
+nl=$'\n'
+tlist=$nl$(printf '%s\n' "${targets[@]}")$nl
 while IFS=$'\t' read -r st f; do
   [ -n "$f" ] || continue
-  [[ $f =~ $test_re ]] && continue
-  printf '%s\n' "${targets[@]}" | grep -qxF -- "$f" && continue
+  [[ $f =~ $test_re || $tlist == *"$nl$f$nl"* ]] && continue
   sources+=("$f")
+  if [ "$st" = A ]; then added+=("$f"); else in_base+=("$f"); fi
 done <<< "$changed"
 [ "${#sources[@]}" -gt 0 ] || { echo "테스트 밖 변경 없음. 건너뛴다."; exit 0; }
 
@@ -55,23 +57,29 @@ for f in "${targets[@]}"; do
 done
 [ "${#ok[@]}" -gt 0 ] || exit 2
 
-# 되돌릴 때는 git checkout 대신 떠 둔 사본을 쓴다. checkout 은 줄 끝(core.autocrlf)을 바꿔 쓸 수 있다
+# 되돌릴 때는 git 대신 떠 둔 사본을 쓴다. git 은 줄 끝(core.autocrlf)을 바꿔 쓸 수 있다
 backup=$(mktemp -d)
 for f in "${sources[@]}"; do
-  [ -e "$f" ] && mkdir -p "$backup/$(dirname "$f")" && cp -p -- "$f" "$backup/$f"
+  [ -e "$f" ] || continue
+  [[ $f == */* ]] && mkdir -p "$backup/${f%/*}"
+  cp -p -- "$f" "$backup/$f"
 done
 restore() {
   for f in "${sources[@]}"; do
-    if [ -e "$backup/$f" ]; then mkdir -p "$(dirname "$f")" && cp -p -- "$backup/$f" "$f"; else rm -f -- "$f"; fi
+    if [ -e "$backup/$f" ]; then
+      [[ $f == */* ]] && mkdir -p "${f%/*}"
+      cp -p -- "$backup/$f" "$f"
+    else
+      rm -f -- "$f"
+    fi
   done
-  git reset -q HEAD -- "${sources[@]}" 2> /dev/null
   rm -rf "$backup"
 }
 trap restore EXIT
 trap 'exit 2' INT TERM
-for f in "${sources[@]}"; do
-  if git cat-file -e "$base:$f" 2> /dev/null; then git checkout -q "$base" -- "$f"; else rm -f -- "$f"; fi
-done
+# 작업 트리만 기준 판으로 바꾼다(인덱스는 그대로). 브랜치에서 더한 파일은 뺀다
+[ "${#added[@]}" -gt 0 ] && rm -f -- "${added[@]}"
+[ "${#in_base[@]}" -gt 0 ] && git restore -q --source="$base" --worktree -- "${in_base[@]}"
 
 passed=0
 for f in "${ok[@]}"; do

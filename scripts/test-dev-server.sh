@@ -42,7 +42,6 @@ ok=1; [ "$code" = 0 ] && [[ $out == *"URL: http://localhost:$port"* ]] && ok=0
 result "명령 없이, 듣는 포트 → URL" $ok "종료 $code"
 
 # 4. 끄기 줄의 명령으로 끈다
-stop=$(printf '%s\n' "$out" | sed -n 's/^끄기: //p')
 out=$(DEV_SERVER_TIMEOUT=20 bash "$script" $((port + 1)) "${serve[@]}" $((port + 1)) 2>&1)
 pid=$(pid_of "$out"); [ -n "$pid" ] && pids+=("$pid")
 stop=$(printf '%s\n' "$out" | sed -n 's/^끄기: //p')

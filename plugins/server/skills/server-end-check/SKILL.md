@@ -34,7 +34,7 @@ OpenAPI 스펙이 있고 바뀌었을 때:
 - `oasdiff breaking --fail-on ERR <기준 스펙> <새 스펙>`(기준 스펙은 `git show origin/<기준>:<경로>`). 호환성을 깨는 변경은 실패가 아니라 리뷰어에게 넘길 근거다. 설치할 수 없으면 두 경로를 리뷰어에게 넘긴다.
 - 스펙을 코드에서 생성하면 생성 후 `git diff --exit-code <스펙>`. 차이가 있으면 실패.
 
-### 설정 키와 키
+### 설정 키·값 파일·키
 
 `bash ${CLAUDE_SKILL_DIR}/scripts/config-check.sh <기준>`을 돌린다. 출력한 줄이 실패다: 추가된 줄에서 새로 읽는 환경 변수가 `.env.example`에 없음, 커밋된 `.env` 같은 값 파일, 추가된 줄의 키(`sb_secret_`, role 이 anon 이 아닌 JWT, 공개 접두사 환경 변수의 비밀 키 이름). 스크립트는 이름만 비교하고 키는 파일 이름만 쓴다. 키 값이 대화에 들어오지 않게, 근거에도 그 출력만 쓴다.
 
@@ -44,7 +44,7 @@ OpenAPI 스펙이 있고 바뀌었을 때:
 
 - **advisors:** `supabase db advisors`. 이 변경으로 새로 생긴 지적이 있으면 실패.
 - **타입**(생성된 타입 파일이 있을 때): 같은 옵션으로 임시 파일에 `supabase gen types typescript --local`을 만들어 비교. 다르면 실패(다시 생성해 커밋).
-- **키:** 위 `config-check.sh`가 본다. 클라이언트 코드가 비밀 키를 쓰는지는 `server:supabase-reviewer`가 본다.
+- **키:** 클라이언트 코드가 비밀 키를 쓰는지는 `server:supabase-reviewer`가 본다(키 패턴은 위 스크립트가 본다).
 
 ## 2. 리뷰에 넣을 에이전트
 

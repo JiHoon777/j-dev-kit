@@ -26,9 +26,9 @@ make_repo() {
 }
 
 pass=0 total=0
-# check <설명> <기대 종료 코드> <출력에 있어야 할 줄 또는 -> <없어야 할 말 또는 -> <변경 명령>
+# check <설명> <기대 종료 코드> <출력에 있어야 할 줄들(|로 나눔) 또는 -> <없어야 할 말 또는 -> <변경 명령>
 check() {
-  local name=$1 want=$2 want_line=$3 not_text=$4 change=$5 dir out code ok=1 why=
+  local name=$1 want=$2 want_lines=$3 not_text=$4 change=$5 dir out code ok=1 why= l
   total=$((total + 1))
   dir="$tmp/case$total"
   cp -a "$tmp/template" "$dir"
@@ -36,7 +36,10 @@ check() {
   out=$(cd "$dir" && bash "$script" main 2>&1)
   code=$?
   [ "$ok" ] && [ "$code" != "$want" ] && { ok=; why="종료 $code, 기대 $want"; }
-  [ "$ok" ] && [ "$want_line" != - ] && ! printf '%s\n' "$out" | grep -qxF -- "$want_line" && { ok=; why="'$want_line' 줄 없음"; }
+  if [ "$ok" ] && [ "$want_lines" != - ]; then
+    IFS='|' read -ra ls <<< "$want_lines"
+    for l in "${ls[@]}"; do printf '%s\n' "$out" | grep -qxF -- "$l" || { ok=; why="'$l' 줄 없음"; break; }; done
+  fi
   [ "$ok" ] && [ "$not_text" != - ] && [[ $out == *"$not_text"* ]] && { ok=; why="'$not_text' 가 나옴"; }
   if [ "$ok" ]; then
     pass=$((pass + 1)); echo "맞음: $name"
@@ -69,12 +72,14 @@ ENV.fetch("L10")
 Deno.env.get("L11")
 Bun.env.L12
 $_ENV["L13"]'
+lines=
 for n in 1 2 3 4 5 6 7 8 9 10 11 12 13; do
   name=L$n; [ $n = 2 ] && name=VITE_L2
-  check "언어별 읽는 형태 $n → $name" 1 "src/langs.txt:$n — 새 환경 변수 $name 이 .env.example 에 없음" - "cat > src/langs.txt <<'EOF'
+  lines+="${lines:+|}src/langs.txt:$n — 새 환경 변수 $name 이 .env.example 에 없음"
+done
+check "언어별 읽는 형태 13가지 → 줄마다 파일:줄" 1 "$lines" - "cat > src/langs.txt <<'EOF'
 $langs
 EOF"
-done
 
 # 값 파일
 check "커밋된 .env → 실패" 1 ".env — 값 파일이 커밋됨" - "echo 'DATABASE_URL=postgres://x' > .env"

@@ -81,8 +81,7 @@ Do not fix anything before getting an answer.
 - Call the `superpowers:receiving-code-review` skill and follow it (check findings against the code; for wrong findings, give the reason and do not apply them).
 - For fixes that change behavior, write a failing test first.
 - Do step 2's "To do after fixing" for the fixed parts (e.g. browser-check only the fixed screens). If a fix touched a stack check's area, call that `*-end-check` again.
-- For "later", invoke the `task` skill with `create <the finding and its evidence> --here` to make a new item. The user already chose "later", so for create step 3's approval, show only the item's content and get approval.
-- For a finding where "block" was chosen, likewise invoke the `task` skill with `create <the finding and its evidence, and the means to block it (lint rule, test or type)> --here` to make a new item. Fix the finding itself as the user chose.
+- For "later" and "block", invoke the `task` skill with `create <the finding and its evidence> --here` to make a new item. For "block", also pass the means to block it (lint rule, test or type), and fix the finding itself as the user chose. The user already chose, so for create step 3's approval, show only the item's content and get approval.
 - Write what was done and seen in `Implementation Notes` and commit.
 
 ## 6. Verify and close the item (Backlog.md definition of done)

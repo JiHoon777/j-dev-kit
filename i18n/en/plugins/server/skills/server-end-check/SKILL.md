@@ -36,7 +36,7 @@ When an OpenAPI spec exists and changed:
 - `oasdiff breaking --fail-on ERR <base spec> <new spec>` (base spec from `git show origin/<base>:<path>`). A breaking change is not a failure but evidence to pass to the reviewer. If it cannot be installed, pass both paths to the reviewer.
 - If the spec is generated from code, run the generator, then `git diff --exit-code <spec>`. A difference is a failure.
 
-### Config keys and keys
+### Config keys, value files, keys
 
 Run `bash ${CLAUDE_SKILL_DIR}/scripts/config-check.sh <base>`. Each line it prints is a failure: an environment variable newly read in added lines is missing from `.env.example`, a committed value file such as `.env`, or a key in added lines (`sb_secret_`, a JWT whose role is not anon, a secret key name in a public-prefixed environment variable). The script compares names only and writes only file names for keys. So that key values never enter the conversation, use only that output as evidence.
 
@@ -46,7 +46,7 @@ Only when files under `supabase/` or code that calls Supabase (`.from(`, `.rpc(`
 
 - **advisors:** `supabase db advisors`. A finding newly introduced by this change is a failure.
 - **Types** (when a generated types file exists): generate `supabase gen types typescript --local` into a temp file with the same options and compare. A difference is a failure (regenerate and commit).
-- **Keys:** the `config-check.sh` above checks them. Whether client code uses a secret key is for `server:supabase-reviewer`.
+- **Keys:** whether client code uses a secret key is for `server:supabase-reviewer` (the script above checks key patterns).
 
 ## 2. Agents to add to the review
 

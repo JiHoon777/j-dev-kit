@@ -50,7 +50,7 @@ unlisten() { kill "$listener_pid" 2> /dev/null; wait "$listener_pid" 2> /dev/nul
 pass=0 total=0
 # check <설명> <기대 종료 코드> <기대 첫 줄(포트)> <출력에 있어야 할 말 또는 -> <준비...> -- <인자...>
 check() {
-  local name=$1 want=$2 want_port=$3 want_text=$4 dir step out code ok=1 why=
+  local name=$1 want=$2 want_port=$3 want_text=$4 dir out code ok=1 why=
   shift 4
   total=$((total + 1))
   dir="$tmp/case$total"
@@ -84,6 +84,8 @@ check "이 항목이 전에 적은 포트는 피하지 않는다" 0 $((base + 9)
 check "작업 트리의 진행 중 항목도 피한다" 0 $((base + 10)) - "item 012 'In Progress' '웹: $((base + 9))'" -- $base 009
 if listen; then
   check "듣고 있는 포트 → 다음 번호" 0 $((base + 10)) - -- $base 009
+  PORT_CHECK_METHODS=netstat check "netstat 으로 듣는 포트를 찾는다" 0 $((base + 10)) - -- $base 009
+  PORT_CHECK_METHODS=devtcp check "bash /dev/tcp 로 듣는 포트를 찾는다" 0 $((base + 10)) - -- $base 009
   check "다른 진행 중 항목의 기본 포트도 피한다" 0 $((base + 11)) - "other 010 'In Progress'" -- $base 009
   unlisten
 else

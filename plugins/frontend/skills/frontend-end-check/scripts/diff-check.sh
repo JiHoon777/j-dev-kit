@@ -4,7 +4,8 @@
 # - 추가된 줄(마크다운 파일 빼고)에 console.log, debugger, .only( 가 있으면 `파일:줄 — 이유`
 # - package.json 의 의존성(dependencies, devDependencies, peerDependencies, optionalDependencies)이 바뀌었는데
 #   그 폴더나 상위 폴더의 lockfile 이 바뀌지 않았으면 `파일 — 이유`. 비교에 node 를 쓴다
-# 를 한 줄씩 쓴다. 걸린 것이 있으면 1, 확인 못 한 것만 있으면 2, 없으면 출력 없이 0.
+# 를 한 줄씩 쓴다(표준 출력에는 실패만). 확인 못 한 것은 표준 오류에 쓴다.
+# 걸린 것이 있으면 1, 확인 못 한 것만 있으면 2, 없으면 출력 없이 0.
 # 저장소 루트에서 돈다. 이 스크립트를 고치면 scripts/test-diff-check.sh 를 돌린다.
 
 [ "$#" = 1 ] || { echo "사용법: bash diff-check.sh <기준 브랜치>" >&2; exit 2; }
@@ -33,7 +34,8 @@ found=$(
 [ -n "$found" ] && { printf '%s\n' "$found"; failed=1; }
 
 # 2. 의존성과 lockfile
-changed=$(git diff --name-only --no-renames "$base" HEAD)
+changed=$(git diff --name-status --no-renames "$base" HEAD)
+# 두 판은 인자 대신 표준 입력으로 넘긴다. Git Bash 는 / 로 시작하는 인자를 Windows 경로로 바꿔 버릴 수 있다
 deps_changed() { # <package.json 경로>: 0 바뀜, 1 그대로, 2 node 없음
   command -v node > /dev/null || return 2
   { git show "$base:$1" 2> /dev/null; printf '\n--diff-check--\n'; git show "HEAD:$1" 2> /dev/null; } |
@@ -46,22 +48,26 @@ deps_changed() { # <package.json 경로>: 0 바뀜, 1 그대로, 2 node 없음
       process.exit(a === b ? 1 : 0)'
 }
 lock_re='(^|/)(package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?)$'
-while IFS= read -r pkg; do
-  git cat-file -e "HEAD:$pkg" 2> /dev/null || continue # 지운 package.json
+lock_dirs=" " # lockfile 이 바뀐 폴더들
+while IFS=$'\t' read -r st f; do
+  [[ $f =~ $lock_re ]] || continue
+  if [[ $f == */* ]]; then lock_dirs+="${f%/*} "; else lock_dirs+=". "; fi
+done <<< "$changed"
+while IFS=$'\t' read -r st pkg; do
+  [[ $st != D && $pkg =~ (^|/)package\.json$ ]] || continue
   deps_changed "$pkg"
   case $? in
     1) continue ;;
-    2) echo "$pkg — 확인 못 함(node 없음)"; unknown=1; continue ;;
+    2) echo "$pkg — 확인 못 함(node 없음)" >&2; unknown=1; continue ;;
   esac
-  dir=$(dirname "$pkg") lock=
+  dir=$pkg lock=
   while :; do # 그 폴더와 상위 폴더의 lockfile 이 바뀌었나
-    prefix=$([ "$dir" = . ] && echo "" || echo "$dir/")
-    printf '%s\n' "$changed" | grep -E "$lock_re" | grep -qx -- "${prefix}[^/]*" && { lock=1; break; }
+    if [[ $dir == */* ]]; then dir=${dir%/*}; else dir=.; fi
+    [[ $lock_dirs == *" $dir "* ]] && { lock=1; break; }
     [ "$dir" = . ] && break
-    dir=$(dirname "$dir")
   done
   [ "$lock" ] || { echo "$pkg — 의존성이 바뀌었는데 lockfile 이 그대로"; failed=1; }
-done < <(printf '%s\n' "$changed" | grep -E '(^|/)package\.json$')
+done <<< "$changed"
 
 [ "$failed" = 1 ] && exit 1
 [ "$unknown" = 1 ] && exit 2
