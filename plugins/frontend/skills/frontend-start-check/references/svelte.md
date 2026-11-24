@@ -2,20 +2,17 @@
 
 package.json 에 `svelte`가 있을 때 `frontend-start-check`가 읽는다. 아래를 그 스킬의 "지킬 것"에 더한다.
 
-공식 Svelte 플러그인(`svelte@svelte`)이 있으면 그 스킬과 MCP 도구를 쓴다. 없어도 아래 CLI 로 된다.
+Svelte 의 기본 규칙(runes, Svelte 4 문법을 쓰지 않기), `svelte-autofixer`, 문서 찾기는 공식 Svelte 플러그인(`svelte@svelte`)의 스킬에 맡긴다. 그 플러그인의 `svelte-file-editor` 에이전트는 쓰지 않는다.
 
 ## 지킬 것
 
-- `.svelte`, `.svelte.ts`, `.svelte.js`를 만들거나 고칠 때 `svelte-code-writer` 스킬이 있으면 부른다.
-- 모르는 API 는 추측하지 않는다. Svelte MCP 의 `list-sections` → `get-documentation`으로 문서를 본다.
-- 고친 Svelte 파일은 `svelte-autofixer`로 확인한다: MCP 도구, 없으면 `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <파일> --svelte-version 5`. 종료 코드가 아니라 출력으로 판단하고, 이번에 쓴 코드에서 나온 문제는 없어질 때까지 고친다. 손대지 않은 기존 코드의 문제는 고치지 않고 알리기만 한다(항목 범위 밖이다).
-- 파생 값은 `$derived`. `$effect` 안에서 state 에 대입해 만들지 않는다.
-- 컴포넌트 최상위에서 `window`, `document`, `localStorage`를 쓰지 않는다. `onMount`, `$effect` 안이나 `browser` 확인 뒤에.
+- `.svelte`, `.svelte.ts`, `.svelte.js`를 만들거나 고칠 때 `svelte-code-writer`와 `svelte-core-bestpractices` 스킬을 부르고 따른다.
+- `svelte-autofixer`가 손대지 않은 기존 코드에서 낸 문제는 고치지 않고 알리기만 한다(항목 범위 밖이다). 이번에 쓴 코드에서 나온 문제는 고친다.
 - 다른 사람이 쓴 값을 `{@html}`로 넣지 않는다.
-- 비밀 값이 필요한 코드는 `+page.server.*`에만(`$env/static/private`는 서버 파일에서만). form action 실패는 `fail()`.
+- 비밀 값이 필요한 코드는 서버 파일(`+page.server.*`, `+server.*`)에만 둔다(`$env/*/private`는 서버 파일에서만). `load`는 권한을 확인하고 다른 사용자의 데이터를 돌려주지 않는다. form action 실패는 `fail()`.
 - `adapter-static`이면 서버 파일(`+page.server.*`, `+server.*`, form action)을 만들지 않는다.
-- 새 코드에 Svelte 4 문법(`export let`, `$:`, `on:click`, `<slot>`, `$app/stores`)을 쓰지 않는다.
 
 ## 물을 것
 
-설치된 `svelte`가 4 이하면 위 규칙이 맞지 않는다고 알리고 어떻게 할지 묻는다.
+- 공식 Svelte 플러그인이 설치돼 있지 않으면 설치할지 묻는다(README "있으면 쓰는 것"의 명령).
+- 설치된 `svelte`가 4 이하면 위 규칙이 맞지 않는다고 알리고 어떻게 할지 묻는다.

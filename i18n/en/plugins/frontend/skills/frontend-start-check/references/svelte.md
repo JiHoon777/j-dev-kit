@@ -4,20 +4,17 @@
 
 Read by `frontend-start-check` when package.json has `svelte`. Add the following to that skill's "To follow".
 
-If the official Svelte plugin (`svelte@svelte`) is installed, use its skills and MCP tools. Without it, the CLI below works.
+Svelte's basic rules (runes, not using Svelte 4 syntax), `svelte-autofixer`, and doc lookup are left to the skills of the official Svelte plugin (`svelte@svelte`). That plugin's `svelte-file-editor` agent is not used.
 
 ## To follow
 
-- When creating or modifying `.svelte`, `.svelte.ts`, `.svelte.js`, invoke the `svelte-code-writer` skill if available.
-- Do not guess APIs you don't know. Look up the docs with the Svelte MCP's `list-sections` → `get-documentation`.
-- Check modified Svelte files with `svelte-autofixer`: the MCP tool, otherwise `npx -y @sveltejs/mcp@0.1.28 svelte-autofixer <file> --svelte-version 5`. Judge by the output, not the exit code, and fix problems reported in the code you wrote this time until they are gone. Do not fix problems in existing code you did not touch; only report them (they are outside the item's scope).
-- Derived values use `$derived`. Do not create them by assigning to state inside `$effect`.
-- Do not use `window`, `document`, `localStorage` at component top level. Use them inside `onMount`, `$effect`, or after a `browser` check.
+- When creating or modifying `.svelte`, `.svelte.ts`, `.svelte.js`, invoke the `svelte-code-writer` and `svelte-core-bestpractices` skills and follow them.
+- Do not fix problems `svelte-autofixer` reports in existing code you did not touch; only report them (they are outside the item's scope). Fix problems reported in the code you wrote this time.
 - Do not insert values written by other people with `{@html}`.
-- Code that needs secrets goes only in `+page.server.*` (`$env/static/private` only in server files). Form action failures use `fail()`.
+- Code that needs secrets goes only in server files (`+page.server.*`, `+server.*`) (`$env/*/private` only in server files). `load` checks authorization and does not return other users' data. Form action failures use `fail()`.
 - With `adapter-static`, do not create server files (`+page.server.*`, `+server.*`, form actions).
-- Do not use Svelte 4 syntax (`export let`, `$:`, `on:click`, `<slot>`, `$app/stores`) in new code.
 
 ## To ask
 
-If the installed `svelte` is 4 or lower, say that the rules above do not apply and ask how to proceed.
+- If the official Svelte plugin is not installed, ask whether to install it (the command under "Used when installed" in the README).
+- If the installed `svelte` is 4 or lower, say that the rules above do not apply and ask how to proceed.

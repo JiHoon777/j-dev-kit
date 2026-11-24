@@ -407,4 +407,19 @@ updated_date: 2026-11-24
 
 **trigger-real** (지금 description, 25개 요청 × 3회): 모두 맞혔다(1.0). 새로 더한 비슷하지만 아닌 요청 셋(작업 브랜치에서 커밋·푸시, 원인만, 바로 고쳐 줘)은 부르지 않았고, 처음 보는 서베이 표현 둘은 불렀다. 008 의 description 결정은 그대로다.
 
+### 결과: A2 의 Svelte 고유 실제 사례 (2026-11-24, Opus 시험, sonnet 채점 3표, 판·사례마다 5회)
+
+사례: `real-svelte-001`(nolmeong 001 리뷰 전 `7dd1faf`. 정답은 고친 커밋 `1b794ec`의 시트 제목 고정 id → `$props.id()`, `{#each dexOrder()}`가 그릴 때마다 다시 계산), `real-svelte-005`(nolmeong 005 리뷰 전 `bb04515`. 정답은 `2bcea6b`의 `$derived` 객체 하나에서 꺼내 1분마다 통과 목록을 다시 만드는 것). 실제 리뷰에서 나와 고친 커밋이 근거다.
+
+| 사례 | 지금(Svelte 절) | A2(공식 스킬) | 판정 |
+| --- | --- | --- | --- |
+| `real-svelte-001` | 0.333 ± 0 | 0.533 ± 0.183 (se 0.082) | 차이 0.200 > 0.082, 나아짐 |
+| `real-svelte-005` | 0.500 ± 0 | 0.600 ± 0.224 (se 0.100) | 같음 |
+| 두 사례 평균 | 0.417 (se 0) | 0.567 (se 0.065) | 나아짐 |
+
+- 채점 기준별: 지금 판은 Svelte 고유 정답 셋을 15번 중 한 번도 못 찾았다(`finds-each-recompute` 0/5, `finds-props-id` 0/5, `finds-derived-rebuild` 0/5). A2 판은 2/5, 1/5, 1/5.
+- `real-*`에서는 같음(위 A1·A2 표). 그래서 **A2 를 적용했다**: `frontend-reviewer` Svelte 절(원문·번역본)은 `svelte-core-bestpractices`를 부르는 줄과 SvelteKit 규칙(`$env/*/private`, `load` 권한, `fail()`, `adapter-static`)만 남겼다(`{@html}`은 공통 항목 1 에 있다). `frontend-start-check/references/svelte.md`는 공식 스킬(`svelte-code-writer`, `svelte-core-bestpractices`)을 부르는 것, 기존 코드의 autofixer 문제는 고치지 않는 것, SvelteKit 규칙, 설치를 묻는 것만 남겼다. `frontend-end-check/references/svelte.md`는 "새로 생긴 `issues`만 실패"를 그대로 두고 autofixer 를 공식 플러그인 것이라고 적었다.
+- 008 의 "Svelte 절 유지"는 판별력 없는 사례(`reviewer-svelte` 만점 동률)와 Svelte 정답이 없는 `real-*`로 정한 것이었다. 이번 결과로 바뀌었다(위 판정 규칙의 재적용과도 같은 방향).
+- 들여오는 방법(AC #3): 의존 플러그인으로 두지 않고 README "있으면 쓰는 것"의 `/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte`로 둔다(위 "들여오는 방법"). 이 기계에는 `svelte@svelte` 1.0.11 이 설치돼 있다(`~/.claude/plugins/installed_plugins.json`). `/task end` 쪽: 위 eval 에서 `frontend-reviewer`가 25회 모두 `svelte-core-bestpractices`를 Skill 도구로 불렀다.
+
 ## Final Summary
