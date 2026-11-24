@@ -59,7 +59,7 @@ After all have returned, this session does not pick findings. Pass all the repor
 - Scope: same as 1 in step 3, plus `docs/review-principles.md`.
 - "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). A finding that goes against a principle is wrong. Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 / 🟡 / ⚪ below. If the same kind as a valid finding is in the Final Summary `리뷰에서 고친 것` (fixed in review) of an item in `docs/done/`, or it appears in several places across these reports, mark it 🔁 with the evidence (item number or locations)."
 
-The user sees only findings judged valid and step 2 stack check failures and test check results. Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores.
+The user sees only findings judged valid and step 2 stack check failures and test check results. Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores. If the verify command line changed in `git diff <base>...HEAD -- CLAUDE.md`, show apart from the findings "This branch changed the verify command (old → new). Until the merge, the verify Stop hook judges with the base branch's command". It changes what judges the work, so a person looks at it.
 
 ```markdown
 🔴 Must fix — confirmed bugs, security problems, data loss, AC violations, stack check failures
@@ -80,6 +80,10 @@ Do not fix anything before getting an answer.
 
 - Call the `superpowers:receiving-code-review` skill and follow it (check findings against the code; for wrong findings, give the reason and do not apply them).
 - For fixes that change behavior, write a failing test first.
+- Fixes that need judgment (changing the design, spanning several files, or with no settled way to fix) are made by this session itself. The session that made the change knows its context best.
+- Mechanical fixes, where the finding states exactly where and what to change and no judgment is left, can be collected and handed to one agent (Agent tool `model: sonnet`, `effort: high`). Settled work goes fine with a smaller model. This session decides whether to hand them over. For example, if there are few, or they must be fixed in the same files as fixes that need judgment, fix them yourself. If you hand them over, the prompt includes that list of findings, the item file path, "for fixes that change behavior, write a failing test first", and "do not fix anything outside the list and do not commit".
+- Do not judge the fixes by the fixer's report. Run the verify command, and for each fixed finding have a new general-purpose judge agent decide whether it is fixed, given only the item file path, the list of fixed findings, `git diff HEAD` and `git status --short` (so new untracked files show). Its prompt: "Do not edit files. For each finding, write fixed / not fixed with evidence (`file:line`). If unclear, do not leave it as fixed." For UI, `frontend-evaluator` from "To do after fixing" below judges.
+- If the same finding is still there after three fixes, stop fixing and tell the user the finding and what you tried. A person rethinking the approach beats repeating the same fix.
 - Do step 2's "To do after fixing" for the fixed parts (e.g. browser-check only the fixed screens). If a fix touched a stack check's area, call that `*-end-check` again.
 - For "later" and "block", invoke the `task` skill with `create <the finding and its evidence> --here` to make a new item. For "block", also pass the means to block it (lint rule, test or type), and fix the finding itself as the user chose. The user already chose, so for create step 3's approval, show only the item's content and get approval.
 - Write what was done and seen in `Implementation Notes` and commit.
