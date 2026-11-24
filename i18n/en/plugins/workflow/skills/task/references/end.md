@@ -30,7 +30,7 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 **Do the tests prove the fix:** after the stack checks and before the review, run the tests added or changed on this branch against the base branch's source. The script changes files for a while, so do not run it alongside the review agents.
 
 - Settle, from the project (CLAUDE.md, package.json scripts, test config), the command that runs one test file, with `{}` in place of the file (for example `pnpm vitest run {}`, `pytest {}`, `bash {}`).
-- `bash <task-scripts>/base-tests.sh <base> '<that command>'`. If the project's test files cannot be picked by name, add the files at the end.
+- `bash <task-scripts>/base-tests.sh <base> '<that command>'`. If the project's test files cannot be picked by name, add the files at the end, and if there are test helpers outside the naming rules (for example `src/testing/`), prefix `BASE_TESTS_KEEP='<path regex>'`.
 - Put each `기준에서도 통과: <file>` (also passes on base) line of the output into the step 4 findings list as 🟡 "does not prove the fix — passes without the fixed code", without going through the judge. The script output is the evidence.
 - If the command cannot be settled or the exit value is 2, write "could not check" and the reason in `Implementation Notes`; for each `HEAD 에서 실패: <file>` (fails on HEAD) line, whatever the exit value, write that test as "could not check"; then move on.
 

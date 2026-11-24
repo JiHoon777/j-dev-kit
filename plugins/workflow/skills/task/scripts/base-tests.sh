@@ -5,7 +5,10 @@
 # (*.test.*, *.spec.*, *_test.*, *-test.*, test_*.py, test-*.sh, *_spec.rb).
 # 1. 테스트를 HEAD 그대로 돌린다. 여기서 실패하면 "HEAD 에서 실패"로 적고 판단하지 않는다.
 # 2. 테스트 밖의 바뀐 파일만 기준 판으로 잠시 되돌리고(브랜치에서 더한 파일은 뺀다) 다시 돌린다.
-#    테스트 쪽 파일(tests/, __tests__/, spec/ 폴더와 위 이름)은 HEAD 판 그대로 둔다.
+#    테스트 쪽 파일은 HEAD 판 그대로 둔다: 위 이름, tests/·__tests__/·spec/·fixtures/·testdata/·mocks/ 폴더,
+#    conftest.py·pytest.ini·setupTests.*·*.setup.*·(vitest|jest|playwright|cypress|karma).config.*·.mocharc*, test_utils·test-helpers 같은 이름.
+#    이름 규칙 밖의 도우미는 BASE_TESTS_KEEP(경로 정규식, 예: '^src/testing/')로 더한다.
+#    테스트 하나는 BASE_TESTS_TIMEOUT 초(기본 600)가 지나면 끊는다(timeout 명령이 있을 때). 기준에서 끊긴 테스트는 기준에서 실패다.
 #    "기준에서 실패"는 고친 것을 증명한다. "기준에서도 통과"는 증명하지 못한다.
 # 3. 끝나면(중단돼도) 작업 트리를 HEAD 로 되돌린다.
 # 끝 값: 0 모두 기준에서 실패(또는 볼 것 없음), 1 기준에서도 통과한 테스트가 있음, 2 판단 못 함(돌릴 수 없음, HEAD 에서 실패).
@@ -25,7 +28,10 @@ for r in "$ref" "origin/$ref"; do base=$(git merge-base "$r" HEAD 2> /dev/null) 
 [ -z "$(git status --porcelain)" ] || { echo "커밋하지 않은 변경이 있어 돌리지 않았다. 커밋한 뒤 돌린다." >&2; exit 2; }
 
 run_re='(^|/)[^/]*[._-](test|spec)\.[^/]+$|(^|/)test_[^/]*\.py$|(^|/)test-[^/]*\.sh$|_spec\.rb$'
-test_re="(^|/)(tests?|__tests__|spec)/|$run_re"
+test_re="(^|/)(tests?|__tests__|spec|fixtures?|__fixtures__|testdata|mocks?|__mocks__)/|$run_re"
+test_re+='|(^|/)(conftest\.py|pytest\.ini|setupTests\.[^/]+|[^/]*\.setup\.[^/]+|(vitest|jest|playwright|cypress|karma)\.config\.[^/]+|\.mocharc[^/]*)$'
+test_re+='|(^|/)test[-_](utils?|helpers?|support)[^/]*$'
+[ -n "$BASE_TESTS_KEEP" ] && test_re+="|$BASE_TESTS_KEEP"
 
 changed=$(git diff --name-status --no-renames "$base" HEAD)
 targets=()
@@ -49,11 +55,19 @@ while IFS=$'\t' read -r st f; do
 done <<< "$changed"
 [ "${#sources[@]}" -gt 0 ] || { echo "테스트 밖 변경 없음. 건너뛴다."; exit 0; }
 
-run_one() { bash -c "${cmd//\{\}/$(printf '%q' "$1")}" > /dev/null 2>&1 < /dev/null; }
+limit=${BASE_TESTS_TIMEOUT:-600}
+tmo=$(command -v timeout || command -v gtimeout) # macOS 에는 기본으로 없다. 없으면 끊지 않는다
+run_one() { # 끝 값 124 는 시간 초과
+  local c=${cmd//\{\}/$(printf '%q' "$1")}
+  if [ -n "$tmo" ]; then "$tmo" -k 5 "$limit" bash -c "$c"; else bash -c "$c"; fi > /dev/null 2>&1 < /dev/null
+}
+late() { [ "$1" = 124 ] && [ -n "$tmo" ] && echo " (${limit}초 시간 초과)"; }
 
 unknown=0 ok=()
 for f in "${targets[@]}"; do
-  if run_one "$f"; then ok+=("$f"); else echo "HEAD 에서 실패: $f"; unknown=1; fi
+  run_one "$f"
+  rc=$?
+  if [ "$rc" = 0 ]; then ok+=("$f"); else echo "HEAD 에서 실패: $f$(late "$rc")"; unknown=1; fi
 done
 [ "${#ok[@]}" -gt 0 ] || exit 2
 
@@ -61,8 +75,8 @@ done
 backup=$(mktemp -d)
 for f in "${sources[@]}"; do
   [ -e "$f" ] || continue
-  [[ $f == */* ]] && mkdir -p "$backup/${f%/*}"
-  cp -p -- "$f" "$backup/$f"
+  { [[ $f != */* ]] || mkdir -p "$backup/${f%/*}"; } && cp -p -- "$f" "$backup/$f" ||
+    { rm -rf "$backup"; echo "사본을 뜨지 못해 돌리지 않았다: $f" >&2; exit 2; }
 done
 restore() {
   for f in "${sources[@]}"; do
@@ -77,13 +91,22 @@ restore() {
 }
 trap restore EXIT
 trap 'exit 2' INT TERM
-# 작업 트리만 기준 판으로 바꾼다(인덱스는 그대로). 브랜치에서 더한 파일은 뺀다
-[ "${#added[@]}" -gt 0 ] && rm -f -- "${added[@]}"
-[ "${#in_base[@]}" -gt 0 ] && git restore -q --source="$base" --worktree -- "${in_base[@]}"
+# 작업 트리만 기준 판으로 바꾼다(인덱스는 그대로). 브랜치에서 더한 파일은 뺀다.
+# 경로는 인자 대신 표준 입력으로 넘긴다. 바뀐 파일이 많으면 Windows 명령줄 한도(32K자)를 넘는다.
+# 하나라도 실패하면 반쯤 바꾼 트리로 판정하지 않고 되돌린 뒤 2로 끝낸다
+switch_failed() { echo "기준 판으로 바꾸지 못해 판정하지 않았다: $1" >&2; exit 2; }
+if [ "${#added[@]}" -gt 0 ]; then rm -f -- "${added[@]}" || switch_failed "더한 파일 빼기"; fi
+if [ "${#in_base[@]}" -gt 0 ]; then
+  printf '%s\0' "${in_base[@]}" |
+    git --literal-pathspecs restore -q --source="$base" --worktree --pathspec-from-file=- --pathspec-file-nul ||
+    switch_failed "git restore"
+fi
 
 passed=0
 for f in "${ok[@]}"; do
-  if run_one "$f"; then echo "기준에서도 통과: $f"; passed=1; else echo "기준에서 실패: $f"; fi
+  run_one "$f"
+  rc=$?
+  if [ "$rc" = 0 ]; then echo "기준에서도 통과: $f"; passed=1; else echo "기준에서 실패: $f$(late "$rc")"; fi
 done
 
 restore
