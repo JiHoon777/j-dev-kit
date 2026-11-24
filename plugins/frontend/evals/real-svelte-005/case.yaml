@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: real-svelte-005
+description: nolmeong 005 도감 화면 다듬기(리뷰 전 bb04515, 기준 671a7b8). 정답은 리뷰에서 고친 Svelte 반응성 지적 1건(고친 커밋 2bcea6b)
+tags: [real-svelte]
+context:
+  scaffold_script: fixture.sh

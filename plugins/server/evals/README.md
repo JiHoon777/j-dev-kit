@@ -8,4 +8,4 @@
 | `supabase-seeded` | 합성 사례(실제 리뷰 아님). todak 010 모양의 코드에 `supabase-reviewer` 볼 것마다 실수를 하나씩 심고, 맞게 쓴 테이블 하나를 둔다. 실제 사례와 함께 써서, 리뷰어 항목을 지우는 결정은 두 사례 모두에서 나빠지지 않을 때만 한다(012). `--tag seeded` |
 | `api-seeded` | 합성 사례. 같은 코드에서 `api-reviewer`의 쿼리 항목(N+1, 상한 없는 조회·인덱스). `--tag seeded` |
 
-다시 돌리기: frontend evals README 의 1~3 과 같다. 셸 도구는 주지 않는다(fixture 가 diff 를 `review.diff`로 남긴다).
+다시 돌리기와 판정: frontend evals README 와 같다. 셸 도구는 주지 않는다(fixture 가 diff 를 `review.diff`로 남긴다).

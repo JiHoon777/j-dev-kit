@@ -34,7 +34,6 @@ Pick a single tool for schema changes. Use the first that matches.
 
 Return only what applies to this item.
 
-- For every new endpoint: authentication, object-level authorization (can the requesting user access this object), input schema validation, accepting only allowed fields.
 - Multiple writes in one transaction. Idempotency keys for create requests that can be retried (payments, orders).
 - Schema changes only through the owning tool's migration files. Do not change the DB by hand.
 - Do not leave passwords, tokens, keys, or connection strings in logs or error responses.

@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: real-svelte-001
+description: nolmeong 001 도감 화면(리뷰 전 7dd1faf, 기준은 001 start 의 부모). 정답은 리뷰에서 고친 Svelte 고유 지적 2건(고친 커밋 1b794ec, 001 항목의 "리뷰" 표)
+tags: [real-svelte]
+context:
+  scaffold_script: fixture.sh
