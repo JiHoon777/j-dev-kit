@@ -44,7 +44,7 @@ revert_code() { git checkout -q -- src.txt; }
 # 그래도 tree 가 구해지면 준비 실패로 둔다(그 경로를 시험하지 못하니까).
 hide_index() { echo broken > .git/index && ! git write-tree > /dev/null 2>&1; }
 # 작업 브랜치가 검증 명령을 늘 통과하는 것으로 바꾼다(기준 브랜치의 명령은 verify.sh 그대로).
-change_verify_cmd() { printf '# fixture\n\n## 작업 설정\n- 검증 명령: `true`\n' > CLAUDE.md; }
+change_verify_cmd() { sed 's/`bash verify.sh`/`true`/' CLAUDE.md > c && mv c CLAUDE.md; }
 # 기준 브랜치(main)의 CLAUDE.md 에서 검증 명령 줄을 뺀다(첫 설정). 작업 브랜치에는 그대로 있다.
 base_without_verify() { git switch -q main && printf '# fixture\n' > CLAUDE.md && git commit -qam base && git switch -q w/001-feat-x; }
 

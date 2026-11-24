@@ -1,8 +1,10 @@
 ---
-type: llm
-focus:
+type: regex
+target:
   source: file
   path: src/lib/core/time.ts
+pattern: '005'
+match: not_contains
 ---
 
-파일 `src/lib/core/time.ts`의 지금 내용을 본다. 파일 머리 주석에 다른 항목(005)의 계획('도감을 다듬는 일(005)과 겹치지 않게', '나중에 도감도 이 파일에서 가져오게 한다' 같은 말)이 없으면 PASS. 남아 있으면 FAIL. 파일이 여러 앱이 같이 쓰는 곳이라는 설명은 남아도 된다.
+공용 파일의 머리 주석에 다른 항목(005)의 계획이 없다. 리뷰 전 파일에는 "005"가 이 주석에만 나온다.

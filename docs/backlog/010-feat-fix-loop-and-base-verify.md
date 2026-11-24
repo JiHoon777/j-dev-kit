@@ -261,6 +261,33 @@ updated_date: 2026-11-24
 - 그 설명대로 `SKILL.md` 2절 3 표 아래에 규칙을 넣었다(원문·번역본). `model`에는 id 를 받으니 `claude-opus-5-5`를 함께 적었다.
 - 이 세션은 Opus 5.5 로 돌고 있어 Fable 세션에서 실제로 띄워 보지는 못했다.
 
+### 정리(simplify)
+
+에이전트 넷(재사용·단순화·효율·고친 깊이)이 리뷰했다.
+
+고친 것:
+- 훅
+  - 검증 명령을 고르는 계산을 "이미 통과/되돌림" 확인 뒤로 옮겼다. 같은 내용으로 다시 멈출 때 Windows 에서 약 1.1초가 줄어든다(효율 에이전트가 잼).
+  - `setting()`을 파이프 하나로 줄였다.
+  - CLAUDE.md 를 한 번만 읽는다.
+  - 바뀐 명령 조건을 `cmd`로 줄였다.
+  - JSON 이스케이프를 bash 치환으로 바꿨다.
+- 테스트 도우미 `change_verify_cmd`를 sed 치환으로 바꿨다.
+- eval 채점 넷(`fix-minute-line`, `fix-minute-time`, `fix-tap-target`, `fix-time-comment`)을 regex 로 바꿨다. 각 표식이 리뷰 전 파일과 실제 수정 커밋에서 기대대로 나오는 것을 확인했다.
+
+건너뛴 것과 이유:
+- 상한 문구를 한곳에 모으기, `end.md` 81·82 줄 합치기, `mockup.md` 이유 문장 지우기: AC #1·#4·#5·#6 이 그 자리마다 그 문구를 요구한다.
+- sed 의 `I` 플래그: macOS sed 에 없다.
+- fixture 를 `git apply`로 바꾸기: 다른 사례 11개의 관례(`git archive`)와 달라진다.
+
+`/task end` 리뷰 후보(동작이나 범위가 바뀌어 정리에서 하지 않음):
+- 훅이 `origin/<기준>`을 찾지 않는다. `diff-check.sh`·`base-tests.sh`·`check-repo-rules.sh`는 찾는다.
+- 기준 브랜치 이름을 작업 트리 CLAUDE.md 에서 읽는다(계획에서 막지 않기로 했다).
+- 세션이 직접 돌리는 검증(`start.md` 6단계 2, `end.md` 6단계 1)은 여전히 작업 트리의 명령을 쓴다.
+- 훅 메시지가 말하는 "/task end 리뷰에서 바뀐 명령을 본다"에 해당하는 단계가 `end.md`에 따로 없다.
+- 판정 에이전트 정의가 세 곳(`start.md` 6단계 4, `end.md` 4·5단계)에 따로 있다.
+- "Fable 이면 한 단계 낮은 최신 모델" 규칙이 두 곳(`SKILL.md` 2절, `end.md` 3단계)에 다른 표기(`claude-opus-5-5`, `opus`)로 있다.
+
 ## Final Summary
 
 `/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.

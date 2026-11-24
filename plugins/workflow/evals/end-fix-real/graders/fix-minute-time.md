@@ -1,8 +1,10 @@
 ---
-type: llm
-focus:
+type: regex
+target:
   source: file
   path: src/lib/core/time.ts
+pattern: 'export\s+const\s+MINUTE\b'
+match: contains
 ---
 
-파일 `src/lib/core/time.ts`의 지금 내용을 본다. `time.ts`가 `MINUTE`를 export 하면 PASS(`HOUR`·`DAY`도 export 하면 더 좋지만 따지지 않는다). `MINUTE`를 export 하지 않으면 FAIL.
+`time.ts`가 `MINUTE`를 export 한다.

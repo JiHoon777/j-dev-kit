@@ -22,33 +22,7 @@ item="docs/backlog/$name.md"
 # Definition of Done 에 체크가 없으면 아직 끝났다고 한 것이 아니다.
 sed -n '/<!-- DOD:BEGIN -->/,/<!-- DOD:END -->/p' "$item" | grep -qi '^[[:space:]]*- \[x\]' || exit 0
 
-# CLAUDE.md 내용(표준 입력)에서 <이름>: 줄의 값을 뽑는다. 백틱이 있으면 그 안의 것.
-setting() {
-  local line val
-  line=$(grep -m1 -iE "($1)[[:space:]]*:" | tr -d '\r')
-  [ -n "$line" ] || return 0
-  val=$(printf '%s' "$line" | sed -E 's/^[^:]*:[[:space:]]*//')
-  case "$val" in
-    *\`*\`*) val=$(printf '%s' "$val" | sed -E 's/^[^`]*`([^`]*)`.*$/\1/') ;;
-  esac
-  printf '%s' "$val" | sed -E 's/[[:space:]]+$//'
-}
-
-# 검증 명령: 기준 브랜치 CLAUDE.md 의 "검증 명령:" 또는 "verify command:" 줄.
-# 작업 브랜치가 판정할 명령을 바꿔 스스로 통과시키지 못하게 하려는 것이다.
-# 기준 브랜치에 CLAUDE.md 나 그 줄이 없으면(첫 설정) 작업 트리의 것을 쓴다.
 [ -f CLAUDE.md ] || exit 0
-keys='검증 명령|verify command'
-work_cmd=$(setting "$keys" < CLAUDE.md)
-base=$(setting '기준 브랜치|base branch' < CLAUDE.md)
-base=${base:-main}
-base_cmd=$(git show "$base:CLAUDE.md" 2>/dev/null | setting "$keys")
-cmd=${base_cmd:-$work_cmd}
-[ -n "$cmd" ] || exit 0
-changed=
-if [ -n "$base_cmd" ] && [ -n "$work_cmd" ] && [ "$base_cmd" != "$work_cmd" ]; then
-  changed="이 브랜치가 검증 명령을 바꿨다($work_cmd). 판정은 $base 의 명령으로 했고, 바뀐 명령은 머지 뒤부터 쓰인다. /task end 리뷰에서 바뀐 명령을 본다."
-fi
 
 # 지금 작업 폴더의 내용(백로그 문서 제외)이 마지막으로 통과한 것과 같으면 다시 돌리지 않는다.
 idx=$(mktemp) || exit 0
@@ -71,13 +45,39 @@ else
   printf '%s' "$input" | grep -q '"stop_hook_active"[[:space:]]*:[[:space:]]*true' && exit 0
 fi
 
+# CLAUDE.md 내용(표준 입력)에서 <이름>: 줄의 값을 뽑는다. 백틱이 있으면 그 안의 것.
+setting() {
+  grep -m1 -iE "($1)[[:space:]]*:" | tr -d '\r' |
+    sed -E 's/^[^:]*:[[:space:]]*//; s/^[^`]*`([^`]*)`.*$/\1/; s/[[:space:]]+$//'
+}
+
+# 검증 명령: 기준 브랜치 CLAUDE.md 의 "검증 명령:" 또는 "verify command:" 줄.
+# 작업 브랜치가 판정할 명령을 바꿔 스스로 통과시키지 못하게 하려는 것이다.
+# 기준 브랜치에 CLAUDE.md 나 그 줄이 없으면(첫 설정) 작업 트리의 것을 쓴다.
+# CLAUDE.md 도 내용(tree)에 들어가므로, 위에서 이미 통과·되돌림을 가린 뒤에 읽어도 된다.
+keys='검증 명령|verify command'
+md=$(<CLAUDE.md)
+work_cmd=$(setting "$keys" <<<"$md")
+base=$(setting '기준 브랜치|base branch' <<<"$md")
+base=${base:-main}
+base_cmd=$(git show "$base:CLAUDE.md" 2>/dev/null | setting "$keys")
+cmd=${base_cmd:-$work_cmd}
+[ -n "$cmd" ] || exit 0
+changed=
+if [ -n "$work_cmd" ] && [ "$cmd" != "$work_cmd" ]; then
+  changed="이 브랜치가 검증 명령을 바꿨다($work_cmd). 판정은 $base 의 명령으로 했고, 바뀐 명령은 머지 뒤부터 쓰인다. /task end 리뷰에서 바뀐 명령을 본다."
+fi
+
 out=$(eval "$cmd" 2>&1)
 status=$?
 if [ "$status" -eq 0 ]; then
   [ -n "$tree" ] && printf '%s' "$tree" > "$marker"
   rm -f "$bounced"
   # 통과했어도 사용자에게는 알린다(Claude 는 막지 않는다).
-  [ -n "$changed" ] && printf '{"systemMessage": "%s"}\n' "$(printf '%s' "$changed" | sed 's/\\/\\\\/g; s/"/\\"/g')"
+  if [ -n "$changed" ]; then
+    msg=${changed//\\/\\\\}
+    printf '{"systemMessage": "%s"}\n' "${msg//\"/\\\"}"
+  fi
   exit 0
 fi
 [ -n "$tree" ] && printf '%s' "$branch $tree" > "$bounced"
