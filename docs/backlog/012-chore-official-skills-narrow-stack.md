@@ -428,4 +428,25 @@ updated_date: 2026-11-24
 - 그래서 `frontend-reviewer`의 접근성(4)·억지로 끈 검사(7) 항목을 그대로 두고, `web-design-guidelines`는 쓰는 곳이 없어 README 두 개의 설치 안내를 지웠다. `design-reviewer`(원문·번역본)의 "코드만 읽어도 보이는 문제는 `frontend-reviewer`와 `web-design-guidelines`가 본다"를 "`frontend-reviewer`가 본다"로 고쳤다. AC #1 을 이에 맞게 고쳤다.
 - `design-reviewer`의 범위 바꾸기(브라우저로 열어야 보이는 것만)는 그대로다(재지 않고 바꿨다).
 
+### 정리(simplify, 2026-11-24)
+
+재사용·단순화·효율·고친 깊이 에이전트 넷의 지적을 보고 고친 것(동작은 바꾸지 않았다):
+
+- 리뷰어 셋(`frontend-reviewer`, `api-reviewer`, `supabase-reviewer`, 원문·번역본): 줄마다 붙어 조금씩 달랐던 "스킬을 부를 수 없으면 '확인 못 한 것'에 '<스킬 이름> 없음'" 문장을 보고 형식 절에 한 번으로 모았다.
+- `supabase-reviewer` 볼 것을 한 문단으로 줄이고(남긴 "입력과 악용"도 그 문단 안), 외부 스킬의 참고 문서 파일 이름 접두사(`security-*` 등)를 지웠다. `api-reviewer` 9 도 같다.
+- `end.md` 2단계의 "테스트를 찾지 못함" 줄을 한 문장으로, 4단계의 같은 괄호를 지웠다. `SKILL.md` 2절 5 의 되풀이 문장과 `start.md` 3단계를 줄였다(하위 세션도 `ExitPlanMode`로 승인받는다는 뜻은 그대로).
+- `react.md`·`svelte.md`(시작 점검)에서 아래 목록이 하는 말을 되풀이하던 문장을 지웠다. `server-start-check`의 "답 전까지는 서버 도구"를 "Node 도구"로 맞추고, 리뷰어가 부르는 공식 Supabase 스킬이 없으면 설치를 묻는 줄을 "물을 것"에 더했다(시작 점검 reference 의 Svelte·React 와 맞춤).
+- `base-tests.sh`: 테스트를 못 찾았을 때 `$changed`를 한 번 더 돌던 루프를 지우고, 이미 구한 `sources`로 판정한다(같은 동작). 두 정규식에 따로 있던 도우미 폴더 목록을 `aux_dirs` 하나로.
+- 테스트: `test-base-tests.sh`의 `__tests__/`·`tests/` 두 사례를 하나로, `test-config-check.sh`의 "보는 형태"와 "보지 않는 형태"를 한 사례로(다른 언어는 대표 둘만) 합쳤다. 합친 뒤 `bash scripts/test-config-check.sh` "20 개 중 20 개 맞음", `bash scripts/test-base-tests.sh` "18 개 중 18 개 맞음".
+- eval: `create-many`와 새 `trigger-real` 다섯이 같은 fixture 를 복사하던 것을 이웃 fixture 를 부르는 한 줄로(`api-seeded`와 같은 방식). `supabase-seeded`·server README 의 "볼 것 1~11"을 주제 이름으로. 새 사례(`real-svelte-*`, `mockup-cart`, `create-*`, `plan-todak-010`)를 각 evals README 표에 더했다. workflow README 의 판정 규칙은 frontend README 를 가리킨다.
+
+건너뛴 것:
+- `frontend-end-check`의 개발 서버 절차가 `frontend-start-check`와 겹친다는 지적: AC #20 이 그 자리에 명령과 포트 규칙을 적으라고 한다. 포트 고르기를 `dev-server.sh`로 옮기는 것은 이 항목 밖이다.
+- 실제 사례 fixture 를 공용 스크립트 하나로: 기존 사례(`real-*`, `compose-real-*`)까지 바꿔야 해 범위 밖이다.
+- 테스트 러너에게 테스트 목록을 묻기(`vitest list` 등), 끝 값으로 "테스트 못 찾음"을 가르기: 더 큰 설계 변경이라 하지 않았다.
+- 공식 스킬을 diff 종류에 따라서만 부르게 하기(효율): eval 로 잰 것은 늘 부르는 판이라, 조건을 붙이면 재지 않은 동작이 된다.
+- 원칙과 부딪히는 지적을 리뷰어가 따로 묶기(효율): B2 의 뜻(판정이 거른다)과 다르다.
+- evals README 의 "008 결정에 다시 적용한 것" 문단을 Notes 로만 옮기기: 부모 세션이 전한 지시가 README 와 Notes 둘 다에 적으라고 했다.
+- `design-reviewer` description 줄이기: 에이전트를 고르는 데 쓰는 글이라 그대로 뒀다.
+
 ## Final Summary

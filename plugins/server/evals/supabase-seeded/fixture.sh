@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 합성 사례. todak 010 이 계획한 모양(작업본, 공개 함수, 이력, 권한)을 따라 지어 쓴 코드에
-# supabase-reviewer "볼 것" 1~11 과 api-reviewer 9(쿼리)에 해당하는 실수를 하나씩 심었다.
+# Supabase 일반 규칙(RLS·노출, 인가, update, RPC, 뷰, 스토리지, 키, 입력 제약, Realtime·Edge Function, 위험한 마이그레이션, 정책 성능)과 쿼리(N+1, 상한 없는 조회)에 실수를 하나씩 심었다.
 # 실제 리뷰에서 나온 것이 아니다. 맞게 쓴 파일(case_sources)을 하나 둬 헛지적도 본다.
 set -euo pipefail
 git init -q -b main

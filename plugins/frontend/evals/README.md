@@ -8,6 +8,8 @@
 | --- | --- |
 | `real-line`, `real-sky`, `real-birthday` | 실제 리뷰 실패(nolmeong 002·013·012 의 리뷰 전 커밋). 정답은 리뷰에서 고친 동작 버그이고 고친 커밋이 근거다(각 `case.yaml`). 버그마다 sonnet 판정, `real-line`에는 그대로 두기로 한 것을 🔴 로 올리지 않는지도 본다. 정답에 Svelte 고유 버그가 없어 Svelte 절은 재지 못한다(012 A7). `--tag real` |
 | `compose-real-*-cr`, `compose-real-*-stack` | 리뷰어 구성을 실제 사례로. `code-review` 하나만 쓴 것과 `frontend-reviewer`를 더한 것. 정답과 채점은 `real-*`와 같다. 리뷰어 수와 내용이 함께 바뀌고 과정 채점이 한쪽에만 있어 구성 결정의 근거로는 약하다(012 A7). `--tag compose-real` |
+| `real-svelte-001`, `real-svelte-005` | Svelte 고유 리뷰 실패(nolmeong 001·005 의 리뷰 전 커밋, 고친 커밋 `1b794ec`·`2bcea6b`). 시트 제목 고정 id, `{#each}` 안 함수 호출, `$derived`가 1분마다 목록을 다시 만듦. `--tag real-svelte` |
+| `mockup-cart` | 합성 사례. `ui-design mockup` 브리프의 질문(시안 수, 저장소에 답이 있는 것, 답이 시안을 바꾸는가). `--tag b4` |
 | `reviewer-svelte` | 스모크용. 심은 Svelte 문제 5개. 008 에서 두 판 모두 만점이라 결정 근거로 쓰지 않는다 |
 
 `real-*`와 `compose-real-*`는 nolmeong 로컬 저장소가 있는 기계에서만 돈다. scaffold 가 그 저장소에서 `git archive`로 커밋을 꺼내 만든다(그 저장소에는 쓰지 않는다). 저장소 경로는 `evals/nolmeong-src.local`에 한 줄로 쓴다(예: `echo ~/projects/nolmeong > evals/nolmeong-src.local`. 셸이 `~`를 절대 경로로 펼친다). 이 파일은 커밋하지 않고, 플러그인 폴더를 복사하면 사본에도 따라간다. eval 은 scaffold 에 환경 변수를 넘기지 않으므로 환경 변수로는 줄 수 없다. j-dev-kit 에는 nolmeong 코드를 넣지 않는다.

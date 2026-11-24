@@ -46,7 +46,7 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
   4. That session cannot see this conversation. The brief is two lines, "Invoke the `task` skill with `<mode> <rest of the arguments> --here` and follow its procedure" and "Write questions and approval requests completely in the last message of the turn, then stop. Write the plan in plan mode and get it approved with `ExitPlanMode`", plus any background the user gave or decisions made in this conversation (only if there are any).
   5. Report the session link. That work does not happen in this session; this session directs it.
      - When the sub-session ends a turn, show any question or approval request to the user in full and pass the answer to that session in the user's own words. Check the result (commits, changed files) yourself and report it before the user asks.
-     - When the sub-session is waiting for plan approval (`ExitPlanMode`), say the plan is ready with the session link and add only the points worth checking, briefly. Do not approve the plan on the user's behalf. The user approving it in that session is the plan approval.
+     - When the sub-session is waiting for plan approval (`ExitPlanMode`), say the plan is ready with the session link and add only the points worth checking, briefly. Do not approve the plan on the user's behalf.
      - If the user answered in the sub-session directly, accept that.
 
 ## 3. Project settings

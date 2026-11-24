@@ -25,7 +25,7 @@ In a monorepo, decide which service this item touches. If unclear, put it under 
 
 Pick a single tool for schema changes. Use the first that matches.
 
-1. Both a Node migration tool (the config file or migration folder of prisma, drizzle-kit, knex, etc.) and `supabase/migrations/` exist → put "Which one is the source of truth?" under questions. Until answered, the server tool.
+1. Both a Node migration tool (the config file or migration folder of prisma, drizzle-kit, knex, etc.) and `supabase/migrations/` exist → put "Which one is the source of truth?" under questions. Until answered, the Node tool.
 2. A Node migration tool exists → that tool (even if the DB is Supabase).
 3. A `supabase/` folder exists → Supabase CLI.
 4. None → no migrations.
@@ -44,6 +44,7 @@ Return only what applies to this item.
 - If the item changes the schema: create a migration with the owning tool's generate command, regenerate types if needed.
 - If the item changes the API request or response format: whether the consumers of that API (frontend, other services) also change.
 - If there are two migration owners or the monorepo service is unclear, put it under questions.
+- If Supabase is used and the official Supabase skills the reviewers invoke (`supabase`, `supabase-postgres-best-practices`) are not installed, put whether to install them under questions ("Used when installed" in the README).
 
 ## Return format
 

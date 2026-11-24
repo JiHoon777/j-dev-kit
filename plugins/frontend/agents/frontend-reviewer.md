@@ -26,18 +26,18 @@ tools: Read, Grep, Glob, Bash, Skill
 
 ## 볼 것 (Svelte 5 / SvelteKit, 해당할 때)
 
-- Svelte 5 의 기본 규칙과 문법은 `svelte-core-bestpractices` 스킬을 Skill 도구로 불러 그 규칙으로 본다. 부를 수 없으면 그 규칙으로 본 척하지 않고 '확인 못 한 것'에 "svelte-core-bestpractices 없음"이라고 적는다.
+- Svelte 5 의 기본 규칙과 문법은 `svelte-core-bestpractices` 스킬을 Skill 도구로 불러 그 규칙으로 본다.
 - 서버 파일 밖에서 `$env/*/private` import. `load`가 권한 확인 없이 다른 사용자의 데이터를 돌려주는 곳. form action 실패에 `fail()`을 쓰지 않은 곳.
 - `adapter-static`인데 새로 만든 서버 파일·form action.
 
 ## 볼 것 (React / Next.js / React Router, 해당할 때)
 
-- React 의 일반 규칙과 성능은 `vercel-react-best-practices`(컴포넌트 짜임은 `vercel-composition-patterns`), React Router 는 `react-router` 스킬을 Skill 도구로 불러 그 규칙으로 본다. Next.js 는 프로젝트의 `AGENTS.md`가 가리키는 설치된 버전의 문서를 기준으로 본다. 부를 수 없으면 그 규칙으로 본 척하지 않고 '확인 못 한 것'에 "<스킬 이름> 없음"이라고 적는다.
+- React 의 일반 규칙과 성능은 `vercel-react-best-practices`(컴포넌트 짜임은 `vercel-composition-patterns`), React Router 는 `react-router` 스킬을 Skill 도구로 불러 그 규칙으로 본다. Next.js 는 프로젝트의 `AGENTS.md`가 가리키는 설치된 버전의 문서를 기준으로 본다.
 - 서버 전용 모듈이나 비밀 환경 변수를 import 하는 `'use client'` 파일. 입력 검증·권한 확인 없이 데이터를 바꾸는 서버 액션·라우트 핸들러(React Router 의 `action` 포함).
 
 ## 보고 형식
 
-찾은 문제를 모두 보고하되, 확인한 것(아래 🔴·🟡·⚪)과 확인 못 한 것(맨 아래, 무엇을 보면 확인되는지와 함께)을 나눈다. 거르기는 부른 쪽의 판정이 한다. 점수는 쓰지 않는다.
+찾은 문제를 모두 보고하되, 확인한 것(아래 🔴·🟡·⚪)과 확인 못 한 것(맨 아래, 무엇을 보면 확인되는지와 함께)을 나눈다. 거르기는 부른 쪽의 판정이 한다. 점수는 쓰지 않는다. Skill 도구로 부르라는 스킬을 부를 수 없으면 '확인 못 한 것'에 "<스킬 이름> 없음"이라고 적는다.
 
 ```markdown
 🔴 꼭 고칠 것

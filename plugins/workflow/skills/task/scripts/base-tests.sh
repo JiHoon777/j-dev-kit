@@ -30,11 +30,11 @@ for r in "$ref" "origin/$ref"; do base=$(git merge-base "$r" HEAD 2> /dev/null) 
 [ -z "$(git status --porcelain)" ] || { echo "커밋하지 않은 변경이 있어 돌리지 않았다. 커밋한 뒤 돌린다." >&2; exit 2; }
 
 run_re='(^|/)[^/]*[._-](test|spec)\.[^/]+$|(^|/)test_[^/]*\.py$|(^|/)test-[^/]*\.sh$|_spec\.rb$'
-# 테스트 폴더 아래의 JS·TS 파일(Jest __tests__, node --test test/). 도우미·fixture 는 뺀다
+aux_dirs='fixtures?|__fixtures__|testdata|mocks?|__mocks__' # 테스트 쪽 도우미 폴더
 dir_re='(^|/)(__tests__|tests?)/([^/]+/)*[^/]+\.[cm]?[jt]sx?$'
-helper_re='(^|/)(fixtures?|__fixtures__|helpers?|utils?|mocks?|__mocks__|support|testdata)/|(^|/)_[^/]*$|(^|/)[^/]*(setup|helper|util|fixture)[^/]*$'
+helper_re="(^|/)($aux_dirs|helpers?|utils?|support)/|(^|/)_[^/]*\$|(^|/)[^/]*(setup|helper|util|fixture)[^/]*\$"
 is_test() { [[ $1 =~ $run_re ]] || { [[ $1 =~ $dir_re ]] && ! [[ $1 =~ $helper_re ]]; }; }
-test_re="(^|/)(tests?|__tests__|spec|fixtures?|__fixtures__|testdata|mocks?|__mocks__)/|$run_re"
+test_re="(^|/)(tests?|__tests__|spec|$aux_dirs)/|$run_re"
 test_re+='|(^|/)(conftest\.py|pytest\.ini|setupTests\.[^/]+|[^/]*\.setup\.[^/]+|(vitest|jest|playwright|cypress|karma)\.config\.[^/]+|\.mocharc[^/]*)$'
 test_re+='|(^|/)test[-_](utils?|helpers?|support)[^/]*$'
 [ -n "$BASE_TESTS_KEEP" ] && test_re+="|$BASE_TESTS_KEEP"
@@ -48,17 +48,6 @@ else
     [ "$st" != D ] && is_test "$f" && targets+=("$f")
   done <<< "$changed"
 fi
-if [ "${#targets[@]}" = 0 ]; then # 볼 테스트가 없는 것을 통과로 두지 않는다
-  docs=0
-  while IFS=$'\t' read -r st f; do
-    [ -n "$f" ] && ! [[ $f =~ $test_re ]] || continue
-    [[ $f == *.md ]] && { docs=1; continue; }
-    echo "바뀐 테스트 없음."; exit 2
-  done <<< "$changed"
-  [ "$docs" = 1 ] && { echo "문서만 바뀜. 건너뛴다."; exit 0; }
-  echo "테스트 밖 변경 없음. 건너뛴다."; exit 0
-fi
-
 sources=() added=() in_base=()
 nl=$'\n'
 tlist=$nl$(printf '%s\n' "${targets[@]}")$nl
@@ -69,6 +58,10 @@ while IFS=$'\t' read -r st f; do
   if [ "$st" = A ]; then added+=("$f"); else in_base+=("$f"); fi
 done <<< "$changed"
 [ "${#sources[@]}" -gt 0 ] || { echo "테스트 밖 변경 없음. 건너뛴다."; exit 0; }
+if [ "${#targets[@]}" = 0 ]; then # 볼 테스트가 없는 것을 통과로 두지 않는다(문서만 바뀌었으면 볼 것이 없다)
+  for f in "${sources[@]}"; do [[ $f == *.md ]] || { echo "바뀐 테스트 없음."; exit 2; }; done
+  echo "문서만 바뀜. 건너뛴다."; exit 0
+fi
 
 limit=${BASE_TESTS_TIMEOUT:-600}
 tmo=$(command -v timeout || command -v gtimeout) # macOS 에는 기본으로 없다. 없으면 끊지 않는다

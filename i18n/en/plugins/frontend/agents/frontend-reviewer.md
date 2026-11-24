@@ -28,18 +28,18 @@ Do not modify files. Do not start servers, run build or verification commands, o
 
 ## What to check (Svelte 5 / SvelteKit, when applicable)
 
-- For Svelte 5's basic rules and syntax, invoke the `svelte-core-bestpractices` skill with the Skill tool and review by its rules. If you cannot invoke it, do not pretend to have reviewed by its rules; write "svelte-core-bestpractices not available" under "Not confirmed".
+- For Svelte 5's basic rules and syntax, invoke the `svelte-core-bestpractices` skill with the Skill tool and review by its rules.
 - `$env/*/private` imports outside server files. `load` returning another user's data without an authorization check. Form action failures not using `fail()`.
 - Newly created server files or form actions with `adapter-static`.
 
 ## What to check (React / Next.js / React Router, when applicable)
 
-- For React's general rules and performance, invoke `vercel-react-best-practices` (for how components are put together, `vercel-composition-patterns`), and for React Router the `react-router` skill, with the Skill tool and review by their rules. For Next.js, use the installed version's docs that the project's `AGENTS.md` points to. If you cannot invoke one, do not pretend to have reviewed by its rules; write "<skill name> not available" under "Not confirmed".
+- For React's general rules and performance, invoke `vercel-react-best-practices` (for how components are put together, `vercel-composition-patterns`), and for React Router the `react-router` skill, with the Skill tool and review by their rules. For Next.js, use the installed version's docs that the project's `AGENTS.md` points to.
 - `'use client'` files that import server-only modules or secret environment variables. Server actions or route handlers (including React Router `action`s) that change data without input validation or an authorization check.
 
 ## Report format
 
-Report every problem you found, split into confirmed ones (🔴 · 🟡 · ⚪ below) and unconfirmed ones (at the bottom, with what would confirm them). The caller's judge does the filtering. Do not write scores.
+Report every problem you found, split into confirmed ones (🔴 · 🟡 · ⚪ below) and unconfirmed ones (at the bottom, with what would confirm them). The caller's judge does the filtering. Do not write scores. If you cannot invoke a skill this file tells you to use, write "<skill name> not available" under "Not confirmed".
 
 ```markdown
 🔴 Must fix

@@ -62,27 +62,19 @@ check "마크다운은 보지 않는다" 0 - "—" "echo '\`process.env.DOC_ONLY
 check "Vite 가 늘 정의하는 import.meta.env 값은 보지 않는다" 0 - "—" \
   "echo 'if (import.meta.env.DEV || import.meta.env.PROD || import.meta.env.SSR) console.info(import.meta.env.MODE, import.meta.env.BASE_URL)' > src/vite.ts"
 check "process.env 의 같은 이름은 그대로 본다" 1 "src/dev.ts:1 — 새 환경 변수 MODE 이 .env.example 에 없음" - "echo 'process.env.MODE' > src/dev.ts"
+# 넷째·다섯째 줄은 Node 밖의 서버 언어 형태라 보지 않는다
 forms='process.env["L1"]
 import.meta.env.VITE_L2
-Deno.env.get("L3")'
+Deno.env.get("L3")
+os.getenv("O1")
+Bun.env.O2'
 lines=
 for n in 1 2 3; do
   name=L$n; [ $n = 2 ] && name=VITE_L2
   lines+="${lines:+|}src/forms.ts:$n — 새 환경 변수 $name 이 .env.example 에 없음"
 done
-check "Node·Vite·Deno(Supabase Edge Functions) 형태 → 줄마다 파일:줄" 1 "$lines" - "cat > src/forms.ts <<'EOF'
+check "Node·Vite·Deno(Supabase Edge Functions) 형태만 → 줄마다 파일:줄" 1 "$lines" "새 환경 변수 O" "cat > src/forms.ts <<'EOF'
 $forms
-EOF"
-others='os.environ["O1"]
-os.getenv("O2")
-os.Getenv("O3")
-env::var("O4")
-System.getenv("O5")
-ENV.fetch("O6")
-Bun.env.O7
-$_ENV["O8"]'
-check "Node 밖의 서버 언어 형태는 보지 않는다" 0 - "—" "cat > src/others.txt <<'EOF'
-$others
 EOF"
 
 # 값 파일

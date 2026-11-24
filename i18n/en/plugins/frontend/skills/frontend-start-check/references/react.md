@@ -2,13 +2,13 @@
 
 # React / Next.js / React Router: start check
 
-Read by `frontend-start-check` when package.json has `react`. React's general rules are left to the official skills and the framework docs; add the following to that skill's "To follow".
+Read by `frontend-start-check` when package.json has `react`. Add the following to that skill's "To follow".
 
 ## To follow
 
 - When creating or changing components, invoke the `vercel-react-best-practices` skill and follow it. If you change how components are put together (composition, props design), also `vercel-composition-patterns`.
-- If there is `react-router`, invoke the `react-router` skill and follow it. That skill identifies the project's mode (framework, data, declarative) and has you read the matching reference.
-- If there is `next`, read the `AGENTS.md` that Next generated and the installed version's docs it points to (`node_modules/next/dist/docs/` on 16.3 or later, `.next-docs/` below that) as the reference for APIs. Do not guess an API you do not know.
+- If there is `react-router`, invoke the `react-router` skill and follow it.
+- If there is `next`, read the `AGENTS.md` that Next generated and the installed version's docs it points to as the reference for APIs. Do not guess an API you do not know.
 
 ## To ask
 

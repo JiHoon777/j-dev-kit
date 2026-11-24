@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 합성 사례(B4). 작은 쇼핑몰 저장소. 통화는 원, 로그인 기능은 없다(누구나 손님), 화면은 SvelteKit.
+# 합성 사례(B4). workflow 의 create-few fixture 와 같은 내용이다(플러그인 폴더를 따로 복사해 돌려서 사본으로 둔다). 작은 쇼핑몰 저장소. 통화는 원, 로그인 기능은 없다(누구나 손님), 화면은 SvelteKit.
 set -euo pipefail
 git init -q -b main
 git config user.name eval

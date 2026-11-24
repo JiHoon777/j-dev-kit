@@ -18,11 +18,7 @@ Do not edit files. Do not run commands that reach the real (remote) Supabase pro
 
 ## What to look at
 
-General rules (RLS and exposure, authorization, update policies, RPC, views, storage, keys, Realtime and Edge Functions, risky migrations, policy performance) are reviewed with the official skills. Invoke the `supabase` skill (its security checklist) and the `supabase-postgres-best-practices` skill (its `security-*`, `schema-*`, `query-*` references) with the Skill tool, and review the diff's migrations and Supabase-calling code by their rules. If you cannot invoke one, do not pretend to have reviewed by its rules; write "<skill name> not available" under "Not confirmed".
-
-Also check separately:
-
-- **Input and abuse:** Are length and range enforced with `check` constraints? Can someone keep creating accounts to spam or scrape other users' data? Can too many rows be read at once?
+Invoke the `supabase` skill and the `supabase-postgres-best-practices` skill with the Skill tool, and review the diff's migrations and Supabase-calling code by their rules (RLS and exposure, authorization, RPC, views, storage, keys, Realtime and Edge Functions, risky migrations, policy performance). Also check input and abuse: Are length and range enforced with `check` constraints? Can someone keep creating accounts to spam or scrape other users' data? Can too many rows be read at once?
 
 ## Check as another user (when policies changed and the local stack is running)
 
@@ -38,7 +34,7 @@ rollback;
 
 ## Report format
 
-Report every problem you found, split into confirmed ones (🔴 · 🟡 · ⚪ below) and unconfirmed ones (at the bottom, with what would confirm them). The caller's judge does the filtering. Do not give scores.
+Report every problem you found, split into confirmed ones (🔴 · 🟡 · ⚪ below) and unconfirmed ones (at the bottom, with what would confirm them). The caller's judge does the filtering. Do not give scores. If you cannot invoke a skill this file tells you to use, write "<skill name> not available" under "Not confirmed".
 
 ```markdown
 🔴 Must fix
