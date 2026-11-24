@@ -171,6 +171,29 @@ updated_date: 2026-11-24
 
 - `claude plugin validate . && bash scripts/check-repo-rules.sh`: 통과(2026-11-24, main 2dba1aa). 이미 실패하는 것 없음.
 
+### AC #3 Stop 훅
+
+- 테스트를 먼저 썼다. 고치기 전에는 `14 개 중 12 개 맞음`이었다. 틀린 둘은 "브랜치가 검증 명령을 바꿈 → … 알림" 두 시나리오로, 바뀐 `true`가 돌아 알림이 없었다. "기준 브랜치에 검증 명령 없음" 시나리오는 지금 동작을 지키는 것이라 처음부터 맞았다.
+- 고친 뒤 `bash scripts/test-verify-on-stop.sh`: `14 개 중 14 개 맞음`.
+- 통과 때 내는 `{"systemMessage": …}`에 따옴표·역슬래시가 든 명령(`true "q\z"`)을 넣어 JSON 으로 읽히는지 따로 확인했다(python `json.load` 성공).
+
+### AC #2 압축 뒤 절차 파일
+
+방법(2026-11-24, Claude Code 2.1.330, Opus 5.5, 헤드리스):
+
+1. scratchpad 에 가짜 저장소를 만들었다. 항목 `001-feat-hello`, 검증 명령 `bash test.sh`, `stack: 없음`이다.
+2. 이 브랜치의 workflow 플러그인 사본(`dependencies`·hooks·evals 를 뺐다. 의존성이 있으면 `--plugin-dir`로 불러지지 않았다)을 `--plugin-dir`로 실었다.
+3. `claude -p "task 스킬을 start 001 --here 로 불러 …"`를 돌렸다. 스킬이 불렸고 `references/start.md`를 Read 한 뒤 계획을 쓰고 멈췄다($0.33, 11턴).
+4. 같은 세션을 `--resume`으로 이어 `/compact`했다(Git Bash 가 `/compact`를 경로로 바꾸지 않게 `MSYS_NO_PATHCONV=1`).
+5. 세션 JSONL 을 봤다. `compact_boundary`(124번 줄) 뒤에 요약(126)과 함께 파일 첨부 세 개가 다시 붙었다: `test.sh`, 항목 파일, `references/start.md`(132).
+   - `start.md` 첨부는 `numLines 92 / totalLines 92`, 5194자로 원본과 글자까지 같았다. 6단계 4 "구현 세션이 아닌 판정자", 5단계 "통과시키려고 기존 테스트를 지우거나", 이번에 더한 "세 번 고쳐도"가 모두 들어 있었다.
+   - 다시 붙은 스킬 내용(SKILL.md)은 `skill_listing`(목록)뿐이었다.
+6. `--tools ""`로 도구를 모두 막고 "6단계 4 의 규칙을 지금 맥락에 있는 그대로 옮겨 쓰라"고 했다. "압축이 끝난 뒤 다시 붙은 `references/start.md` 읽기 결과(86–90행)"라고 출처를 대고 원문과 같게 옮겼다($1.02).
+
+결과: 이 세션에서는 압축 뒤에도 절차 파일 내용이 사라지지 않았다. Claude Code 가 압축 뒤 Read 했던 파일을 다시 붙이기 때문이다. AC #2 대로 `task` `SKILL.md`는 고치지 않았다.
+
+한계: 이 세션은 Read 한 파일이 셋뿐이었다. 다시 붙는 파일 수나 크기에 상한이 있다면, 절차 파일 뒤에 많은 파일을 읽은 긴 세션에서는 빠질 수 있다. 그 상한은 문서에서 확인하지 못했고 재지도 않았다. 압축 확인에 든 비용은 처음 실패한 두 번을 합쳐 약 $2.4 다(의존성 때문에 스킬을 못 부른 실행 $0.23, `/compact`가 경로로 바뀐 실행 $0.39).
+
 ## Final Summary
 
 `/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
