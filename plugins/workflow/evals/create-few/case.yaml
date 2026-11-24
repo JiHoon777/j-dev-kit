@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: create-few
+description: 합성 사례(B4). 질문이 필요 없는 분명한 요청으로 create 1단계가 쓸데없는 질문을 하지 않는지 본다
+tags: [b4]
+context:
+  scaffold_script: fixture.sh

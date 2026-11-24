@@ -7,7 +7,7 @@ Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하
 | 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end`, 검증 Stop 훅, 항목 포트 고르기·기준 브랜치 테스트 확인 스크립트 | `superpowers` |
-| `frontend` | Svelte·SvelteKit 점검(개발 서버 띄우기·diff 검사 스크립트), DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
+| `frontend` | Svelte·React 점검(개발 서버 띄우기·diff 검사 스크립트), DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | Node 서버·Supabase 점검(마이그레이션, 키. 설정 키·키는 스크립트), `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설치한다.
@@ -45,7 +45,10 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 | Svelte 공식 | `/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte` |
 | Chrome DevTools | `/plugin marketplace add ChromeDevTools/chrome-devtools-mcp`, `/plugin install chrome-devtools-mcp@chrome-devtools-plugins` |
 | modern-web-guidance | `/plugin marketplace add GoogleChrome/modern-web-guidance`, `/plugin install modern-web-guidance@googlechrome` |
-| web-design-guidelines (Vercel agent-skills) | `npx -y skills@1.7.5 add vercel-labs/agent-skills` |
+| web-design-guidelines | `npx -y skills@1.7.5 add vercel-labs/agent-skills --skill web-design-guidelines -a claude-code` |
+| React (Vercel react-best-practices, composition-patterns) | `npx -y skills@1.7.5 add vercel-labs/agent-skills --skill vercel-react-best-practices --skill vercel-composition-patterns -a claude-code` |
+| React Router | `npx -y skills@1.7.5 add https://github.com/remix-run/react-router --skill react-router -a claude-code` |
+| Next.js 문서 | 16.3 이상은 `next dev`가 `AGENTS.md`를 만든다. 그보다 낮으면 `npx @next/codemod@canary agents-md` |
 | Supabase 공식 | `/plugin install supabase@anthropic-plugin-directory` (같이 오는 MCP 는 `/mcp`에서 끈다) |
 
 ## 사용법
@@ -58,7 +61,7 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 /task create --survey 자주 나는 오류 줄이기 logs/  # 자료를 직접 읽고 항목 후보를 골라 보여 주기
 ```
 
-- **하위 세션:** `create`와 `start`는 기본으로 세션을 하나 띄우고 링크만 알린다. `create`는 같은 폴더에서(기준 브랜치에 있을 때만. 작업 브랜치나 워크트리에서는 이 세션에서 한다), `start`는 기준 브랜치에서 딴 새 워크트리(`w/<항목>` 브랜치)에서 돈다. 띄운 세션이 지휘한다: 하위 세션의 질문과 승인 요청을 이 세션에서 보여 주고 답을 전하며, 하위 세션이 끝나면 결과를 확인해 먼저 보고한다. 하위 세션에서 직접 답해도 된다. 이 세션이 Fable 이면 하위 세션은 한 단계 낮은 최신 모델(지금은 Opus)과 노력 `high`로, Opus 이하면 이 세션의 모델과 노력 그대로 돈다. 작업하던 세션을 닫았으면 `start <번호>`가 이 세션에서 그 브랜치를 이어 간다. `end`는 작업한 세션에서 부른다. 세션을 새로 띄우는 도구가 없으면(데스크톱 앱이 아닌 곳) 이 세션에서 한다. 여러 항목을 함께 하려면 `start`를 여러 번 부르면 된다.
+- **하위 세션:** `create`와 `start`는 기본으로 세션을 하나 띄우고 링크만 알린다. `create`는 같은 폴더에서(기준 브랜치에 있을 때만. 작업 브랜치나 워크트리에서는 이 세션에서 한다), `start`는 기준 브랜치에서 딴 새 워크트리(`w/<항목>` 브랜치)에서 돈다. 띄운 세션이 지휘한다: 하위 세션의 질문과 승인 요청을 이 세션에서 보여 주고 답을 전하며, 하위 세션이 끝나면 결과를 확인해 먼저 보고한다. 계획은 하위 세션이 플랜 모드로 올리고 사용자가 그 세션의 플랜 화면에서 승인한다(띄운 세션은 링크와 확인할 점만 알린다). 하위 세션에서 직접 답해도 된다. 이 세션이 Fable 이면 하위 세션은 한 단계 낮은 최신 모델(지금은 Opus)과 노력 `high`로, Opus 이하면 이 세션의 모델과 노력 그대로 돈다. 작업하던 세션을 닫았으면 `start <번호>`가 이 세션에서 그 브랜치를 이어 간다. `end`는 작업한 세션에서 부른다. 세션을 새로 띄우는 도구가 없으면(데스크톱 앱이 아닌 곳) 이 세션에서 한다. 여러 항목을 함께 하려면 `start`를 여러 번 부르면 된다.
 
 - **create --survey:** 목표와 자료(경로, 명령, URL. 없으면 저장소에서 찾는다)를 받아 Claude 가 날것을 직접 읽고 항목 후보를 고른다. 같은 원인은 한 후보로 묶고, 버그 제보는 기준 브랜치에서 재현해 본다. 후보마다 근거와 확인 수단을 한 목록으로 보여 주고, 고른 것만 항목으로 쓴다. `start`는 부르지 않는다.
 - **start:** 기준선(검증 명령 한 번), 스택 시작 점검, 크기에 맞춘 계획(작은 항목은 에이전트 없이), 그 분야 최고 실무자의 도구와 단계 정하기, 테스트 먼저 구현, `simplify`로 정리, 검증. AC 는 바깥 증거(명령 출력)나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다. 같은 AC 가 세 번 고쳐도 실패하면 멈추고 사용자에게 넘긴다.

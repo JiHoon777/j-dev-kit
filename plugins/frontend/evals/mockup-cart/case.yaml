@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: mockup-cart
+description: 합성 사례(B4). ui-design mockup 1단계 브리프의 질문을 본다
+tags: [b4]
+context:
+  scaffold_script: fixture.sh

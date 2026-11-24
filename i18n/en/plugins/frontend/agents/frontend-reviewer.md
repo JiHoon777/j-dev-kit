@@ -1,7 +1,7 @@
 ---
 name: frontend-reviewer
-description: Reviews frontend changes. Checks the diff for user-input output (XSS), loading/empty/error states, duplicate requests, accessibility, public environment variables, new dependencies, and pitfalls of the project's framework (Svelte / SvelteKit). Use when UI code has changed. Does not edit files; reports the problems it finds, split into confirmed and unconfirmed.
-tools: Read, Grep, Glob, Bash
+description: Reviews frontend changes. Checks the diff for user-input output (XSS), loading/empty/error states, duplicate requests, accessibility, public environment variables, new dependencies, and pitfalls of the project's framework (Svelte, React/Next/React Router). Use when UI code has changed. Does not edit files; reports the problems it finds, split into confirmed and unconfirmed.
+tools: Read, Grep, Glob, Bash, Skill
 ---
 
 > Translation. Source: [plugins/frontend/agents/frontend-reviewer.md](../../../../../plugins/frontend/agents/frontend-reviewer.md). Update this file when the source changes. Claude does not read this file.
@@ -33,6 +33,11 @@ Do not modify files. Do not start servers, run build or verification commands, o
 - `$env/*/private` imports outside server files. `load` returning another user's data without an authorization check. Form action failures not using `fail()`.
 - Newly created server files or form actions with `adapter-static`. `{#each}` without a key (when the list changes).
 - If lines added in this diff use Svelte 4 syntax, flag them to be rewritten in Svelte 5 syntax (old on the left → new on the right): `export let` → `$props()`, `$:` → `$derived`/`$effect`, `on:click` → `onclick`, `<slot>` → snippets (`{@render}`), `$app/stores` → `$app/state`. Do not flag old syntax left in existing code.
+
+## What to check (React / Next.js / React Router, when applicable)
+
+- For React's general rules and performance, invoke `vercel-react-best-practices` (for how components are put together, `vercel-composition-patterns`), and for React Router the `react-router` skill, with the Skill tool and review by their rules. For Next.js, use the installed version's docs that the project's `AGENTS.md` points to. If you cannot invoke one, do not pretend to have reviewed by its rules; write "<skill name> not available" under "Not confirmed".
+- `'use client'` files that import server-only modules or secret environment variables. Server actions or route handlers (including React Router `action`s) that change data without input validation or an authorization check.
 
 ## Report format
 

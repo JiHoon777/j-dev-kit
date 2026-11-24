@@ -1,6 +1,6 @@
 ---
 name: frontend-start-check
-description: 프론트엔드 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 프레임워크를 감지하고, 구현 중 지킬 것(frontend-design, 프레임워크 규칙, 브라우저 확인), 계획 전에 할 것(시안), 플랜에 넣을 것(DESIGN.md)을 돌려준다. Svelte 내용은 references/svelte.md 에 있다.
+description: 프론트엔드 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 프레임워크를 감지하고, 구현 중 지킬 것(frontend-design, 프레임워크 규칙, 브라우저 확인), 계획 전에 할 것(시안), 플랜에 넣을 것(DESIGN.md)을 돌려준다. 프레임워크별 내용은 references(svelte.md, react.md)에 있다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -20,6 +20,7 @@ metadata:
   | package.json 에 | reference |
   | --- | --- |
   | `svelte` | `${CLAUDE_SKILL_DIR}/references/svelte.md` |
+  | `react` | `${CLAUDE_SKILL_DIR}/references/react.md` |
 
 ## 1. 지킬 것
 

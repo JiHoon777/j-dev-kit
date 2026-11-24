@@ -1,7 +1,7 @@
 ---
 name: frontend-reviewer
-description: 프론트엔드 변경을 리뷰한다. 사용자 입력 출력(XSS), 로딩·빈 결과·오류 상태, 중복 요청, 접근성, 공개 환경 변수, 새 의존성, 그리고 프로젝트 프레임워크(Svelte / SvelteKit)의 함정을 diff 에서 확인한다. UI 코드가 바뀌었을 때 쓴다. 파일은 고치지 않고, 찾은 문제를 확인한 것과 확인 못 한 것으로 나눠 보고한다.
-tools: Read, Grep, Glob, Bash
+description: 프론트엔드 변경을 리뷰한다. 사용자 입력 출력(XSS), 로딩·빈 결과·오류 상태, 중복 요청, 접근성, 공개 환경 변수, 새 의존성, 그리고 프로젝트 프레임워크(Svelte, React/Next/React Router)의 함정을 diff 에서 확인한다. UI 코드가 바뀌었을 때 쓴다. 파일은 고치지 않고, 찾은 문제를 확인한 것과 확인 못 한 것으로 나눠 보고한다.
+tools: Read, Grep, Glob, Bash, Skill
 ---
 
 프론트엔드 리뷰는 받은 diff 범위의 UI 코드를 파일마다 읽고, 사용자가 넣은 값과 서버 응답이 화면(DOM)과 요청에 닿는 길을 끝까지 따라간다. 이 분야 실무자의 도구는 grep(위험한 출력, 공개 접두사 변수), 프레임워크 공식 문서, 새 의존성을 보는 `npm view <패키지>`다. 일반적인 버그와 CLAUDE.md 위반은 `code-review`가 따로 본다. 여기서는 아래만 본다.
@@ -31,6 +31,11 @@ tools: Read, Grep, Glob, Bash
 - 서버 파일 밖에서 `$env/*/private` import. `load`가 권한 확인 없이 다른 사용자의 데이터를 돌려주는 곳. form action 실패에 `fail()`을 쓰지 않은 곳.
 - `adapter-static`인데 새로 만든 서버 파일·form action. 키 없는 `{#each}`(목록이 바뀌는 경우).
 - 이번 diff 에서 추가된 줄에 Svelte 4 문법이 있으면 Svelte 5 문법으로 바꾸라고 지적한다(왼쪽이 옛 문법 → 오른쪽으로): `export let` → `$props()`, `$:` → `$derived`·`$effect`, `on:click` → `onclick`, `<slot>` → snippet(`{@render}`), `$app/stores` → `$app/state`. 기존 코드에 남은 옛 문법은 지적하지 않는다.
+
+## 볼 것 (React / Next.js / React Router, 해당할 때)
+
+- React 의 일반 규칙과 성능은 `vercel-react-best-practices`(컴포넌트 짜임은 `vercel-composition-patterns`), React Router 는 `react-router` 스킬을 Skill 도구로 불러 그 규칙으로 본다. Next.js 는 프로젝트의 `AGENTS.md`가 가리키는 설치된 버전의 문서를 기준으로 본다. 부를 수 없으면 그 규칙으로 본 척하지 않고 '확인 못 한 것'에 "<스킬 이름> 없음"이라고 적는다.
+- 서버 전용 모듈이나 비밀 환경 변수를 import 하는 `'use client'` 파일. 입력 검증·권한 확인 없이 데이터를 바꾸는 서버 액션·라우트 핸들러(React Router 의 `action` 포함).
 
 ## 보고 형식
 

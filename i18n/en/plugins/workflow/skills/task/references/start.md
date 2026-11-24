@@ -35,7 +35,7 @@ Finding the item: look up the argument in `docs/backlog/` (`README.md` and files
 
 ## 3. Plan (plan mode)
 
-Enter with `EnterPlanMode`. Do not edit files in this step. If the brief says to write questions and approval requests in the last message (when the starting session directs), do not use the plan mode tools; write the plan in full in the last message and stop.
+Enter with `EnterPlanMode`. Do not edit files in this step. The same holds in a sub-session directed by the session that opened it: get the plan approved with `ExitPlanMode`, and the user approves it on that session's plan screen. Write questions that come before the plan in the last message of the turn, as the brief says, and stop.
 
 **Match the size.**
 

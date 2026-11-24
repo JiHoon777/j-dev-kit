@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: trigger-real-y12-survey-review-notes
+description: 부를 요청(합성, 처음 보는 서베이 표현). create --survey
+tags: [trigger-real]
+context:
+  scaffold_script: fixture.sh

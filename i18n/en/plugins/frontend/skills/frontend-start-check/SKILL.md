@@ -1,6 +1,6 @@
 ---
 name: frontend-start-check
-description: Pre-work check for frontend projects. Called by the start mode of the workflow plugin's task skill. Detects the framework and returns what to follow during implementation (frontend-design, framework rules, browser check), what to do before planning (mockups), and what to put in the plan (DESIGN.md). Svelte content lives in references/svelte.md.
+description: Pre-work check for frontend projects. Called by the start mode of the workflow plugin's task skill. Detects the framework and returns what to follow during implementation (frontend-design, framework rules, browser check), what to do before planning (mockups), and what to put in the plan (DESIGN.md). Framework-specific content lives in references (svelte.md, react.md).
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -22,6 +22,7 @@ Called by `/task start`. Does not modify anything and runs almost no commands. R
   | In package.json | reference |
   | --- | --- |
   | `svelte` | `${CLAUDE_SKILL_DIR}/references/svelte.md` |
+  | `react` | `${CLAUDE_SKILL_DIR}/references/react.md` |
 
 ## 1. To follow
 

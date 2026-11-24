@@ -43,9 +43,10 @@ Choose the mode by the first word of the arguments, and pass the rest to the mod
 
      Model and effort: if this session is Fable, pass `model` as the latest model one step lower (for now Opus, `claude-opus-5-5`) and `effort` as `high`. The tool does not take an effort above this session's, so if this session's effort is below `high`, leave `effort` out (it inherits) and say so. On Opus or lower, pass neither (it inherits this session's model and effort).
 
-  4. That session cannot see this conversation. The brief is two lines, "Invoke the `task` skill with `<mode> <rest of the arguments> --here` and follow its procedure" and "Write questions and approval requests (a plan in full) completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any).
+  4. That session cannot see this conversation. The brief is two lines, "Invoke the `task` skill with `<mode> <rest of the arguments> --here` and follow its procedure" and "Write questions and approval requests completely in the last message of the turn, then stop. Write the plan in plan mode and get it approved with `ExitPlanMode`", plus any background the user gave or decisions made in this conversation (only if there are any).
   5. Report the session link. That work does not happen in this session; this session directs it.
      - When the sub-session ends a turn, show any question or approval request to the user in full and pass the answer to that session in the user's own words. Check the result (commits, changed files) yourself and report it before the user asks.
+     - When the sub-session is waiting for plan approval (`ExitPlanMode`), say the plan is ready with the session link and add only the points worth checking, briefly. Do not approve the plan on the user's behalf. The user approving it in that session is the plan approval.
      - If the user answered in the sub-session directly, accept that.
 
 ## 3. Project settings

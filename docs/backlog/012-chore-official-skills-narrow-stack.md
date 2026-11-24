@@ -28,7 +28,11 @@ updated_date: 2026-11-24
    - 공식 `svelte` 플러그인(sveltejs/ai-tools `plugins/claude/svelte`, 1.0.11: `svelte-code-writer`, `svelte-core-bestpractices` 스킬, `svelte-file-editor` 에이전트, MCP·LSP)에 Svelte 기본 규칙(runes, Svelte 4 문법), autofixer, 문서 찾기를 맡긴다. 들여오는 방법은 가정을 본다.
    - 우리 `svelte.md`(start·end 둘 다)와 `frontend-reviewer` Svelte 절(`frontend-reviewer.md:27-33`)에는 SvelteKit 규칙(`$env/*/private`는 서버 파일에서만, `adapter-static`, `fail()`, `load` 권한, `{@html}`)과 "기준 브랜치 대비 새로 생긴 autofixer `issues`만 실패"(`frontend-end-check/references/svelte.md:11`)만 남긴다.
    - `svelte-file-editor` 에이전트는 쓰지 않는다. 역할로 나눈 에이전트이고(공통분모 10) `acceptEdits`로 돈다.
-3. **React 지원 지우기:** `frontend-start-check/references/react.md`와 번역본, `frontend-start-check/SKILL.md:20-23` 프레임워크 표의 React 줄, `frontend-end-check/SKILL.md:18`의 React 문장, `frontend-reviewer.md:35-39` React 절, description·README·`marketplace.json`·`plugin.json`의 React 언급, README "있으면 쓰는 것"의 Vercel react-best-practices 줄을 지운다. React eval 사례(`reviewer-react`, `compose-code-review`, `compose-with-stack`)도 지운다.
+3. **React 는 공식 스킬로 (2026-11-24 바꿈):** 처음에는 React 지원을 지우기로 했다가 사용자가 되돌렸다. 사용자의 말: "react 는 복구 해주고 react-base-practice? next-best-practice? remix 기반의 react-route-best-practice? 같은 검증된 스킬 조사해주고 검증된 것들로 검증할 수 있게 해줘"(부모 세션이 조사해 보이고 사용자가 "보내기"로 승인).
+   - React 지원(감지와 프레임워크 표, `frontend-start-check`·`frontend-end-check`, `frontend-reviewer`의 React 절, README·설명)은 남긴다. 우리가 쓴 일반 React 체크리스트(`react.md`의 일반 규칙, 리뷰어의 일반 React 항목)는 되살리지 않고 공식 자료에 맡긴다: React 는 `vercel-react-best-practices`(필요하면 `vercel-composition-patterns`, vercel-labs/agent-skills, MIT), React Router 는 `react-router`(remix-run/react-router `.agents/skills/react-router`, MIT. remix-run/agent-skills 의 방식별 스킬 셋은 2026-06-18 보관되고 이것으로 옮겨졌다), Next.js 는 Next 가 만든 `AGENTS.md`와 설치된 버전의 문서(16.3 이상 `next dev`, 낮으면 `npx @next/codemod@canary agents-md`. `next-best-practices`는 더 이상 스킬이 아니다).
+   - 시작·끝 점검은 package.json 을 보고 맞는 공식 자료를 돌려주고, 설치돼 있지 않으면 설치할지를 "물을 것"으로 돌려준다. `frontend-reviewer`도 같은 자료로 보고, 우리 것만 남긴다(`'use client'`에서 서버 전용 모듈·비밀 환경 변수 불러오기, 검증 없는 서버 액션·라우트 핸들러).
+   - 복사하지 않는다. 설치된 스킬을 부르고, README "있으면 쓰는 것"에 `npx skills add` 설치 안내(버전 고정)를 둔다.
+   - 재지 않는다. 사용자 프로젝트에 React 프로젝트가 없어 실제 사례가 없다. 지운 React eval 사례(합성)는 되살리지 않는다.
 4. **Supabase → 공식 `supabase`·`supabase-postgres-best-practices`**
    - supabase/agent-skills 의 `supabase`, `supabase-postgres-best-practices`(참고 문서 34개)에 일반 규칙(RLS·정책·RPC·뷰·스토리지·키·정책 성능 같은 것)을 맡긴다.
    - `supabase-reviewer`에는 우리 것만 남긴다: 로컬 DB 에서 두 사용자로 SQL 을 직접 돌려 확인하기(`supabase-reviewer.md:31-41`), 원격·운영 명령 금지(`:9`), 브라우저에서 바로 부르는 앱은 RLS 가 모든 권한을 지킨다는 전제(`:7`).
@@ -64,6 +68,15 @@ updated_date: 2026-11-24
 5. **`server-start-check`의 일반 원칙(5.2-5, 공통분모 1):** `server-start-check/SKILL.md:35, 36, 38`(인증·객체 단위 인가·입력 검증, 트랜잭션·멱등성 키, 로그에 비밀 값 안 남기기)을 있는 판과 없는 판으로 eval 비교해, 없어도 나빠지지 않으면 지운다. A4 의 공식 스킬과 겹치니 A4 와 같은 Supabase 사례로 잰다. `:37`(스키마는 마이그레이션 파일로만)과 `:39`(원격 DB·배포 명령 금지)는 이 저장소의 운영 규칙이라 남긴다(리뷰 보고서 5.2-5).
 6. **`server-end-check` 예시의 "oasdiff 없음"(5.2-6):** `server-end-check/SKILL.md:63`(번역본 `:65`). A5 로 OpenAPI 를 지우면 함께 사라진다.
 7. **`frontend-end-check`가 다른 스킬의 SKILL.md 를 통째로 읽는 것(5.2-7):** `frontend-end-check/SKILL.md:35`(번역본 같은 자리)가 `frontend-start-check/SKILL.md`를 읽게 하는 대신, 개발 서버 스크립트를 바로 부르는 방법을 그 자리에 적는다.
+
+### C. 하위 세션도 공식 플랜 모드로 계획 승인 (2026-11-24 추가)
+
+부모 세션이 "start.md 를 플랜 모드로 바꾸는 걸 새 항목으로 만들까요?"라고 묻자 사용자가 "012 에 더하기"라고 답했다. 앞서 사용자의 말: "이건 공식 플랜 모드를 쓰는게 맞아. 하위 세션 플랜 모드".
+
+- `start.md` 3단계: 하위 세션이어도 `EnterPlanMode`로 들어가 계획을 쓰고 `ExitPlanMode`로 승인받는다. 사용자는 그 하위 세션 창의 플랜 화면에서 승인한다. 플랜 모드 대신 텍스트로 쓰라는 문장(008 에서 넣음)을 지운다.
+- `SKILL.md` 2절 4: 지시문에서 "(계획은 전문)"을 빼고 계획은 플랜 모드로 승인받는다고 쓴다. 다른 질문·승인 요청은 지금처럼 마지막 메시지에 쓴다.
+- `SKILL.md` 2절 5: 하위 세션이 계획 승인을 기다리면, 부모는 계획이 나왔다고 세션 링크와 함께 알리고 확인할 점만 짧게 덧붙인다. 계획을 대신 승인하지 않는다. 사용자가 하위 세션에서 승인하면 그것이 계획 승인이다.
+- 이 변경은 다음 `/task start`부터 적용된다. 012 는 이미 승인된 계획대로 진행한다.
 
 ### 이번에 빼는 것
 
@@ -108,7 +121,7 @@ updated_date: 2026-11-24
 - [ ] #3 (A2) Svelte 기본 규칙(runes, Svelte 4 문법, autofixer, 문서 찾기)은 공식 `svelte` 스킬에서 온다. 들여오는 방법(의존 플러그인, 교차 마켓플레이스 허용, README 안내 가운데 고른 것)과, 그 방법으로 실제로 설치되고 `/task start`·`/task end` 중에 공식 스킬이 불리는지 확인한 결과가 `Implementation Notes`에 있다
 - [ ] #4 (A2) `svelte.md`(start·end, 원문·번역본)와 `frontend-reviewer` Svelte 절에 남은 규칙이 SvelteKit 규칙(`$env/*/private`, `adapter-static`, `fail()`, `load` 권한, `{@html}`)과 "기준 브랜치 대비 새로 생긴 autofixer issues 만 실패"뿐이다. `$derived`·`$effect`·Svelte 4 문법 같은 Svelte 기본 규칙은 없다
 - [ ] #5 (A2) `grep -rn 'svelte-file-editor' plugins i18n`의 결과가 "쓰지 않는다"는 문장뿐이거나 비어 있다
-- [ ] #6 (A3) `react.md`와 번역본, `reviewer-react`·`compose-code-review`·`compose-with-stack` eval 폴더가 없다. 프레임워크 표, `frontend-end-check`, `frontend-reviewer`, frontend `plugin.json`·`marketplace.json`·README 두 개의 설명, `plugins/frontend/evals/README.md` 사례 표에 React 가 없다(감지 목록과 공개 접두사 목록은 빼는 것에 적은 대로 남는다)
+- [ ] #6 (A3) `react.md`(원문·번역본)와 `frontend-reviewer` React 절에 우리가 쓴 일반 React 규칙(훅 규칙, 파생 state, 정리 함수, 인덱스 `key` 등)이 없고, React 는 `vercel-react-best-practices`(·`vercel-composition-patterns`), React Router 는 `react-router` 스킬, Next.js 는 `AGENTS.md`와 설치된 버전의 문서로 본다고 적혀 있다. 설치돼 있지 않으면 설치할지 묻는다. 리뷰어에 `'use client'`·서버 액션 안전 장치가 남아 있다. README 두 개 "있으면 쓰는 것"에 버전을 고정한 설치 명령이 있다. `reviewer-react`·`compose-code-review`·`compose-with-stack` eval 폴더는 없다(재지 않고 들였다고 `Implementation Notes`에 적혀 있다)
 - [ ] #7 (A4) `supabase-reviewer`(원문·번역본)에 로컬 DB 에서 두 사용자로 SQL 을 직접 확인하기, 원격·운영 명령 금지, RLS 전제, 공식 Supabase 스킬 규칙으로 본다는 문장이 있다. `supabase-reviewer` "볼 것" 1~11 과 `api-reviewer` 9(쿼리·인덱스)마다 지웠는지 남겼는지와 그 근거(A6 eval 결과)가 `Implementation Notes`에 목록으로 있고, 두 파일은 그 목록대로다
 - [ ] #8 (A5) `config-check.sh`가 읽는 형태가 Node 형태(`process.env`, `import.meta.env`)뿐이고, `scripts/test-config-check.sh`에 다른 언어 시나리오가 없으며 테스트가 모두 통과한다
 - [ ] #9 (A5) `server-start-check`·`server-end-check`(원문·번역본)의 감지와 마이그레이션 담당이 Node 도구와 Supabase CLI 만 말하고, `grep -rni 'oasdiff\|openapi' plugins i18n README.md README.en.md .claude-plugin`이 비어 있다. server `plugin.json`·`marketplace.json`·README 설명에 "any server language"와 API 스펙 검사가 없다
@@ -123,6 +136,7 @@ updated_date: 2026-11-24
 - [ ] #18 (B5) `server-start-check` "지킬 것"의 일반 원칙 셋이 있는 판과 없는 판의 비교 방법과 결과가 `Implementation Notes`에 있고, 없어도 나빠지지 않은 것만 지워져 있다. 마이그레이션 파일 규칙과 원격 명령 금지는 남아 있다
 - [ ] #19 (B6) `server-end-check` 보고 형식 예시(원문·번역본)에 "oasdiff 없음"이 없다
 - [ ] #20 (B7) `frontend-end-check`(원문·번역본)가 다른 스킬의 SKILL.md 를 읽게 하지 않고, 개발 서버를 띄우는 명령과 포트 규칙을 그 자리에 적는다
+- [ ] #21 (C) `start.md` 3단계(원문·번역본)에 플랜 모드 대신 계획을 마지막 메시지에 쓰라는 문장이 없고, 하위 세션도 `ExitPlanMode`로 승인받는다고 적혀 있다. `SKILL.md` 2절 4(원문·번역본)의 지시문에 "(계획은 전문)"이 없고 계획은 플랜 모드로 승인받는다고 적혀 있으며, 2절 5 에 부모가 계획을 대신 승인하지 않고 링크와 확인할 점만 알린다고 적혀 있다
 
 <!-- AC:END -->
 
@@ -293,5 +307,24 @@ updated_date: 2026-11-24
 - 합성 사례(실제 리뷰 아님) `plugins/server/evals/supabase-seeded/`(볼 것 1~11 에 실수 하나씩, 12개 채점 + 맞게 쓴 `case_sources`), `api-seeded/`(api-reviewer 9 의 실수 둘). todak 010 모양을 따라 지어 썼다.
 - `web-design-guidelines` 원문 두 파일(SKILL.md 2,077 바이트, `references/command.md` 8,055 바이트)을 raw.githubusercontent.com 에서 `.claude/.local/012/ext/`로 받았다(eval 사본에만 넣는다, 커밋 안 함). `command.md`의 SHA-256 이 SKILL.md 에 고정된 `d246b026…0234`와 같다.
 - 실행 중: frontend 네 판(지금, A1, A2, A1+A2) × `real-*` 3 × 5회, server 두 판(지금, A4) × 사례 3 × 5회. Opus 시험, sonnet 채점(3표), `.claude/.local/012/results/`.
+
+### C: 하위 세션 플랜 모드 (2026-11-24 추가 범위)
+
+- `start.md` 3단계(원문·번역본): "지시문이 질문과 승인 요청을 마지막 메시지에 쓰라고 하면 … 플랜 모드 도구는 쓰지 않고, 계획 전문을 마지막 메시지에 쓰고 멈춘다"를 지우고 "띄운 세션이 지휘하는 하위 세션이어도 같다: 계획은 `ExitPlanMode`로 승인받고, 사용자는 그 세션의 플랜 화면에서 승인한다. 계획 전의 질문은 지시문대로 턴의 마지막 메시지에 쓰고 멈춘다"로.
+- `SKILL.md` 2절 4(원문·번역본): 지시문 둘째 줄을 "질문과 승인 요청은 턴의 마지막 메시지에 빠짐없이 쓰고 멈춘다. 계획은 플랜 모드로 쓰고 `ExitPlanMode`로 승인받는다"로("(계획은 전문)" 지움). 2절 5 에 "하위 세션이 계획 승인(`ExitPlanMode`)을 기다리면, 계획이 나왔다고 세션 링크와 함께 알리고 확인할 점만 짧게 덧붙인다. 계획을 대신 승인하지 않는다. 사용자가 그 세션에서 승인하면 그것이 계획 승인이다"를 더했다.
+- README 두 개의 "하위 세션" 줄과 workflow 설명(`plugin.json`·`marketplace.json`)에 같은 내용을 더했다.
+- `grep -rn '계획은 전문\|a plan in full\|플랜 모드 도구는 쓰지 않고\|do not use the plan mode tools' plugins i18n README.md README.en.md`에 남은 것은 eval 사례 `start-plan`·`start-plan-real`의 프롬프트뿐이다. eval 은 사람이 승인할 수 없는 실행이라 그대로 둔다.
+
+### A7: 고친 사례와 README (2026-11-24)
+
+- `start-plan-real`: `plans-*` 여섯이 "질문으로 다룬 것"도 PASS 로 치던 것을 "정한 것이나 가정으로 둔 것. 묻기만 하고 기본안이 없으면 FAIL"로 바꿨다. 답이 계획을 바꾸지 않는 질문이 있으면 FAIL 인 `questions-change-plan`을 더했다(질문 수 대신 질문마다의 쓸모). 008 의 "질문 최대 3개" 삭제를 다시 재려고 지금 판과 그 문구를 되살린 판(`q3`)을 5회씩 돌린다.
+- `trigger-real`: 합성 다섯을 더했다(라벨은 `task` description 문장 기준이고 사용자가 확인하지 않았다). 부르지 말 것: 작업 브랜치에서 "커밋하고 푸시까지"(end 와 헷갈림), "로그 보고 원인만, 항목은 안 만들어도 돼"(서베이와 헷갈림), "바로 고쳐 줘". 부를 것: 처음 보는 서베이 표현 둘. 지금 description 으로 3회씩 돌린다.
+- README: frontend·workflow evals README 가 측정 방법으로 `skill-creator`를 가리키고, 겹치는 설명(판 두기, 반복, 채점, 판별력, 평균 ± 표준편차, 트리거 요청 고르기)을 지웠다. 사례 표, 저장소 경로, 사본 만들기, 셸 없음, 명령 예는 남겼다. `reviewer-svelte`·`start-plan`·`end-fix-real`은 스모크용이라고 적었다(다시 돌리지 않는다. `end-fix-real`의 위임 결정은 사용자 방침이었다). `plugins/server/evals/README.md`를 새로 썼다.
+- `compose-real-*`는 README 에 약점만 적었다. 012 의 결정에 쓰지 않는다.
+
+### B4·B5 사례 (2026-11-24)
+
+- B4 는 실제 `create`·`mockup` 세션에서 질문과 사용자의 답이 기록된 것을 찾지 못해(세션 검색, 시안 기록 `docs/design/*/decisions.md`에는 브리프만 있다) **합성 사례**로 짰다: `plugins/workflow/evals/create-many`(사용자만 정할 결정 넷: 결제 대행사, 실결제·테스트, 결제 수단·환불, 그리고 저장소에 답이 있는 것: 통화·비회원·프레임워크), `create-few`(질문이 필요 없는 버그), `plugins/frontend/evals/mockup-cart`(시안 수, 저장소에 답이 있는 데이터·토큰). 질문으로 점수를 얻지 않게 "답이 만들 것을 바꾸는 질문인가"를 본다. 규칙상 지금 문구(대조군)가 실패하지 않으면 그대로 두니, 합성이라 쉬우면 바꾸지 않는 쪽으로만 기운다. 지금 판과 조건판을 5회씩 돌린다.
+- B5 는 승인대로 todak 010 을 계획하는 사례 `plugins/server/evals/plan-todak-010`(main `b545b27`). 승인된 계획이 아직 없어 정답은 원칙 셋이 이 항목에 들어가는지(함수 입력 검사·호출 권한, 공개와 이력을 한 트랜잭션, 재시도 멱등성, 비밀 값 안 남기기)와 남기는 두 줄(마이그레이션 파일로만, 원격 명령 없음)이다. 원칙 셋이 있는 판과 없는 판을 5회씩 돌린다.
 
 ## Final Summary

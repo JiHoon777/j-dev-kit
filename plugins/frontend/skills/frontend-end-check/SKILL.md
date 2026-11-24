@@ -15,7 +15,7 @@ metadata:
 - CLAUDE.md 에 frontend 가 빠진 `stack:` 줄이 있으면 "해당 없음".
 - `git diff --name-only <기준>...HEAD`에 프론트엔드 코드(컴포넌트, 페이지, 스타일, 클라이언트 로직, package.json)가 없으면 "프론트엔드 변경 없음"만 돌려준다.
 - 볼 package.json 은 바뀐 파일이 속한 앱·패키지의 것이다(모노레포면 루트가 아니다). 거기에 프런트엔드 프레임워크(react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro)가 없으면 "해당 없음".
-- 그 package.json 에 `svelte`가 있으면 `${CLAUDE_SKILL_DIR}/references/svelte.md`를 Read 도구로 끝까지 읽는다.
+- 그 package.json 에 `svelte`가 있으면 `${CLAUDE_SKILL_DIR}/references/svelte.md`를 Read 도구로 끝까지 읽는다. React 는 따로 돌릴 검사가 없다(훅 린트와 빌드는 검증 명령에 들어 있어야 한다).
 
 ## 1. 검사
 

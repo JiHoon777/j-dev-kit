@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: trigger-real-n13-fix-now
+description: 부르지 말 요청(합성, 비슷하지만 아님). 항목 이야기 없이 바로 고쳐 달라는 요청
+tags: [trigger-real]
+context:
+  scaffold_script: fixture.sh

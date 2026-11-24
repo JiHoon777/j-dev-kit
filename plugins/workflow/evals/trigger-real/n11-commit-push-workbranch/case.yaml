@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: trigger-real-n11-commit-push-workbranch
+description: 부르지 말 요청(합성, 비슷하지만 아님). 작업 브랜치 w/002 에서. end(머지)와 헷갈리기 쉽다
+tags: [trigger-real]
+context:
+  scaffold_script: fixture.sh

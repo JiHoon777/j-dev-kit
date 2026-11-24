@@ -1,0 +1,6 @@
+schema_version: "1.1"
+name: create-many
+description: 합성 사례(B4). 사용자만 정할 수 있는 결정이 넷인 모호한 요청으로 create 1단계의 질문을 본다
+tags: [b4]
+context:
+  scaffold_script: fixture.sh

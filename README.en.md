@@ -9,7 +9,7 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 | Plugin | Contains | Also installs |
 | --- | --- | --- |
 | `workflow` | `/task create`, `/task start`, `/task end`, the verify Stop hook, scripts that pick item ports and check tests against the base branch | `superpowers` |
-| `frontend` | Svelte and SvelteKit checks (scripts that start the dev server and check the diff), `ui-design` for DESIGN.md and canvas mockups, `frontend-reviewer`, `design-reviewer` for screen review, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
+| `frontend` | Svelte and React checks (scripts that start the dev server and check the diff), `ui-design` for DESIGN.md and canvas mockups, `frontend-reviewer`, `design-reviewer` for screen review, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
 | `server` | Node server and Supabase checks (migrations, keys; config keys and keys by a script), `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 If you use Supabase, install `server` even if you call it straight from the frontend.
@@ -47,7 +47,10 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 | Official Svelte | `/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte` |
 | Chrome DevTools | `/plugin marketplace add ChromeDevTools/chrome-devtools-mcp`, `/plugin install chrome-devtools-mcp@chrome-devtools-plugins` |
 | modern-web-guidance | `/plugin marketplace add GoogleChrome/modern-web-guidance`, `/plugin install modern-web-guidance@googlechrome` |
-| web-design-guidelines (Vercel agent-skills) | `npx -y skills@1.7.5 add vercel-labs/agent-skills` |
+| web-design-guidelines | `npx -y skills@1.7.5 add vercel-labs/agent-skills --skill web-design-guidelines -a claude-code` |
+| React (Vercel react-best-practices, composition-patterns) | `npx -y skills@1.7.5 add vercel-labs/agent-skills --skill vercel-react-best-practices --skill vercel-composition-patterns -a claude-code` |
+| React Router | `npx -y skills@1.7.5 add https://github.com/remix-run/react-router --skill react-router -a claude-code` |
+| Next.js docs | On 16.3 or later `next dev` writes `AGENTS.md`. Below that, `npx @next/codemod@canary agents-md` |
 | Official Supabase | `/plugin install supabase@anthropic-plugin-directory` (turn off its bundled MCP in `/mcp`) |
 
 ## Usage
@@ -60,7 +63,7 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 /task create --survey Reduce frequent errors logs/      # read the sources directly and show item candidates
 ```
 
-- **Sub-sessions:** `create` and `start` open one session by default and only report its link. `create` runs in the same folder (only from the base branch; from a work branch or a worktree it runs in this session); `start` runs in a new worktree off the base branch (on a `w/<item>` branch). The starting session directs: it shows the sub-session's questions and approval requests here and passes on the answers, and when the sub-session finishes it checks the result and reports first. Answering in the sub-session directly also works. From a Fable session, sub-sessions run on the latest model one step lower (for now Opus) at `high` effort; from Opus or lower, on this session's model and effort. If the work session was closed, `start <number>` continues that branch in this session. Invoke `end` in the session that did the work. Without a tool that opens new sessions (outside the desktop app), the work happens in this session. To run several items together, call `start` several times.
+- **Sub-sessions:** `create` and `start` open one session by default and only report its link. `create` runs in the same folder (only from the base branch; from a work branch or a worktree it runs in this session); `start` runs in a new worktree off the base branch (on a `w/<item>` branch). The starting session directs: it shows the sub-session's questions and approval requests here and passes on the answers, and when the sub-session finishes it checks the result and reports first. The sub-session puts the plan up in plan mode and the user approves it on that session's plan screen (the starting session only reports the link and points worth checking). Answering in the sub-session directly also works. From a Fable session, sub-sessions run on the latest model one step lower (for now Opus) at `high` effort; from Opus or lower, on this session's model and effort. If the work session was closed, `start <number>` continues that branch in this session. Invoke `end` in the session that did the work. Without a tool that opens new sessions (outside the desktop app), the work happens in this session. To run several items together, call `start` several times.
 
 - **create --survey:** takes a goal and sources (paths, commands, URLs; if none, it looks in the repository), reads the raw material directly, and picks item candidates. Sources with the same cause become one candidate, and bug reports are reproduced on the base branch. It shows one list with evidence and a way to check each, and writes only the ones picked. It does not call `start`.
 - **start:** baseline (one run of the verify command), stack start checks, planning sized to the item (no agents for small items), settling the tools and steps the best practitioners in the field use, test-first implementation, cleanup with `simplify`, verification. ACs are checked off only with outside evidence (command output) or a judge agent other than the implementing session. If the same AC still fails after three fixes, it stops and hands over to the user.
