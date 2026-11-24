@@ -116,27 +116,27 @@ updated_date: 2026-11-24
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 (A1) `frontend-reviewer`와 `web-design-guidelines`를 실제 사례로 비교한 결과가 `Implementation Notes`에 있고, 비교에서 나빠졌으므로 `frontend-reviewer`(원문·번역본)의 접근성·억지로 끈 검사 항목은 그대로이며 `web-design-guidelines`를 쓰는 곳과 README 의 설치 안내가 없다. XSS·상태·중복 요청·비밀 값·새 의존성 항목은 남아 있다(2026-11-24 바꿈, 사용자의 말: "바꾸지 않기")
-- [ ] #2 (A1) `design-reviewer`(원문·번역본)가 보는 것이 브라우저로 열어야 보이는 것(폭별 스크린샷, axe, 대비 측정, 키보드, 상태·콘솔, DESIGN.md 토큰)뿐이고, `frontend-reviewer`와 같은 항목을 함께 보지 않는다(재지 않고 바꾼 것이라고 `Implementation Notes`에 적혀 있다)
-- [ ] #3 (A2) Svelte 기본 규칙(runes, Svelte 4 문법, autofixer, 문서 찾기)은 공식 `svelte` 스킬에서 온다. 들여오는 방법(의존 플러그인, 교차 마켓플레이스 허용, README 안내 가운데 고른 것)과, 그 방법으로 실제로 설치되고 `/task start`·`/task end` 중에 공식 스킬이 불리는지 확인한 결과가 `Implementation Notes`에 있다
-- [ ] #4 (A2) `svelte.md`(start·end, 원문·번역본)와 `frontend-reviewer` Svelte 절에 남은 규칙이 SvelteKit 규칙(`$env/*/private`, `adapter-static`, `fail()`, `load` 권한, `{@html}`)과 "기준 브랜치 대비 새로 생긴 autofixer issues 만 실패"뿐이다. `$derived`·`$effect`·Svelte 4 문법 같은 Svelte 기본 규칙은 없다
-- [ ] #5 (A2) `grep -rn 'svelte-file-editor' plugins i18n`의 결과가 "쓰지 않는다"는 문장뿐이거나 비어 있다
-- [ ] #6 (A3) `react.md`(원문·번역본)와 `frontend-reviewer` React 절에 우리가 쓴 일반 React 규칙(훅 규칙, 파생 state, 정리 함수, 인덱스 `key` 등)이 없고, React 는 `vercel-react-best-practices`(·`vercel-composition-patterns`), React Router 는 `react-router` 스킬, Next.js 는 `AGENTS.md`와 설치된 버전의 문서로 본다고 적혀 있다. 설치돼 있지 않으면 설치할지 묻는다. 리뷰어에 `'use client'`·서버 액션 안전 장치가 남아 있다. README 두 개 "있으면 쓰는 것"에 버전을 고정한 설치 명령이 있다. `reviewer-react`·`compose-code-review`·`compose-with-stack` eval 폴더는 없다(재지 않고 들였다고 `Implementation Notes`에 적혀 있다)
-- [ ] #7 (A4) `supabase-reviewer`(원문·번역본)에 로컬 DB 에서 두 사용자로 SQL 을 직접 확인하기, 원격·운영 명령 금지, RLS 전제, 공식 Supabase 스킬 규칙으로 본다는 문장이 있다. `supabase-reviewer` "볼 것" 1~11 과 `api-reviewer` 9(쿼리·인덱스)마다 지웠는지 남겼는지와 그 근거(A6 eval 결과)가 `Implementation Notes`에 목록으로 있고, 두 파일은 그 목록대로다
-- [ ] #8 (A5) `config-check.sh`가 읽는 형태가 Node 형태(`process.env`, `import.meta.env`)와 Supabase Edge Functions 의 `Deno.env.get`(승인 때 남기기로 함)뿐이고, `scripts/test-config-check.sh`에 다른 언어를 읽는 시나리오가 없으며(다른 언어 형태를 보지 않는지 확인하는 줄만 있다) 테스트가 모두 통과한다 (2026-11-24 바꿈: 승인 조건 2)
-- [ ] #9 (A5) `server-start-check`·`server-end-check`(원문·번역본)의 감지와 마이그레이션 담당이 Node 도구와 Supabase CLI 만 말하고, `grep -rni 'oasdiff\|openapi' plugins i18n README.md README.en.md .claude-plugin`이 비어 있다. server `plugin.json`·`marketplace.json`·README 설명에 "any server language"와 API 스펙 검사가 없다
-- [ ] #10 (A6) A1·A2·A4 마다 지금 판과 바꾼 판을 실제 사례(Svelte·UI 는 nolmeong `real-*`, Supabase 는 새로 만든 실제 사례)로 비교한 방법과 결과가 `Implementation Notes`에 있다. 새 Supabase 사례가 `plugins/server/evals/`에 커밋되어 있다. 바꾼 묶음은 비교에서 나빠지지 않은 것뿐이고, 나빠진 묶음은 바꾸지 않았다고 적혀 있다
-- [ ] #11 (A7) `plugins/frontend/evals/README.md`·`plugins/workflow/evals/README.md`가 스킬을 고칠 때의 측정 방법으로 `skill-creator`를 가리키고, `skill-creator`와 겹치는 설명이 없다. 실제 사례 eval 폴더와 그 사례에만 있는 설명은 남아 있다. `skill-creator` 원문에서 무엇이 겹친다고 봤는지, `skill-creator`가 실제 사례 eval 을 대신하는지에 대한 판단과 근거가 `Implementation Notes`에 있다
-- [ ] #12 (A7) `plugins/*/evals/`의 실제 사례·트리거·계획 단계·리뷰 위임 사례마다 `skill-creator` eval 가이드에 비춰 대조군, 채점 기준, 반복 수, 판별력, 채점 보정을 점검한 결과가 `Implementation Notes`에 있다. 잘못 짜였다고 본 사례는 고쳐 다시 돌린 결과가 있고, 결과가 바뀌어 다시 본 결정은 사용자의 답과 함께 적혀 있다
-- [ ] #13 (B1) `design-reviewer`(원문·번역본)에 "확인한 문제만"이 없고, 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고하고 거르기는 부른 쪽이 한다고 적혀 있다
-- [ ] #14 (B2) `end.md` 3단계(원문·번역본)에 "원칙에 어긋나는 지적은 하지 않는다"가 없고, 원칙에 어긋나 보이는 지적도 부딪히는 원칙과 함께 보고한다고 적혀 있다. 4단계 판정 규칙은 그대로다
-- [ ] #15 (B3) 테스트 밖 소스만 바뀌고 테스트가 없는 브랜치에서 `base-tests.sh`가 끝 값 2 로 끝나고, `src/__tests__/login.js`·`tests/login.js`를 바꾼 브랜치에서는 그 파일을 고른다. 두 경우가 `scripts/test-base-tests.sh`에 있고 통과한다
-- [ ] #16 (B3) `end.md` 2단계(원문·번역본)가 테스트를 찾지 못한 결과를 사용자에게 "확인 못 함"과 이유로 보인다고 적혀 있다
-- [ ] #17 (B4) `create.md`·`mockup.md`의 지금 문구와 조건판을 eval 로 비교한 방법과 결과가 `Implementation Notes`에 있고, 두 파일(원문·번역본)은 나은 쪽이다
-- [ ] #18 (B5) `server-start-check` "지킬 것"의 일반 원칙 셋이 있는 판과 없는 판의 비교 방법과 결과가 `Implementation Notes`에 있고, 없어도 나빠지지 않은 것만 지워져 있다. 마이그레이션 파일 규칙과 원격 명령 금지는 남아 있다
-- [ ] #19 (B6) `server-end-check` 보고 형식 예시(원문·번역본)에 "oasdiff 없음"이 없다
-- [ ] #20 (B7) `frontend-end-check`(원문·번역본)가 다른 스킬의 SKILL.md 를 읽게 하지 않고, 개발 서버를 띄우는 명령과 포트 규칙을 그 자리에 적는다
-- [ ] #21 (C) `start.md` 3단계(원문·번역본)에 플랜 모드 대신 계획을 마지막 메시지에 쓰라는 문장이 없고, 하위 세션도 `ExitPlanMode`로 승인받는다고 적혀 있다. `SKILL.md` 2절 4(원문·번역본)의 지시문에 "(계획은 전문)"이 없고 계획은 플랜 모드로 승인받는다고 적혀 있으며, 2절 5 에 부모가 계획을 대신 승인하지 않고 링크와 확인할 점만 알린다고 적혀 있다
+- [x] #1 (A1) `frontend-reviewer`와 `web-design-guidelines`를 실제 사례로 비교한 결과가 `Implementation Notes`에 있고, 비교에서 나빠졌으므로 `frontend-reviewer`(원문·번역본)의 접근성·억지로 끈 검사 항목은 그대로이며 `web-design-guidelines`를 쓰는 곳과 README 의 설치 안내가 없다. XSS·상태·중복 요청·비밀 값·새 의존성 항목은 남아 있다(2026-11-24 바꿈, 사용자의 말: "바꾸지 않기")
+- [x] #2 (A1) `design-reviewer`(원문·번역본)가 보는 것이 브라우저로 열어야 보이는 것(폭별 스크린샷, axe, 대비 측정, 키보드, 상태·콘솔, DESIGN.md 토큰)뿐이고, `frontend-reviewer`와 같은 항목을 함께 보지 않는다(재지 않고 바꾼 것이라고 `Implementation Notes`에 적혀 있다)
+- [x] #3 (A2) Svelte 기본 규칙(runes, Svelte 4 문법, autofixer, 문서 찾기)은 공식 `svelte` 스킬에서 온다. 들여오는 방법(의존 플러그인, 교차 마켓플레이스 허용, README 안내 가운데 고른 것)과, 그 방법으로 실제로 설치되고 `/task start`·`/task end` 중에 공식 스킬이 불리는지 확인한 결과가 `Implementation Notes`에 있다
+- [x] #4 (A2) `svelte.md`(start·end, 원문·번역본)와 `frontend-reviewer` Svelte 절에 남은 규칙이 SvelteKit 규칙(`$env/*/private`, `adapter-static`, `fail()`, `load` 권한, `{@html}`)과 "기준 브랜치 대비 새로 생긴 autofixer issues 만 실패"뿐이다. `$derived`·`$effect`·Svelte 4 문법 같은 Svelte 기본 규칙은 없다
+- [x] #5 (A2) `grep -rn 'svelte-file-editor' plugins i18n`의 결과가 "쓰지 않는다"는 문장뿐이거나 비어 있다
+- [x] #6 (A3) `react.md`(원문·번역본)와 `frontend-reviewer` React 절에 우리가 쓴 일반 React 규칙(훅 규칙, 파생 state, 정리 함수, 인덱스 `key` 등)이 없고, React 는 `vercel-react-best-practices`(·`vercel-composition-patterns`), React Router 는 `react-router` 스킬, Next.js 는 `AGENTS.md`와 설치된 버전의 문서로 본다고 적혀 있다. 설치돼 있지 않으면 설치할지 묻는다. 리뷰어에 `'use client'`·서버 액션 안전 장치가 남아 있다. README 두 개 "있으면 쓰는 것"에 버전을 고정한 설치 명령이 있다. `reviewer-react`·`compose-code-review`·`compose-with-stack` eval 폴더는 없다(재지 않고 들였다고 `Implementation Notes`에 적혀 있다)
+- [x] #7 (A4) `supabase-reviewer`(원문·번역본)에 로컬 DB 에서 두 사용자로 SQL 을 직접 확인하기, 원격·운영 명령 금지, RLS 전제, 공식 Supabase 스킬 규칙으로 본다는 문장이 있다. `supabase-reviewer` "볼 것" 1~11 과 `api-reviewer` 9(쿼리·인덱스)마다 지웠는지 남겼는지와 그 근거(A6 eval 결과)가 `Implementation Notes`에 목록으로 있고, 두 파일은 그 목록대로다
+- [x] #8 (A5) `config-check.sh`가 읽는 형태가 Node 형태(`process.env`, `import.meta.env`)와 Supabase Edge Functions 의 `Deno.env.get`(승인 때 남기기로 함)뿐이고, `scripts/test-config-check.sh`에 다른 언어를 읽는 시나리오가 없으며(다른 언어 형태를 보지 않는지 확인하는 줄만 있다) 테스트가 모두 통과한다 (2026-11-24 바꿈: 승인 조건 2)
+- [x] #9 (A5) `server-start-check`·`server-end-check`(원문·번역본)의 감지와 마이그레이션 담당이 Node 도구와 Supabase CLI 만 말하고, `grep -rni 'oasdiff\|openapi' plugins i18n README.md README.en.md .claude-plugin`이 비어 있다. server `plugin.json`·`marketplace.json`·README 설명에 "any server language"와 API 스펙 검사가 없다
+- [x] #10 (A6) A1·A2·A4 마다 지금 판과 바꾼 판을 실제 사례(Svelte·UI 는 nolmeong `real-*`, Supabase 는 새로 만든 실제 사례)로 비교한 방법과 결과가 `Implementation Notes`에 있다. 새 Supabase 사례가 `plugins/server/evals/`에 커밋되어 있다. 바꾼 묶음은 비교에서 나빠지지 않은 것뿐이고, 나빠진 묶음은 바꾸지 않았다고 적혀 있다
+- [x] #11 (A7) `plugins/frontend/evals/README.md`·`plugins/workflow/evals/README.md`가 스킬을 고칠 때의 측정 방법으로 `skill-creator`를 가리키고, `skill-creator`와 겹치는 설명이 없다. 실제 사례 eval 폴더와 그 사례에만 있는 설명은 남아 있다. `skill-creator` 원문에서 무엇이 겹친다고 봤는지, `skill-creator`가 실제 사례 eval 을 대신하는지에 대한 판단과 근거가 `Implementation Notes`에 있다
+- [x] #12 (A7) `plugins/*/evals/`의 실제 사례·트리거·계획 단계·리뷰 위임 사례마다 `skill-creator` eval 가이드에 비춰 대조군, 채점 기준, 반복 수, 판별력, 채점 보정을 점검한 결과가 `Implementation Notes`에 있다. 잘못 짜였다고 본 사례는 고쳐 다시 돌린 결과가 있고, 결과가 바뀌어 다시 본 결정은 사용자의 답과 함께 적혀 있다
+- [x] #13 (B1) `design-reviewer`(원문·번역본)에 "확인한 문제만"이 없고, 찾은 문제를 모두 확인한 것과 확인 못 한 것으로 나눠 보고하고 거르기는 부른 쪽이 한다고 적혀 있다
+- [x] #14 (B2) `end.md` 3단계(원문·번역본)에 "원칙에 어긋나는 지적은 하지 않는다"가 없고, 원칙에 어긋나 보이는 지적도 부딪히는 원칙과 함께 보고한다고 적혀 있다. 4단계 판정 규칙은 그대로다
+- [x] #15 (B3) 테스트 밖 소스만 바뀌고 테스트가 없는 브랜치에서 `base-tests.sh`가 끝 값 2 로 끝나고, `src/__tests__/login.js`·`tests/login.js`를 바꾼 브랜치에서는 그 파일을 고른다. 두 경우가 `scripts/test-base-tests.sh`에 있고 통과한다
+- [x] #16 (B3) `end.md` 2단계(원문·번역본)가 테스트를 찾지 못한 결과를 사용자에게 "확인 못 함"과 이유로 보인다고 적혀 있다
+- [x] #17 (B4) `create.md`·`mockup.md`의 지금 문구와 조건판을 eval 로 비교한 방법과 결과가 `Implementation Notes`에 있고, 두 파일(원문·번역본)은 나은 쪽이다
+- [x] #18 (B5) `server-start-check` "지킬 것"의 일반 원칙 셋이 있는 판과 없는 판의 비교 방법과 결과가 `Implementation Notes`에 있고, 없어도 나빠지지 않은 것만 지워져 있다. 마이그레이션 파일 규칙과 원격 명령 금지는 남아 있다
+- [x] #19 (B6) `server-end-check` 보고 형식 예시(원문·번역본)에 "oasdiff 없음"이 없다
+- [x] #20 (B7) `frontend-end-check`(원문·번역본)가 다른 스킬의 SKILL.md 를 읽게 하지 않고, 개발 서버를 띄우는 명령과 포트 규칙을 그 자리에 적는다
+- [x] #21 (C) `start.md` 3단계(원문·번역본)에 플랜 모드 대신 계획을 마지막 메시지에 쓰라는 문장이 없고, 하위 세션도 `ExitPlanMode`로 승인받는다고 적혀 있다. `SKILL.md` 2절 4(원문·번역본)의 지시문에 "(계획은 전문)"이 없고 계획은 플랜 모드로 승인받는다고 적혀 있으며, 2절 5 에 부모가 계획을 대신 승인하지 않고 링크와 확인할 점만 알린다고 적혀 있다
 
 <!-- AC:END -->
 
@@ -144,9 +144,9 @@ updated_date: 2026-11-24
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
-- [ ] #3 고친 플러그인(workflow, frontend, server)마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 원문(`plugins/`)을 고친 곳은 번역본(`i18n/en/`)도 같이 고쳤다
+- [x] #3 고친 플러그인(workflow, frontend, server)마다 `plugin.json` `version`을 올렸고, README 두 개와 `marketplace.json` 설명을 맞췄다
 
 <!-- DOD:END -->
 
@@ -502,5 +502,76 @@ AC 판정 에이전트가 "A4 묶음은 실제 사례에서 나빠졌는데 항�
 - `-stack`과 `-gp`는 차이 0.012 < 표준오차 합 0.045 로 같음, 둘 다 `-cr`보다 낫다. 008 의 "리뷰어를 더하면 0.597 → 0.804"는 리뷰어 수 효과였고, `frontend-reviewer` 체크리스트 고유의 효과는 이 사례로는 보이지 않는다.
 - 008 의 결정("`end.md` 3단계 구성은 바꾸지 않는다, 재기만")은 바뀌지 않는다(지금 구성은 대조군보다 나쁘지 않다). 다만 `frontend-reviewer`를 일반 리뷰어로 바꿀 수 있는지는 이 항목 밖의 후속 후보로 남긴다(사용자에게 알린다).
 - `keep-card-not-saved`·`keep-no-list-limit`는 세 판 모두 3/3 이었다(심각도를 붙여도 🔴 로 올리지 않았다).
+
+### AC #12: 옛 real-* 사례 (2026-11-24, 부모 세션이 전한 사용자의 답: "1" — 기록으로 마무리)
+
+두 번째 AC 판정에서 "`real-line`·`real-sky`·`real-birthday`를 '고칠 것'으로 보고도 사례 파일은 그대로"라는 지적이 나왔다. 사용자가 기록으로 마무리하기로 했다.
+
+- 옛 사례는 Svelte 정답이 든 새 사례(`real-svelte-001`, `real-svelte-005`)로 대신했다. 옛 사례 파일은 고치지 않았다.
+- 늘 0/5 인 채점 넷(궤도 0 억 km, 이모지 반쪽, 가려진 동안 흉내, 버튼 자리 밀림)과 채점 보정 부족(사람 라벨 5건)은 남아 있다. 다만 이 넷은 비교한 판 모두 0 이라 판 사이 차이에 영향이 없고, A1 판정(바꾸지 않기)도 그대로다.
+- 늘 0/5 인 채점 넷이 왜 늘 실패하는지(리뷰어가 못 찾는 어려운 문제인지, 채점 문구가 잘못된 것인지)는 확인하지 않았다. 그 사례로 다른 것을 잴 때 함께 고친다(사용자 요청: 기록만).
+- 이 단서를 달아 #12 를 통과로 친다(사용자 결정).
+
+### B5: 최종 판 다시 재기 (2026-11-24)
+
+두 번째 AC 판정이 "실제로 지운 인가·입력 검증 줄 하나만 뺀 최종 판은 재지 않았다"고 했다. 그 최종 판(지금 커밋의 `server-start-check`, 트랜잭션·멱등성 줄과 비밀 값 줄은 남김)을 같은 사례로 5회 쟀다.
+
+| 판 | 점수 | 판정(지금 판과) |
+| --- | --- | --- |
+| 지금(원칙 셋 있음) | 0.686 ± 0.156 (se 0.070) | — |
+| 셋 다 뺌 | 0.514 ± 0.078 (se 0.035) | 나빠짐 |
+| 최종(인가 줄만 뺌) | 0.743 ± 0.064 (se 0.029) | 같음(차이 0.057 < 0.099) |
+
+채점 기준별(지금 → 최종): 트랜잭션 4/5 → 5/5, 비밀 값 5/5 → 5/5, 마이그레이션 파일로만 4/5 → 5/5, 원격 명령 없음 5/5 → 5/5, 멱등성 0/5 → 1/5, 함수 입력 검사·호출 권한 1/5 → 0/5. 지운 줄이 다루던 인가 채점은 1 → 0 으로 한 번 줄었지만 5회 이진 채점의 잡음 안이고, 사례 점수는 나빠지지 않았다.
+
+### 인수인계 (2026-11-24)
+
+다른 컴퓨터의 새 세션이 이 절만 읽고 `/task end`를 할 수 있게 적는다.
+
+**브랜치와 상태**
+- 작업 브랜치: `w/012-chore-official-skills-narrow-stack`(origin 에 푸시함). 기준 브랜치 `main`. 마지막 커밋은 이 절을 더한 커밋이다.
+- start 6단계(정리, 검증, AC 판정, 체크와 커밋)까지 끝났다. 남은 일은 `/task end` 하나다: 리뷰(`code-review`, 필요하면 `security-review`, 스택 리뷰어), 판정, 고치기, Final Summary, 항목 닫기, 머지.
+- 다른 컴퓨터에서 시작하는 법: `git fetch origin && git switch w/012-chore-official-skills-narrow-stack`(워크트리를 쓰면 `git worktree add <경로> w/012-chore-official-skills-narrow-stack`) 뒤 그 폴더에서 `/task end`.
+- 검증 명령 `claude plugin validate . && bash scripts/check-repo-rules.sh`: 마지막 커밋 직전 상태에서 통과. 바뀐 스크립트의 짝 테스트(`test-base-tests.sh`가 10분 가까이 걸린다)를 돌리므로, eval 을 함께 돌리는 등 기계가 바쁘면 시간 제한(540초)을 넘을 수 있다. 그때는 `CHECK_TESTS_TIMEOUT=3000`을 앞에 붙여 다시 돌린다.
+
+**AC 상태**
+- AC #1~#21, DoD #1~#3 모두 체크했다. 체크 근거는 위 Notes 와 두 차례의 AC 판정(구현 세션이 아닌 general-purpose 판정 에이전트, 항목 파일과 `git diff main...HEAD`만 받음)이다.
+  - 첫 판정의 실패 넷(#3, #8, #10, #12)과 두 번째 판정의 실패 셋(#11, #12, #18)은 이렇게 정리했다. #3 은 실제 `svelte@svelte` 플러그인을 실어 다시 확인했다. #8 은 승인 결정(`Deno.env.get` 남김)대로 AC 문구를 고쳤다. #10·#18 은 최종 판을 다시 재서 나빠지지 않음을 확인했다. #11 은 README 의 겹치는 설명을 지웠다. #12 는 사용자 결정으로 기록과 단서를 달아 통과로 쳤다.
+  - DoD #1 은 판정 에이전트 대신 이 세션이 돌렸다. 검증 명령은 마지막 커밋에서 통과했다(아래 "브랜치와 상태").
+- 단서가 붙은 통과:
+  - #2: 키보드·포커스는 두 리뷰어가 보는 방법만 달리해 본다(`frontend-reviewer`는 코드, `design-reviewer`는 브라우저).
+  - #3: 전체 `/task start`·`/task end` 흐름이 아니라 그 흐름이 부르는 두 자리를 따로 돌려 확인했다.
+  - #6: Next.js 문서 받기 명령은 `@next/codemod@canary`라 버전이 고정되지 않았다(Next 공식 안내 그대로).
+  - #10: A4 의 항목 2~7, 9~11 은 근거가 합성 사례뿐이다.
+  - #12: 옛 `real-*`의 늘 0/5 인 채점 넷과 사람 라벨 부족이 남아 있다.
+
+**바뀐 것과 버전(머지 전까지 GitHub main 에 없다)**
+- workflow 0.13.0 → 0.14.0: 하위 세션도 플랜 모드(`ExitPlanMode`)로 계획 승인, `end.md` 원칙 지적 보고, `base-tests.sh`의 "테스트를 못 찾으면 끝 값 2"와 `__tests__/`·`tests/` 고르기.
+- frontend 0.10.0 → 0.11.0: Svelte 기본 규칙은 공식 svelte 스킬로(리뷰어·시작 점검), React 는 공식 Vercel·React Router 스킬과 Next `AGENTS.md`로, `design-reviewer`는 브라우저로 열어야 보이는 것만·찾은 문제를 모두 보고, `frontend-end-check`가 다른 스킬 문서를 읽지 않음. `frontend-reviewer`의 접근성 항목은 그대로(A1 은 비교에서 나빠져 바꾸지 않음).
+- server 0.6.0 → 0.7.0: Node·Supabase 로 좁힘(다른 서버 언어·OpenAPI·oasdiff 지움), `supabase-reviewer`·`api-reviewer`의 일반 규칙은 공식 Supabase 스킬로(입력과 악용만 남김), `server-start-check`의 인가 줄 삭제.
+- 다른 컴퓨터에 설치된 플러그인은 마켓플레이스(GitHub main)의 옛 버전이다. 머지하고 푸시하기 전까지 그 컴퓨터의 `/task end`는 **옛 workflow 0.13.0 절차**로 돈다. 이 브랜치의 새 절차로 리뷰하려면 그 컴퓨터에서 이 브랜치 폴더를 로컬 마켓플레이스로 더하거나(`/plugin marketplace add <브랜치 폴더>`) 머지 뒤에 업데이트한다. 옛 절차로 해도 리뷰·머지에는 문제없다.
+
+**다른 컴퓨터에서 쓰려면 설치할 외부 스킬(README "있으면 쓰는 것")**
+- 공식 Svelte: `/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte`
+- 공식 Supabase(스킬 `supabase`, `supabase-postgres-best-practices`): `/plugin install supabase@anthropic-plugin-directory`(같이 오는 원격 MCP 는 `/mcp`에서 끈다)
+- React(Vercel): `npx -y skills@1.7.5 add vercel-labs/agent-skills --skill vercel-react-best-practices --skill vercel-composition-patterns -a claude-code`
+- React Router: `npx -y skills@1.7.5 add https://github.com/remix-run/react-router --skill react-router -a claude-code`
+- Next.js: 16.3 이상은 `next dev`가 `AGENTS.md`를 만든다. 낮으면 `npx @next/codemod@canary agents-md`
+- 리뷰어는 이 스킬이 없으면 "확인 못 한 것"에 "<스킬 이름> 없음"이라고 적는다(리뷰가 멈추지는 않는다).
+
+**이 기계에만 있는 것(커밋하지 않음)**
+- `.claude/.local/012/`: eval 판 사본(`arms/`), 결과 JSON(`results/*.json`, Notes 의 표가 이것으로 만든 것), 정리 스크립트 `summarize.py`, A7 점검 요지 `a7-audit.md`, 받은 `web-design-guidelines` 원문(`ext/`). 다른 컴퓨터에는 없다. Notes 의 표가 결과를 다 담고 있어 `/task end`에는 필요 없다.
+- eval 의 실행 기록(trace)은 `%LOCALAPPDATA%\Temp\claude-eval-*`에 남아 있다(`--keep-temp`). 지워도 된다.
+- 실제 사례의 원본 저장소: nolmeong(`real-*`, `real-svelte-*`, `compose-real-*`, `start-plan-real`, `end-fix-real`), todak(`real-todak-002`, `plan-todak-010`). 경로는 커밋하지 않는 `plugins/{frontend,workflow}/evals/nolmeong-src.local`, `plugins/server/evals/todak-src.local`에 한 줄로 쓴다. 이 기계의 값은 `/c/Users/user/Documents/jihoons/nolmeong`, `/c/Users/user/Documents/jihoons/todak`이다. 다른 컴퓨터에서 eval 을 다시 돌리려면 그 컴퓨터의 경로로 이 파일을 만든다.
+
+**eval 다시 돌리는 법**(`/task end`에는 필요 없다. 리뷰 지적으로 리뷰어 문구를 다시 재야 할 때만)
+- 플러그인 폴더를 판마다 복사하고, 사본 `.claude-plugin/plugin.json`의 `dependencies`(workflow 는 `hooks/`도)를 지운다. 공식 스킬이 필요한 판은 그 스킬 폴더를 사본 `skills/`에 넣는다. 실제 다른 플러그인을 실으려면 사본 안에 복사하고 사례 프롬프트 머리에 `plugins: ["../..", "../../<폴더>"]`를 적는다(`plugins:`가 대상을 대신하므로 `../..`도 적는다).
+- `claude plugin eval <사본 경로> --ablation none --scaffold --trust-plugin --model opus --judge-model sonnet --runs 5 --tag <태그> --no-publish --threshold 0 -j 2 --json <결과>.json`. 대상은 반드시 경로로 준다(`frontend`처럼 이름만 주면 설치된 플러그인이 돈다). Edit·Write 가 필요한 사례는 `--allow-tools Edit Write`. 셸은 주지 않는다(Windows).
+- 판정 규칙은 `plugins/frontend/evals/README.md`의 "판정"(평균 차이가 두 표준오차 합보다 작으면 같음).
+
+**후속 후보(이 항목 밖, 사용자에게 알림)**
+- `compose-real` 다시 재기에서 `code-review` + 일반 리뷰어가 `code-review` + `frontend-reviewer`와 같았다(0.823 대 0.811). `frontend-reviewer` 체크리스트의 고유 효과가 이 사례로는 보이지 않는다.
+- 옛 실제 사례(`real-line`·`real-sky`·`real-birthday`)에서 늘 0/5 인 채점 기준 넷이 왜 늘 실패하는지는 확인하지 않았다. 리뷰어가 못 찾는 어려운 문제인지, 채점 문구가 잘못된 것인지는 사례를 열어 봐야 안다. 그 사례로 다른 것을 잴 때 함께 고친다.
+- `simplify`에서 건너뛴 것: 실제 사례 fixture 를 공용 스크립트로 모으기, 포트 고르기를 `dev-server.sh`로 옮기기, 테스트 러너에게 테스트 목록 묻기.
 
 ## Final Summary
