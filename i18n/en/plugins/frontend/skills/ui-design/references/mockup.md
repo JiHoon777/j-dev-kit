@@ -6,10 +6,10 @@ Handle one screen at a time.
 
 ## 1. Brief
 
-Settle the screen, who uses it, what they do there, and the real copy and data. Ask only what code and docs cannot answer, at most 3 questions at once. **Always ask how many mockups.**
+Settle the screen, who uses it, what they do there, and the real copy and data. Ask only what code and docs cannot answer, at most 3 questions at once. Always ask how many mockups. The number decides whether step 2 (directions) happens.
 
-- **One:** build one direction right away. Skip step 2.
-- **Several:** 3 by default, at most 5. Compare after building and pick.
+- One: build one direction right away. Skip step 2.
+- Several: 3 by default, at most 5. Compare after building and pick.
 
 Check whether the root has a `DESIGN.md` (`ls DESIGN.md`). If not, suggest `system` first. If the user wants to go ahead anyway, go ahead. If `/task start` invoked this before planning, do not suggest it (DESIGN.md is handled in that item's plan).
 
@@ -29,7 +29,7 @@ Show a table before building and get confirmation.
 
 Create a Design canvas with the Artifact tool (`action: quickstart`, `intent: design`, `design_systems: false`). Name this repo's DESIGN.md as the design system. One artboard per direction, titled with the direction's name. Use real copy, no lorem ipsum.
 
-When done, give the link and **stop.** The user looks, edits on the canvas, and picks. Do not recommend one in advance.
+When done, give the link and stop, so the user can look, edit on the canvas, and pick. Do not recommend one in advance.
 
 ## 4. Refine
 

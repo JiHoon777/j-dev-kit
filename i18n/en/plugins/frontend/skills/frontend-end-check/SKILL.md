@@ -37,7 +37,7 @@ If fixing review findings changed the UI, hand the fixed screens to the `fronten
 - Start the dev server: read `${CLAUDE_SKILL_DIR}/../frontend-start-check/SKILL.md` and follow the dev server item under "Browser check" in section 1. The script path in that item is relative to the frontend-start-check folder.
 - Pass the agent the item file path, the screen URL, the viewport and the list of fixed findings. Do not pass how they were fixed.
 - Viewport: the one set in CLAUDE.md, otherwise desktop. If you fixed a responsive layout, also mobile (375×812).
-- Fix a "fail" again. If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser) and write that you did it yourself. If you cannot do that either, stop and say so.
+- Fix a "fail" again. If the same finding still fails after three fixes, stop fixing and tell the user which finding failed and what you tried. A person rethinking the approach beats repeating the same fix. If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser) and write that you did it yourself. If you cannot do that either, stop and say so.
 
 ## Return format
 

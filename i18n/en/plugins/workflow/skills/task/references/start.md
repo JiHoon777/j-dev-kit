@@ -89,5 +89,5 @@ Before approval, do not edit files and do not create a branch.
    - Outside evidence: the command that shows the result (test, grep, CLI) and its output are written in `Implementation Notes`.
    - A judge other than the implementing session: for UI, the browser check from 3; otherwise a new general-purpose judge agent said pass. Give the judge agent only the item file path and the `git diff <base>...HEAD` range, not how it was implemented. Brief: "Do not edit files. For each AC write pass / fail / could not verify with evidence (`file:line`, command output). When unsure, do not leave it as pass."
 
-   Fix "fail" and get judged again. Do not check off "could not verify"; say so. Check off Definition of Done the same way, and commit. Leave no uncommitted changes.
+   Fix "fail" and get judged again. If the same AC still fails after three fixes, stop fixing and tell the user which AC failed and what you tried. A person rethinking the approach beats repeating the same fix. Do not check off "could not verify"; say so. Check off Definition of Done the same way, and commit. Leave no uncommitted changes.
 5. Report: what was done, the result per AC, what changed from the plan, what could not be verified. Next is `/task end`.
