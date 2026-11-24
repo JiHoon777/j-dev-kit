@@ -57,12 +57,12 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 /task start 001                                  # 워크트리 하위 세션에서 계획 → 승인 → w/001-… 브랜치에서 구현
 /task end                                        # 그 세션에서: 리뷰 → 고치기 → 항목 닫기 → 머지
 /task start 001 --here                           # 하위 세션 없이 이 세션에서
-/task create --survey 자주 나는 오류 줄이기 logs/  # 자료를 직접 읽고 항목 후보를 골라 보여 주기
+/task create --survey 자주 나는 오류 줄이기 logs/  # 저장소와 바깥을 조사해 항목 후보를 보고서로 보여 주기
 ```
 
 - **하위 세션:** `create`와 `start`는 기본으로 세션을 하나 띄우고 링크만 알린다. `create`는 같은 폴더에서(기준 브랜치에 있을 때만. 작업 브랜치나 워크트리에서는 이 세션에서 한다), `start`는 기준 브랜치에서 딴 새 워크트리(`w/<항목>` 브랜치)에서 돈다. 띄운 세션이 지휘한다: 하위 세션의 질문과 승인 요청을 이 세션에서 보여 주고 답을 전하며, 하위 세션이 끝나면 결과를 확인해 먼저 보고한다. 계획은 하위 세션이 플랜 모드로 올리고 사용자가 그 세션의 플랜 화면에서 승인한다(띄운 세션은 링크와 확인할 점만 알린다). 하위 세션에서 직접 답해도 된다. 이 세션이 Fable 이면 하위 세션은 한 단계 낮은 최신 모델(지금은 Opus)과 노력 `high`로, Opus 이하면 이 세션의 모델과 노력 그대로 돈다. 작업하던 세션을 닫았으면 `start <번호>`가 이 세션에서 그 브랜치를 이어 간다. `end`는 작업한 세션에서 부른다. 세션을 새로 띄우는 도구가 없으면(데스크톱 앱이 아닌 곳) 이 세션에서 한다. 여러 항목을 함께 하려면 `start`를 여러 번 부르면 된다.
 
-- **create --survey:** 목표와 자료(경로, 명령, URL. 없으면 저장소에서 찾는다)를 받아 Claude 가 날것을 직접 읽고 항목 후보를 고른다. 같은 원인은 한 후보로 묶고, 버그 제보는 기준 브랜치에서 재현해 본다. 후보마다 근거와 확인 수단을 한 목록으로 보여 주고, 고른 것만 항목으로 쓴다. `start`는 부르지 않는다.
+- **create --survey:** 목표를 결과 한 문장과 조사 질문으로 쪼개 보여 주고(승인은 기다리지 않는다), 자료를 주지 않아도 안쪽(저장소)과 바깥(쓰는 도구의 공식 문서·변경 기록·이슈, 선례, 실무자의 글)을 각도마다 하위 에이전트로 병렬 조사한다. 준 자료와 URL 은 출발점이고, 바깥은 `--internal`이라고 할 때만 뺀다. 자료마다 메모(인용, 위치, 날짜, [직접]/[검색])를 남기고, 메모를 범주로 묶어 세고, 새 범주가 안 나오면 멈춘다. 후보는 문제·필요로 적고 크기와 목표에 닿는 정도를 붙인다. 같은 원인은 한 후보로 묶고, 버그 제보는 기준 브랜치에서 재현해 본다. 판정 에이전트가 근거·겹침·1차 출처를 보고 거른 뒤, 보고서(`.claude/.local/reports/`)와 후보 표를 보여 준다. 고른 것만 항목으로 쓰고, 그때 보고서를 `docs/backlog/references/`로 옮겨 첫 항목과 함께 커밋한다. `start`는 부르지 않는다.
 - **start:** 기준선(검증 명령 한 번), 스택 시작 점검, 크기에 맞춘 계획(작은 항목은 에이전트 없이), 그 분야 최고 실무자의 도구와 단계 정하기, 테스트 먼저 구현, 물어보고 `simplify`로 찾은 정리를 보여 준 뒤 고른 것만 고치기, 검증. AC 는 바깥 증거(명령 출력)나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다. 같은 AC 가 세 번 고쳐도 실패하면 멈추고 사용자에게 넘긴다.
 - **end:** 스택 종료 점검, 리뷰(`code-review` + 필요할 때 `security-review`·스택 리뷰어·화면이 바뀌면 `design-reviewer`), 지적의 타당성은 작업 세션이 아닌 판정 에이전트가 가리고 타당한 것만 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 구분별로 묻기, 고치기(판단이 필요한 수정은 작업 세션이, 기계적인 수정은 작업 세션이 정하면 Sonnet 에이전트가 고치고, 판정은 검증 명령과 판정 에이전트가 하며, 같은 지적이 세 번 남으면 멈춤), 검증, 머지. 푸시는 요청할 때만. 리뷰 전에 이 브랜치의 새 테스트를 기준 브랜치의 소스에 대고도 돌려, 고친 코드 없이도 통과하면 🟡 로 넣는다. 전에도 고친 종류이거나 여러 곳에 나온 지적(🔁)은 린트 규칙·테스트·타입으로 막는 새 항목도 고를 수 있다.
 - **리뷰 원칙:** 그대로 두기로 한 지적과 사용자가 바로잡은 것은 Final Summary 에 남고, 다른 항목에도 통하면 `docs/review-principles.md`에 원칙 한 줄로 모여 다음 리뷰의 입력이 된다.
@@ -114,6 +114,6 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 
 검증 훅, `frontend-evaluator`, `design-reviewer`: Claude Code [hooks](https://code.claude.com/docs/en/hooks.md)(꼭 지킬 것은 지침이 아니라 훅으로), Anthropic [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps)(만든 쪽과 따로 둔 평가자가 실행 중인 앱을 직접 써 본다).
 
-실무자의 도구·단계, 바깥 판정, 리뷰 원칙, eval 로 덜어내기, 서베이: Felix Rieseberg 대담([영상](https://youtu.be/D-SVFneJ_Nk)), Lauren Tan([영상](https://www.youtube.com/watch?v=MN9dGgmLyso), 관련 제보 묶기·재현), Satya Nadella([영상](https://www.youtube.com/watch?v=0NE89Nzfk20), eval 을 남겨 모델이 바뀌면 다시 재기).
+실무자의 도구·단계, 바깥 판정, 리뷰 원칙, eval 로 덜어내기, 서베이: Felix Rieseberg 대담([영상](https://youtu.be/D-SVFneJ_Nk)), Lauren Tan([영상](https://www.youtube.com/watch?v=MN9dGgmLyso), 관련 제보 묶기·재현), Satya Nadella([영상](https://www.youtube.com/watch?v=0NE89Nzfk20), eval 을 남겨 모델이 바뀌면 다시 재기). 서베이의 조사 방식: Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system)(각도별 병렬 수집, 1차 출처), Hamel Husain [error analysis](https://hamel.dev/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html)(메모 → 범주 → 세기 → 포화), Teresa Torres [opportunity solution trees](https://www.producttalk.org/ai-opportunity-solution-trees/)(후보는 문제·필요로), Claude Code `/dedupe`(따로 거르기).
 
 `ui-design`·`design-reviewer`: [Google DESIGN.md](https://github.com/google-labs-code/design.md), WCAG 2.2, Claude Code [artifacts](https://code.claude.com/docs/en/artifacts.md). 아이디어를 빌린 스킬: [emilkowalski/skills](https://github.com/emilkowalski/skills) `prototype`(이름과 축, 3~5개, 고를 때까지 멈춤), [impeccable](https://github.com/pbakaus/impeccable)(축 목록, 정체성 고정), [gstack](https://github.com/garrytan/gstack) `design-shotgun`(헤드라인 바꾸기 테스트), [OneRedOak/claude-code-workflows](https://github.com/OneRedOak/claude-code-workflows) `design-review`(폭별 실제 화면 리뷰).
