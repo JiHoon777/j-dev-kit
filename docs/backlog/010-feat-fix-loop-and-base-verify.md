@@ -237,7 +237,7 @@ updated_date: 2026-11-24
 
 - eval 점수가 깎인 것은 `fix-exports` 두 번(A 1회, B 1회, 판정 FFF)과 B 의 `used-sonnet` 두 번이었다.
   - `fix-exports` 실패의 근거 파일을 보니 세 타입의 `export`를 지웠고 타입은 남아 있었다. PASS 한 실행과 같은 내용이라 채점 잡음이다.
-  - 아홉 실행 모두의 근거 파일에 regex(`export\s+type\s+(Example|Received|Sent)`가 없고 세 타입 정의는 있음)를 대니 모두 PASS 였다. 이 채점은 regex 로 바꿨다.
+  - 아홉 실행 모두의 근거 파일에 regex(`export\s+type\s+(Example|Received|Sent)\b`가 없고 세 타입 정의는 있음)를 대니 모두 PASS 였다. 이 채점은 regex 로 바꿨다.
 - 비용은 eval 의 `costUsd`에서 `judgeCostUsd`를 뺀 것이다(파일럿 실행 기록의 `total_cost_usd`와 맞았다). 위임한 B 1회($0.69)에 서브에이전트 비용이 들었는지는, 이번 실행에서 기록을 남기지 않아(`--keep-temp` 없음) 확인하지 못했다.
 - 결론:
   - 기계적 지적 12개는 Opus·Sonnet·위임 모두 9회 전부 고쳤다. 품질로는 판별력이 없다.
