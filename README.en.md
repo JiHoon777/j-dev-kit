@@ -80,7 +80,7 @@ plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)
 plugins/frontend/                   skills/frontend-{start,end}-check (scripts/dev-server.sh, diff-check.sh), ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
 plugins/server/                     skills/server-{start,end}-check (scripts/config-check.sh), agents/api-reviewer.md, supabase-reviewer.md
 i18n/en/                            English translations (Claude does not read them)
-scripts/check-repo-rules.sh         repository rule check (translation pairs and updates, matching descriptions, README lists, version bumps, shell injection lines in skills)
+scripts/check-repo-rules.sh         repository rule check (translation pairs and updates, matching descriptions, README lists, version bumps, shell injection lines in skills, the duplicated port_open, paired tests of changed scripts)
 scripts/test-check-repo-rules.sh    scenario tests for the check script
 scripts/test-verify-on-stop.sh      scenario tests for the verify hook
 scripts/test-{pick-port,base-tests,dev-server,diff-check,config-check}.sh  scenario tests for the plugin scripts
@@ -96,7 +96,7 @@ claude plugin marketplace update j-dev-kit
 claude plugin update <plugin>@j-dev-kit --scope project
 ```
 
-Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command in CLAUDE.md (`claude plugin validate .` and `scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, when a plugin's description differs between `plugin.json` and `marketplace.json`, when a plugin in `marketplace.json` is missing from the table in either README, when a source changed since `main` (or `origin/main` if there is no local `main`) but its translation did not, or when a plugin changed since `main` kept or lowered its `version`. If the version is unchanged, the update is not picked up. After changing the check script, run the scenarios with `bash scripts/test-check-repo-rules.sh`.
+Then open a new session. Maintainers bump `version` in `plugin.json` for each changed plugin, run the verify command in CLAUDE.md (`claude plugin validate .` and `scripts/check-repo-rules.sh`), and push. The check script fails when a markdown file in `plugins/` has no translation in `i18n/en/`, when a plugin's description differs between `plugin.json` and `marketplace.json`, when a plugin in `marketplace.json` is missing from the table in either README, when a source changed since `main` (or `origin/main` if there is no local `main`) but its translation did not, when a plugin changed since `main` kept or lowered its `version`, or when the `port_open` bodies in `pick-port.sh` and `dev-server.sh` differ. If the version is unchanged, the update is not picked up. It also runs the paired test `scripts/test-<name>.sh` of each script changed since `main` (the `.sh` files in `plugins/` outside evals, and the check script) and each changed paired test, and fails when one fails or a script has no pair. Each test takes about a minute (`test-check-repo-rules.sh` three to four, `test-base-tests.sh` about five), and one that runs past `CHECK_TESTS_TIMEOUT` seconds (default 540) is stopped and fails.
 
 ## Troubleshooting
 

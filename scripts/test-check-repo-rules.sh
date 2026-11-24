@@ -9,6 +9,7 @@ trap 'rm -rf "$tmp"' EXIT
 export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com
 export GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com
 export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.autocrlf GIT_CONFIG_VALUE_0=false # 줄 끝 경고 끄기
+export CHECK_TESTS_TIMEOUT=3 # 가짜 짝 테스트는 바로 끝난다. 시간 초과 시나리오만 이것에 걸린다
 
 # 가짜 저장소: alpha·beta 는 marketplace 와 README 에 있고, gamma 는 없다.
 plugin() { # 이름
@@ -26,9 +27,24 @@ EOF
   echo "# $1" > "plugins/$1/skills/a.md"
   echo "# $1 en" > "i18n/en/plugins/$1/skills/a.md"
 }
+pick_port=plugins/workflow/skills/task/scripts/pick-port.sh
+dev_server=plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh
+port_fn() { # 위 주석 줄. 실제처럼 주석은 다르고 본문은 같다
+  printf '%s\nport_open() {\n  local p=$1\n  return 2\n}\n\nport_open 1\n' "$1"
+}
+scripts_fixture() { # 스크립트와 짝 테스트 (가짜 테스트는 실제 테스트를 부르지 않는다)
+  mkdir -p plugins/alpha/scripts scripts "${pick_port%/*}" "${dev_server%/*}"
+  echo 'exit 0' > plugins/alpha/scripts/tool.sh
+  echo 'bash plugins/alpha/scripts/tool.sh' > scripts/test-tool.sh
+  port_fn '# workflow 쪽' > "$pick_port"
+  port_fn '# frontend 쪽' > "$dev_server"
+  echo '# 가짜 검사' > scripts/check-repo-rules.sh
+  for t in pick-port dev-server check-repo-rules; do echo 'exit 0' > "scripts/test-$t.sh"; done
+}
 make_fixture() {
   git init -q -b main "$tmp/fixture" && cd "$tmp/fixture" || exit 1
   plugin alpha; plugin beta; plugin gamma
+  scripts_fixture
   mkdir .claude-plugin
   cat > .claude-plugin/marketplace.json <<'EOF'
 {
@@ -107,9 +123,25 @@ s_skill_bang()       { printf -- '- 브랜치: !`git branch --show-current`
 ' >> i18n/en/plugins/alpha/skills/a.md; bump alpha; }
 s_one_line_base()    { tr -s ' \n' ' ' < plugins/gamma/.claude-plugin/plugin.json > m && mv m plugins/gamma/.claude-plugin/plugin.json
                        git commit -qam one-line && git branch -q -f main HEAD; both gamma; }
+s_script_pass()      { echo '# 고침' >> plugins/alpha/scripts/tool.sh; bump alpha; }
+s_script_fail()      { echo 'exit 1' > plugins/alpha/scripts/tool.sh; bump alpha; }
+s_script_no_pair()   { echo 'exit 0' > plugins/alpha/scripts/new.sh; bump alpha; }
+s_check_changed()    { echo '# 고침' >> scripts/check-repo-rules.sh; }
+s_test_only()        { echo '# 고침' >> scripts/test-tool.sh; }
+s_test_only_fail()   { echo 'exit 1' >> scripts/test-tool.sh; }
+s_eval_sh()          { mkdir -p plugins/alpha/evals/c1; echo 'exit 0' > plugins/alpha/evals/c1/fixture.sh; bump alpha; }
+s_script_deleted()   { git rm -q plugins/alpha/scripts/tool.sh; bump alpha; }
+s_port_comment()     { sed -i 's/^# frontend 쪽$/# frontend 쪽, 고침/' "$dev_server"; }
+s_port_diff()        { sed -i 's/return 2/return 1/' "$dev_server"; }
+s_port_missing()     { sed -i 's/^port_open() {$/port_check() {/' "$dev_server"; }
+s_test_hangs()       { echo 'sleep 30' >> scripts/test-tool.sh; }
+s_test_reads_stdin() { echo '# 고침' >> plugins/alpha/scripts/tool.sh; bump alpha # 첫 테스트가 표준 입력을 읽어도
+                       echo 'cat > /dev/null' >> scripts/test-tool.sh             # 뒤에 바뀐 것의 테스트가 돈다
+                       echo 'exit 1' > scripts/test-pick-port.sh; }
 
 pass=0 total=0
-scenario() { # 설명 기대종료코드 준비함수 [출력에 있어야 할 문구]
+has() { printf '%s\n' "$out" | grep -qF -- "$1"; }
+scenario() { # 설명 기대종료코드 준비함수 [출력에 있어야 할 문구, !로 시작하면 없어야 할 문구]
   local name=$1 want=$2 setup=$3 msg=$4 dir out code
   total=$((total + 1))
   dir="$tmp/case$total"
@@ -118,7 +150,7 @@ scenario() { # 설명 기대종료코드 준비함수 [출력에 있어야 할 �
     echo "틀림: $name (준비 실패)"; sed 's/^/    /' "$dir.setup"; return
   fi
   out=$(cd "$dir" && bash "$check" 2>&1); code=$?
-  if [ "$code" = "$want" ] && { [ -z "$msg" ] || printf '%s\n' "$out" | grep -qF -- "$msg"; }; then
+  if [ "$code" = "$want" ] && case $msg in '') ;; '!'*) ! has "${msg#!}" ;; *) has "$msg" ;; esac; then
     pass=$((pass + 1)); echo "맞음: $name"
   else
     echo "틀림: $name (종료 $code, 기대 $want${msg:+, 문구 \"$msg\"})"
@@ -163,6 +195,21 @@ scenario "기준 plugin.json 한 줄 → 실패"       1 s_one_line_base     "ve
 scenario "evals 의 md 는 번역본 없이 → 통과"   0 s_eval_md
 scenario "evals 의 md 만 고침 → 통과"          0 s_eval_md_edit
 scenario "스킬에 셸 주입 줄 → 실패"           1 s_skill_bang        "셸 주입 줄: plugins/alpha/skills/a.md"
+# 011 에서 더한 것
+scenario "바뀐 스크립트의 테스트 통과 → 통과"  0 s_script_pass       "테스트 통과: scripts/test-tool.sh"
+scenario "바뀐 스크립트의 테스트 틀림 → 실패"  1 s_script_fail       "테스트 실패: scripts/test-tool.sh"
+scenario "마크다운만 바뀜 → 테스트 안 돌림"     0 s_bump              "!scripts/test-"
+scenario "짝 테스트 없는 스크립트 → 실패"       1 s_script_no_pair    "짝 테스트 없음: plugins/alpha/scripts/new.sh"
+scenario "검사 스크립트 바뀜 → 그 테스트 돌림"  0 s_check_changed     "테스트 통과: scripts/test-check-repo-rules.sh"
+scenario "짝 테스트만 바뀜 → 그 테스트 돌림"    0 s_test_only         "테스트 통과: scripts/test-tool.sh"
+scenario "짝 테스트만 바뀌고 틀림 → 실패"       1 s_test_only_fail    "테스트 실패: scripts/test-tool.sh"
+scenario "evals 의 fixture.sh → 짝 없이 통과"   0 s_eval_sh           "!짝 테스트 없음"
+scenario "스크립트 지움 → 테스트 안 돌림"       0 s_script_deleted    "!scripts/test-tool.sh"
+scenario "port_open 같고 주석만 다름 → 통과"    0 s_port_comment      "테스트 통과: scripts/test-dev-server.sh"
+scenario "port_open 다름 → 실패"                1 s_port_diff         "port_open 다름: $pick_port, $dev_server"
+scenario "port_open 없음 → 실패"                1 s_port_missing      "port_open 을 찾지 못함: $dev_server"
+scenario "짝 테스트가 멈춤 → 시간 초과로 실패"  1 s_test_hangs        "테스트 실패(3초 시간 초과): scripts/test-tool.sh"
+scenario "테스트가 표준 입력 읽음 → 뒤도 돌림"  1 s_test_reads_stdin  "테스트 실패: scripts/test-pick-port.sh"
 
 echo "$total 개 중 $pass 개 맞음"
 [ "$pass" = "$total" ]
