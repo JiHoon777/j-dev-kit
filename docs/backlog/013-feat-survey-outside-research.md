@@ -123,9 +123,19 @@ frontend·server start check: CLAUDE.md `stack: 없음` → 해당 없음.
 - `llm` 채점의 대상 키는 `target`이 아니라 `focus`다(`regex`만 `target`).
 - 바깥을 빼는 플래그는 `--internal`. `SKILL.md`와 번역본의 `argument-hint`에만 더했고 `description`(트리거 문장)은 그대로다.
 
+### skill-creator 방식에 맞춘 것 (사용자 지시, 2026-11-25)
+
+사용자: "eval 작성은 skill creator 참고해서 하면 돼. 클로드코드의". 첫 실행을 시작한 뒤 받아, 돌던 실행을 멈추고 맞춘 뒤 두 판을 처음부터 다시 돌렸다.
+
+- 맞춘 것(`skill-creator` `references/schemas.md` "Test cases"): `case.yaml`에 `expected_outcome`(성공 모습), 채점 파일 이름에 번호(`01-searched-outside.md` …), llm 채점에 `focus: trace`·`weight: 1`(채점자가 마지막 메시지만이 아니라 한 일도 본다. 보고서 내용을 기록의 Write 호출에서 볼 수 있게 됐다), 모든 채점에 `weight: 1`(점수 = 통과율).
+- 맞춘 것(SKILL.md "Improving an existing skill"): 기준 판은 고치기 전 스킬의 사본(main 판)이다. 비교는 통과율·시간·비용의 평균 ± 표준편차와 차이, 그리고 분석(판을 가르지 못하는 채점, 들쭉날쭉한 채점)으로 한다.
+- 그대로 둔 것: 실행은 `skill-creator`의 하위 에이전트 방식이 아니라 `claude plugin eval`로 한다(012 에서 정한 이유: 하위 에이전트 방식은 플러그인 로드·Skill 도구·`allowed_tools`를 시험하지 않는다. `plugins/workflow/evals/README.md`). `tags`는 이 저장소 다른 사례처럼 `case.yaml`에 둔다(스키마가 받는다). 사람이 볼 결과 화면은 `generate_review.py` 대신 eval 이 만드는 HTML 보고서를 쓴다.
+
 ### eval 실행
 
-- 이 맥의 셸에서 `claude` CLI 가 로그인돼 있지 않다(`claude auth status` → `loggedIn: false`, 샌드박스 밖에서도 같음). eval 러너가 "Not logged in · Please run /login"으로 바로 끝나 두 판 측정을 아직 못 했다.
+- 이 맥의 셸에서 `claude` CLI 가 로그인돼 있지 않아(`loggedIn: false`) eval 이 "Not logged in"으로 끝났다. 사용자가 `claude auth login`을 한 뒤 돌렸다.
+- eval 실행은 `.claude/` 아래 쓰기를 막는다(dontAsk 모드, `--allow-tools 'Write(.claude/**)'`로도 안 풀림. 시험 사례로 `notes/` 경로는 쓰이고 `.claude/.local/`은 거부되는 것을 확인). 그래서 `02-report-written`은 파일이 아니라 그 경로로 Write 를 부른 기록을 본다. 실제 세션에서는 이 저장소가 이미 `.claude/.local/`에 쓰고 있다.
+- 하위 에이전트의 도구 호출도 기록(trace)에 남는다(시험 사례로 확인).
 - 사본: 지금 판은 `git archive main plugins/workflow`(af09fc4)에 새 사례를 넣은 것, 고친 판은 이 브랜치의 `plugins/workflow`. 둘 다 `dependencies`와 `hooks/`를 뺐다.
 
 ## Final Summary
