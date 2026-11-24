@@ -8,9 +8,9 @@ A personal Claude Code plugin marketplace. The work loop is a single `/task` ski
 
 | Plugin | Contains | Also installs |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, the verify Stop hook | `superpowers` |
-| `frontend` | Svelte and React checks, `ui-design` for DESIGN.md and canvas mockups, `frontend-reviewer`, `design-reviewer` for screen review, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
-| `server` | Server and Supabase checks (migrations, API spec, keys), `api-reviewer`, `supabase-reviewer` | `workflow` |
+| `workflow` | `/task create`, `/task start`, `/task end`, the verify Stop hook, scripts that pick item ports and check tests against the base branch | `superpowers` |
+| `frontend` | Svelte and React checks (scripts that start the dev server and check the diff), `ui-design` for DESIGN.md and canvas mockups, `frontend-reviewer`, `design-reviewer` for screen review, and `frontend-evaluator` for browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
+| `server` | Server and Supabase checks (migrations, API spec, keys; config keys and keys by a script), `api-reviewer`, `supabase-reviewer` | `workflow` |
 
 If you use Supabase, install `server` even if you call it straight from the frontend.
 
@@ -64,10 +64,10 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 
 - **create --survey:** takes a goal and sources (paths, commands, URLs; if none, it looks in the repository), reads the raw material directly, and picks item candidates. Sources with the same cause become one candidate, and bug reports are reproduced on the base branch. It shows one list with evidence and a way to check each, and writes only the ones picked. It does not call `start`.
 - **start:** baseline (one run of the verify command), stack start checks, planning sized to the item (no agents for small items), settling the tools and steps the best practitioners in the field use, test-first implementation, cleanup with `simplify`, verification. ACs are checked off only with outside evidence (command output) or a judge agent other than the implementing session.
-- **end:** stack end checks, review (`code-review` plus `security-review` and stack reviewers when needed, and `design-reviewer` when a screen changed), a judge agent other than the work session decides which findings are valid, and only those are shown as 🔴 must fix / 🟡 consider / ⚪ minor with one question per group, fixes, verification, merge. Pushes only on request.
+- **end:** stack end checks, review (`code-review` plus `security-review` and stack reviewers when needed, and `design-reviewer` when a screen changed), a judge agent other than the work session decides which findings are valid, and only those are shown as 🔴 must fix / 🟡 consider / ⚪ minor with one question per group, fixes, verification, merge. Pushes only on request. Before the review, the branch's new tests also run against the base branch's source, and a test that passes without the fixed code goes in as 🟡. For a finding fixed before or seen in several places (🔁), you can also choose a new item that blocks it with a lint rule, test or type.
 - **Review principles:** findings left as is and what the user corrected go in the Final Summary, and when they hold for other items they are collected as one-line principles in `docs/review-principles.md`, which become input to later reviews.
 - **Verify hook:** on a `w/` branch, when the item's Definition of Done is checked and Claude stops, a hook runs the `verify command:` from CLAUDE.md itself. On failure it sends Claude back with the output, only once for the same content. It does not run again while the code is unchanged. It still runs after another Stop hook such as `/goal` has blocked the stop. It can overlap the verification the skill already ran, so it may run once more per stage. On Windows it needs Git Bash.
-- **Ports:** with `- 웹 포트: 5000` (web port) and `- 서버 포트: 6000` (server port) under `## 작업 설정` (work settings) in CLAUDE.md, each item gets `base port + item number` (item 007 → 5007, 6007) written under the item's `### 포트`, and the checks that start a dev server and the `design-reviewer` review use those ports. If a port is already in use, it goes up by 1. If you work on several projects together, keep base ports 1000 apart per project and between web and server (for example project A web 5000, server 6000; project B web 7000, server 8000). Item numbers are three digits, so they do not overlap. Supabase and database ports are not split.
+- **Ports:** with `- 웹 포트: 5000` (web port) and `- 서버 포트: 6000` (server port) under `## 작업 설정` (work settings) in CLAUDE.md, each item gets `base port + item number` (item 007 → 5007, 6007) written under the item's `### 포트`, and the checks that start a dev server and the `design-reviewer` review use those ports. `pick-port.sh` picks the ports, going up by 1 past ports something is listening on and ports of other items in progress (including other `w/` branches). `dev-server.sh` starts the dev server on that port and confirms it is listening. If you work on several projects together, keep base ports 1000 apart per project and between web and server (for example project A web 5000, server 6000; project B web 7000, server 8000). Item numbers are three digits, so they do not overlap. Supabase and database ports are not split.
 - **Worktrees:** if a sub-session's worktree is created inside the repository (for example `.claude/worktrees/`), leave that folder out of test and lint tool settings. After merging, archiving the session lets the app clean up the worktree.
 - **Browser check:** when the UI changes, the `frontend-evaluator` agent, not the implementing session, judges each Acceptance Criterion on the running screen.
 - **Design (frontend):** steps in only when needed, without being invoked. For an item that adds or redesigns a screen, `start` makes mockups on the Claude Code design canvas before planning (one or several; the user picks on the canvas) and writes the chosen one into the plan and the item. For a UI item with no root `DESIGN.md`, it asks whether to make one in this item (to opt out, `- DESIGN.md: 안 씀` under `## 작업 설정` in CLAUDE.md), and for an item that changes tokens it puts a DESIGN.md update in the plan. Once made, DESIGN.md is always read through `@DESIGN.md` in CLAUDE.md. Saying "make mockups for the login screen" without an item also runs `ui-design`. Without the canvas, a temporary `variants.html` outside the repo stands in.
@@ -75,14 +75,15 @@ Without the superpowers paragraph, superpowers takes over the planning step of `
 ## Layout
 
 ```
-plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md
+plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md + scripts/pick-port.sh, base-tests.sh
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)
-plugins/frontend/                   skills/frontend-{start,end}-check, ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
-plugins/server/                     skills/server-{start,end}-check, agents/api-reviewer.md, supabase-reviewer.md
+plugins/frontend/                   skills/frontend-{start,end}-check (scripts/dev-server.sh, diff-check.sh), ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
+plugins/server/                     skills/server-{start,end}-check (scripts/config-check.sh), agents/api-reviewer.md, supabase-reviewer.md
 i18n/en/                            English translations (Claude does not read them)
 scripts/check-repo-rules.sh         repository rule check (translation pairs and updates, matching descriptions, README lists, version bumps, shell injection lines in skills)
 scripts/test-check-repo-rules.sh    scenario tests for the check script
 scripts/test-verify-on-stop.sh      scenario tests for the verify hook
+scripts/test-{pick-port,base-tests,dev-server,diff-check,config-check}.sh  scenario tests for the plugin scripts
 ```
 
 - The source is Korean (`plugins/`); translations live in `i18n/en/`. Update the translation when you change the source.

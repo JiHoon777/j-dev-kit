@@ -65,7 +65,7 @@ Before approval, do not edit files and do not create a branch.
    - If you are on the base branch: `git switch -c w/<name>`.
    - If you are in a worktree made for this item and the branch name differs: `git branch -m w/<name>`. The verify Stop hook runs only on `w/` branches.
    - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5000, item 007 → 5007). Only the ones that are set.
-     - Treat these ports as in use and go up by 1 to avoid them: ports something is listening on (`lsof -nP -iTCP:<port> -sTCP:LISTEN`, or `nc -z 127.0.0.1 <port>` if lsof is missing or fails), the `### 포트` of items in progress in other sessions (`In Progress` in `docs/backlog/`), and those items' default ports (base port + their number). This keeps it clear of other items and of other projects' servers. If there is no way to check whether a port is listening, say so.
+     - For each port, run `bash <task-scripts>/pick-port.sh <base port> <item number>` and use the port on the first line. It picks a port clear of other items and of other projects' servers. If it exits with a non-zero value, tell the user the reason it printed.
      - Write the ports into the item file as soon as they are set (2 below), so that another session started at the same time can see them.
 2. Item file: `status: In Progress`, `updated_date` today, the approved plan in `Implementation Plan`, the baseline under `### Baseline` in `Implementation Notes`, the ports you set under `### 포트` (one per line, like `- 웹: 5007`).
 3. Commit: `chore(backlog): <number> start`

@@ -19,8 +19,7 @@ metadata:
 
 ## 1. 검사
 
-- `git diff <기준>...HEAD -U0`의 추가된 줄에 `console.log`, `debugger`, `.only(`가 있으면 실패.
-- package.json 의존성이 바뀌었는데 lockfile 이 바뀌지 않았으면 실패.
+- `bash ${CLAUDE_SKILL_DIR}/scripts/diff-check.sh <기준>`을 돌린다. 출력한 줄이 실패다(추가된 줄의 `console.log`·`debugger`·`.only(`, lockfile 없이 바뀐 의존성). 끝 값이 2 면 표준 오류에 쓴 이유를 확인 못 한 것으로 적는다.
 - reference 의 검사.
 
 ## 2. 리뷰에 넣을 에이전트
@@ -33,7 +32,7 @@ UI 코드가 바뀌었으면 `frontend:frontend-reviewer`. 근거로 바뀐 UI �
 
 리뷰 지적을 고쳐 UI 가 바뀌었으면, 고친 화면을 `frontend:frontend-evaluator` 에이전트에 맡겨 확인한다. reference 가 더하는 것도.
 
-- 개발 서버를 띄운다(`.claude/launch.json`이 있으면 그것). 작업 브랜치 항목의 `### 포트`에 웹 포트가 있으면 `.claude/launch.json`의 포트보다 그것을 쓴다(launch.json 은 고치지 않는다. 그 포트가 다르면 launch.json 대신 개발 명령을 직접 띄운다). 개발 명령이 포트를 받는 방식(예: Vite `--port`, 위치 인자, `PORT` 환경 변수)을 스크립트에서 확인해 그 포트로 띄우고, 실제로 그 포트에서 듣는지(`lsof -nP -iTCP:<포트> -sTCP:LISTEN`) 확인한 뒤 화면 URL 에 쓴다. 백엔드 서버도 띄워야 하면 같은 방식으로 서버 포트에 띄우고, 웹이 백엔드 주소를 받는 곳(프록시 대상, `VITE_API_URL` 같은 환경 변수)도 파일을 고치지 않고 명령 인자나 환경 변수로 그 서버 포트를 가리키게 한다. 빌드에서만 보이는 변경은 빌드 후 미리보기.
+- 개발 서버를 띄운다: `${CLAUDE_SKILL_DIR}/../frontend-start-check/SKILL.md`를 읽고 1절 "브라우저 확인"의 개발 서버 항목대로 한다. 그 항목의 스크립트 경로는 frontend-start-check 폴더 기준이다.
 - 에이전트에 항목 파일 경로, 화면 URL, 뷰포트, 고친 지적 목록을 넘긴다. 어떻게 고쳤는지는 넘기지 않는다.
 - 뷰포트는 CLAUDE.md 에 정한 것, 없으면 데스크톱. 반응형 레이아웃을 고쳤으면 휴대폰(375×812)도.
 - "실패"는 다시 고친다. 에이전트가 "브라우저 도구 없음"이라고 하면 직접 확인하고(`chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저) 직접 했다고 적는다. 직접도 할 수 없으면 멈추고 알린다.

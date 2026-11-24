@@ -21,8 +21,7 @@ Called by `/task end`. Runs commands and returns only the results. The review th
 
 ## 1. Checks
 
-- If added lines in `git diff <base>...HEAD -U0` contain `console.log`, `debugger`, `.only(`, fail.
-- If package.json dependencies changed but the lockfile did not, fail.
+- Run `bash ${CLAUDE_SKILL_DIR}/scripts/diff-check.sh <base>`. Each line it prints is a failure (`console.log`, `debugger`, `.only(` in added lines, dependencies changed without the lockfile). If it exits with 2, record the reason it wrote to standard error as not checked.
 - The reference's checks.
 
 ## 2. Agents to include in the review
@@ -35,7 +34,7 @@ If a screen (components, pages, styles) changed, also `frontend:design-reviewer`
 
 If fixing review findings changed the UI, hand the fixed screens to the `frontend:frontend-evaluator` agent to check. Also what the reference adds.
 
-- Start the dev server (`.claude/launch.json` if present). If the work branch item has a web port under `### 포트`, use it over the port in `.claude/launch.json` (do not edit launch.json; if its port differs, start the dev command directly instead). Check in the script how the dev command takes a port (for example Vite `--port`, a positional argument, or the `PORT` environment variable), start it on that port, confirm it is actually listening there (`lsof -nP -iTCP:<port> -sTCP:LISTEN`), and then use it in the screen URL. If a backend server is needed too, start it on the server port the same way, and point the place where the web app takes the backend address (proxy target, an environment variable like `VITE_API_URL`) at that server port through command arguments or environment variables, without editing files. For changes visible only in a build, preview after building.
+- Start the dev server: read `${CLAUDE_SKILL_DIR}/../frontend-start-check/SKILL.md` and follow the dev server item under "Browser check" in section 1. The script path in that item is relative to the frontend-start-check folder.
 - Pass the agent the item file path, the screen URL, the viewport and the list of fixed findings. Do not pass how they were fixed.
 - Viewport: the one set in CLAUDE.md, otherwise desktop. If you fixed a responsive layout, also mobile (375×812).
 - Fix a "fail" again. If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser) and write that you did it yourself. If you cannot do that either, stop and say so.

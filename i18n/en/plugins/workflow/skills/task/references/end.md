@@ -27,6 +27,13 @@ Call, with the Skill tool, every available skill whose name ends in `-end-check`
 - **Agents to add to the review:** add them to step 3 (with the evidence).
 - **To do after fixing:** do it in step 5.
 
+**Do the tests prove the fix:** after the stack checks and before the review, run the tests added or changed on this branch against the base branch's source. The script changes files for a while, so do not run it alongside the review agents.
+
+- Settle, from the project (CLAUDE.md, package.json scripts, test config), the command that runs one test file, with `{}` in place of the file (for example `pnpm vitest run {}`, `pytest {}`, `bash {}`).
+- `bash <task-scripts>/base-tests.sh <base> '<that command>'`. If the project's test files cannot be picked by name, add the files at the end, and if there are test helpers outside the naming rules (for example `src/testing/`), prefix `BASE_TESTS_KEEP='<path regex>'`.
+- Put each `기준에서도 통과: <file>` (also passes on base) line of the output into the step 4 findings list as 🟡 "does not prove the fix — passes without the fixed code", without going through the judge. The script output is the evidence.
+- If the command cannot be settled or the exit value is 2, write "could not check" and the reason in `Implementation Notes`; for each `HEAD 에서 실패: <file>` (fails on HEAD) line, whatever the exit value, write that test as "could not check"; then move on.
+
 ## 3. Review (agents, in parallel in one message)
 
 | Agent | When | What it does |
@@ -50,13 +57,14 @@ Agents cannot see this conversation, so put these in the instructions:
 After all have returned, this session does not pick findings. Pass all the reports, as written, to one new general-purpose **judge agent**. Its model is the same as this session's. Brief:
 
 - Scope: same as 1 in step 3, plus `docs/review-principles.md`.
-- "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). A finding that goes against a principle is wrong. Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 / 🟡 / ⚪ below."
+- "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). A finding that goes against a principle is wrong. Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 / 🟡 / ⚪ below. If the same kind as a valid finding is in the Final Summary `리뷰에서 고친 것` (fixed in review) of an item in `docs/done/`, or it appears in several places across these reports, mark it 🔁 with the evidence (item number or locations)."
 
-The user sees only findings judged valid and step 2 stack check failures. Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores.
+The user sees only findings judged valid and step 2 stack check failures and test check results. Those judged wrong are written only as a count, "N dropped by the judge", and pre-existing ones as "N pre-existing problems". Do not show scores.
 
 ```markdown
 🔴 Must fix — confirmed bugs, security problems, data loss, AC violations, stack check failures
 - src/a.ts:12 — problem — how to fix (code-review)
+- src/b.ts:30 — problem — how to fix (code-review) 🔁 also fixed in 006
 
 🟡 Consider — real problems but do not block the merge
 - …
@@ -64,7 +72,7 @@ The user sees only findings judged valid and step 2 stack check failures. Those 
 ⚪ 4 minor (say so if you want to see them)
 ```
 
-Ask once: "I'll fix 🔴 now. For 🟡: now / later (new item) / leave as is?" If the user wants, decide one at a time. If an agent suggests changing permissions, CLAUDE.md, or `.claude/` settings, do not change them; pass it on as a suggestion.
+Ask once: "I'll fix 🔴 now. For 🟡: now / later (new item) / leave as is?" If there are findings marked 🔁, add "For 🔁, along with the fix you can also choose to block it with a lint rule, test or type (new item)". A repeated mistake is better blocked by an automatic check than warned against in prose. Do not attach this choice to findings without 🔁. If the user wants, decide one at a time. If an agent suggests changing permissions, CLAUDE.md, or `.claude/` settings, do not change them; pass it on as a suggestion.
 
 Do not fix anything before getting an answer.
 
@@ -73,7 +81,7 @@ Do not fix anything before getting an answer.
 - Call the `superpowers:receiving-code-review` skill and follow it (check findings against the code; for wrong findings, give the reason and do not apply them).
 - For fixes that change behavior, write a failing test first.
 - Do step 2's "To do after fixing" for the fixed parts (e.g. browser-check only the fixed screens). If a fix touched a stack check's area, call that `*-end-check` again.
-- For "later", invoke the `task` skill with `create <the finding and its evidence> --here` to make a new item. The user already chose "later", so for create step 3's approval, show only the item's content and get approval.
+- For "later" and "block", invoke the `task` skill with `create <the finding and its evidence> --here` to make a new item. For "block", also pass the means to block it (lint rule, test or type), and fix the finding itself as the user chose. The user already chose, so for create step 3's approval, show only the item's content and get approval.
 - Write what was done and seen in `Implementation Notes` and commit.
 
 ## 6. Verify and close the item (Backlog.md definition of done)
