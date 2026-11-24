@@ -1,7 +1,7 @@
 ---
 id: '012'
 title: 일반 규칙은 외부 공식 스킬(web-design-guidelines, svelte, supabase, skill-creator)에 맡기고 스택을 Svelte·Node·Supabase 로 좁히기, 리뷰·검사 규칙 다듬기 (전문가 스킬 활용 리뷰 5절)
-status: In Progress
+status: Done
 labels: [chore]
 priority: medium
 dependencies: []
@@ -597,3 +597,61 @@ AC 판정 에이전트가 "A4 묶음은 실제 사례에서 나빠졌는데 항�
 - 고친 뒤 판정은 새 general-purpose 판정 에이전트가 했다(첫 판정 다섯 지적 모두 고쳐짐 + 새 문제 하나, 다시 판정 고쳐짐 + 작은 것 둘).
 
 ## Final Summary
+
+- **바뀐 것:**
+  - workflow 0.13.0 → 0.14.0
+    - 하위 세션도 플랜 모드(`ExitPlanMode`)로 계획을 승인받는다.
+    - `end.md`: 원칙에 어긋나 보이는 지적도 부딪히는 원칙과 함께 보고한다. 테스트를 찾지 못하면 "확인 못 함"으로 보인다.
+    - `base-tests.sh`: 소스가 바뀌었는데 테스트를 못 찾으면 끝 값 2 로 끝난다. `__tests__/`·`tests/` 아래 테스트를 고르고, 도우미는 고르지 않는다.
+    - eval README 는 측정 방법으로 `skill-creator`를 가리킨다.
+  - frontend 0.10.0 → 0.11.0
+    - Svelte 기본 규칙은 공식 `svelte` 스킬로 넘기고, 리뷰어·시작 점검에는 SvelteKit 규칙만 남겼다.
+    - React 는 Vercel·React Router 공식 스킬과 Next `AGENTS.md`로 본다.
+    - `design-reviewer`는 브라우저로 열어야 보이는 것만 보고, 찾은 문제를 모두 보고한다.
+    - `frontend-end-check`가 다른 스킬 문서를 읽지 않는다.
+    - A1 은 비교에서 나빠져 `frontend-reviewer`의 접근성 항목을 그대로 두었다.
+  - server 0.6.0 → 0.7.0
+    - Node·Supabase 로 좁혔다(다른 서버 언어, OpenAPI·oasdiff 를 지움).
+    - `supabase-reviewer`·`api-reviewer`의 일반 규칙은 공식 Supabase 스킬로 넘기고, 입력과 악용만 남겼다.
+    - `server-start-check`의 인가 줄을 지웠다.
+  - 재는 묶음(A1·A2·A4·B4·B5)은 실제·합성 eval 사례로 쟀다. 판정은 "나빠지지 않을 때만 바꾼다"였다.
+  - 외부 공식 스킬은 의존 플러그인으로 두지 않고 README "있으면 쓰는 것"에 설치 안내로 두었다.
+- **리뷰에서 고친 것:** 🟡 4·⚪ 1(모두 🔁 — 일반 규칙을 지우거나 옮기면서 남길 것까지 빠진 같은 종류). 자세한 것은 Implementation Notes 의 "`/task end`"에 있다.
+  - `api-reviewer` 9: Postgres 가 아닌 DB 의 N+1·인덱스·전체 스캔
+  - React 시작 점검의 안전 장치 셋
+  - `frontend-end-check`의 개발 서버 절차에서 빠진 세 가지(🔁 009 "개발 서버 문단을 한 곳에")
+  - `base-tests.sh` 도우미 분류(🔁 009 "테스트 도우미 분류"). 고친 뒤 판정이 새 문제 둘을 찾아 함께 고쳤다: 도우미 폴더가 경로 어디서나 맞던 것, `__tests__/constants.js`가 빠지던 것.
+  - `design-reviewer`: 이름이 뜻에 맞는지 보기
+- **미룬 것:** 없음. 사용자는 막기(새 항목)를 고르지 않았다.
+- **그대로 둔 지적과 이유:**
+  - 판정에서 뺀 7건은 승인된 계획·AC 가 정한 것이다.
+    - `base-tests`의 문서 예외는 `*.md`뿐이다(계획 가정 3). 그래서 이 저장소에서 plugin.json 버전만 함께 올린 문서 브랜치는 "확인 못 함"이 된다.
+    - `config-check`에서 `Bun.env`를 지웠다(A5).
+    - 공식 스킬이 없을 때 대신 볼 목록이 없다(계획 20, 승인 4).
+    - React·Svelte 일반 정확성 줄을 지웠다(AC #4·#6).
+    - `server-start-check`의 인가 줄을 지웠다(B5 eval).
+    - `@next/codemod@canary`는 Next 공식 안내 그대로다.
+    - 리뷰어 도구에 `Skill`을 더했다(Bash 가 이미 있어 권한이 늘지 않는다).
+  - 기존 문제 2건
+    - `timeout`·`gtimeout`이 없으면 시간 제한 없이 돈다. main 부터 있었고, 이 맥에는 `timeout`이 있다.
+    - react-router 저장소 판을 고정하지 않았다. main 의 `skills add` 방식과 같다.
+  - `base-tests`가 `tests/`·`test/` 아래 `pages`·`types` 폴더의, 이름 규칙 없는 테스트를 도우미로 뺀다. page object 를 빼는 것과 맞바꾼 것이고, 빠져도 잘못 통과시키지 않는다.
+  - 이름 규칙 `[._-](test|spec)\.`이 확장자를 가리지 않아 `*-test.md` 문서를 테스트로 고른다. main 부터 있던 것이다.
+- **사용자가 바로잡은 것:**
+  - 나누지 않고 한 항목으로 한다.
+  - `skill-creator`를 넣고, 그 가이드로 우리 eval 사례를 점검해 잘못 짠 것은 다시 한다.
+  - React 는 지우지 말고 검증된 공식 스킬로 본다.
+  - 하위 세션도 공식 플랜 모드로 계획을 승인받게 하고, 그것을 012 에 더한다.
+  - 계획은 추천안에 Supabase 확인 조건을 붙여 승인했다.
+  - 판정 규칙은 추천안(표준오차)대로 한다.
+  - A1 은 바꾸지 않는다.
+  - AC #12 는 기록으로 마무리한다.
+  - end 리뷰 지적은 추천대로 지금 고친다.
+- **확인 못 한 것:**
+  - 전체 `/task start`·`/task end` 흐름에서 공식 스킬이 불리는지는 보지 않았다. 부르는 두 자리를 따로 확인했다(AC #3 단서).
+  - A4 항목 2~7, 9~11 은 근거가 합성 사례뿐이다.
+  - 옛 `real-*`의 늘 0/5 인 채점 넷이 왜 늘 실패하는지는 확인하지 않았다.
+- **후속 후보**(항목 밖)
+  - `frontend-reviewer` 체크리스트의 고유 효과가 `compose-real`에서 보이지 않았다(일반 리뷰어 0.823 대 0.811).
+  - 옛 `real-*` 채점 넷을 고치는 것
+  - `base-tests` 이름 규칙이 확장자를 가리지 않는 것
