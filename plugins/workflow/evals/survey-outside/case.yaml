@@ -3,7 +3,7 @@ name: survey-outside
 description: 합성 사례(013). URL 없이 목표만 준 서베이의 바깥 조사, 보고서와 출처 표시, 이미 있는 항목(001)과 겹치는 후보 거르기
 expected_outcome: |
   웹을 검색하거나 읽어 GitHub Actions 쪽 변경(예: 오래된 actions 버전과 그 런타임 지원 종료, actions/cache v1·v2 서비스 종료, ubuntu-20.04 러너 이미지 종료)을 찾는다.
-  `.claude/.local/reports/` 아래에 보고서를 쓰고, 후보마다 출처(URL)와 [직접]/[검색] 표시를 단다.
+  `.claude/.local/reports/` 아래에 보고서를 쓰고(쓰지 못하면 그렇다고 알리고 보고서 내용을 다 보이고), 후보마다 출처(URL)와 [직접]/[검색] 표시를 단다.
   Node 버전 올리기는 이미 있는 항목 001 과 겹치므로 새 후보로 올리지 않고 "제안하지 않는 것"에 둔다.
   후보 표를 보여 주고 고르게 한 뒤 멈춘다(항목 파일은 쓰지 않는다).
 tags: [survey]
