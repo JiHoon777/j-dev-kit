@@ -1,7 +1,7 @@
 ---
 id: '009'
 title: 정해진 절차는 스크립트로, 되풀이되는 지적은 자동 검사로, 테스트는 고치기 전 코드에서 확인 (네 자료 1~4)
-status: In Progress
+status: Done
 labels: [feat]
 priority: medium
 dependencies: []
@@ -251,4 +251,27 @@ grep -rn 'lsof' plugins/ i18n/ → 없음
 
 ## Final Summary
 
-`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것.
+- **바뀐 것:**
+  - 기계적 절차 다섯 개를 테스트가 있는 bash 스크립트로 옮겼다. 마크다운에는 판단 부분과 "스크립트를 돌려 출력을 쓴다"만 남겼고, `lsof`는 쓰지 않는다.
+    - `pick-port.sh`(task): 다른 `w/` 브랜치의 항목 포트까지 피한다.
+    - `dev-server.sh`(frontend-start-check)
+    - `diff-check.sh`(frontend-end-check)
+    - `config-check.sh`(server-end-check)
+    - `base-tests.sh`(task)
+  - 포트 확인은 netstat 을 먼저 쓰고, 없으면 `/dev/tcp`, 그다음 `nc`를 쓴다.
+  - `end.md` 2단계: 이 브랜치의 새 테스트를 기준 브랜치 소스에 대고 돌린다. 거기서도 통과하는 테스트는 🟡 "고친 것을 증명하지 못함"이 된다.
+  - `end.md` 4·5단계: 전에도 고친 종류이거나 여러 곳에 나온 지적(🔁)에는 "린트 규칙·테스트·타입으로 막기(새 항목)"를 고를 수 있다.
+  - `design-reviewer`에 `disallowedTools`를 달았다.
+  - version: workflow 0.12.0, frontend 0.9.0, server 0.6.0.
+- **리뷰에서 고친 것:** 🔴 1·🟡 4. 자세한 것은 Implementation Notes 의 "리뷰 반영"에 있다.
+  - config-check 가 Vite 기본 변수와 예시 파일의 자리표시자 키를 실패로 내던 오탐
+  - base-tests 의 테스트 도우미 분류
+  - 기준 판 바꾸기가 실패해도 판정하던 것(긴 경로 목록 포함)
+  - 테스트마다 시간 제한이 없던 것
+  - 그전 정리(simplify)에서: netstat 우선, fork 줄이기, git restore, 개발 서버 문단을 한 곳에
+- **미룬 것:** 011, "바뀐 스크립트의 테스트를 검증이 돌리고, 두 벌인 port_open 이 같은지 검사". 사용자가 나중(새 항목)을 골랐다.
+- **그대로 둔 지적과 이유:**
+  - ⚪ 5건은 사용자가 보지 않아 그대로 뒀다: diff-check 의 node 끝 값 1, base-tests 의 `run_re`가 코드 아닌 파일까지 고르는 것, 경로의 `&`(patsub_replacement), dev-server 의 손자 프로세스, pick-port 의 10진수와 루트 cd, base-tests 의 심볼릭 링크.
+  - 기존 문제 2건은 이 항목 밖이다: 값 파일을 브랜치 변경분이 아니라 `git ls-files` 전체에서 보는 것, 거의 동시에 시작한 두 항목이 같은 포트를 받을 수 있는 짧은 틈.
+- **사용자가 바로잡은 것:** 근거 보고서를 커밋하기로 해, 이 항목의 보고서 경로를 `docs/backlog/references/`로 바꿨다(부모 세션 경유).
+- **확인 못 한 것:** macOS·Linux 에서 돌려 보지 않았다. 실제 프론트엔드·서버 프로젝트에서 `/task`로 써 보지 않았다.
