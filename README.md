@@ -2,17 +2,53 @@
 
 **한국어** | [English](README.en.md)
 
-Claude Code 개인 플러그인 마켓플레이스. 작업 흐름은 `/task` 하나, 스택별 점검은 스택 플러그인으로 나눴다. `/task`는 직접 쳐도 되고, "백로그에 넣어 줘", "006 시작해 줘"처럼 말하면 Claude 가 알아서 부른다.
+할 일을 백로그 항목으로 만들고, 구현하고, 리뷰해서 머지하기까지를 `/task` 하나로 돌리는 Claude Code 플러그인 모음.
 
-| 플러그인 | 들어 있는 것 | 같이 설치되는 것 |
+```mermaid
+flowchart LR
+  C["/task create<br/>할 일 → 항목 파일"] --> S["/task start 001<br/>계획 → 승인 → 구현"]
+  S --> E["/task end<br/>리뷰 → 수정 → 머지"]
+```
+
+명령을 외울 필요는 없다. "백로그에 넣어 줘", "001 시작해 줘"라고 말하면 Claude 가 알아서 부른다.
+
+## 플러그인
+
+| 플러그인 | 하는 일 | 같이 설치되는 것 |
 | --- | --- | --- |
-| `workflow` | `/task create`, `/task start`, `/task end`, 검증 Stop 훅, 항목 포트 고르기·기준 브랜치 테스트 확인 스크립트 | `superpowers` |
-| `frontend` | Svelte·React 점검(개발 서버 띄우기·diff 검사 스크립트), DESIGN.md·캔버스 시안을 맡는 `ui-design`, `frontend-reviewer`, 화면 리뷰를 맡는 `design-reviewer`, 브라우저 확인을 맡는 `frontend-evaluator` | `workflow`, `typescript-lsp`, `frontend-design` |
-| `server` | Node 서버·Supabase 점검(마이그레이션, 키. 설정 키·키는 스크립트), 일반 규칙은 공식 Supabase 스킬로 보는 `api-reviewer`, `supabase-reviewer` | `workflow` |
+| `workflow` | `/task` 흐름과 검증 훅 (필수) | `superpowers` |
+| `frontend` | Svelte·React 점검, 화면 시안과 리뷰, 브라우저 확인 | `workflow`, `typescript-lsp`, `frontend-design` |
+| `server` | Node 서버·Supabase 점검과 리뷰 | `workflow` |
 
-Supabase 를 쓰면 프론트엔드에서 바로 부르더라도 `server`를 설치한다.
+쓰는 스택만 설치한다. Supabase 를 쓰면 프론트엔드에서만 부르더라도 `server`를 설치한다.
 
-## 설치
+## 스택
+
+`workflow`는 어느 프로젝트에서나 같은 흐름을 돌린다. 프로젝트마다 다른 점검(프레임워크 규칙, 마이그레이션, 화면 확인)은 스택 플러그인이 맡는다. `/task start`와 `/task end`는 설치된 스택 플러그인의 점검을 모두 부른다. 각 점검은 이번 항목이 자기 영역을 건드릴 때만 돌고, 아니면 "해당 없음"으로 빠진다.
+
+```mermaid
+flowchart LR
+  subgraph wf["workflow"]
+    S["/task start<br/>작업 전 점검을 부른다"]
+    E["/task end<br/>마무리 점검을 부른다"]
+  end
+  subgraph stack["스택 플러그인 · 설치한 것만"]
+    F["frontend<br/>Svelte · React · 화면"]
+    V["server<br/>Node 서버 · Supabase"]
+  end
+  wf --> stack
+```
+
+| 스택 | 이럴 때 돈다 | `/task start`에서 | `/task end`에서 |
+| --- | --- | --- | --- |
+| frontend | package.json 에 react, svelte 같은 프레임워크가 있을 때 | 프레임워크 규칙을 알려 준다. 새 화면이면 시안을 만든다. UI 가 바뀌면 브라우저로 확인한다 | 남은 디버그 코드와 lockfile 을 검사한다. `frontend-reviewer`가 리뷰하고, 화면이 바뀌면 `design-reviewer`도 리뷰한다 |
+| server | Node 서버 의존성이나 Supabase 가 있을 때 | 트랜잭션과 마이그레이션 규칙을 알려 준다. 원격 DB 를 바꾸는 명령은 막는다 | 빠진 마이그레이션과 설정 키를 검사한다. `api-reviewer`와 `supabase-reviewer`가 리뷰한다 |
+
+CLAUDE.md 의 `stack:` 줄로 돌릴 스택을 정한다(예: `stack: frontend, server`). 줄이 없으면 설치된 스택 플러그인이 코드를 보고 알아서 정한다.
+
+## 빠른 시작
+
+**1. 설치**
 
 ```bash
 claude plugin marketplace add JiHoon777/j-dev-kit --scope project
@@ -20,9 +56,9 @@ claude plugin install frontend@j-dev-kit --scope project
 claude plugin install server@j-dev-kit --scope project
 ```
 
-쓰는 스택만 설치한다. `.claude/settings.json`에 적힌 의존 플러그인 줄은 지우지 않는다.
+`.claude/settings.json`에 적힌 의존 플러그인 줄은 지우지 않는다.
 
-프로젝트 CLAUDE.md 에 적는다.
+**2. 프로젝트 CLAUDE.md 에 설정 적기**
 
 ```markdown
 ## 작업 설정
@@ -36,9 +72,47 @@ claude plugin install server@j-dev-kit --scope project
 subagent-driven-development, using-git-worktrees 는 쓰지 않는다.
 ```
 
-superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계를 가로챈다.
+`stack:`은 위 [스택](#스택)을 본다. superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계를 가로챈다.
 
-### 있으면 쓰는 것
+**3. 쓰기**
+
+```
+/task create 로그인 화면 추가   # 항목 docs/backlog/001-….md 만들기
+/task start 001                 # 새 세션에서 계획 → 승인 → 구현
+/task end                       # 그 세션에서 리뷰 → 수정 → 머지
+```
+
+## 더 알아보기
+
+<details>
+<summary>/task 가 하는 일</summary>
+
+```
+/task start 001 --here                             # 하위 세션 없이 이 세션에서
+/task create --survey 자주 나는 오류 줄이기 logs/  # 저장소와 바깥을 조사해 항목 후보를 보고서로
+```
+
+- **하위 세션:** `create`와 `start`는 세션을 하나 띄우고 링크만 알린다. `start`는 기준 브랜치에서 딴 새 워크트리(`w/<항목>` 브랜치)에서 돈다. 하위 세션의 질문과 승인 요청은 띄운 세션에서 보여 주고 답을 전하며, 끝나면 결과를 확인해 먼저 보고한다. 계획 승인은 하위 세션의 플랜 화면에서 한다. 세션을 띄울 수 없는 곳(데스크톱 앱 밖)에서는 이 세션에서 한다. 여러 항목을 함께 하려면 `start`를 여러 번 부른다.
+- **create --survey:** 목표를 조사 질문으로 쪼개 저장소와 바깥(공식 문서, 이슈, 선례, 실무자의 글)을 하위 에이전트로 함께 조사한다. 판정 에이전트가 거른 후보를 보고서와 함께 보여 주고, 고른 것만 항목으로 쓴다. 보고서는 `docs/backlog/references/`에 커밋한다. 바깥 조사를 빼려면 `--internal`.
+- **start:** 기준선 검증 → 스택 점검 → 크기에 맞춘 계획 → 테스트 먼저 구현 → 정리(`simplify`) → 검증. Acceptance Criteria 는 명령 출력이나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다. 같은 AC 가 세 번 고쳐도 실패하면 멈추고 넘긴다.
+- **end:** 스택 점검 → 리뷰(`code-review`, 필요하면 `security-review`와 스택 리뷰어) → 판정 에이전트가 타당한 지적만 골라 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 묻기 → 고치기 → 검증 → 머지. 푸시는 요청할 때만. 고친 코드 없이도 통과하는 새 테스트는 🟡 로 알린다.
+- **리뷰 원칙:** 그대로 두기로 한 지적과 사용자가 바로잡은 것은 `docs/review-principles.md`에 한 줄 원칙으로 모여 다음 리뷰에 쓰인다.
+
+</details>
+
+<details>
+<summary>알아서 도는 것 (검증 훅, 포트, 워크트리, 디자인)</summary>
+
+- **검증 훅:** `w/` 브랜치에서 항목의 Definition of Done 을 체크하고 멈추면, 기준 브랜치 CLAUDE.md 의 `검증 명령:`을 돌린다. 실패하면 출력과 함께 되돌려 보낸다. 코드가 그대로면 다시 돌리지 않는다. 30분까지 기다린다. Windows 에서는 Git Bash 가 필요하다.
+- **포트:** CLAUDE.md `## 작업 설정`에 `- 웹 포트: 5000`, `- 서버 포트: 6000`을 두면 항목마다 `기준 포트 + 항목 번호`(항목 007 → 5007, 6007)를 쓴다. 쓰는 중인 포트는 1씩 올려 피한다. 여러 프로젝트를 함께 하면 프로젝트마다 기준 포트를 1000씩 떨어뜨린다(예: A 는 5000·6000, B 는 7000·8000).
+- **워크트리:** 워크트리가 저장소 안(예: `.claude/worktrees/`)에 생기면 테스트·린트 설정에서 그 폴더를 뺀다. 머지 뒤 세션을 보관하면 앱이 워크트리를 정리한다.
+- **브라우저 확인 (frontend):** UI 가 바뀌면 구현한 세션이 아니라 `frontend-evaluator` 에이전트가 실행 중인 화면에서 AC 를 하나씩 판정한다.
+- **디자인 (frontend):** 새 화면이나 다시 디자인하는 항목이면 `start`가 계획 전에 디자인 캔버스로 시안을 만들고, 고른 안을 계획에 적는다. UI 항목인데 `DESIGN.md`가 없으면 만들지 묻는다(안 쓰려면 `- DESIGN.md: 안 씀`). 항목 없이 "로그인 화면 시안 만들어 줘"라고 해도 `ui-design`이 돈다.
+
+</details>
+
+<details>
+<summary>있으면 좋은 플러그인</summary>
 
 | 플러그인 · 스킬 | 설치 |
 | --- | --- |
@@ -50,55 +124,10 @@ superpowers 문단이 없으면 superpowers 가 `/task start`의 계획 단계�
 | Next.js 문서 | 16.3 이상은 `next dev`가 `AGENTS.md`를 만든다. 그보다 낮으면 `npx @next/codemod@canary agents-md` |
 | Supabase 공식 | `/plugin install supabase@anthropic-plugin-directory` (같이 오는 MCP 는 `/mcp`에서 끈다) |
 
-## 사용법
+</details>
 
-```
-/task create 이메일·비밀번호 로그인 화면 추가   # 하위 세션에서 docs/backlog/001-….md 쓰기
-/task start 001                                  # 워크트리 하위 세션에서 계획 → 승인 → w/001-… 브랜치에서 구현
-/task end                                        # 그 세션에서: 리뷰 → 고치기 → 항목 닫기 → 머지
-/task start 001 --here                           # 하위 세션 없이 이 세션에서
-/task create --survey 자주 나는 오류 줄이기 logs/  # 저장소와 바깥을 조사해 항목 후보를 보고서로 보여 주기
-```
-
-- **하위 세션:** `create`와 `start`는 기본으로 세션을 하나 띄우고 링크만 알린다. `create`는 같은 폴더에서(기준 브랜치에 있을 때만. 작업 브랜치나 워크트리에서는 이 세션에서 한다), `start`는 기준 브랜치에서 딴 새 워크트리(`w/<항목>` 브랜치)에서 돈다. 띄운 세션이 지휘한다: 하위 세션의 질문과 승인 요청을 이 세션에서 보여 주고 답을 전하며, 하위 세션이 끝나면 결과를 확인해 먼저 보고한다. 계획은 하위 세션이 플랜 모드로 올리고 사용자가 그 세션의 플랜 화면에서 승인한다(띄운 세션은 링크와 확인할 점만 알린다). 하위 세션에서 직접 답해도 된다. 이 세션이 Fable 이면 하위 세션은 한 단계 낮은 최신 모델(지금은 Opus)과 노력 `high`로, Opus 이하면 이 세션의 모델과 노력 그대로 돈다. 작업하던 세션을 닫았으면 `start <번호>`가 이 세션에서 그 브랜치를 이어 간다. `end`는 작업한 세션에서 부른다. 세션을 새로 띄우는 도구가 없으면(데스크톱 앱이 아닌 곳) 이 세션에서 한다. 여러 항목을 함께 하려면 `start`를 여러 번 부르면 된다.
-
-- **create --survey:** 목표를 조사 질문으로 쪼개, 자료를 주지 않아도 저장소와 바깥(쓰는 도구의 공식 문서·변경 기록·이슈, 선례, 실무자의 글)을 하위 에이전트로 병렬 조사한다. 준 자료는 출발점이고, 바깥은 `--internal`이라고 할 때만 뺀다. 판정 에이전트가 근거와 겹침을 거른 후보 표를 보고서와 함께 보여 주고, 고른 것만 항목으로 써 보고서를 `docs/backlog/references/`에 함께 커밋한다. `start`는 부르지 않는다.
-- **start:** 기준선(검증 명령 한 번), 스택 시작 점검, 크기에 맞춘 계획(작은 항목은 에이전트 없이), 그 분야 최고 실무자의 도구와 단계 정하기, 테스트 먼저 구현, 물어보고 `simplify`로 찾은 정리를 보여 준 뒤 고른 것만 고치기, 검증. AC 는 바깥 증거(명령 출력)나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다. 같은 AC 가 세 번 고쳐도 실패하면 멈추고 사용자에게 넘긴다.
-- **end:** 스택 종료 점검, 리뷰(`code-review` + 필요할 때 `security-review`·스택 리뷰어·화면이 바뀌면 `design-reviewer`), 지적의 타당성은 작업 세션이 아닌 판정 에이전트가 가리고 타당한 것만 🔴 꼭 고칠 것 / 🟡 고려 / ⚪ 사소함으로 보여 주고 구분별로 묻기, 고치기(판단이 필요한 수정은 작업 세션이, 기계적인 수정은 작업 세션이 정하면 Sonnet 에이전트가 고치고, 판정은 검증 명령과 판정 에이전트가 하며, 같은 지적이 세 번 남으면 멈춤), 검증, 머지. 푸시는 요청할 때만. 리뷰 전에 이 브랜치의 새 테스트를 기준 브랜치의 소스에 대고도 돌려, 고친 코드 없이도 통과하면 🟡 로 넣는다. 전에도 고친 종류이거나 여러 곳에 나온 지적(🔁)은 린트 규칙·테스트·타입으로 막는 새 항목도 고를 수 있다.
-- **리뷰 원칙:** 그대로 두기로 한 지적과 사용자가 바로잡은 것은 Final Summary 에 남고, 다른 항목에도 통하면 `docs/review-principles.md`에 원칙 한 줄로 모여 다음 리뷰의 입력이 된다.
-- **검증 훅:** `w/` 브랜치에서 항목의 Definition of Done 을 체크하고 멈추면, 훅이 기준 브랜치 CLAUDE.md 의 `검증 명령:`을 직접 돌린다. 작업 브랜치가 그 줄을 바꿨으면 판정은 기준 브랜치의 명령으로 하고 바뀌었다고 알린다(바뀐 명령은 머지 뒤부터 쓰인다). 기준 브랜치는 로컬에서, 없으면 `origin`에서 찾는다. 기준 브랜치에 그 줄이 없으면 작업 트리의 것을 쓰고, 기준 브랜치를 못 찾으면 작업 트리의 것을 쓰면서 그렇다고 알린다. 실패하면 출력과 함께 되돌려 보내는데, 같은 내용으로는 한 번뿐이다. 코드가 그대로면 다시 돌리지 않는다. `/goal` 같은 다른 Stop 훅이 멈춤을 막은 뒤에도 돈다. 스킬이 이미 돌린 검증과 겹쳐 단계마다 한 번 더 돌 수 있다. 검증 명령은 30분(`timeout` 1800초)까지 기다린다. 기본값 600초로는 바뀐 스크립트의 테스트를 함께 돌리는 검증이 넘칠 수 있다. Windows 에서는 Git Bash 가 필요하다.
-- **포트:** CLAUDE.md `## 작업 설정`에 `- 웹 포트: 5000`, `- 서버 포트: 6000`을 두면 항목마다 `기준 포트 + 항목 번호`(항목 007 → 5007, 6007)를 항목의 `### 포트`에 적고, 개발 서버를 띄우는 점검과 `design-reviewer` 리뷰가 그 포트를 쓴다. 포트는 `pick-port.sh`가 고른다. 지금 듣는 포트와 다른 진행 중 항목(다른 `w/` 브랜치 포함)의 포트는 1씩 올려 피한다. 개발 서버는 `dev-server.sh`가 그 포트로 띄우고 듣는지 확인한다. 여러 프로젝트를 함께 한다면 프로젝트마다, 그리고 웹과 서버끼리 기준 포트를 1000씩 떨어뜨린다(예: 프로젝트 A 웹 5000·서버 6000, 프로젝트 B 웹 7000·서버 8000). 항목 번호가 세 자리라 겹치지 않는다. Supabase·DB 포트는 나누지 않는다.
-- **워크트리:** 하위 세션의 워크트리가 저장소 안에 생기면(예: `.claude/worktrees/`) 테스트·린트 도구 설정에서 그 폴더를 빼 둔다. 머지한 뒤 세션을 보관하면 앱이 워크트리를 정리한다.
-- **브라우저 확인:** UI 가 바뀌면 구현한 세션이 아니라 `frontend-evaluator` 에이전트가 실행 중인 화면에서 Acceptance Criteria 를 하나씩 판정한다.
-- **디자인 (frontend):** 따로 부르지 않아도 필요할 때만 끼어든다. 새 화면이나 다시 디자인하는 항목이면 `start`가 계획 전에 Claude Code 디자인 캔버스로 시안을 만들고(1개 또는 여러 개, 사용자가 캔버스에서 고른다) 고른 안을 계획과 항목에 적는다. UI 항목인데 루트 `DESIGN.md`가 없으면 이 항목에서 만들지 묻고(안 쓰려면 CLAUDE.md `## 작업 설정`에 `- DESIGN.md: 안 씀`), 토큰을 바꾸는 항목이면 DESIGN.md 갱신을 계획에 넣는다. 만든 DESIGN.md 는 CLAUDE.md 의 `@DESIGN.md`로 늘 읽힌다. 항목 없이 "로그인 화면 시안 만들어 줘"라고 해도 `ui-design`이 돈다. 캔버스를 못 쓰면 저장소 밖 임시 `variants.html`로 대신한다.
-
-## 구조
-
-```
-plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md + scripts/pick-port.sh, base-tests.sh
-plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
-plugins/frontend/                   skills/frontend-{start,end}-check(scripts/dev-server.sh, diff-check.sh), ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
-plugins/server/                     skills/server-{start,end}-check(scripts/config-check.sh), agents/api-reviewer.md, supabase-reviewer.md
-i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
-scripts/check-repo-rules.sh         저장소 규칙 검사 (번역본 짝과 갱신, 설명 일치, README 목록, version 올리기, 스킬의 셸 주입 줄, 두 벌인 port_open, 바뀐 스크립트의 짝 테스트)
-scripts/test-check-repo-rules.sh    검사 스크립트의 시나리오 테스트
-scripts/test-verify-on-stop.sh      검증 훅의 시나리오 테스트
-scripts/test-{pick-port,base-tests,dev-server,diff-check,config-check}.sh  플러그인 스크립트의 시나리오 테스트
-```
-
-- 원문은 한국어(`plugins/`), 번역본은 `i18n/en/`. 원문을 고치면 번역본도 고친다.
-- `/task start`는 이름이 `-start-check`로, `/task end`는 `-end-check`로 끝나는 스킬을 모두 부른다. 새 스택은 같은 이름 규칙으로 플러그인을 만들어 `marketplace.json`에 등록한다.
-
-## 업데이트
-
-```bash
-claude plugin marketplace update j-dev-kit
-claude plugin update <플러그인>@j-dev-kit --scope project
-```
-
-그다음 세션을 새로 연다. 관리자는 바뀐 플러그인의 `plugin.json` `version`을 올리고 CLAUDE.md 의 검증 명령(`claude plugin validate .`과 `scripts/check-repo-rules.sh`)을 돌린 뒤 푸시한다. 검사 스크립트는 `plugins/`의 마크다운에 `i18n/en/` 번역본이 없거나, `plugin.json`과 `marketplace.json`의 플러그인 설명이 다르거나, `marketplace.json`의 플러그인이 README 두 개의 표에 없거나, `main`(없으면 `origin/main`) 대비 원문만 고치고 번역본은 그대로이거나, 바뀐 플러그인의 `version`이 그대로이거나 내려갔거나, `pick-port.sh`와 `dev-server.sh`의 `port_open` 본문이 다르면 실패한다. 버전이 같으면 업데이트되지 않는다. 또 `main` 대비 바뀐 스크립트(`plugins/`의 `.sh`(evals 제외)와 검사 스크립트)의 짝 테스트 `scripts/test-<이름>.sh`와 바뀐 짝 테스트를 돌려, 틀리거나 짝이 없으면 실패한다. 테스트 하나가 1분 안팎(`test-check-repo-rules.sh`는 3~4분, `test-base-tests.sh`는 5분 안팎) 걸리고, `CHECK_TESTS_TIMEOUT`초(기본 540)를 넘으면 끊고 실패한다.
-
-## 문제 해결
+<details>
+<summary>문제 해결</summary>
 
 | 증상 | 해결 |
 | --- | --- |
@@ -108,7 +137,37 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 | 멈출 때 검증 명령이 돈다 | 검증 훅이다. 항목의 Definition of Done 이 체크돼 있고 코드가 마지막 통과 뒤에 바뀌었을 때만 돈다. CLAUDE.md 에 `검증 명령:` 줄이 없으면 돌지 않는다. |
 | 스택 점검이 하나도 안 돈다 | 플러그인이 꺼져 있거나 CLAUDE.md 의 `stack:`에 빠져 있다. |
 
-## 출처
+</details>
+
+<details>
+<summary>업데이트와 기여</summary>
+
+```bash
+claude plugin marketplace update j-dev-kit
+claude plugin update <플러그인>@j-dev-kit --scope project
+```
+
+그다음 세션을 새로 연다. 플러그인의 `version`이 같으면 업데이트되지 않는다.
+
+```
+plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
+plugins/frontend/                   skills/frontend-{start,end}-check(scripts/dev-server.sh, diff-check.sh), ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
+plugins/server/                     skills/server-{start,end}-check(scripts/config-check.sh), agents/api-reviewer.md, supabase-reviewer.md
+i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
+scripts/check-repo-rules.sh         저장소 규칙 검사
+scripts/test-*.sh                   검사 스크립트·검증 훅·플러그인 스크립트의 시나리오 테스트
+```
+
+- 원문은 한국어(`plugins/`), 번역본은 `i18n/en/`. 원문을 고치면 번역본도 고친다.
+- 새 스택은 `<스택>-start-check`, `<스택>-end-check` 스킬을 가진 플러그인으로 만들어 `marketplace.json`에 등록한다. `/task`가 이 이름으로 찾아 부른다.
+- 고친 플러그인의 `plugin.json` `version`을 올리고, 검증 명령(`claude plugin validate . && bash scripts/check-repo-rules.sh`)을 돌린 뒤 푸시한다.
+- 검사 스크립트는 이럴 때 실패한다: 번역본이 없거나 원문만 고쳤을 때, `plugin.json`과 `marketplace.json`의 설명이 다를 때, 플러그인이 README 두 개의 표에 없을 때, 바뀐 플러그인의 `version`이 그대로이거나 내려갔을 때, `pick-port.sh`와 `dev-server.sh`의 `port_open` 본문이 다를 때, `main` 대비 바뀐 스크립트의 짝 테스트 `scripts/test-<이름>.sh`가 없거나 틀릴 때. 테스트 하나가 `CHECK_TESTS_TIMEOUT`초(기본 540)를 넘으면 끊고 실패한다.
+
+</details>
+
+<details>
+<summary>출처</summary>
 
 [Backlog.md](https://github.com/MrLesk/Backlog.md) 항목 형식, [superpowers](https://github.com/obra/superpowers)(brainstorming, TDD, 완료 전 검증, 리뷰 받기, 브랜치 마무리), [spec-kit](https://github.com/github/spec-kit)(질문 최대 3개), [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin)(크기에 맞춘 계획), [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), Claude Code 내장 `code-review`·`security-review`·`simplify`, OWASP API Security Top 10, [supabase/agent-skills](https://github.com/supabase/agent-skills), Anthropic [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
 
@@ -117,3 +176,5 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 실무자의 도구·단계, 바깥 판정, 리뷰 원칙, eval 로 덜어내기, 서베이: Felix Rieseberg 대담([영상](https://youtu.be/D-SVFneJ_Nk)), Lauren Tan([영상](https://www.youtube.com/watch?v=MN9dGgmLyso), 관련 제보 묶기·재현), Satya Nadella([영상](https://www.youtube.com/watch?v=0NE89Nzfk20), eval 을 남겨 모델이 바뀌면 다시 재기). 서베이의 조사 방식: Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system)(각도별 병렬 수집, 1차 출처), Hamel Husain [error analysis](https://hamel.dev/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html)(메모 → 범주 → 세기 → 포화), Teresa Torres [opportunity solution trees](https://www.producttalk.org/ai-opportunity-solution-trees/)(후보는 문제·필요로), Claude Code `/dedupe`(따로 거르기).
 
 `ui-design`·`design-reviewer`: [Google DESIGN.md](https://github.com/google-labs-code/design.md), WCAG 2.2, Claude Code [artifacts](https://code.claude.com/docs/en/artifacts.md). 아이디어를 빌린 스킬: [emilkowalski/skills](https://github.com/emilkowalski/skills) `prototype`(이름과 축, 3~5개, 고를 때까지 멈춤), [impeccable](https://github.com/pbakaus/impeccable)(축 목록, 정체성 고정), [gstack](https://github.com/garrytan/gstack) `design-shotgun`(헤드라인 바꾸기 테스트), [OneRedOak/claude-code-workflows](https://github.com/OneRedOak/claude-code-workflows) `design-review`(폭별 실제 화면 리뷰).
+
+</details>
