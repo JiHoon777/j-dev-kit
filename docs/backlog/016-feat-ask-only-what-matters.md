@@ -1,7 +1,7 @@
 ---
 id: '016'
 title: 사람에게 묻는 곳을 꼭 필요한 것만 남긴다 — 계획 승인과 superpowers 를 떼고, start 와 end 를 합치고, pstack 원칙을 가져온다
-status: To Do
+status: In Progress
 labels: [feat]
 priority: high
 dependencies: []
@@ -116,11 +116,43 @@ updated_date: 2026-11-26
 
 ## Implementation Plan
 
-만들 때는 비워 둔다. `/task start`가 계획을 적는다.
+사용자가 정한 대로 계획 승인을 받지 않고 진행한다(2026-11-26). 하위 세션 없이 이 세션에서 한다(사용자: "여기서 작업해").
+
+**목표:** `/task`가 꼭 필요한 것만 묻게 하고, 계획 승인과 superpowers 를 떼고, start 와 end 를 합치고, pstack·cursor-team-kit 에서 가져올 것을 색인과 본문 파일로 들인다.
+
+**단계**
+
+1. 본문 파일 가져오기 (하위 에이전트 셋이 나눠 쓴다. 한국어 원문과 `i18n/en/` 번역본을 함께)
+   - `plugins/workflow/skills/task/references/principles/<이름>.md` 24개
+   - `references/skills/<이름>.md` 14개: architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing, control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 기능 지도 예시 3개는 `references/skills/feature-map-example/`
+   - `references/playbooks/<이름>.md` 5개: bug-fix, refactoring, prototype, perf-issue, hillclimb
+   - `plugins/workflow/THIRD_PARTY_NOTICES.md`: pstack 과 cursor-team-kit 의 MIT 고지
+   - Cursor 이름은 Claude Code 것으로 바꾸고, 가져오지 않은 스킬을 가리키는 줄은 빼거나 풀어 쓴다
+2. `task` SKILL.md 다시 쓰기: 모드는 create·start 둘, 묻는 기준 다섯, 정한 것 줄 형식, 일하는 방식 세 줄, 색인(꼭 지킬 것, 원칙 24, 플레이북 5), 하위 세션 지시문
+3. `start.md` 다시 쓰기: 플랜 모드 없이 되짚기 → 플레이북 고르기 → 착수 전 질문(있을 때만) → 구현 → deslop → 검증 → AC 판정 → 리뷰 → 타당한 지적 고치기 → 마지막 메시지 하나 → 항목 닫기 → 머지. `end.md`는 지운다
+4. `create.md`: brainstorming 호출을 질문 규칙으로 바꾸고, AC 전문 승인, 서베이 후보 표에 AC 초안
+5. superpowers 떼기: `plugin.json`·`marketplace.json` 의존성, `.claude/settings.json`, README 두 개, 저장소 CLAUDE.md
+6. `docs/review-principles.md`, `docs/backlog/README.md`·`_template.md` 문구
+7. frontend·server·ui-design 의 질문 지점(AC #10)과 "end 모드" 문구
+8. 번역본, `plugin.json` version(workflow 0.17.0, frontend 0.12.0, server 0.8.0), README 두 개, `marketplace.json` 설명
+9. eval 사례를 새 규칙에 맞게 고치고, 멈춘 횟수를 잰다(AC #11)
+
+**확인 방법:** AC #2·#9·#12 는 grep, #1·#3~#8·#10·#13·#14 는 구현 세션이 아닌 판정 에이전트, #11 은 eval 실행 결과. DoD 는 검증 명령.
+
+**정한 것** (정한 것 — 이유 — 틀렸을 때 비용)
+
+- 본문 파일은 `task` 스킬의 `references/` 아래에 둔다 — 스킬 하나의 색인이 같은 폴더의 파일을 가리키는 pstack 모양이고, 스킬 목록이 늘지 않는다 — 진입 모드 스킬을 만들 때 경로를 옮겨야 할 수 있다
+- 번역본(`i18n/en/`)은 pstack·team-kit 원문을 바탕으로 같은 고침만 적용한다 — 원문이 영어다 — 없음
+- 사용자가 `end`를 치면 표를 보이지 않고 `start`로 이어 간다고 알린 뒤 이어 간다 — 지금까지의 습관 — 줄 하나
+- `frontend-end-check`·`server-end-check` 스킬 이름은 그대로 둔다 — README 가 새 스택에 이 이름 규칙을 쓰게 한다. 이름을 바꾸면 쓰는 프로젝트가 깨진다 — 이름이 "end 모드"를 떠올리게 한다
+- 이 저장소는 마크다운과 셸뿐이라 테스트 먼저 쓰기는 스크립트를 고칠 때만 해당한다. 문서 변경은 grep 과 판정 에이전트로 확인한다 (Prove It Works)
 
 ## Implementation Notes
 
-작업하며 알게 된 것, 계획에서 바뀐 것.
+### Baseline
+
+- `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(2026-11-26, main `2c90103`). 이미 실패하는 것 없음.
+- 스택 점검: frontend·server 모두 "해당 없음"(CLAUDE.md `stack: 없음`).
 
 ## Final Summary
 
