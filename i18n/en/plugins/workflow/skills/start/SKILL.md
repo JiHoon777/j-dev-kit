@@ -87,10 +87,11 @@ The skills and principles are other skills of this plugin. Their bodies are at `
 ### Must follow
 
 - The first message → restate the goal and the smallest change that meets it, then go on.
+- Before implementing → call every installed stack check skill (names ending in `-start-check`, e.g. `frontend:frontend-start-check`, `server:server-start-check`) with the Skill tool and follow what they return. Before review → call every one ending in `-end-check`. Do not skip them when following a playbook or `figure-it-out`.
 - You do not know how the code to change works → the `how` skill. The question is why it came to be that way → the `why` skill.
 - A fork that running something would settle → do not ask; `playbooks/prototype.md`.
 - Before writing code → settle the shape of the data first. A change that crosses a function boundary → the `architect` skill.
-- Changing a screen or reproducing a UI bug → the `control-ui` skill. For a CLI or TUI → the `control-cli` skill. If the project has a `verify-*` skill, follow that skill and its feature map first.
+- Changing a screen or reproducing a UI bug → the `control-ui` skill. For a CLI or TUI → the `control-cli` skill. If the project has a `verify-*` skill, follow that skill and its feature map first. If a stack check has set how to verify (for example, frontend has the `frontend-evaluator` agent judge), that comes first, and these skills are how the screen gets driven.
 - The project has no set way to drive the real app and check it → the `create-verification-skill` skill. Whether to create one goes into the pre-start questions, once per project. The feature map does not match the app → the `maintain-verification-skill` skill.
 - A claim of "fixed" or "faster" → the `verify-this` skill.
 - Reporting a measured number, or deciding by it → the `benchmark-checklist` skill.
