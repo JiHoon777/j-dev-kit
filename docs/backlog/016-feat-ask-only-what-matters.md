@@ -33,6 +33,7 @@ updated_date: 2026-11-26
 - `docs/backlog/references/research_notes/2026-11-26-pstack-분석과-차용/` (에이전트 다섯 개의 보고 원문)
 - `docs/backlog/references/2026-11-26-질문-줄이기-비교.html` (단계별 지금 / 바꾼 뒤 비교 페이지)
 - `docs/backlog/references/2026-11-26-016-인수인계.md` (남은 조사와 시작 방법)
+- `docs/backlog/references/2026-11-26-코딩-에이전트-실무자-워크플로.md` (바깥 서베이: 실무자·도구 팀 워크플로 약 40개 비교, 016 을 뒷받침·반박하는 근거, 016 에 더할 것), 노트는 `research_notes/2026-11-26-코딩-에이전트-실무자-워크플로/`
 
 남은 조사: 인수인계 문서의 "더 조사할 것"을 `start` 전에 보고, 바뀐 것은 계획의 가정에 적는다.
 
