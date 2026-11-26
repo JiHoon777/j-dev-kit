@@ -49,15 +49,20 @@ item docs/backlog/011-feat-c.md
 git add -A && git commit -qm c
 git switch -q main
 check "다른 로컬 브랜치의 번호를 센다" 012
+mkdir -p src && cd src || exit 1
+check "하위 폴더에서 돌려도 저장소 루트 기준으로 센다" 012
+cd .. || exit 1
 [ "$(git branch --show-current)" = main ] && [ -z "$(git status --short)" ] || { total=$((total + 1)); echo "틀림: 브랜치나 작업 트리가 바뀌었다"; }
 
 # 원격 추적 브랜치에만 있는 번호
 git switch -q -c tmp-remote
 item docs/done/020-fix-d.md
 git add -A && git commit -qm d
+item docs/backlog/023-feat-한글.md
+git add -A && git commit -qm e
 git update-ref refs/remotes/origin/w/020-fix-d HEAD
 git switch -q main && git branch -q -D tmp-remote
-check "이미 가져온 원격 브랜치의 번호를 센다" 021
+check "이미 가져온 원격 브랜치의 번호를 세고, 이름에 한글이 있어도 센다" 024
 
 # 작업 브랜치에서 커밋하지 않은 새 항목
 git switch -q -c w/work

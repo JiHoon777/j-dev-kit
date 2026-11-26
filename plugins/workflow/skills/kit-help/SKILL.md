@@ -88,7 +88,7 @@ workflow 플러그인에 대한 질문에 답하고, 사용자가 그대로 보�
 
 - `frontend-start-check`, `frontend-end-check`, `server-start-check`, `server-end-check`: `/start`가 구현 전과 리뷰 전에 부르는 스택 점검이다. CLAUDE.md 의 `stack:` 줄이나 코드를 보고, 해당하지 않으면 "해당 없음"으로 빠진다.
 - 리뷰어와 판정 에이전트(`frontend-reviewer`, `design-reviewer`, `frontend-evaluator`, `api-reviewer`, `supabase-reviewer`): `/start`의 리뷰 단계가 띄운다.
-- `survey-collector`, `survey-judge`: `/backlog --survey`가 띄운다. 읽기·웹 도구만 가진다. `comment-sicko`: `/no-comments`가 띄운다.
+- `survey-collector`, `survey-judge`: `/backlog --survey`가 띄운다. 수집 쪽은 읽기·웹 도구와 메모 쓰기만, 판정 쪽은 읽기·웹 도구만 가진다. `comment-sicko`: `/no-comments`가 띄운다.
 
 헷갈리는 것:
 
