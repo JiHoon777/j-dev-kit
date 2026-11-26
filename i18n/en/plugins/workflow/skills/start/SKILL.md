@@ -64,6 +64,7 @@ Do not ask anything else. Decide, and go on while writing down what was decided 
 - Do not ask questions like "Shall I go on to the next step?"
 - If `git revert` or removing a worktree can undo it, it can be undone.
 - If the user says "let me see the plan" or "stop here", do so.
+- If the user says "run it to the end", "don't stop", "I'm stepping away" or "I'm going to bed", do not stop. Only criterion 1 (work that cannot be undone or that goes outside) remains, and the merge is still asked. Decide the other questions (pre-start questions, the ones on the scope list, product or taste decisions) by your recommendation, write them down as decisions, and collect them in the last message. At a dead end, do not spin. Say so.
 
 ### Writing down decisions
 
@@ -104,7 +105,8 @@ The skills and principles are other skills of this plugin. Their bodies are at `
 - A claim of "fixed" or "faster" → the `verify-this` skill.
 - Reporting a measured number, or deciding by it → the `benchmark-checklist` skill.
 - A diff that is small but reaches wide and is hard to trust → the `blast-radius` skill before the review.
-- Before committing → the `deslop` skill.
+- When launching an agent → write `먼저 <이 스킬 폴더의 절대 경로>/references/worker.md 를 읽는다.` (read `<absolute path of this skill's folder>/references/worker.md` first) as the first line of the brief, and open the next line with the goal. Skills do not fire on their own, so this is the only way the rules reach a subagent.
+- Before committing → the `deslop` skill. Before the review, if code changed → the `no-comments` skill.
 - Prose (replies, item files, reports) → the `unslop` skill. Docs and commit messages → the `technical-writing` skill.
 - Merge conflicts → the `fix-merge-conflicts` skill.
 - Review findings → check each one against the code and judge it. The procedure's judge agent does this.
@@ -113,6 +115,7 @@ The skills and principles are other skills of this plugin. Their bodies are at `
 
 Pick the one that fits the nature of the item, move its steps into the task list first, and follow them. If none fits, or the work is large and cross-cutting, or a human will review it after stepping away, design the steps for that work with the `figure-it-out` skill.
 
+- Finding something out without changing code → `playbooks/investigation.md`
 - Adding new behavior → `playbooks/feature.md`
 - Fixing a bug → `playbooks/bug-fix.md`
 - Changing only the structure and leaving the behavior as it is → `playbooks/refactoring.md`

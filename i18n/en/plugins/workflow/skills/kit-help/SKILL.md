@@ -77,6 +77,7 @@ The default answer is `/start`. When the procedure needs one, it reads and uses 
 | Create the project skill that drives the app to check it, and its feature map | `/create-verification-skill` |
 | Bring that skill and feature map back in line with the app | `/maintain-verification-skill` |
 | Remove AI-added code clutter before committing | `/deslop` |
+| Flag unneeded comments and workaround code before the review | `/no-comments` |
 | Remove AI tells from prose | `/unslop` |
 | Write docs, READMEs, and commit messages to the standard | `/technical-writing` |
 | Resolve merge conflicts | `/fix-merge-conflicts` |
@@ -89,6 +90,7 @@ Not invoked by you:
 
 - `frontend-start-check`, `frontend-end-check`, `server-start-check`, `server-end-check`: the stack checks `/start` calls before implementing and before the review. They look at the `stack:` line in CLAUDE.md or at the code, and drop out as "not applicable" if they do not apply.
 - Reviewers and judge agents (`frontend-reviewer`, `design-reviewer`, `frontend-evaluator`, `api-reviewer`, `supabase-reviewer`): launched by the review step of `/start`.
+- `survey-collector`, `survey-judge`: launched by `/backlog --survey`. They have only read and web tools. `comment-sicko`: launched by `/no-comments`.
 
 Easy to mix up:
 
@@ -106,6 +108,7 @@ Not in this plugin:
 
 A playbook is a list of steps inside `/start`. It is not a skill, so it has no slash command. Describe the work and `/start` picks one.
 
+- Find something out without changing code → investigation
 - Add new behavior → feature
 - Fix a bug → bug-fix
 - Keep the behavior and change only the structure → refactoring
@@ -124,6 +127,7 @@ The principles are 24 skills of one rule each (`principle-<name>`). `/start` rea
 | --- | --- |
 | It asks too often | If the question is outside the five asking criteria, say "don't ask, decide and write it down". If it keeps happening, the asking criteria in the `start` SKILL.md need fixing |
 | It asks how to merge every time | Set how to merge in `/kit-setup`: local merge then push, or a PR |
+| You want it to keep going while you are away | Say "run it to the end". It asks only about the merge and work that cannot be undone, decides the rest by its recommendation, and collects it in the last message |
 | You want to see the plan | Say "let me see the plan" and it shows the plan and waits |
 | The model was changed but nothing changed | Per-role settings apply from the next session or agent launched, and main session settings from a new session |
 | It costs a lot | See the cost paragraph in "First-time setup" |

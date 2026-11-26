@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Figure it out
 
-> Source: `pstack/skills/figure-it-out/SKILL.md` in `cursor/plugins` (MIT, Lauren Tan). Cursor names were replaced with Claude Code names, and lines pointing to skills that were not imported were removed.
+> Source: `pstack/skills/figure-it-out/SKILL.md` in `cursor/plugins` (MIT, Lauren Tan). Cursor names were replaced with Claude Code names, and lines pointing to skills that were not imported were removed. The log rules in Phase D come from the `show-me-your-work` skill the original points to.
 
 **When:** When no playbook fits, or for work a human reviews after stepping away, such as a large migration or an ambitious multi-part change.
 
@@ -24,14 +24,14 @@ Ground first, then commit. Don't start the run until you can state:
 - Scope, quantified: rough units and effort, plus the blockers grounding surfaced.
 - The rigor level, biased high. One-way doors and high blast radius get more. Reversible low-stakes steps get less. Rigor is gates and artifacts, not "try harder".
 
-Present the framing and tradeoffs before committing to a long run, then proceed. Do not wait for approval (the `principle-never-block-on-the-human` skill). If only a person can decide how far to go, put just that into the pre-start questions of the `start` procedure (asking criterion 4).
+Present the framing and tradeoffs before committing to a long run. Reversible work proceeds (the `principle-never-block-on-the-human` skill), but a multi-hour run earns one checkpoint before it starts. If the user has already said to run it to the end, skip this checkpoint too (the asking criteria of the `start` skill).
 
 ## Phase B: Design the workflow
 
 Decompose into atomic, independently-landable units. Sequence riskiest-unknown-first. Scaffold and verification come before features (the `principle-foundational-thinking` skill).
 
 - Build the verification harness before the work, with the baseline captured from the pre-change state, so the check reads as "old value vs new value".
-- For one-way-door design decisions, run the `architect` skill. Skip it for mechanical work whose shape is already concrete. Re-contesting a settled design is over-engineering (the `principle-laziness-protocol` skill).
+- For one-way-door design decisions, run the `architect` skill. Skip it for mechanical work whose shape is already concrete. A second `architect` run over a settled design is over-engineering (the `principle-laziness-protocol` skill).
 - Decide what fans out. Parallelize only across seams, and give each worker its own worktree or branch (the `principle-separate-before-serializing-shared-state` skill). Don't over-fan.
 - Write the designed phase list down. That list is what the human reviews. Put it in the item file's `Implementation Plan`.
 
@@ -48,6 +48,9 @@ Each unit is an experiment. State the hypothesis, make the smallest change, meas
 ## Phase D: Keep the audit trail
 
 Log decisions under `### 정한 것` (decisions) in the item file's `Implementation Notes` as `decision — reason — cost if wrong`. For each unit, also write one line with the evidence (commit, `file:line`, command output) and the result. The trail plus the diff is what lets the human come back and trust the work.
+
+- The log is append-only. A wrong call gets a new line that supersedes it. Never edit or delete it.
+- Before handing back, check the log against what actually happened. Check that every line maps to a real decision or action, and that its evidence resolves and shows what the line claims. A fork or abandoned approach that shaped the work but isn't logged is a gap. Add it. A wrong line is not deleted either. A new line supersedes it.
 
 ## Phase E: Verify and hand back
 

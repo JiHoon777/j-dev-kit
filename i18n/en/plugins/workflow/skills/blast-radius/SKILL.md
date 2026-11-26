@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Blast radius
 
-> Source: `pstack/skills/blast-radius/SKILL.md` in `cursor/plugins` (MIT, Lauren Tan). Cursor names were replaced with Claude Code names, and lines pointing to skills that were not imported were removed.
+> Source: `pstack/skills/blast-radius/SKILL.md` in `cursor/plugins` (MIT, Lauren Tan). Cursor names were replaced with Claude Code names. Step 6 of the original is an `arena`, which asks models from several companies the same question. Here it runs on several agents of the same model, so the gain from having different models is smaller.
 
 **When:** Before a change ships, to find what it could break somewhere else, beyond the diff. Use for 'blast radius of X', 'what could this break', or reviewing a small diff you don't trust.
 
@@ -39,6 +39,7 @@ Step 4 is usually one small script that imports the same library the app ships a
 3. Look where grep stops. Read the source of the library you call, and check its pinned version and any local patch. Work out when things run: microtasks, unmount and teardown, how run timing differs between frameworks. Follow what a symbol search misses: the JSON an API returns, a DB column, a wire format, another language reading the same bytes, a feature flag, code three hops downstream.
 4. Be honest about each risk. Give it a real chance of happening and a real cost if it does. Keep the risks you confirmed. List the ones you checked and cleared separately. Cite a real `file:line`, a search that finds nothing is still an answer, and never make up a caller or an API.
 5. Prove the one fact. Write a script or test that runs the real code, run it, and paste what happened.
+6. For a big or wide change, ask two or more subagents the same question separately and merge the answers. Do not show them each other's answers.
 
 ## What to hand back
 
