@@ -85,10 +85,11 @@ metadata:
 ### 꼭 지킬 것
 
 - 첫 메시지 → 목표와 그것을 채우는 가장 작은 변경을 되짚고 진행한다.
+- 구현 전 → 설치된 스택 점검 스킬(이름이 `-start-check`로 끝나는 것, 예: `frontend:frontend-start-check`, `server:server-start-check`)을 모두 Skill 도구로 부르고, 돌려준 지킬 것을 따른다. 리뷰 전 → `-end-check`로 끝나는 것을 모두 부른다. 플레이북이나 `figure-it-out`을 따를 때도 건너뛰지 않는다.
 - 고칠 코드가 어떻게 동작하는지 모른다 → `how` 스킬. 왜 그렇게 됐는지가 문제다 → `why` 스킬.
 - 돌려 보면 정해지는 갈림길 → 묻지 말고 `playbooks/prototype.md`.
 - 코드를 쓰기 전 → 데이터 모양을 먼저 정한다. 함수 경계를 넘는 변경 → `architect` 스킬.
-- 화면을 바꾸거나 UI 버그를 재현한다 → `control-ui` 스킬. CLI·TUI 면 → `control-cli` 스킬. 프로젝트에 `verify-*` 스킬이 있으면 그 스킬과 기능 지도를 먼저 따른다.
+- 화면을 바꾸거나 UI 버그를 재현한다 → `control-ui` 스킬. CLI·TUI 면 → `control-cli` 스킬. 프로젝트에 `verify-*` 스킬이 있으면 그 스킬과 기능 지도를 먼저 따른다. 스택 점검이 확인 방법을 정해 줬으면(예: frontend 의 `frontend-evaluator` 에이전트가 판정한다) 그것이 먼저이고, 이 스킬들은 화면을 모는 방법이다.
 - 프로젝트에 앱을 실제로 몰아 확인할 정해진 방법이 없다 → `create-verification-skill` 스킬. 만들지는 프로젝트당 한 번 착수 전 질문에 넣는다. 기능 지도가 앱과 어긋난다 → `maintain-verification-skill` 스킬.
 - "고쳤다", "빨라졌다"는 주장 → `verify-this` 스킬.
 - 잰 숫자를 보고하거나 그 숫자로 정한다 → `benchmark-checklist` 스킬.
