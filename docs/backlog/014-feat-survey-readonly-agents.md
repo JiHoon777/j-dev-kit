@@ -46,7 +46,29 @@ updated_date: 2026-11-26
 
 ## Implementation Notes
 
-작업하며 알게 된 것, 계획에서 바뀐 것.
+016 뒤의 pstack 점검 수정과 같은 브랜치(`w/pstack-fidelity`)에서 항목 017 과 함께 했다. 계획은 따로 적지 않았다.
+
+### 정한 것
+
+- 수집 에이전트(`survey-collector`)에 Write 를 줬다 — 메모를 직접 써야 메인 세션에 원문이 쌓이지 않는다(AC #1 이 허용한다) — 메모 폴더 밖에 쓸 수 있다. 경로를 막는 장치는 없다(보안 리뷰가 짚었다)
+- 명령 자료(`gh issue list`, 로그를 뽑는 명령)는 메인 세션이 돌려 출력을 파일로 넘긴다 — 수집 에이전트에 Bash 가 없다 — 메인 세션이 명령 출력을 한 번 더 다룬다
+
+### eval 결과 (survey-outside, 2026-11-27)
+
+| 판 | 점수 (5회) | 평균 ± 표준편차 | 실행당 비용(API 환산) | 실행당 시간 |
+| --- | --- | --- | --- | --- |
+| main (general-purpose 에이전트) | 1, 1, 0.75, 1, 1 | 0.95 ± 0.11 | $2.93 | 312초 |
+| 이 브랜치 (survey-collector, survey-judge) | 0.75, 1, 1, 1, 1 | 0.95 ± 0.11 | $3.62 | 360초 |
+
+- 평균 차이가 0 이라 판정 규칙(차이가 두 표준오차의 합 0.10 보다 작으면 같음)으로 "같음"이다. 013 때의 고친 판(0.95 ± 0.11)과도 같다.
+- 채점 항목별 통과 수도 두 판이 같다: 바깥 검색 5, 보고서 5, 출처 표시 5, 겹침 거르기 4.
+- 이 브랜치 판의 기록에는 `workflow:survey-collector`와 `workflow:survey-judge`만 나오고 general-purpose 호출이 없다. main 판은 general-purpose 뿐이다.
+
+다시 돌리기(두 사본: main 판은 `git archive main plugins/workflow`, 고친 판은 이 브랜치의 `plugins/workflow`. 둘 다 `hooks/`를 뺀다):
+
+```bash
+claude plugin eval <사본>/workflow --ablation none --scaffold --trust-plugin --model opus --judge-model sonnet --runs 5 --tag survey --no-publish --threshold 0 -j 3 --allow-tools WebSearch WebFetch Write --json <사본>.json
+```
 
 ## Final Summary
 
