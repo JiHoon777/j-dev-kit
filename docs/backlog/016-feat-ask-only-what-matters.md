@@ -39,7 +39,7 @@ updated_date: 2026-11-26
 - **start 와 end 를 합친다.** `/task start` 하나가 구현, 검증, 리뷰, 지적 고치기, 머지 질문까지 한다. `end` 모드는 없다. 그래서 "end 를 진행할까요?"도, 사용자가 `/task end`를 치는 일도 없다.
 - **AC 승인은 남긴다.** 계획 승인이 없어지면 구현 전에 사람이 확인하는 유일한 계약이다.
 - **superpowers 를 쓰지 않는다.** 플러그인 의존성에서 빼고, `/task`가 부르던 다섯 스킬(brainstorming, test-driven-development, verification-before-completion, receiving-code-review, finishing-a-development-branch)에서 필요한 규칙만 `/task` 절차에 직접 적는다.
-- **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 5개(architect, blast-radius, how, why, benchmark-checklist), 플레이북 5개(Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다.
+- **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 7개(architect, blast-radius, how, why, benchmark-checklist, 검증 스킬 만들기·유지하기), 플레이북 5개(Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다. pstack 이 기대어 쓰는 cursor-team-kit(`cursor/plugins`의 `cursor-team-kit/`, MIT, Cursor)에서도 가져온다: control-ui, control-cli, verify-this, fix-merge-conflicts, deslop 의 점검 목록.
 - **simplify 는 묻지 않고 늘 돈다.** 찾기만 하고 고치지 않는다. 찾은 것은 마지막 메시지에 함께 보이고, 고칠지는 그때 고른다. 11-25 에 정한 "항상 확인한다"(`fa91c89`)는 이렇게 지킨다.
 
 ### 근거
@@ -55,7 +55,8 @@ updated_date: 2026-11-26
 - 진입 모드 스킬(`/poteto-mode` 같은 것). 004 의 `/until-done`이 같은 일을 하다가 한 번도 쓰이지 않고 006 에서 지워졌다. 이 항목을 써 본 뒤 따로 정한다. 만든다면 이 항목과 같은 기준을 따른다: 꼭 필요한 것만 묻고, 나머지는 정한 것과 이유를 적으면서 알아서 한다.
 - pstack 의 나머지. 이유는 추가 조사 보고서의 "가져오지 않는 것" 표에 있다
   - PR·Cursor 클라우드 중심 플레이북(Opening a PR, Babysit, Shipping, Autopilot 둘)과 `/task` 밖의 일을 다루는 플레이북(Investigation, Autonomous run, Session pickup, Pause safely 등). 뒤의 것은 진입 모드 스킬을 정할 때 함께 본다
-  - 다른 회사 모델 패널이 핵심인 스킬(arena, swarm, interrogate), 프로젝트 검증 스킬 만들기, 글쓰기 스킬, Cursor 전용 스킬
+  - 다른 회사 모델 패널이 핵심인 스킬(arena, swarm, interrogate), 글쓰기 스킬, Cursor 전용 스킬
+  - cursor-team-kit 의 PR·CI 스킬(fix-ci, loop-on-ci, review-and-ship, pr-review-canvas 등), 주간 요약 스킬, thermo-nuclear 리뷰
 - 다른 플러그인의 리뷰어 에이전트 본문
 - 사용자 컴퓨터에서 superpowers 플러그인을 지우는 일(사용자가 한다)
 
@@ -91,11 +92,13 @@ updated_date: 2026-11-26
   - 본문은 workflow 플러그인 안에 원칙·스킬·플레이북마다 파일 하나씩 있고, 색인이 가리킬 때 읽고 따른다. 절차 파일(`create.md`·`start.md`)에 본문을 옮겨 적지 않는다
   - 원칙 24개: 이름, 언제 쓰는지, 본문
   - 스킬 5개: architect(함수 경계를 넘는 변경이면 구조안 두 개를 그려 고른다), blast-radius(믿기 어려운 diff 는 머지 전에 diff 밖 영향을 실행으로 확인한다), how·why(고치기 전에 코드가 어떻게, 왜 그렇게 됐는지 읽는다), benchmark-checklist(잰 숫자를 보고하기 전에 점검한다)
+  - 검증 스킬 2개: create-verification-skill(프로젝트에 앱을 실제로 몰아 확인할 정해진 방법이 없으면, 띄우기·점검·몰기·증거·정리와 기능 지도를 프로젝트 스킬로 만든다. 만들지는 프로젝트당 한 번 착수 전 질문에 넣는다), maintain-verification-skill(기능 지도가 앱과 어긋나면 고친다). 지도가 있으면 화면 확인과 AC 판정이 그것을 따른다
+  - cursor-team-kit 4개: control-ui(화면을 몰 때: 스냅샷 → 동작 하나 → 스냅샷 → 확인), control-cli(CLI·TUI 를 tmux·PTY 로 몰 때), verify-this(고쳤다는 주장은 전후를 같은 조건으로 재서 VERIFIED / NOT VERIFIED / INCONCLUSIVE 중 하나로 답한다), fix-merge-conflicts(머지 충돌). deslop 의 점검 목록(쓸데없는 주석, 믿는 경로의 방어 코드, `any` 캐스트, 깊은 중첩)은 #5 의 simplify 가 찾을 때 함께 본다
   - 플레이북 5개: Bug fix(재현 먼저, 원인을 증거로 좁힌다), Refactoring(동작을 먼저 고정하고 구조만 바꾼다), Prototype(갈림길은 버릴 시제품으로 정한다), Perf issue(먼저 잰다), Hillclimb(한 번에 하나 바꾸고 잰다). `start`는 항목의 성격에 맞는 플레이북을 골라 그 단계를 할 일 목록에 옮긴다. 맞는 것이 없으면 기본 흐름으로 간다
   - 이미 있는 같은 규칙은 한 곳에만 둔다: Never Block on the Human 은 #1 의 묻는 기준과, Prove It Works 는 "검증을 새로 돌리고 결과를 보여 준다"와, Laziness Protocol 은 "항목이 요구하는 것만 한다"와 합친다
   - 정한 것 줄의 이유에 적용한 원칙·스킬 이름을 적는다
-  - Cursor 이름(Task, AskQuestion, control-ui, `/loop`, 모델 슬러그, 다른 회사 모델)은 Claude Code 의 것으로 바꾸거나 뺀다. 가져온 파일마다 원문 위치를 적고, MIT 저작권·허가 고지를 플러그인에 둔다
-  - README 두 개의 출처에 pstack 을 적는다
+  - Cursor 이름(Task, AskQuestion, control-ui, `/loop`, 모델 슬러그, 다른 회사 모델)은 Claude Code 의 것으로 바꾸거나 뺀다. 가져온 파일마다 원문 위치를 적고, pstack 과 cursor-team-kit 의 MIT 저작권·허가 고지를 플러그인에 둔다
+  - README 두 개의 출처에 pstack 과 cursor-team-kit 을 적는다
 - [ ] #14 SKILL.md "일하는 원칙"에 세 줄이 있다: 아니라고 말해도 된다(범위를 넓히자는 제안이 값을 못 하면 그렇게 말한다), 스스로 돌릴 수 있는 확인을 사람에게 넘기지 않는다, 주장마다 근거를 달거나 확인함·추론·추측 중 무엇인지 표시한다
 
 <!-- AC:END -->
