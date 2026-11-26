@@ -1,0 +1,18 @@
+> Translation. Source: [plugins/workflow/skills/frontend-start-check/references/svelte.md](../../../../../../../plugins/workflow/skills/frontend-start-check/references/svelte.md). Update this file when the source changes. Claude does not read this file.
+
+# Svelte 5 / SvelteKit: start check
+
+Read by `frontend-start-check` when package.json has `svelte`. Add the following to that skill's "To follow".
+
+## To follow
+
+- When creating or modifying `.svelte`, `.svelte.ts`, `.svelte.js`, invoke the official Svelte plugin's (`svelte@svelte`) `svelte-code-writer` and `svelte-core-bestpractices` skills and follow them. That plugin's `svelte-file-editor` agent is not used.
+- Do not fix problems `svelte-autofixer` reports in existing code you did not touch; only report them (they are outside the item's scope). Fix problems reported in the code you wrote this time.
+- Do not insert values written by other people with `{@html}`.
+- Code that needs secrets goes only in server files (`+page.server.*`, `+server.*`) (`$env/*/private` only in server files). `load` checks authorization and does not return other users' data. Form action failures use `fail()`.
+- With `adapter-static`, do not create server files (`+page.server.*`, `+server.*`, form actions).
+
+## To ask
+
+- If the official Svelte plugin is not installed, ask whether to install it (the command under "Nice-to-have plugins" in the README). Ask only once per project: if the answer is not to install, suggest writing `- 공식 스킬 설치 안 함: svelte` (official skills not installed: svelte) under `## 작업 설정` (work settings) in CLAUDE.md, and do not ask when that line has `svelte`. If the line already exists, add the name after a comma.
+- If the installed `svelte` is 4 or lower, say that the rules above do not apply and ask how to proceed.

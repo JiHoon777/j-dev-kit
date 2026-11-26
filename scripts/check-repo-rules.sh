@@ -3,7 +3,7 @@
 # 1. plugins/ 의 마크다운마다 i18n/en/ 에 같은 경로의 번역본이 있다(plugins/*/evals/ 의 eval 사례는 뺀다).
 # 2. marketplace.json 의 플러그인마다 plugin.json 과 설명이 같고, README 두 개의 목록에 있다.
 # 5. 스킬·에이전트 마크다운(번역본 포함)에 셸 주입 줄(!`명령`)이 없다. Bash 가 막힌 곳에서 그 줄 하나가 스킬 호출 전체를 멈춘다.
-# 7. 두 벌인 port_open(workflow 의 pick-port.sh, frontend 의 dev-server.sh)의 본문이 같다.
+# 7. 두 벌인 port_open(start 의 pick-port.sh, frontend-start-check 의 dev-server.sh)의 본문이 같다.
 # 기준 브랜치(인자, 기본 main. 없으면 origin/<기준>) 대비:
 # 3. 원문 마크다운을 고쳤으면 번역본도 고쳤다.
 # 4. 바뀐 플러그인은 plugin.json 의 version 을 올렸다(내리지 않았다).
@@ -79,8 +79,8 @@ for readme in README.md README.en.md; do
   done
 done
 
-# 7. 두 벌인 port_open (플러그인은 따로 설치되니 한 파일로 합칠 수 없다)
-port_files=(plugins/workflow/skills/task/scripts/pick-port.sh plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh)
+# 7. 두 벌인 port_open (스킬 폴더마다 스크립트를 따로 둔다)
+port_files=(plugins/workflow/skills/start/scripts/pick-port.sh plugins/workflow/skills/frontend-start-check/scripts/dev-server.sh)
 bodies=()
 for f in "${port_files[@]}"; do
   body=$(sed -n '/^port_open() {$/,/^}$/p' "$f" 2>/dev/null)

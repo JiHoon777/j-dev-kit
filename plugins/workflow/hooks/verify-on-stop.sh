@@ -62,7 +62,7 @@ changed=
 if [ -z "$base_ref" ]; then
   changed="기준 브랜치 $base 을 찾지 못해(로컬, origin 모두) 작업 트리의 검증 명령으로 판정했다."
 elif [ "$work_cmd" != "$fork_cmd" ] && [ "$cmd" != "$work_cmd" ]; then
-  changed="이 브랜치가 검증 명령을 바꿨다(${work_cmd:-없음}). 판정은 $base 의 명령으로 했고, 바뀐 명령은 머지 뒤부터 쓰인다. /task end 리뷰에서 바뀐 명령을 본다."
+  changed="이 브랜치가 검증 명령을 바꿨다(${work_cmd:-없음}). 판정은 $base 의 명령으로 했고, 바뀐 명령은 머지 뒤부터 쓰인다. /start 의 리뷰에서 바뀐 명령을 본다."
 fi
 
 # 지금 작업 폴더의 내용(백로그 문서 제외)과 명령이 마지막으로 통과한 것과 같으면 다시 돌리지 않는다.

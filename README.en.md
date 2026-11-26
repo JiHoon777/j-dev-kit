@@ -4,49 +4,46 @@
 
 > Translation of README.md. The Korean README is the source.
 
-A set of Claude Code plugins that runs the whole loop — turn a task into a backlog item, implement it, review it, and merge — with a single `/task`.
+A Claude Code plugin that turns a task into a backlog item (`/backlog`) and then implements it, reviews it, and merges it (`/start`). It asks only what is truly needed, and for the rest it goes to the end while writing what it decided and why into the item file.
 
 ```mermaid
 flowchart LR
-  C["/task create<br/>task → item file"] --> S["/task start 001<br/>plan → approve → implement"]
-  S --> E["/task end<br/>review → fix → merge"]
+  C["/backlog<br/>task → item file"] --> S["/start 001<br/>implement → verify → review → merge"]
+  D["/start task<br/>right away, no item"] --> S
 ```
 
-No need to memorize the commands. Say "put this in the backlog" or "start 001" and Claude invokes it on its own.
+No need to memorize the commands. Say "put this in the backlog" or "start 001" and Claude invokes it on its own. If you want to know how to use it, ask `/kit-help`.
 
 ## Plugins
 
-| Plugin | What it does | Also installs |
-| --- | --- | --- |
-| `workflow` | The `/task` loop and the verify hook (required) | `superpowers` |
-| `frontend` | Svelte and React checks, screen mockups and review, browser verification | `workflow`, `typescript-lsp`, `frontend-design` |
-| `server` | Node server and Supabase checks and review | `workflow` |
+| Plugin | What it does |
+| --- | --- |
+| `workflow` | The `/backlog` and `/start` loop, stack checks (frontend, server), principles, skills and playbooks, model settings, and the verify hook |
 
-Install only the stacks you use. If you use Supabase, install `server` even if you only call it from the frontend.
+There is one plugin. It has no dependency plugins. Stack checks run only when they apply to the project.
 
 ## Stacks
 
-`workflow` runs the same loop in every project. The checks that differ per project (framework rules, migrations, screen verification) belong to stack plugins. `/task start` and `/task end` call the checks of every installed stack plugin. Each check runs only when the item touches its area; otherwise it drops out as "not applicable".
+`workflow` runs the same loop in every project. The checks that differ per project (framework rules, migrations, screen verification) belong to stack check skills. `/start` calls every stack check. It calls the start checks before implementation and the end checks before the review. Each check runs only when the item touches its area; otherwise it drops out as "not applicable".
 
 ```mermaid
 flowchart LR
   subgraph wf["workflow"]
-    S["/task start<br/>calls the start checks"]
-    E["/task end<br/>calls the end checks"]
+    S["/start<br/>calls the start checks and the end checks"]
   end
-  subgraph stack["Stack plugins · installed ones only"]
+  subgraph stack["Stack checks · only when they apply"]
     F["frontend<br/>Svelte · React · screens"]
     V["server<br/>Node server · Supabase"]
   end
   wf --> stack
 ```
 
-| Stack | Runs when | In `/task start` | In `/task end` |
+| Stack | Runs when | Start check | End check |
 | --- | --- | --- | --- |
 | frontend | package.json has a framework such as react or svelte | Gives the framework rules. Makes mockups for a new screen. Verifies in the browser when the UI changes | Checks for leftover debug code and the lockfile. `frontend-reviewer` reviews, and `design-reviewer` too when a screen changed |
 | server | There are Node server dependencies or Supabase | Gives the transaction and migration rules. Blocks commands that change a remote database | Checks for missing migrations and config keys. `api-reviewer` and `supabase-reviewer` review |
 
-The `stack:` line in CLAUDE.md sets which stacks run (for example `stack: frontend, server`). Without the line, installed stack plugins decide from the code.
+The `stack:` line in CLAUDE.md sets which stacks run (for example `stack: frontend, server`, or `stack: 없음` (none) if there are none). Without the line, the checks decide from the code. Supabase is covered by the server check even if you only call it from the frontend.
 
 ## Quick start
 
@@ -54,13 +51,16 @@ The `stack:` line in CLAUDE.md sets which stacks run (for example `stack: fronte
 
 ```bash
 claude plugin marketplace add JiHoon777/j-dev-kit --scope project
-claude plugin install frontend@j-dev-kit --scope project
-claude plugin install server@j-dev-kit --scope project
+claude plugin install workflow@j-dev-kit --scope project
 ```
 
-Do not remove the dependency plugin lines written to `.claude/settings.json`.
+**2. Set up**
 
-**2. Add settings to the project CLAUDE.md**
+```
+/kit-setup
+```
+
+It asks which model and effort each role uses and how to merge, and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself.
 
 ```markdown
 ## Work settings
@@ -68,36 +68,41 @@ Do not remove the dependency plugin lines written to `.claude/settings.json`.
 - base branch: main
 - verify command: pnpm verify
 - document language: English
-
-## superpowers
-The rules in this document take precedence. Follow only the skills `/task` calls; do not use
-writing-plans, executing-plans, subagent-driven-development, or using-git-worktrees.
 ```
 
-For `stack:`, see [Stacks](#stacks) above. Without the superpowers paragraph, superpowers takes over the planning step of `/task start`.
+For `stack:`, see [Stacks](#stacks) above. The superpowers plugin is not used. If it is on, turn it off. Left on, superpowers cuts into the planning step.
 
 **3. Use it**
 
 ```
-/task create Add a login screen   # make the item docs/backlog/001-….md
-/task start 001                   # in a new session: plan → approve → implement
-/task end                         # in that session: review → fix → merge
+/backlog Add a login screen               # make the item docs/backlog/001-….md
+/start 001                                # in a new session: implement → verify → review → merge
+/start Fix the login button label         # right away in this session, no item
+/kit-help What do I run before a commit?  # ask how to use it
 ```
 
 ## More
 
 <details>
-<summary>What /task does</summary>
+<summary>What /backlog and /start do</summary>
 
 ```
-/task start 001 --here                              # in this session, no sub-session
-/task create --survey Reduce frequent errors logs/  # research the repo and the outside, show item candidates as a report
+/start 001 --here                              # in this session, no sub-session
+/backlog --survey Reduce frequent errors logs/  # research the repo and the outside, show item candidates as a report
 ```
 
-- **Sub-sessions:** `create` and `start` open a session and only report its link. `start` runs in a new worktree off the base branch (on a `w/<item>` branch). The sub-session's questions and approval requests are shown in the starting session, which passes on the answers and, when the sub-session finishes, checks the result and reports first. Plan approval happens on the sub-session's plan screen. Where sessions cannot be opened (outside the desktop app), the work happens in this session. To run several items together, call `start` several times.
-- **create --survey:** splits the goal into research questions and researches the repository and the outside (official docs, issues, precedents, practitioners' writing) with subagents in parallel. It shows the candidates a judge agent filtered, together with a report, and writes only the ones picked. The report is committed to `docs/backlog/references/`. To leave out the outside, `--internal`.
-- **start:** baseline verification → stack checks → planning sized to the item → test-first implementation → cleanup (`simplify`) → verification. Acceptance Criteria are checked off only with command output or a judge agent other than the implementing session. If the same AC still fails after three fixes, it stops and hands over.
-- **end:** stack checks → review (`code-review`, plus `security-review` and stack reviewers when needed) → a judge agent picks the valid findings, shown as 🔴 must fix / 🟡 consider / ⚪ minor with a question → fixes → verification → merge. Pushes only on request. A new test that passes without the fixed code is flagged as 🟡.
+- **What it asks:** only five things. Work that cannot be undone or that goes outside (merging, pushing to the base or a deploy branch, deleting, a remote DB, deploying), work that changes something outside the project or shared settings, product or taste decisions that code or a run cannot settle, choosing what to do, and states that could lose work. It decides the rest and writes it into the item file as `decision — reason — cost if wrong`. It does not get the plan approved. If you say "let me see the plan", it shows the plan and waits.
+- **Sub-sessions:** `/backlog` and `/start` open a session and only report its link. `/start` runs in a new worktree off the base branch (on a `w/<item>` branch). The sub-session's questions are shown in the starting session, which passes on the answers and, when the sub-session finishes, checks the result and reports first. Where sessions cannot be opened (outside the desktop app), the work happens in this session. To run several items together, call `/start` several times.
+- **/start <task>:** given words that are not a backlog item, it does not create an item and does the work right away in this session. In the first message it restates the goal, the smallest change, and the condition for calling it done, then goes on. Verification and the last message are the same, and the review is sized to the change.
+- **/backlog:** shows the full Acceptance Criteria of the item draft and gets approval. It is the only contract a person checks before implementation.
+- **/backlog --survey:** splits the goal into research questions and researches the repository and the outside (official docs, issues, precedents, practitioners' writing) with subagents in parallel. It shows the candidates a judge agent filtered, together with draft ACs, and writes only the ones picked. The report is committed to `docs/backlog/references/`. To leave out the outside, `--internal`.
+- **/start:** baseline verification → stack checks → restating the goal and picking a playbook → pre-start questions (once, only when there are any) → implementation → cleanup (deslop) → verification → AC judgment → review (`code-review`, plus `security-review` and stack reviewers when needed) → fixing, without asking, the 🔴 and 🟡 findings the judge agent found valid → one last message → merge. Called on a work branch that already exists, it continues from the step that remains.
+- **Last message:** asks every remaining decision at once: the findings for a person to decide, the "later" candidates, and how to merge. Each decision comes with a recommendation, the evidence, and the risk. The base branch is pushed only on request.
+- **Judgment:** Acceptance Criteria are checked off only with command output or a judge agent other than the implementing session. If the same AC still fails after three fixes, it stops and hands over. A new test that passes without the fixed code is flagged as 🟡.
+- **Principles, skills, playbooks:** the `start` skill has a "when → what" index, and each body is its own skill, read when it is used. They do not fire on their own, and you can invoke them directly, as in `/architect`, `/how` or `/deslop`. There are 24 principles, 15 skills (architect, figure-it-out, blast-radius, how, why, creating a verification skill, control-ui, deslop and others), and 6 playbooks (feature, bug-fix, refactoring, prototype, perf-issue, hillclimb). For an item no playbook fits, figure-it-out designs the steps for that work. They were brought in from [pstack](https://github.com/cursor/plugins/tree/main/pstack) and [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit).
+- **Merge setting:** written as `merge` in `.claude/workflow.json` (project) or `~/.claude/workflow.json` (user). `local` merges into the base branch locally and pushes. `pr` opens a PR that targets the base branch. `/kit-setup` asks and writes it. Once set, `/start` does not ask how to merge at the end; it asks only whether to merge that way. Without it, `/start` asks how.
+- **Model settings:** the model and effort that sub-sessions and subagents use are written per role (`session`, `implement`, `review`, `judge`, `mechanical`, `explore`) in `.claude/workflow.json` (project) or `~/.claude/workflow.json` (user). `/kit-setup` asks and writes them. Without a file, the defaults apply (if the main session is Fable, sub-sessions and reviews use the model one step lower). The main session's model is set by `model` and `effortLevel` in the Claude Code settings, and `/kit-setup` can write those keys too.
+- **/kit-help:** ask what to use when. It gives the answer and one command line to send, and does not start work.
 - **Review principles:** findings left as is and what the user corrected are collected as one-line principles in `docs/review-principles.md` and used in later reviews.
 
 </details>
@@ -109,7 +114,8 @@ For `stack:`, see [Stacks](#stacks) above. Without the superpowers paragraph, su
 - **Ports:** with `- 웹 포트: 5000` (web port) and `- 서버 포트: 6000` (server port) under `## 작업 설정` (work settings) in CLAUDE.md, each item uses `base port + item number` (item 007 → 5007, 6007). Ports in use are skipped by going up by 1. If you work on several projects together, keep base ports 1000 apart per project (for example A on 5000 and 6000, B on 7000 and 8000).
 - **Worktrees:** if a worktree is created inside the repository (for example `.claude/worktrees/`), leave that folder out of test and lint settings. Archiving the session after the merge lets the app clean up the worktree.
 - **Browser check (frontend):** when the UI changes, the `frontend-evaluator` agent, not the implementing session, judges each AC on the running screen.
-- **Design (frontend):** for an item that adds or redesigns a screen, `start` makes mockups on the design canvas before planning and writes the chosen one into the plan. For a UI item with no `DESIGN.md`, it asks whether to make one (to opt out, `- DESIGN.md: 안 씀`). Saying "make mockups for the login screen" without an item also runs `ui-design`.
+- **Verification skill and feature map:** if the project has no set way to drive the real app and check it, `/start` asks once per project whether to create the project skill `verify-<app>` (launch, check, drive, evidence, cleanup, and a feature map). When there is one, the screen check and the AC judgment follow that map.
+- **Design (frontend):** for an item that adds or redesigns a screen, `/start` makes 3 mockups on the design canvas before planning and writes the chosen one into the plan. For a UI item with no `DESIGN.md`, it asks whether to make one (to opt out, `- DESIGN.md: 안 씀`). Saying "make mockups for the login screen" without an item also runs `ui-design`.
 
 </details>
 
@@ -118,6 +124,8 @@ For `stack:`, see [Stacks](#stacks) above. Without the superpowers paragraph, su
 
 | Plugin / skill | Install |
 | --- | --- |
+| frontend-design (invoked when designing a new screen) | `/plugin install frontend-design@anthropic-plugin-directory` |
+| typescript-lsp | `/plugin install typescript-lsp@anthropic-plugin-directory` |
 | Official Svelte | `/plugin marketplace add sveltejs/ai-tools`, `/plugin install svelte@svelte` |
 | Chrome DevTools | `/plugin marketplace add ChromeDevTools/chrome-devtools-mcp`, `/plugin install chrome-devtools-mcp@chrome-devtools-plugins` |
 | modern-web-guidance | `/plugin marketplace add GoogleChrome/modern-web-guidance`, `/plugin install modern-web-guidance@googlechrome` |
@@ -133,11 +141,12 @@ For `stack:`, see [Stacks](#stacks) above. Without the superpowers paragraph, su
 
 | Symptom | Fix |
 | --- | --- |
-| `supabase@j-dev-kit` cannot be found | It was merged into `server`. Remove it from `enabledPlugins` and install `server@j-dev-kit`. |
-| `architecture@j-dev-kit` or `design@j-dev-kit` cannot be found | They were removed. Remove them from `enabledPlugins`. DESIGN.md and mockups moved to `ui-design` in `frontend`, and screen review to `design-reviewer` in `frontend`. |
-| `Dependency "…" is not installed` | Install the removed dependency plugin with the same `--scope`. |
+| `/task` cannot be found | It was split in two. Creating an item is `/backlog`, and implementation through to the merge is `/start`. `/start` also carries on with the review and the merge. |
+| `frontend@j-dev-kit` or `server@j-dev-kit` cannot be found | They were merged into `workflow`. Remove the two lines from `enabledPlugins` in the project's `.claude/settings.json` and update `workflow`. Agent names changed to the form `workflow:frontend-reviewer`. |
+| superpowers cuts into the plan | It is no longer used. Turn off the `superpowers` plugin and delete the `## superpowers` paragraph from CLAUDE.md. |
+| `supabase@j-dev-kit`, `architecture@j-dev-kit`, or `design@j-dev-kit` cannot be found | All were merged into `workflow` or removed. Remove them from `enabledPlugins`. Supabase checks are done by `server-start-check` and `server-end-check`, DESIGN.md and mockups by `ui-design`, and screen review by `design-reviewer`. |
 | The verify command runs when Claude stops | That is the verify hook. It runs only when the item's Definition of Done is checked and the code changed since the last pass. Without a `verify command:` line in CLAUDE.md it does not run. |
-| No stack checks run | The plugin is disabled, or it is missing from `stack:` in CLAUDE.md. |
+| No stack checks run | That stack is missing from `stack:` in CLAUDE.md (`stack: 없음`, none), or the code has no framework. |
 
 </details>
 
@@ -146,23 +155,30 @@ For `stack:`, see [Stacks](#stacks) above. Without the superpowers paragraph, su
 
 ```bash
 claude plugin marketplace update j-dev-kit
-claude plugin update <plugin>@j-dev-kit --scope project
+claude plugin update workflow@j-dev-kit --scope project
 ```
 
 Then open a new session. If a plugin's `version` is unchanged, the update is not picked up.
 
 ```
-plugins/workflow/skills/task/       SKILL.md + references/create.md, start.md, end.md + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/backlog/    SKILL.md + references/survey.md
+plugins/workflow/skills/start/      SKILL.md (asking criteria, index) + references/procedure.md + playbooks/ (6) + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/<skill>/    the 15 skills the index points to (architect, how, why, deslop and more). You can also invoke them directly (`/architect`)
+plugins/workflow/skills/principle-*/  the 24 principles
+plugins/workflow/THIRD_PARTY_NOTICES.md  copyright notices for the imported texts (pstack, cursor-team-kit)
+plugins/workflow/skills/kit-setup/, kit-help/   setup and help
+plugins/workflow/skills/frontend-{start,end}-check/ (scripts/dev-server.sh, diff-check.sh), ui-design/   frontend checks and mockups
+plugins/workflow/skills/server-{start,end}-check/ (scripts/config-check.sh)   server and Supabase checks
+plugins/workflow/agents/            frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md, api-reviewer.md, supabase-reviewer.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)
-plugins/frontend/                   skills/frontend-{start,end}-check (scripts/dev-server.sh, diff-check.sh), ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md
-plugins/server/                     skills/server-{start,end}-check (scripts/config-check.sh), agents/api-reviewer.md, supabase-reviewer.md
+plugins/workflow/evals/             eval cases (including the frontend and server reviewer cases)
 i18n/en/                            English translations (Claude does not read them)
 scripts/check-repo-rules.sh         repository rule check
 scripts/test-*.sh                   scenario tests for the check script, the verify hook and the plugin scripts
 ```
 
 - The source is Korean (`plugins/`); translations live in `i18n/en/`. Update the translation when you change the source.
-- To add a stack, make a plugin with `<stack>-start-check` and `<stack>-end-check` skills and register it in `marketplace.json`. `/task` finds and calls them by those names.
+- To add a stack, add `<stack>-start-check` and `<stack>-end-check` skills under `plugins/workflow/skills/`. `start` also finds and calls skills that another plugin provides under the same naming rule.
 - Bump `version` in the changed plugin's `plugin.json`, run the verify command (`claude plugin validate . && bash scripts/check-repo-rules.sh`), then push.
 - The check script fails when: a translation is missing or only the source changed; a plugin's description differs between `plugin.json` and `marketplace.json`; a plugin is missing from the table in either README; a changed plugin kept or lowered its `version`; the `port_open` bodies in `pick-port.sh` and `dev-server.sh` differ; or a script changed since `main` has no paired test `scripts/test-<name>.sh` or that test fails. A test that runs past `CHECK_TESTS_TIMEOUT` seconds (default 540) is stopped and fails.
 
@@ -171,7 +187,7 @@ scripts/test-*.sh                   scenario tests for the check script, the ver
 <details>
 <summary>Sources</summary>
 
-[Backlog.md](https://github.com/MrLesk/Backlog.md) item format, [superpowers](https://github.com/obra/superpowers) (brainstorming, TDD, verification before completion, receiving review, finishing a branch), [spec-kit](https://github.com/github/spec-kit) (at most 3 questions), [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) (planning sized to the task), [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), Claude Code built-in `code-review`, `security-review`, `simplify`, OWASP API Security Top 10, [supabase/agent-skills](https://github.com/supabase/agent-skills), Anthropic [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
+[Backlog.md](https://github.com/MrLesk/Backlog.md) item format, [pstack](https://github.com/cursor/plugins/tree/main/pstack) (asking criteria, the shape of the index, 24 principles, skills and playbooks, the last-message format, test rules), [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit) (control-ui, control-cli, deslop, verify-this, fix-merge-conflicts), [spec-kit](https://github.com/github/spec-kit) (at most 3 questions), [compound-engineering](https://github.com/EveryInc/compound-engineering-plugin) (planning sized to the task), [andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills), Claude Code built-in `code-review`, `security-review`, OWASP API Security Top 10, [supabase/agent-skills](https://github.com/supabase/agent-skills), Anthropic [Skill authoring best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
 
 Verify hook, `frontend-evaluator`, `design-reviewer`: Claude Code [hooks](https://code.claude.com/docs/en/hooks.md) (rules that must hold go in hooks, not instructions), Anthropic [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps) (an evaluator kept apart from the builder uses the running app itself).
 

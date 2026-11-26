@@ -1,0 +1,20 @@
+---
+name: principle-migrate-callers-then-delete-legacy-apis
+description: "The Migrate Callers Then Delete Legacy APIs principle. Introducing a new internal API while old callers still exist."
+disable-model-invocation: true
+---
+
+# Migrate Callers Then Delete Legacy APIs
+
+> Source: `pstack/skills/principle-migrate-callers-then-delete-legacy-apis/SKILL.md` in `cursor/plugins` (MIT, Lauren Tan). Cursor names were replaced with Claude Code names, and lines pointing to skills that were not imported were removed.
+
+**When:** Introducing a new internal API while old callers still exist.
+
+Migrate callers and delete the old API in the same wave instead of preserving compatibility layers.
+
+- Update tests to assert the new contract, and delete tests that only protect pre-refactor implementation details
+
+**When this applies:**
+- No external users depend on backward compatibility
+- The project can absorb coordinated breaking changes
+- The new API is part of a simplification or refactor initiative

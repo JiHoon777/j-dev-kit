@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh 의 시나리오 테스트. `bash scripts/test-dev-server.sh`
+# plugins/workflow/skills/frontend-start-check/scripts/dev-server.sh 의 시나리오 테스트. `bash scripts/test-dev-server.sh`
 # 가짜 개발 서버는 node(없으면 python)로 localhost 에 띄운다. 하나라도 틀리면 1로 끝난다.
 
-script="$(cd "$(dirname "$0")/.." && pwd)/plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh"
+script="$(cd "$(dirname "$0")/.." && pwd)/plugins/workflow/skills/frontend-start-check/scripts/dev-server.sh"
 tmp=$(mktemp -d)
 pids=()
 cleanup() { for p in "${pids[@]}"; do kill "$p" 2> /dev/null; done; rm -rf "$tmp"; }

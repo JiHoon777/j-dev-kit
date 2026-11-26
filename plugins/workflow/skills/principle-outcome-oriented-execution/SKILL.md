@@ -1,0 +1,25 @@
+---
+name: principle-outcome-oriented-execution
+description: "Outcome-Oriented Execution 원칙. 단계 경계가 명시된, 계획된 재작성과 마이그레이션을 할 때."
+disable-model-invocation: true
+---
+
+# Outcome-Oriented Execution
+
+> 원문: `cursor/plugins`의 `pstack/skills/principle-outcome-oriented-execution/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꾸고 가져오지 않은 스킬을 가리키는 줄을 뺐다.
+
+**언제:** 단계 경계가 명시된, 계획된 재작성과 마이그레이션을 할 때.
+
+중간 상태를 매끄럽게 유지하는 것보다, 의도한 검증 가능한 최종 상태에 맞춰 최적화한다.
+
+**왜:** 모든 중간 단계를 완전히 안정되게 유지하려다 보면 임시 호환 코드가 생기고, 그것이 오래 남는 부채가 되는 일이 많다. 목표 아키텍처로 수렴하고, 명시한 검증 경계에서 올바름을 증명한다.
+
+**핵심 규칙:**
+- 과도기의 안정보다 최종 상태의 온전함을 앞에 둔다
+- 중간에 깨지는 것은 계획되어 있고, 범위가 정해져 있고, 되돌릴 수 있으면 받아들일 수 있다
+
+**지킬 선:**
+- 단계 경계가 명시된, 계획된 재작성과 마이그레이션에 쓴다
+- 일시적으로 깨져도 되는 곳을 밝혀 둔다
+- 마이그레이션하는 동안 지금 손대는 영역에는 신호가 분명한 검사를 유지한다
+- 계획이 끝나면 정적 검증과 런타임 검증을 전부 요구한다

@@ -1,11 +1,8 @@
 {
   "enabledPlugins": {
-    "superpowers@anthropic-plugin-directory": true,
     "workflow@j-dev-kit": true,
     "typescript-lsp@anthropic-plugin-directory": true,
-    "frontend-design@anthropic-plugin-directory": true,
-    "frontend@j-dev-kit": true,
-    "server@j-dev-kit": true
+    "frontend-design@anthropic-plugin-directory": true
   },
   "extraKnownMarketplaces": {
     "j-dev-kit": {

@@ -57,7 +57,7 @@ E
 cat > docs/backlog/README.md <<'E'
 # 백로그
 
-`/task create`가 항목을 만들고, `/task start`·`/task end`가 진행한다.
+`/backlog`가 항목을 만들고, `/start`가 구현부터 머지까지 진행한다.
 E
 cat > docs/backlog/001-chore-ci-node-version.md <<'E'
 ---

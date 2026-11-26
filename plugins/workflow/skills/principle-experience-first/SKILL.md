@@ -1,0 +1,23 @@
+---
+name: principle-experience-first
+description: "Experience First 원칙. 제품, UX, 기능 범위를 두고 무엇을 택하고 무엇을 포기할지 정해야 할 때."
+disable-model-invocation: true
+---
+
+# Experience First
+
+> 원문: `cursor/plugins`의 `pstack/skills/principle-experience-first/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꾸고 가져오지 않은 스킬을 가리키는 줄을 뺐다.
+
+**언제:** 제품, UX, 기능 범위를 두고 무엇을 택하고 무엇을 포기할지 정해야 할 때.
+
+구현의 편의와 사용자의 즐거움이 부딪치면 즐거움을 택한다.
+
+- 기능, 컨트롤, 옵션은 하나하나 있어야 할 이유가 있어야 한다
+- 적게 내고 더 잘 낸다(기능 셋을 다듬은 경험이 기능 열을 거칠게 낸 것보다 낫다)
+- 확정하기 전에 프로토타입을 만든다(디자인 결정은 프로덕션 코드보다 버릴 HTML 에서 하는 편이 싸다)
+- 세부를 제대로 한다(전환 효과, 정렬, 간격, 피드백, 오류 상태)
+- 핵심 루프를 조인다(모든 기능은 중심 작업 흐름을 돕거나, 아니면 방해되지 않게 비켜 있어야 한다)
+
+사용자는 그 결과물을 쓰는 사람 누구나다. UI 라면 최종 사용자다. 라이브러리나 내부 API 라면 그것을 import 하는 동료다. 다음에 그 코드를 유지보수하는 엔지니어도 사용자다. 이들의 경험도 똑같이 따지고, 영향은 그 사람의 관점에서 설명한다.
+
+기반은 경험을 위해 있어야 한다. Foundational Thinking(`principle-foundational-thinking` 스킬)은 일의 *순서*를 정한다. 이 원칙은 *목표*를 정한다.

@@ -4,7 +4,7 @@ timeout_seconds: 2400
 allowed_tools: [Skill, Agent, Read, Grep, Glob, Edit, Write]
 ---
 
-`task` 스킬을 `end`로 불러 그 절차의 5단계(고치기)를 따른다. 1~4단계는 끝났다. 판정 에이전트가 타당하다고 한 아래 지적을 사용자가 모두 "지금 고친다"로 골랐고, 2단계 스택 점검이 돌려준 "고친 뒤 할 것"은 없다. 이 실행에는 셸이 없어 git, 테스트, 검증 명령을 돌릴 수 없다. 그래서 5단계 가운데 고친 뒤 판정, Implementation Notes 기록, 커밋은 하지 않는다. 고치고 나면 지적마다 무엇을 했는지 한 줄씩 마지막 메시지에 쓰고 멈춘다. 항목 파일은 `docs/backlog/002-line-port-prototype.md`다.
+`start` 스킬을 `002 --here`로 불러 그 절차의 9단계(판정하고 고치기)의 "고치는 법"만 따른다. 1~8단계는 끝났다. 판정 에이전트가 아래 지적을 타당하다고 했고, 7단계 스택 점검이 돌려준 "고친 뒤 할 것"은 없다. 이 실행에는 셸이 없어 git, 테스트, 검증 명령을 돌릴 수 없다. 그래서 9단계 가운데 고친 뒤 판정, Implementation Notes 기록, 커밋은 하지 않는다. 고치고 나면 지적마다 무엇을 했는지 한 줄씩 마지막 메시지에 쓰고 멈춘다. 항목 파일은 `docs/backlog/002-line-port-prototype.md`다.
 
 🔴 꼭 고칠 것
 - src/routes/line/Compose.svelte:24 — Safari 는 한글 조합을 마치는 Enter 를 `isComposing=false`, `keyCode 229`로 보내서, 조합 중인 글이 보내질 수 있다 — `event.keyCode === 229`일 때도 보내지 않는다.
