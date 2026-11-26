@@ -106,8 +106,9 @@ The skills and principles are other skills of this plugin. Their bodies are at `
 - A claim of "fixed" or "faster" → the `verify-this` skill.
 - Reporting a measured number, or deciding by it → the `benchmark-checklist` skill.
 - A diff that is small but reaches wide and is hard to trust → the `blast-radius` skill before the review.
-- When launching an agent → write `먼저 <이 스킬 폴더의 절대 경로>/references/worker.md 를 읽는다.` (read `<absolute path of this skill's folder>/references/worker.md` first) as the first line of the brief, and open the next line with the goal. Skills do not fire on their own, so this is the only way the rules reach a subagent.
+- When launching an agent → write `먼저 <이 스킬 폴더의 절대 경로>/references/worker.md 를 읽는다.` (read `<absolute path of this skill's folder>/references/worker.md` first) as the first line of the brief, and open the next line with the goal. Skills do not fire on their own, so this is the only way the rules reach a subagent. Give an agent you delegate implementation to the absolute path of this file as well, so it reads the principles ("When delegating" in step 5 of the procedure).
 - Before committing → the `deslop` skill. Before the review, if code changed → the `no-comments` skill.
+- Opening a PR → `playbooks/opening-a-pr.md`. Step 12 of the procedure calls it when the merge is by PR.
 - Prose (replies, item files, reports) → the `unslop` skill. Docs and commit messages → the `technical-writing` skill.
 - Merge conflicts → the `fix-merge-conflicts` skill.
 - Review findings → check each one against the code and judge it. The procedure's judge agent does this.

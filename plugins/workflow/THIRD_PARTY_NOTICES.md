@@ -5,7 +5,7 @@
 ## pstack
 
 - 원문: <https://github.com/cursor/plugins/tree/main/pstack>
-- 가져온 것: 원칙 24개(`skills/principle-*`), 스킬 11개(architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing, figure-it-out, no-comments)와 기능 지도 예시, 에이전트 1개(`agents/comment-sicko.md`), 플레이북 7개(investigation, feature, bug-fix, refactoring, prototype, perf-issue, hillclimb), 하위 에이전트 규칙(`skills/start/references/worker.md`). `start` 스킬의 색인 모양, 묻는 기준, 마지막 메시지 형식, 테스트 규칙도 pstack 의 `poteto-mode`, `ketchup`, `tdd`에서 왔다.
+- 가져온 것: 원칙 24개(`skills/principle-*`), 스킬 11개(architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing, figure-it-out, no-comments)와 기능 지도 예시, 에이전트 1개(`agents/comment-sicko.md`), 플레이북 8개(investigation, feature, bug-fix, refactoring, prototype, perf-issue, hillclimb, opening-a-pr), 하위 에이전트 규칙(`skills/start/references/worker.md`). `start` 스킬의 색인 모양, 묻는 기준, 마지막 메시지 형식, 테스트 규칙도 pstack 의 `poteto-mode`, `ketchup`, `tdd`에서 왔다.
 
 ```text
 MIT License

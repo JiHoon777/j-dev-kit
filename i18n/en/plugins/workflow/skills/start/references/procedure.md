@@ -113,7 +113,7 @@ If the user says "let me see the plan", show the plan and wait.
 - When one AC is done, check it off right away only if there is outside evidence (command output). ACs that need a judge are judged together in step 6.
 - Write what you decide without asking under `### 정한 것` as you go. Write what changed from the plan in `Implementation Notes` too.
 - Commit to the work branch at each meaningful step. Before committing, follow the `deslop` skill (with the same limit as 1 in step 6). Do not commit to the base branch.
-- **When delegating:** if you hand implementation or a fix to a subagent, put these in the brief: the scope (files, what to do, success criteria), this step's test rules, do only what is within the Acceptance Criteria, if something on the scope list above comes up do not fix it but come back, and do not commit to the base branch. The model follows the `implement` role in `<ref>/settings.md`. Read the diff of the delegated result yourself and check it. When the delegated agent reports what it chose and why, move that under `### 정한 것`.
+- **When delegating:** if you hand implementation or a fix to a subagent, put these in the brief: the scope (files, what to do, success criteria), this step's test rules, do only what is within the Acceptance Criteria, if something on the scope list above comes up do not fix it but come back, and do not commit to the base branch. Also put the absolute path of `SKILL.md` in the brief and write this: "Read the '일하는 방식' (how to work) and '원칙' (principles) sections of that file. When you apply a principle, read its body (`../<name>/SKILL.md` from the folder that holds that file; `${CLAUDE_SKILL_DIR}` inside the file is that folder), and write the principle name and the choice it changed in your report. The rest of that file (where to run, the ask criteria, the playbooks) is the delegating session's job, so do not follow it." Skills do not fire on their own, so this is the only way the principles reach the delegated agent. The model follows the `implement` role in `<ref>/settings.md`. Read the diff of the delegated result yourself and check it. When the delegated agent reports what it chose and why, move that under `### 정한 것`.
 
 ## 6. Wrap-up check
 
@@ -241,7 +241,7 @@ Do it the way the `merge` setting says. With no setting, do it the way the user 
   5. Run the verify command again in the base folder. If it fails, do not push; say so.
   6. If the user accepted the push in step 10, `git -C <base folder> push`.
   7. Cleanup: if the work was not done in a worktree, `git branch -d w/<name>`. If the session is inside a worktree, do not remove the worktree or the branch from this session. Say that archiving the session lets the app clean up the worktree, and otherwise running `git worktree remove <worktree path>` and `git branch -d w/<name>` in the base folder does it.
-- **PR:** push the work branch and open a PR that targets the base branch. If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so. Leave the worktree.
+- **PR:** follow `playbooks/opening-a-pr.md` to push the work branch and open a PR that targets the base branch. If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so. Leave the worktree.
 - **Leave as is:** do nothing. Leave the worktree and the branch.
 
 Push the base branch and deploy branches only when the user accepted it in step 10 (saying yes to "merge and push?" asked from the `local` setting counts as accepting). Do not force-push.

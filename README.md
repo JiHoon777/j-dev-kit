@@ -99,7 +99,7 @@ claude plugin install workflow@j-dev-kit --scope project
 - **판정:** Acceptance Criteria 는 명령 출력이나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다. 같은 AC 가 세 번 고쳐도 실패하면 멈추고 넘긴다. 고친 코드 없이도 통과하는 새 테스트는 🟡 로 지적한다.
 - **끝까지 하기:** "끝까지 해", "자리 비운다"고 하면 멈추지 않는다. 머지와 되돌릴 수 없는 일만 묻고, 나머지 질문은 추천안으로 정해 마지막 메시지에 모은다.
 - **하위 에이전트 규칙:** 에이전트를 띄울 때마다 지시문 첫 줄에서 규칙 파일(`start/references/worker.md`)을 읽게 한다. 지시문의 기준이 전부이고, 사람에게 묻지 않고, 고른 것과 이유를 보고한다.
-- **원칙, 스킬, 플레이북:** `start` 스킬에 "언제 → 무엇" 색인이 있고, 본문은 스킬마다 따로 있어 쓸 때 읽는다. 스스로 뜨지는 않고, `/architect`, `/how`, `/deslop`처럼 직접 부를 수 있다. 원칙 24개, 스킬 16개(architect, figure-it-out, blast-radius, how, why, 검증 스킬 만들기, control-ui, deslop, no-comments 등), 플레이북 7개(investigation, feature, bug-fix, refactoring, prototype, perf-issue, hillclimb)다. 맞는 플레이북이 없는 항목은 figure-it-out 이 그 일에 맞는 단계를 짠다. [pstack](https://github.com/cursor/plugins/tree/main/pstack)과 [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit)에서 가져왔다.
+- **원칙, 스킬, 플레이북:** `start` 스킬에 "언제 → 무엇" 색인이 있고, 본문은 스킬마다 따로 있어 쓸 때 읽는다. 스스로 뜨지는 않고, `/architect`, `/how`, `/deslop`처럼 직접 부를 수 있다. 원칙 24개, 스킬 16개(architect, figure-it-out, blast-radius, how, why, 검증 스킬 만들기, control-ui, deslop, no-comments 등), 플레이북 8개(investigation, feature, bug-fix, refactoring, prototype, perf-issue, hillclimb, opening-a-pr)다. 맞는 플레이북이 없는 항목은 figure-it-out 이 그 일에 맞는 단계를 짠다. [pstack](https://github.com/cursor/plugins/tree/main/pstack)과 [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit)에서 가져왔다.
 - **머지 방식 설정:** `.claude/workflow.json`(프로젝트)이나 `~/.claude/workflow.json`(사용자)의 `merge`에 적는다. `local`은 로컬에서 기준 브랜치에 머지하고 푸시한다. `pr`은 기준 브랜치를 대상으로 PR 을 만든다. `/kit-setup`이 물어서 써 준다. 정해 두면 `/start`는 마지막에 방식을 묻지 않고 그 방식으로 머지할지만 묻는다. 없으면 방식을 묻는다.
 - **모델 설정:** 하위 세션과 하위 에이전트가 쓸 모델과 노력을 역할(`session`, `implement`, `review`, `judge`, `mechanical`, `explore`)마다 `.claude/workflow.json`(프로젝트)이나 `~/.claude/workflow.json`(사용자)에 적는다. `/kit-setup`이 물어서 써 준다. 없으면 pstack 과 같은 기본값이다. 모두 Opus 이고, 하위 세션·구현·리뷰·판정은 노력 `xhigh`, 기계적 수정·탐색은 `high`다. Fable 은 그 일에 지목했거나 Opus 가 같은 지시문으로 두 번 실패했을 때만 쓴다. 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel`이 정하고, `/kit-setup`이 그 키도 써 줄 수 있다.
 - **/kit-help:** 무엇을 언제 쓰는지 묻는다. 답과 보낼 명령 한 줄을 주고, 일은 시작하지 않는다.
@@ -162,7 +162,7 @@ claude plugin update workflow@j-dev-kit --scope project
 
 ```
 plugins/workflow/skills/backlog/    SKILL.md + references/survey.md + scripts/next-number.sh
-plugins/workflow/skills/start/      SKILL.md(묻는 기준, 색인) + references/procedure.md, worker.md + playbooks/(7개) + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/start/      SKILL.md(묻는 기준, 색인) + references/procedure.md, worker.md + playbooks/(8개) + scripts/pick-port.sh, base-tests.sh
 plugins/workflow/skills/<스킬>/     색인이 가리키는 스킬 16개(architect, how, why, deslop 등). 직접 부를 수도 있다(`/architect`)
 plugins/workflow/skills/principle-*/  원칙 24개
 plugins/workflow/THIRD_PARTY_NOTICES.md  가져온 글의 저작권 고지(pstack, cursor-team-kit)

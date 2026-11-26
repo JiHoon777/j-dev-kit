@@ -117,6 +117,8 @@ A playbook is a list of steps inside `/start`. It is not a skill, so it has no s
 - Push one metric up to a target, again and again → hillclimb
 - None fits, or the work is large and cross-cutting → `figure-it-out` designs the steps
 
+When the merge is by PR, `/start` follows opening-a-pr. It holds the PR title and body format.
+
 The files are `start/playbooks/<name>.md`.
 
 The principles are 24 skills of one rule each (`principle-<name>`). `/start` reads the index and writes the principles it applied in the decision lines. Rather than invoking principles, the user steers by name. For example: "Apply prove it works. Show me the real output, not the build log." Typing `/principle-<name>` reads one. The list is in the index of the `start` SKILL.md.
