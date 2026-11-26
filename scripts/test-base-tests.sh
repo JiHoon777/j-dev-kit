@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# plugins/workflow/skills/task/scripts/base-tests.sh 의 시나리오 테스트. `bash scripts/test-base-tests.sh`
+# plugins/workflow/skills/start/scripts/base-tests.sh 의 시나리오 테스트. `bash scripts/test-base-tests.sh`
 # 가짜 저장소: 기준 브랜치의 lib.sh 에는 버그(add 가 뺀다)가 있고, 작업 브랜치가 고친다.
 # 작업 브랜치의 테스트 중 고친 것을 증명하는 것(기준에서 실패)과 증명하지 못하는 것(기준에서도 통과)을 구별하는지,
 # 돌린 뒤 작업 트리가 원래대로인지 본다. 하나라도 틀리면 1로 끝난다.
 
-script="$(cd "$(dirname "$0")/.." && pwd)/plugins/workflow/skills/task/scripts/base-tests.sh"
+script="$(cd "$(dirname "$0")/.." && pwd)/plugins/workflow/skills/start/scripts/base-tests.sh"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com

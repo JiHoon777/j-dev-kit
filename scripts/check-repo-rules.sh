@@ -80,7 +80,7 @@ for readme in README.md README.en.md; do
 done
 
 # 7. 두 벌인 port_open (플러그인은 따로 설치되니 한 파일로 합칠 수 없다)
-port_files=(plugins/workflow/skills/task/scripts/pick-port.sh plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh)
+port_files=(plugins/workflow/skills/start/scripts/pick-port.sh plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh)
 bodies=()
 for f in "${port_files[@]}"; do
   body=$(sed -n '/^port_open() {$/,/^}$/p' "$f" 2>/dev/null)

@@ -13,6 +13,7 @@ Do not edit files or commit. Do not start servers (the caller has it running). D
 ## What you receive
 
 - The item file path, the screen URL, the viewport
+- The path of the project's `verify-*` skill (when there is one). If you received it, read that skill's Drive method and its feature map (`features/`), and for a feature the criteria cover, get there the way the map says and look at the end state the map gives
 - After review findings were fixed: the list of findings to check
 
 ## What to do

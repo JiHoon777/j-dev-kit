@@ -1,6 +1,6 @@
 ---
 name: server-start-check
-description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인 task 스킬의 start 모드가 부른다. 서버 코드와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다.
+description: 백엔드·Supabase 프로젝트의 작업 전 점검. workflow 플러그인의 start 스킬이 부른다. 서버 코드와 Supabase 사용, 마이그레이션 담당을 판별하고, 구현 중 지킬 것과 플랜에 넣을 것을 돌려준다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -8,7 +8,7 @@ metadata:
 
 # 서버 시작 점검
 
-`/task start`가 부른다. 고치지 않는다. 이 항목에 맞는 것만 돌려준다. 보고는 프로젝트의 언어로.
+`start` 스킬이 부른다. 고치지 않는다. 이 항목에 맞는 것만 돌려준다. 보고는 프로젝트의 언어로.
 
 ## 0. 해당 여부와 판별
 
@@ -42,7 +42,7 @@ CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아�
 - 항목이 스키마를 바꾸면: 담당 도구의 생성 명령으로 마이그레이션 만들기, 필요하면 타입 재생성.
 - 항목이 API 요청·응답 형식을 바꾸면: 그 API 를 쓰는 쪽(프론트엔드, 다른 서비스)도 바꾸는지.
 - 마이그레이션 담당이 둘이거나 모노레포 서비스가 분명하지 않으면 물을 것으로.
-- Supabase 를 쓰는데 리뷰어가 부르는 공식 Supabase 스킬(`supabase`, `supabase-postgres-best-practices`)이 설치돼 있지 않으면 설치할지 물을 것으로(README "있으면 쓰는 것").
+- Supabase 를 쓰는데 리뷰어가 부르는 공식 Supabase 스킬(`supabase`, `supabase-postgres-best-practices`)이 설치돼 있지 않으면 설치할지 물을 것으로(README "있으면 쓰는 것"). 프로젝트당 한 번만 묻는다: 설치하지 않기로 하면 CLAUDE.md `## 작업 설정`에 `- 공식 스킬: 설치 안 함`을 적자고 제안하고, 그 줄이 있으면 묻지 않는다.
 
 ## 돌려줄 형식
 

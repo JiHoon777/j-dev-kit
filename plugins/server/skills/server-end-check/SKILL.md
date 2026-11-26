@@ -1,6 +1,6 @@
 ---
 name: server-end-check
-description: 백엔드·Supabase 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 서버 코드나 Supabase 가 바뀌었을 때만 빠진 마이그레이션, 마이그레이션 순서, 문서에 없는 설정 키, Supabase 검사(db diff, advisors, 타입, 키)를 확인하고, 리뷰에 넣을 api-reviewer·supabase-reviewer 를 돌려준다.
+description: 백엔드·Supabase 프로젝트의 마무리 점검. workflow 플러그인 start 스킬의 리뷰 단계가 부른다. 서버 코드나 Supabase 가 바뀌었을 때만 빠진 마이그레이션, 마이그레이션 순서, 문서에 없는 설정 키, Supabase 검사(db diff, advisors, 타입, 키)를 확인하고, 리뷰에 넣을 api-reviewer·supabase-reviewer 를 돌려준다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -8,7 +8,7 @@ metadata:
 
 # 서버 마무리 점검
 
-`/task end`가 부른다. 명령을 돌리고 결과만 돌려준다. 코드를 읽고 판단하는 리뷰는 `server:api-reviewer`, `server:supabase-reviewer`가 한다. 보고는 프로젝트의 언어로.
+`start` 스킬의 리뷰 단계가 부른다. 명령을 돌리고 결과만 돌려준다. 코드를 읽고 판단하는 리뷰는 `server:api-reviewer`, `server:supabase-reviewer`가 한다. 보고는 프로젝트의 언어로.
 
 ## 0. 해당 여부
 
@@ -33,7 +33,7 @@ metadata:
 
 ### Supabase
 
-`supabase/` 아래나 Supabase 를 부르는 코드(`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)가 바뀌었을 때만. DB 가 필요한 검사는 로컬 스택이 돌 때만(`supabase status`, 꺼져 있으면 켤지 묻는다).
+`supabase/` 아래나 Supabase 를 부르는 코드(`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`)가 바뀌었을 때만. DB 가 필요한 검사는 로컬 스택이 돌 때만(`supabase status`, 꺼져 있으면 `supabase start`로 켜고 켰다고 알린다. 끄지 않는다).
 
 - **advisors:** `supabase db advisors`. 이 변경으로 새로 생긴 지적이 있으면 실패.
 - **타입**(생성된 타입 파일이 있을 때): 같은 옵션으로 임시 파일에 `supabase gen types typescript --local`을 만들어 비교. 다르면 실패(다시 생성해 커밋).

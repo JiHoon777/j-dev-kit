@@ -33,7 +33,7 @@ updated_date: YYYY-MM-DD
 
 ## Implementation Plan
 
-만들 때는 비워 둔다. `/task start`가 승인된 계획을 적는다.
+만들 때는 비워 둔다. `/start`가 계획을 적는다.
 
 ## Implementation Notes
 
@@ -41,4 +41,4 @@ updated_date: YYYY-MM-DD
 
 ## Final Summary
 
-`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.
+`/start`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.

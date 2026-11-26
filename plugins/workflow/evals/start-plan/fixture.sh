@@ -79,7 +79,7 @@ J
 cat > docs/backlog/README.md <<'J'
 # 백로그
 
-`/task create`가 항목을 만들고, `/task start`·`/task end`가 진행한다.
+`/backlog`가 항목을 만들고, `/start`가 구현부터 머지까지 진행한다.
 J
 cat > docs/backlog/001-feat-cancel-refund.md <<'J'
 ---

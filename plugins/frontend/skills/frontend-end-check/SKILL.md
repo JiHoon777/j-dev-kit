@@ -1,6 +1,6 @@
 ---
 name: frontend-end-check
-description: 프론트엔드 프로젝트의 마무리 점검. workflow 플러그인 task 스킬의 end 모드가 부른다. 프론트엔드 코드가 바뀌었을 때만 남은 디버그 코드와 lockfile 을 확인하고 프레임워크 검사 도구를 돌린 뒤, 리뷰에 넣을 frontend-reviewer·design-reviewer 와 고친 뒤 할 브라우저 확인을 돌려준다.
+description: 프론트엔드 프로젝트의 마무리 점검. workflow 플러그인 start 스킬의 리뷰 단계가 부른다. 프론트엔드 코드가 바뀌었을 때만 남은 디버그 코드와 lockfile 을 확인하고 프레임워크 검사 도구를 돌린 뒤, 리뷰에 넣을 frontend-reviewer·design-reviewer 와 고친 뒤 할 브라우저 확인을 돌려준다.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -8,7 +8,7 @@ metadata:
 
 # 프론트엔드 마무리 점검
 
-`/task end`가 부른다. 명령을 돌리고 결과만 돌려준다. 코드를 읽고 판단하는 리뷰는 `frontend:frontend-reviewer`가 한다. 보고는 프로젝트의 언어로.
+`start` 스킬의 리뷰 단계가 부른다. 명령을 돌리고 결과만 돌려준다. 코드를 읽고 판단하는 리뷰는 `frontend:frontend-reviewer`가 한다. 보고는 프로젝트의 언어로.
 
 ## 0. 해당 여부
 
@@ -33,9 +33,9 @@ UI 코드가 바뀌었으면 `frontend:frontend-reviewer`. 근거로 바뀐 UI �
 리뷰 지적을 고쳐 UI 가 바뀌었으면, 고친 화면을 `frontend:frontend-evaluator` 에이전트에 맡겨 확인한다. reference 가 더하는 것도.
 
 - 개발 서버를 띄운다. 포트는 작업 브랜치 항목의 `### 포트`에 있는 웹 포트, 없으면 `.claude/launch.json`의 포트다(launch.json 은 고치지 않는다). launch.json 으로 그 포트에 띄울 수 있으면 그것으로 띄우고 `bash ${CLAUDE_SKILL_DIR}/../frontend-start-check/scripts/dev-server.sh <포트>`로 듣는지 확인한다. 아니면 개발 명령이 포트를 받는 방식(예: Vite `--port`, 위치 인자, `PORT` 환경 변수)을 package.json 스크립트에서 확인해 `bash ${CLAUDE_SKILL_DIR}/../frontend-start-check/scripts/dev-server.sh <포트> <그 포트로 띄우는 명령…>`으로 띄운다. 출력의 `URL:`을 화면 URL 로 쓰고, 0 이 아닌 값으로 끝나면 출력한 이유를 알린다. 백엔드 서버도 띄워야 하면 같은 스크립트로 서버 포트에 띄우고, 웹이 백엔드 주소를 받는 곳(프록시 대상, `VITE_API_URL` 같은 환경 변수)은 파일을 고치지 않고 명령 인자나 환경 변수로 그 서버 포트를 가리키게 한다. 빌드에서만 보이는 변경(서비스 워커, 정적 생성)은 빌드한 뒤 미리보기 명령을 같은 스크립트로 띄운다.
-- 에이전트에 항목 파일 경로, 화면 URL, 뷰포트, 고친 지적 목록을 넘긴다. 어떻게 고쳤는지는 넘기지 않는다.
+- 에이전트에 항목 파일 경로, 화면 URL, 뷰포트, 고친 지적 목록을 넘긴다. 프로젝트에 `verify-*` 스킬이 있으면 그 경로도 넘긴다. 어떻게 고쳤는지는 넘기지 않는다.
 - 뷰포트는 CLAUDE.md 에 정한 것, 없으면 데스크톱. 반응형 레이아웃을 고쳤으면 휴대폰(375×812)도.
-- "실패"는 다시 고친다. 같은 지적이 세 번 고쳐도 실패하면 더 고치지 않고 멈추고, 실패한 지적과 시도한 것을 사용자에게 알린다. 같은 고치기를 되풀이하기보다 사람이 접근을 다시 보는 편이 낫다. 에이전트가 "브라우저 도구 없음"이라고 하면 직접 확인하고(`chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저) 직접 했다고 적는다. 직접도 할 수 없으면 멈추고 알린다.
+- "실패"는 다시 고친다. 같은 지적이 세 번 고쳐도 실패하면 더 고치지 않고 멈추고, 실패한 지적과 시도한 것을 사용자에게 알린다. 같은 고치기를 되풀이하기보다 사람이 접근을 다시 보는 편이 낫다. 에이전트가 "브라우저 도구 없음"이라고 하면 직접 확인하고(`chrome-devtools` 스킬이 있으면 그것, 없으면 앱의 내장 브라우저) 직접 했다고 적는다. 직접도 할 수 없으면 멈추지 않는다. "확인 못 함"으로 적고 계속하고, 마지막 메시지에 올린다.
 
 ## 돌려줄 형식
 

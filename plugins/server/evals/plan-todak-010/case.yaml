@@ -1,6 +1,6 @@
 schema_version: "1.1"
 name: plan-todak-010
-description: 실제 항목(todak 010 작업본·공개 함수·이력, main b545b27 에서 To Do)을 server-start-check 를 따라 계획한다. 정답은 승인된 계획이 아직 없어 server-start-check "지킬 것"의 원칙(인가·입력 검증, 트랜잭션·멱등성, 비밀 값)이 이 항목에 들어가는지로 본다(B5)
+description: 실제 항목(todak 010 작업본·공개 함수·이력, main b545b27 에서 To Do)을 server-start-check 를 따라 계획한다. 정답으로 삼을 계획이 아직 없어 server-start-check "지킬 것"의 원칙(인가·입력 검증, 트랜잭션·멱등성, 비밀 값)이 이 항목에 들어가는지로 본다(B5)
 tags: [real-plan]
 context:
   scaffold_script: fixture.sh

@@ -1,6 +1,6 @@
 ---
 name: server-start-check
-description: Pre-work check for backend and Supabase projects. Called by the start mode of the workflow plugin's task skill. Detects server code, Supabase usage, and the migration owner, and returns what to follow during implementation and what to put in the plan.
+description: Pre-work check for backend and Supabase projects. Called by the workflow plugin's start skill. Detects server code, Supabase usage, and the migration owner, and returns what to follow during implementation and what to put in the plan.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -10,7 +10,7 @@ metadata:
 
 # Server start check
 
-Called by `/task start`. Does not edit anything. Returns only what fits this item. Report in the project's language.
+Called by the `start` skill. Does not edit anything. Returns only what fits this item. Report in the project's language.
 
 ## 0. Applicability and detection
 
@@ -44,7 +44,7 @@ Return only what applies to this item.
 - If the item changes the schema: create a migration with the owning tool's generate command, regenerate types if needed.
 - If the item changes the API request or response format: whether the consumers of that API (frontend, other services) also change.
 - If there are two migration owners or the monorepo service is unclear, put it under questions.
-- If Supabase is used and the official Supabase skills the reviewers invoke (`supabase`, `supabase-postgres-best-practices`) are not installed, put whether to install them under questions ("Used when installed" in the README).
+- If Supabase is used and the official Supabase skills the reviewers invoke (`supabase`, `supabase-postgres-best-practices`) are not installed, put whether to install them under questions ("Used when installed" in the README). Ask only once per project: if the answer is not to install, suggest writing `- 공식 스킬: 설치 안 함` (official skills: not installed) under `## 작업 설정` (work settings) in CLAUDE.md, and do not ask when that line is there.
 
 ## Return format
 

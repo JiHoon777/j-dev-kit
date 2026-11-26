@@ -155,6 +155,16 @@ updated_date: 2026-11-26
 - `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과(2026-11-26, main `2c90103`). 이미 실패하는 것 없음.
 - 스택 점검: frontend·server 모두 "해당 없음"(CLAUDE.md `stack: 없음`).
 
+### 정한 것
+
+- 스크립트 둘을 `skills/start/scripts/`로 옮기면서 짝 테스트가 검증에 걸렸는데, 이 맥에서는 변경 전(main)에도 실패했다. 테스트와 스크립트를 최소로 고쳤다 — 검증 명령이 통과해야 항목을 닫을 수 있다(Prove It Works) — 016 의 범위 밖 수정 셋이 들어갔다
+  - `scripts/test-check-repo-rules.sh`: `sed -i`가 BSD sed(macOS)에서 돌지 않아 두 sed 모두에서 도는 함수로 감쌌다. 44개 중 15개 → 44개 통과
+  - `pick-port.sh`·`dev-server.sh`의 `port_open`: 이 맥에서 bash 로 돌린 `netstat -an`은 TCP 줄을 하나도 보여 주지 않는데 출력에 "tcp"라는 글자는 있어(`com.apple.network.tcp_ccdebug`), 듣는 포트를 "없음"으로 판정했다. TCP 줄이 없으면 다음 방법(`/dev/tcp`)으로 넘어가게 고쳤다(Fix Root Causes). 쓰는 중인 포트를 못 피하던 실제 버그다
+  - `scripts/test-pick-port.sh`: 이 기계에서 흉내 낼 수 없는 두 경우(netstat 만 쓰기, `nc`가 `git`·`head`와 같은 폴더에 있을 때의 "nc 없음")는 건너뛰고 그렇다고 출력한다
+- 번역본의 `> Source:` 줄 문구를 43개 파일에서 하나로 맞췄다 — 한 가지를 한 이름으로(unslop 11) — 없음
+- eval 트리거 사례의 채점은 어느 스킬을 불렀는지까지 본다(`(:|")start"`, `(:|")backlog"`) — 스킬이 둘로 나뉘어 "불렀다"만으로는 맞는 스킬인지 모른다 — 러너가 Skill 입력을 다른 모양으로 적으면 정규식을 고쳐야 한다
+- README 에 "superpowers 는 쓰지 않는다. 켜져 있으면 끈다"와 문제 해결 줄을 남겼다 — 예전 안내대로 CLAUDE.md 문단을 넣어 둔 사용자가 있다. AC #9 의 grep 범위(plugins, i18n, 매니페스트, 설정)에는 들지 않는다 — README 에 superpowers 라는 말이 남는다
+
 ## Final Summary
 
 `/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.

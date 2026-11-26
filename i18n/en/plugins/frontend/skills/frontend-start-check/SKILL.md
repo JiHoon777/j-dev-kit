@@ -1,6 +1,6 @@
 ---
 name: frontend-start-check
-description: Pre-work check for frontend projects. Called by the start mode of the workflow plugin's task skill. Detects the framework and returns what to follow during implementation (frontend-design, framework rules, browser check), what to do before planning (mockups), and what to put in the plan (DESIGN.md). Framework-specific content lives in references (svelte.md, react.md).
+description: Pre-work check for frontend projects. Called by the workflow plugin's start skill. Detects the framework and returns what to follow during implementation (frontend-design, framework rules, browser check), what to do before planning (mockups), and what to put in the plan (DESIGN.md). Framework-specific content lives in references (svelte.md, react.md).
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -10,7 +10,7 @@ metadata:
 
 # Frontend start check
 
-Called by `/task start`. Does not modify anything and runs almost no commands. Returns only what fits this item. Report in the project's language.
+Called by the `start` skill. Does not modify anything and runs almost no commands. Returns only what fits this item. Report in the project's language.
 
 ## 0. Applicability
 
@@ -32,10 +32,10 @@ Return only what applies to this item.
 - **When choosing a new web feature or UI pattern** (dialog, popover, layout, form validation, etc.): invoke the `modern-web-guidance` skill if available.
 - **Browser check** (when the UI changes, at the end of implementation): the implementing session does not judge it itself; hand it to the `frontend:frontend-evaluator` agent.
   - Start the dev server. The port is the web port under `### 포트` in the work branch item, or else the port in `.claude/launch.json` (do not edit launch.json). If launch.json can start it on that port, start it that way and confirm it is listening with `bash ${CLAUDE_SKILL_DIR}/scripts/dev-server.sh <port>`. Otherwise check in the package.json scripts how the dev command takes a port (for example Vite `--port`, a positional argument, or the `PORT` environment variable) and start it with `bash ${CLAUDE_SKILL_DIR}/scripts/dev-server.sh <port> <command that starts it on that port…>`. Use the `URL:` line of the output as the screen URL, and if it exits with a non-zero value, report the reason it printed. If a backend server is needed too, start it on the server port with the same script, and point the place where the web app takes the backend address (proxy target, an environment variable like `VITE_API_URL`) at that server port through command arguments or environment variables, without editing files. For changes visible only in a build (service worker, static generation), build and then start the preview command with the same script.
-  - Pass the agent only the item file path, the screen URL and the viewport. Do not pass what was implemented or how.
+  - Pass the agent only the item file path, the screen URL and the viewport. If the project has a `verify-*` skill (`.claude/skills/verify-*/`), pass its path too. Do not pass what was implemented or how.
   - Viewport: the one set in CLAUDE.md, otherwise desktop. If you changed a responsive layout, also mobile (375×812).
   - Fix a "fail" and hand it over again. If the same AC still fails after three fixes, stop fixing and tell the user which AC failed and what you tried. A person rethinking the approach beats repeating the same fix. Do not check off a "could not verify"; tell the user.
-  - If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser): walk through each Acceptance Criterion as a user would, with no console errors and no failed requests (4xx/5xx). Write in `Implementation Notes` that you did it yourself. If you cannot do that either, stop and say so.
+  - If the agent says "no browser tool", check it yourself (the `chrome-devtools` skill if available, otherwise the app's built-in browser): walk through each Acceptance Criterion as a user would, with no console errors and no failed requests (4xx/5xx). Write in `Implementation Notes` that you did it yourself. If you cannot do that either, do not stop. Write it as "could not verify" and continue, and raise it in the last message.
 - The framework rules from the reference.
 
 ## 2. Before planning / To put in the plan / To ask

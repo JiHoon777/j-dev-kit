@@ -1,6 +1,6 @@
 ---
 name: design-reviewer
-description: Opens a built UI screen in a browser and checks what only shows once it is open (the screen per width, automated accessibility checks, contrast, the keyboard, on-screen states and the console, DESIGN.md tokens). frontend-end-check returns it when `/task end` reviews a work branch that changed a screen, and it runs with the URL and the baseline file paths. Only reads, and reports the problems it finds, split into confirmed and not confirmed.
+description: Opens a built UI screen in a browser and checks what only shows once it is open (the screen per width, automated accessibility checks, contrast, the keyboard, on-screen states and the console, DESIGN.md tokens). frontend-end-check returns it when the `start` skill reviews a work branch that changed a screen, and it runs with the URL and the baseline file paths. Only reads, and reports the problems it finds, split into confirmed and not confirmed.
 disallowedTools: Edit, Write, NotebookEdit
 ---
 

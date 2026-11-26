@@ -1,6 +1,5 @@
 {
   "enabledPlugins": {
-    "superpowers@anthropic-plugin-directory": true,
     "workflow@j-dev-kit": true,
     "typescript-lsp@anthropic-plugin-directory": true,
     "frontend-design@anthropic-plugin-directory": true,

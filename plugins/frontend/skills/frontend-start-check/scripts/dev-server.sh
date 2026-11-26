@@ -20,7 +20,8 @@ port_open() {
   for m in ${PORT_CHECK_METHODS-netstat devtcp nc}; do
     case $m in
       netstat) # 한 번에 목록을 읽어 빠르다. 상태 낱말(LISTEN)은 언어마다 달라, 상대 주소가 빈 TCP 줄을 듣는 줄로 본다
-        out=$(netstat -an 2> /dev/null) && [[ $out == *[Tt][Cc][Pp]* ]] || continue
+        # TCP 줄이 하나도 없으면 netstat 이 소켓을 보여 주지 못한 것이다(macOS 에서 bash 로 돌 때 그럴 수 있다). 다음 방법으로 넘어간다
+        out=$(netstat -an 2> /dev/null) && grep -qE '^[[:space:]]*(TCP|tcp[46]*)[[:space:]]' <<< "$out" || continue
         grep -qE "^[[:space:]]*(TCP|tcp[46]*)[[:space:]].*[.:]$p[[:space:]]+(0\.0\.0\.0:0|\[::\]:0|0\.0\.0\.0:\*|:::\*|\*\.\*|\*:\*)([[:space:]]|\$)" <<< "$out" && return 0
         return 1 ;;
       devtcp) # 두 주소에 함께 붙는다(Windows 는 닫힌 포트에 붙는 데 2초쯤 걸린다)

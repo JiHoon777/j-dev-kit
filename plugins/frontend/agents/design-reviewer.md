@@ -1,6 +1,6 @@
 ---
 name: design-reviewer
-description: 구현된 UI 화면을 브라우저로 열어, 열어야만 보이는 것(폭별 화면, 자동 접근성 검사, 대비, 키보드, 화면의 상태와 콘솔, DESIGN.md 토큰)을 확인한다. 화면이 바뀐 작업 브랜치를 `/task end`가 리뷰할 때 frontend-end-check 가 돌려주고, URL 과 기준 파일 경로를 받아 돈다. 읽기만 하고, 찾은 문제를 확인한 것과 확인 못 한 것으로 나눠 보고한다.
+description: 구현된 UI 화면을 브라우저로 열어, 열어야만 보이는 것(폭별 화면, 자동 접근성 검사, 대비, 키보드, 화면의 상태와 콘솔, DESIGN.md 토큰)을 확인한다. 화면이 바뀐 작업 브랜치를 `start` 스킬이 리뷰할 때 frontend-end-check 가 돌려주고, URL 과 기준 파일 경로를 받아 돈다. 읽기만 하고, 찾은 문제를 확인한 것과 확인 못 한 것으로 나눠 보고한다.
 disallowedTools: Edit, Write, NotebookEdit
 ---
 

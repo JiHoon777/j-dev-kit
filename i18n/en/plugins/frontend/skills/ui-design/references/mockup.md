@@ -6,16 +6,16 @@ Handle one screen at a time.
 
 ## 1. Brief
 
-Settle the screen, who uses it, what they do there, and the real copy and data. Ask only what code and docs cannot answer, at most 3 questions at once. Always ask how many mockups. The number decides whether step 2 (directions) happens.
+Settle the screen, who uses it, what they do there, and the real copy and data. Ask only what code and docs cannot answer, at most 3 questions at once. Do not ask how many mockups. The default is 3. If the user said a number, use that number.
 
 - One: build one direction right away. Skip step 2.
-- Several: 3 by default, at most 5. Compare after building and pick.
+- Several: at most 5. Compare after building and pick.
 
-Check whether the root has a `DESIGN.md` (`ls DESIGN.md`). If not, suggest `system` first. If the user wants to go ahead anyway, go ahead. If `/task start` invoked this before planning, do not suggest it (DESIGN.md is handled in that item's plan).
+Check whether the root has a `DESIGN.md` (`ls DESIGN.md`). If not, suggest `system` first. If the user wants to go ahead anyway, go ahead. If the `start` skill invoked this before planning, do not suggest it (DESIGN.md is handled in that item's plan).
 
 ## 2. Directions (several only)
 
-Show a table before building and get confirmation.
+Show a table before building. Build right away without waiting for confirmation. If the user steps in to change it, follow them.
 
 | Name | Axis | Strength | Cost |
 | --- | --- | --- | --- |
@@ -47,7 +47,7 @@ When the user says it is done, record it. Do not write mockup files to the repo.
 - Changed while refining: …
 ```
 
-- If `/task start` invoked this before planning, put this in the plan's "assumptions and decisions". Start step 4 writes it to the item file, and the implementation follows the chosen option.
+- If the `start` skill invoked this before planning, put this in the plan's "Decisions". Step 4 of the start procedure writes it to the item file, and the implementation follows the chosen option.
 - Otherwise, report it.
 
 ## When the canvas is unavailable

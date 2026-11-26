@@ -47,7 +47,7 @@ J
 cat > docs/backlog/README.md <<'J'
 # 백로그
 
-`/task create`가 항목을 만든다. 형식은 `_template.md`.
+`/backlog`가 항목을 만든다. 형식은 `_template.md`.
 J
 cat > docs/backlog/_template.md <<'J'
 ---

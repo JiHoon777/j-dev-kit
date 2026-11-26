@@ -1,6 +1,6 @@
 # 백로그
 
-`/task create`가 항목을 만들고, `/task start`·`/task end`가 진행한다. 끝난 항목은 `docs/done/`으로 옮긴다.
+`/backlog`가 항목을 만들고, `/start`가 구현부터 머지까지 진행한다. 끝난 항목은 `docs/done/`으로 옮긴다.
 
 ## 규칙
 

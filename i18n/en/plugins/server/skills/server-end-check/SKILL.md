@@ -1,6 +1,6 @@
 ---
 name: server-end-check
-description: Wrap-up check for backend and Supabase projects. Called by the end mode of the workflow plugin's task skill. Only when server code or Supabase changed, checks missing migrations, migration order, config keys missing from docs, and Supabase checks (db diff, advisors, types, keys), and returns api-reviewer and supabase-reviewer to add to the review.
+description: Wrap-up check for backend and Supabase projects. Called by the review step of the workflow plugin's start skill. Only when server code or Supabase changed, checks missing migrations, migration order, config keys missing from docs, and Supabase checks (db diff, advisors, types, keys), and returns api-reviewer and supabase-reviewer to add to the review.
 user-invocable: false
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -10,7 +10,7 @@ metadata:
 
 # Server end check
 
-Called by `/task end`. Runs commands and returns only the results. Review that reads and judges code is done by `server:api-reviewer` and `server:supabase-reviewer`. Report in the project's language.
+Called by the `start` skill's review step. Runs commands and returns only the results. Review that reads and judges code is done by `server:api-reviewer` and `server:supabase-reviewer`. Report in the project's language.
 
 ## 0. Applicability
 
@@ -35,7 +35,7 @@ Run `bash ${CLAUDE_SKILL_DIR}/scripts/config-check.sh <base>`. Each line it prin
 
 ### Supabase
 
-Only when files under `supabase/` or code that calls Supabase (`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`) changed. Checks that need the DB run only while the local stack is running (`supabase status`; if it is off, ask whether to start it).
+Only when files under `supabase/` or code that calls Supabase (`.from(`, `.rpc(`, `.channel(`, `auth.`, `storage.`) changed. Checks that need the DB run only while the local stack is running (`supabase status`; if it is off, start it with `supabase start` and say that you did. Do not stop it).
 
 - **advisors:** `supabase db advisors`. A finding newly introduced by this change is a failure.
 - **Types** (when a generated types file exists): generate `supabase gen types typescript --local` into a temp file with the same options and compare. A difference is a failure (regenerate and commit).

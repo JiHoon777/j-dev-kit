@@ -14,5 +14,5 @@ Read by `frontend-start-check` when package.json has `react`. Add the following 
 
 ## To ask
 
-- If the skills above are not installed, ask whether to install them (the commands under "Used when installed" in the README).
+- If the skills above are not installed, ask whether to install them (the commands under "Used when installed" in the README). Ask only once per project: if the answer is not to install, suggest writing `- 공식 스킬: 설치 안 함` (official skills: not installed) under `## 작업 설정` (work settings) in CLAUDE.md, and do not ask when that line is there.
 - If Next is below 16.3 and there is no `.next-docs/`, ask whether to fetch the docs with `npx @next/codemod@canary agents-md`.

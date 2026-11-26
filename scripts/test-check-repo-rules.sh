@@ -10,6 +10,8 @@ export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com
 export GIT_COMMITTER_NAME=test GIT_COMMITTER_EMAIL=test@example.com
 export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.autocrlf GIT_CONFIG_VALUE_0=false # 줄 끝 경고 끄기
 export CHECK_TESTS_TIMEOUT=3 # 가짜 짝 테스트는 바로 끝난다. 시간 초과 시나리오만 이것에 걸린다
+# sed -i 는 GNU 와 BSD(macOS)가 다르다. 백업 접미사를 붙이면 둘 다 받으니, 그렇게 돌리고 백업을 지운다. 파일은 마지막 인자 하나다.
+sed() { if [ "$1" = -i ]; then shift; command sed -i.bak "$@" && rm -f "${!#}.bak"; else command sed "$@"; fi; }
 
 # 가짜 저장소: alpha·beta 는 marketplace 와 README 에 있고, gamma 는 없다.
 plugin() { # 이름
@@ -27,7 +29,7 @@ EOF
   echo "# $1" > "plugins/$1/skills/a.md"
   echo "# $1 en" > "i18n/en/plugins/$1/skills/a.md"
 }
-pick_port=plugins/workflow/skills/task/scripts/pick-port.sh
+pick_port=plugins/workflow/skills/start/scripts/pick-port.sh
 dev_server=plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh
 port_fn() { # 위 주석 줄. 실제처럼 주석은 다르고 본문은 같다
   printf '%s\nport_open() {\n  local p=$1\n  return 2\n}\n\nport_open 1\n' "$1"

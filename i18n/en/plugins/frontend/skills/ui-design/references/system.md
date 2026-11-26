@@ -15,7 +15,7 @@ The format is Google DESIGN.md (alpha). Do not write the spec from memory; get i
 - **New:** put only values found in the code into the YAML tokens. Keep only sections that have content. Ask about what the code cannot tell (tone, principles, Do's and Don'ts). Do not make it up without asking.
 - **Update:** show only the tokens where the code and DESIGN.md differ, as a table (token, DESIGN.md value, code value). Ask which side is right.
 
-Get approval, then write the root `DESIGN.md`.
+Show what will be written and get approval once. This approval covers both the write and the commit in step 5. Once approved, write the root `DESIGN.md`.
 
 ## 3. Check
 
@@ -27,4 +27,4 @@ DESIGN.md is not read automatically. If CLAUDE.md has no `@DESIGN.md` line, ask 
 
 ## 5. Commit
 
-Get approval and commit as `design: DESIGN.md <create|update>`.
+It was approved in step 2, so commit as `design: DESIGN.md <create|update>` without asking again.

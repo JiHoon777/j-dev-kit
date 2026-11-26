@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# plugins/workflow/skills/task/scripts/pick-port.sh 의 시나리오 테스트. `bash scripts/test-pick-port.sh`
+# plugins/workflow/skills/start/scripts/pick-port.sh 의 시나리오 테스트. `bash scripts/test-pick-port.sh`
 # 임시 폴더에 가짜 저장소를 만들고, 다른 항목의 w/ 브랜치와 듣는 포트를 시나리오마다 꾸며 돌린다.
 # 듣는 포트는 node(없으면 python)로 localhost 에 띄운다. 하나라도 틀리면 1로 끝난다.
 
-script="$(cd "$(dirname "$0")/.." && pwd)/plugins/workflow/skills/task/scripts/pick-port.sh"
+script="$(cd "$(dirname "$0")/.." && pwd)/plugins/workflow/skills/start/scripts/pick-port.sh"
 tmp=$(mktemp -d)
 listener_pid=
 cleanup() { [ -n "$listener_pid" ] && kill "$listener_pid" 2>/dev/null; rm -rf "$tmp"; }
@@ -84,7 +84,12 @@ check "이 항목이 전에 적은 포트는 피하지 않는다" 0 $((base + 9)
 check "작업 트리의 진행 중 항목도 피한다" 0 $((base + 10)) - "item 012 'In Progress' '웹: $((base + 9))'" -- $base 009
 if listen; then
   check "듣고 있는 포트 → 다음 번호" 0 $((base + 10)) - -- $base 009
-  PORT_CHECK_METHODS=netstat check "netstat 으로 듣는 포트를 찾는다" 0 $((base + 10)) - -- $base 009
+  # netstat 이 TCP 소켓을 보여 주지 않는 기계(macOS 에서 bash 로 돌 때)에서는 이 방법만 따로 시험할 수 없다
+  if netstat -an 2> /dev/null | grep -qE '^[[:space:]]*(TCP|tcp[46]*)[[:space:]]'; then
+    PORT_CHECK_METHODS=netstat check "netstat 으로 듣는 포트를 찾는다" 0 $((base + 10)) - -- $base 009
+  else
+    echo "건너뜀: netstat 으로 듣는 포트를 찾는다 (이 기계의 netstat 이 TCP 줄을 보여 주지 않는다)"
+  fi
   PORT_CHECK_METHODS=devtcp check "bash /dev/tcp 로 듣는 포트를 찾는다" 0 $((base + 10)) - -- $base 009
   check "다른 진행 중 항목의 기본 포트도 피한다" 0 $((base + 11)) - "other 010 'In Progress'" -- $base 009
   unlisten
@@ -95,7 +100,12 @@ fi
 PORT_CHECK_METHODS= check "확인할 방법 없음 → 항목만 피한 포트와 이유, 0 아님" 2 $((base + 9)) "확인할 방법 없음" -- $base 009
 # PATH 에서 nc 가 있는 폴더를 뺀다(macOS 처럼 nc 가 있는 기계에서도 "없음"을 시험하려고)
 no_nc_path=$(printf '%s' "$PATH" | tr ':' '\n' | while IFS= read -r d; do [ -x "$d/nc" ] || printf '%s:' "$d"; done)
-PORT_CHECK_METHODS=nc PATH=${no_nc_path%:} check "nc 만 쓰는데 nc 없음 → 0 아님" 2 $((base + 9)) "확인할 방법 없음" -- $base 009
+# nc 가 git·head 와 같은 폴더(/usr/bin)에 있는 기계에서는 그 폴더를 빼면 스크립트와 이 테스트도 돌지 못한다. 그때는 건너뛴다.
+if PATH=${no_nc_path%:} command -v git > /dev/null && PATH=${no_nc_path%:} command -v head > /dev/null; then
+  PORT_CHECK_METHODS=nc PATH=${no_nc_path%:} check "nc 만 쓰는데 nc 없음 → 0 아님" 2 $((base + 9)) "확인할 방법 없음" -- $base 009
+else
+  echo "건너뜀: nc 만 쓰는데 nc 없음 (nc 가 git·head 와 같은 폴더에 있어 흉내 낼 수 없다)"
+fi
 check "인자가 틀림 → 사용법, 0 아님" 2 - "사용법" -- $base
 
 echo "$total 개 중 $pass 개 맞음"
