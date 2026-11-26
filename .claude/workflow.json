@@ -1,0 +1,10 @@
+{
+  "models": {
+    "session": { "model": "opus", "effort": "xhigh" },
+    "implement": { "model": "opus", "effort": "xhigh" },
+    "review": { "model": "opus", "effort": "xhigh" },
+    "judge": { "model": "opus", "effort": "xhigh" },
+    "mechanical": { "model": "opus", "effort": "high" },
+    "explore": { "model": "opus", "effort": "high" }
+  }
+}
