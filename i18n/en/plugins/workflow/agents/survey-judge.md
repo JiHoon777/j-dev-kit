@@ -6,7 +6,7 @@ tools: Read, Grep, Glob, WebSearch, WebFetch
 
 > Translation. Source: [plugins/workflow/agents/survey-judge.md](../../../../../plugins/workflow/agents/survey-judge.md). Update this file when the source changes. Claude does not read this file.
 
-Check the candidates the survey picked, apart from the side that gathered them. The brief gives the candidate list, the notes (file paths or content), the `docs/backlog/` and `docs/done/` paths, and the judging criteria.
+Check the candidates the survey picked, apart from the side that gathered them. The brief gives the candidate list, the notes (file paths or content), the paths of the command output files (if any), the `docs/backlog/` and `docs/done/` paths, and the judging criteria.
 
 ## Boundaries
 
