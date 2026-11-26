@@ -39,7 +39,7 @@ updated_date: 2026-11-26
 - **start 와 end 를 합친다.** `/task start` 하나가 구현, 검증, 리뷰, 지적 고치기, 머지 질문까지 한다. `end` 모드는 없다. 그래서 "end 를 진행할까요?"도, 사용자가 `/task end`를 치는 일도 없다.
 - **AC 승인은 남긴다.** 계획 승인이 없어지면 구현 전에 사람이 확인하는 유일한 계약이다.
 - **superpowers 를 쓰지 않는다.** 플러그인 의존성에서 빼고, `/task`가 부르던 다섯 스킬(brainstorming, test-driven-development, verification-before-completion, receiving-code-review, finishing-a-development-branch)에서 필요한 규칙만 `/task` 절차에 직접 적는다.
-- **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 7개(architect, blast-radius, how, why, benchmark-checklist, 검증 스킬 만들기·유지하기), 플레이북 5개(Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다. pstack 이 기대어 쓰는 cursor-team-kit(`cursor/plugins`의 `cursor-team-kit/`, MIT, Cursor)에서도 가져온다: control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 앞의 셋은 pstack 이 직접 부르는 것이다.
+- **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 9개(architect, blast-radius, how, why, benchmark-checklist, 검증 스킬 만들기·유지하기, unslop, technical-writing), 플레이북 5개(Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다. pstack 이 기대어 쓰는 cursor-team-kit(`cursor/plugins`의 `cursor-team-kit/`, MIT, Cursor)에서도 가져온다: control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 앞의 셋은 pstack 이 직접 부르는 것이다.
 - **정리는 pstack 처럼 deslop 으로 한다.** 커밋 전에 deslop 을 돌려 이 브랜치가 넣은 군더더기를 묻지 않고 바로 고친다. 동작은 바꾸지 않는다. simplify 를 돌릴지, 무엇을 고칠지 묻던 두 질문(11-25, `fa91c89`)은 없앤다.
 
 ### 근거
@@ -55,7 +55,7 @@ updated_date: 2026-11-26
 - 진입 모드 스킬(`/poteto-mode` 같은 것). 004 의 `/until-done`이 같은 일을 하다가 한 번도 쓰이지 않고 006 에서 지워졌다. 이 항목을 써 본 뒤 따로 정한다. 만든다면 이 항목과 같은 기준을 따른다: 꼭 필요한 것만 묻고, 나머지는 정한 것과 이유를 적으면서 알아서 한다.
 - pstack 의 나머지. 이유는 추가 조사 보고서의 "가져오지 않는 것" 표에 있다
   - PR·Cursor 클라우드 중심 플레이북(Opening a PR, Babysit, Shipping, Autopilot 둘)과 `/task` 밖의 일을 다루는 플레이북(Investigation, Autonomous run, Session pickup, Pause safely 등). 뒤의 것은 진입 모드 스킬을 정할 때 함께 본다
-  - 다른 회사 모델 패널이 핵심인 스킬(arena, swarm, interrogate), 글쓰기 스킬, Cursor 전용 스킬
+  - 다른 회사 모델 패널이 핵심인 스킬(arena, swarm, interrogate), no-comments, Cursor 전용 스킬
   - cursor-team-kit 의 PR·CI 스킬(fix-ci, loop-on-ci, review-and-ship, pr-review-canvas 등), 주간 요약 스킬, thermo-nuclear 리뷰
 - 다른 플러그인의 리뷰어 에이전트 본문
 - 사용자 컴퓨터에서 superpowers 플러그인을 지우는 일(사용자가 한다)
@@ -72,7 +72,7 @@ updated_date: 2026-11-26
 - [ ] #3 `start`의 "범위가 커지면 멈춘다"가 확인할 수 있는 목록이다: AC 밖 동작, 새 의존성·도구 설치, 스키마·공개 API·삭제, CLAUDE.md·설정 변경
 - [ ] #4 `create`는 AC 전문을 보여 주고 승인받는다. 서베이 모드는 후보 표에 AC 초안을 넣어, 고르기 한 번으로 항목을 쓰고 다시 승인받지 않는다
 - [ ] #5 커밋 전에 deslop 을 돌린다. 묻지 않고 바로 고치고, 동작은 바꾸지 않는다. 고친 것을 한 줄로 적는다. simplify 를 돌릴지와 무엇을 고칠지 묻던 질문은 없다
-- [ ] #6 리뷰 판정에서 타당한 🔴·🟡 는 묻지 않고 고친 뒤 알린다. 남은 질문(AC·정한 것과 부딪히는 지적, "나중" 후보, 머지 방식)은 한 메시지로 추천·근거·위험과 함께 묻는다. 그 메시지 첫 줄에 사용자를 기다리는 것이 무엇인지 쓰고, Claude 가 스스로 할 수 있는 일은 질문으로 올리지 않는다. "막기" 선택지는 없다
+- [ ] #6 리뷰 판정에서 타당한 🔴·🟡 는 묻지 않고 고친 뒤 알린다. 남은 질문(AC·정한 것과 부딪히는 지적, "나중" 후보, 머지 방식)은 한 메시지로 추천·근거·위험과 함께 묻는다. 그 메시지 첫 줄에 사용자를 기다리는 것이 무엇인지 쓰고, Claude 가 스스로 할 수 있는 일은 질문으로 올리지 않는다. 쉬운 말과 짧은 문장으로 쓰고, 해시·경로·명령은 사용자가 행동하는 데 필요할 때만 넣는다. "막기" 선택지는 없다
 - [ ] #7 `docs/review-principles.md`의 "승인된 계획·AC 가 정한 것은 사용자가 정한 것" 원칙이 "AC 와 사용자가 답한 것"으로 좁혀져 있다. Claude 가 정한 것은 리뷰 대상이다. `plugins`·`i18n`·`docs/backlog/_template.md`에 "승인된 계획" 문구가 없다
 - [ ] #8 하위 세션 지시문(`task` SKILL.md 2절)에 플랜 모드 승인 문장이 없고, 하위 세션도 #1 기준을 따른다. 부모 세션이 계획 승인을 기다리는 문장이 없다
 - [ ] #9 superpowers 를 뗀다
@@ -94,6 +94,7 @@ updated_date: 2026-11-26
   - 스킬 5개: architect(함수 경계를 넘는 변경이면 구조안 두 개를 그려 고른다), blast-radius(믿기 어려운 diff 는 머지 전에 diff 밖 영향을 실행으로 확인한다), how·why(고치기 전에 코드가 어떻게, 왜 그렇게 됐는지 읽는다), benchmark-checklist(잰 숫자를 보고하기 전에 점검한다)
   - 검증 스킬 2개: create-verification-skill(프로젝트에 앱을 실제로 몰아 확인할 정해진 방법이 없으면, 띄우기·점검·몰기·증거·정리와 기능 지도를 프로젝트 스킬로 만든다. 만들지는 프로젝트당 한 번 착수 전 질문에 넣는다), maintain-verification-skill(기능 지도가 앱과 어긋나면 고친다). 지도가 있으면 화면 확인과 AC 판정이 그것을 따른다
   - cursor-team-kit 5개: control-ui(화면을 몰 때: 스냅샷 → 동작 하나 → 스냅샷 → 확인), control-cli(CLI·TUI 를 tmux·PTY 로 몰 때), verify-this(고쳤다는 주장은 전후를 같은 조건으로 재서 VERIFIED / NOT VERIFIED / INCONCLUSIVE 중 하나로 답한다), fix-merge-conflicts(머지 충돌), deslop(커밋 전에 이 브랜치가 넣은 군더더기를 지운다: 쓸데없는 주석, 믿는 경로의 방어 코드, `any` 캐스트, 깊은 중첩)
+  - 글쓰기 2개: unslop(답을 포함한 모든 글에서 AI 티가 나는 표현을 뺀다), technical-writing(문서, 항목 파일, 커밋 메시지는 한 번 읽고 이해되게 쓴다). 영어 낱말 목록 같은 규칙은 한국어에서 같은 구실을 하는 표현으로 옮긴다
   - 플레이북 5개: Bug fix(재현 먼저, 원인을 증거로 좁힌다), Refactoring(동작을 먼저 고정하고 구조만 바꾼다), Prototype(갈림길은 버릴 시제품으로 정한다), Perf issue(먼저 잰다), Hillclimb(한 번에 하나 바꾸고 잰다). `start`는 항목의 성격에 맞는 플레이북을 골라 그 단계를 할 일 목록에 옮긴다. 맞는 것이 없으면 기본 흐름으로 간다
   - 이미 있는 같은 규칙은 한 곳에만 둔다: Never Block on the Human 은 #1 의 묻는 기준과, Prove It Works 는 "검증을 새로 돌리고 결과를 보여 준다"와, Laziness Protocol 은 "항목이 요구하는 것만 한다"와 합친다
   - 정한 것 줄의 이유에 적용한 원칙·스킬 이름을 적는다
