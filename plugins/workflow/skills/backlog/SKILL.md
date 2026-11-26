@@ -106,7 +106,7 @@ updated_date: YYYY-MM-DD
 | 크기 | 한 번에 리뷰하고 머지할 만큼. 크면 나누고 순서를 `dependencies`에 |
 | 의존성 | 번호가 더 작은 항목만 |
 | Implementation Plan | 비워 둔다 |
-| 글 | `${CLAUDE_SKILL_DIR}/../start/references/skills/unslop.md`와 `technical-writing.md`를 따른다 |
+| 글 | `${CLAUDE_SKILL_DIR}/../unslop/SKILL.md`와 `${CLAUDE_SKILL_DIR}/../technical-writing/SKILL.md`를 따른다 |
 
 - 번호: `docs/backlog/`와 `docs/done/`을 통틀어 가장 큰 번호 + 1, 세 자리. `README.md`와 `_`로 시작하는 파일은 항목이 아니다.
 - 파일 이름: `<번호>-<라벨>-<짧은-영어-이름>.md`. `status: To Do`, 날짜는 오늘.

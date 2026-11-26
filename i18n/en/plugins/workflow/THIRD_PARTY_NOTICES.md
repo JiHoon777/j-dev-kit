@@ -1,11 +1,11 @@
 # Third-party notices
 
-The files under `references/principles/`, `references/skills/` and `references/playbooks/` of the `start` skill are adapted from the two plugins below. Each file names its source at the top. Both plugins are MIT licensed.
+The principle skills (`principle-*`) and the skills listed below under `skills/`, and the `playbooks/` files of the `start` skill, are adapted from the two plugins below. Each file names its source at the top. Both plugins are MIT licensed.
 
 ## pstack
 
 - Source: <https://github.com/cursor/plugins/tree/main/pstack>
-- Adapted: 24 principles (`principles/`), 9 skills (architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing) with the feature map example, and 5 playbooks (bug-fix, refactoring, prototype, perf-issue, hillclimb). The index shape of the `start` skill, the ask criteria, the final message format and the test rule also come from pstack's `poteto-mode`, `ketchup` and `tdd`.
+- Adapted: 24 principles (`skills/principle-*`), 9 skills (architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing) with the feature map example, and 5 playbooks (bug-fix, refactoring, prototype, perf-issue, hillclimb). The index shape of the `start` skill, the ask criteria, the final message format and the test rule also come from pstack's `poteto-mode`, `ketchup` and `tdd`.
 
 ```text
 MIT License

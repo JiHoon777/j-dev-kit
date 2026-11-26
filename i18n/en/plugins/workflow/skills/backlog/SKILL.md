@@ -108,7 +108,7 @@ Written by `/start`: what changed, what was fixed in review, what was deferred, 
 | Size | Small enough to review and merge in one go. If large, split it and put the order in `dependencies` |
 | Dependencies | Only items with smaller numbers |
 | Implementation Plan | Leave empty |
-| Prose | Follow `${CLAUDE_SKILL_DIR}/../start/references/skills/unslop.md` and `technical-writing.md` |
+| Prose | Follow `${CLAUDE_SKILL_DIR}/../unslop/SKILL.md` and `${CLAUDE_SKILL_DIR}/../technical-writing/SKILL.md` |
 
 - Number: the largest number across `docs/backlog/` and `docs/done/` + 1, three digits. `README.md` and files starting with `_` are not items.
 - File name: `<number>-<label>-<short-english-name>.md`. `status: To Do`, dates set to today.

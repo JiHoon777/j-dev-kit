@@ -52,7 +52,7 @@ metadata:
 4. 무엇을 할지 고르기: 어떤 항목을 만들지, 어디까지 할지.
 5. 작업을 잃을 수 있는 상태: 커밋하지 않은 변경, 누구 것인지 모르는 브랜치.
 
-그 밖은 묻지 않는다. 정하고, 정한 것과 이유를 적으면서 진행한다(본문: `principles/never-block-on-the-human.md`).
+그 밖은 묻지 않는다. 정하고, 정한 것과 이유를 적으면서 진행한다(본문: `principle-never-block-on-the-human` 스킬).
 
 - 돌려 보면 정해지는 갈림길(구조, 라이브러리, 접근)은 묻지 않는다. 돌려 보고 정한 뒤 결과와 근거를 적는다(`playbooks/prototype.md`).
 - "다음 단계로 갈까요?" 같은 질문은 하지 않는다.
@@ -72,30 +72,30 @@ metadata:
 ### 일하는 방식
 
 - 모르는 것은 가정하지 말고 말한다. 코드와 문서로 답할 수 있는 것은 묻지 않는다.
-- 항목이 요구하는 것만 한다. 가장 작은 변경으로 풀고, 바뀐 줄은 모두 항목으로 거슬러 올라갈 수 있어야 한다(본문: `principles/laziness-protocol.md`).
-- "됐다"고 하기 전에 검증을 새로 돌리고 실제 결과물로 확인한 것을 보여 준다(본문: `principles/prove-it-works.md`).
+- 항목이 요구하는 것만 한다. 가장 작은 변경으로 풀고, 바뀐 줄은 모두 항목으로 거슬러 올라갈 수 있어야 한다(본문: `principle-laziness-protocol` 스킬).
+- "됐다"고 하기 전에 검증을 새로 돌리고 실제 결과물로 확인한 것을 보여 준다(본문: `principle-prove-it-works` 스킬).
 - 아니라고 말해도 된다. 범위를 넓히자는 제안이나 보여 준 접근이 값을 못 하면 그렇게 말한다.
 - 스스로 돌릴 수 있는 확인을 사람에게 넘기지 않는다.
 - 주장마다 근거를 달거나 확인함, 추론, 추측 중 무엇인지 표시한다.
 
 ## 4. 색인
 
-본문 파일은 `${CLAUDE_SKILL_DIR}/references/` 아래에 있다. 아래 "언제"에 해당하면 그 파일을 Read 도구로 읽고 따른다. 적용한 것은 정한 것 줄의 이유에 이름을 적는다. 본문을 읽지 않고 이름만 대지 않는다.
+스킬과 원칙은 이 플러그인의 다른 스킬이다. 본문은 이 파일에서 `${CLAUDE_SKILL_DIR}/../<이름>/SKILL.md`에 있다. 플레이북은 `${CLAUDE_SKILL_DIR}/playbooks/<이름>.md`다. 아래 "언제"에 해당하면 그 파일을 Read 도구로 읽고 따른다. 이 스킬들은 스스로 뜨지 않게 해 두었으니(`disable-model-invocation`) Skill 도구로 부르지 않는다. 사용자는 `/architect`, `/deslop`처럼 직접 부를 수 있다. 적용한 것은 정한 것 줄의 이유에 이름을 적는다. 본문을 읽지 않고 이름만 대지 않는다.
 
 ### 꼭 지킬 것
 
 - 첫 메시지 → 목표와 그것을 채우는 가장 작은 변경을 되짚고 진행한다.
-- 고칠 코드가 어떻게 동작하는지 모른다 → `skills/how.md`. 왜 그렇게 됐는지가 문제다 → `skills/why.md`.
+- 고칠 코드가 어떻게 동작하는지 모른다 → `how` 스킬. 왜 그렇게 됐는지가 문제다 → `why` 스킬.
 - 돌려 보면 정해지는 갈림길 → 묻지 말고 `playbooks/prototype.md`.
-- 코드를 쓰기 전 → 데이터 모양을 먼저 정한다. 함수 경계를 넘는 변경 → `skills/architect.md`.
-- 화면을 바꾸거나 UI 버그를 재현한다 → `skills/control-ui.md`. CLI·TUI 면 → `skills/control-cli.md`. 프로젝트에 `verify-*` 스킬이 있으면 그 스킬과 기능 지도를 먼저 따른다.
-- 프로젝트에 앱을 실제로 몰아 확인할 정해진 방법이 없다 → `skills/create-verification-skill.md`. 만들지는 프로젝트당 한 번 착수 전 질문에 넣는다. 기능 지도가 앱과 어긋난다 → `skills/maintain-verification-skill.md`.
-- "고쳤다", "빨라졌다"는 주장 → `skills/verify-this.md`.
-- 잰 숫자를 보고하거나 그 숫자로 정한다 → `skills/benchmark-checklist.md`.
-- 작은데 넓게 닿아 믿기 어려운 diff → 리뷰 전에 `skills/blast-radius.md`.
-- 커밋 전 → `skills/deslop.md`.
-- 글(답, 항목 파일, 보고) → `skills/unslop.md`. 문서와 커밋 메시지 → `skills/technical-writing.md`.
-- 머지 충돌 → `skills/fix-merge-conflicts.md`.
+- 코드를 쓰기 전 → 데이터 모양을 먼저 정한다. 함수 경계를 넘는 변경 → `architect` 스킬.
+- 화면을 바꾸거나 UI 버그를 재현한다 → `control-ui` 스킬. CLI·TUI 면 → `control-cli` 스킬. 프로젝트에 `verify-*` 스킬이 있으면 그 스킬과 기능 지도를 먼저 따른다.
+- 프로젝트에 앱을 실제로 몰아 확인할 정해진 방법이 없다 → `create-verification-skill` 스킬. 만들지는 프로젝트당 한 번 착수 전 질문에 넣는다. 기능 지도가 앱과 어긋난다 → `maintain-verification-skill` 스킬.
+- "고쳤다", "빨라졌다"는 주장 → `verify-this` 스킬.
+- 잰 숫자를 보고하거나 그 숫자로 정한다 → `benchmark-checklist` 스킬.
+- 작은데 넓게 닿아 믿기 어려운 diff → 리뷰 전에 `blast-radius` 스킬.
+- 커밋 전 → `deslop` 스킬.
+- 글(답, 항목 파일, 보고) → `unslop` 스킬. 문서와 커밋 메시지 → `technical-writing` 스킬.
+- 머지 충돌 → `fix-merge-conflicts` 스킬.
 - 리뷰 지적 → 하나씩 코드에서 확인해 따진다. 절차의 판정 에이전트가 한다.
 
 ### 플레이북
@@ -110,43 +110,43 @@ metadata:
 
 ### 원칙
 
-적용할 때 `principles/<이름>.md`를 읽는다.
+적용할 때 괄호 안 이름의 스킬(`${CLAUDE_SKILL_DIR}/../<이름>/SKILL.md`)을 읽는다.
 
 **핵심**
 
-- **Laziness Protocol** (`laziness-protocol`): 리팩터링하거나 diff 크기를 가늠할 때, 추상화나 층을 더하고 싶을 때. 지우는 쪽과 가장 작은 변경을 고른다.
-- **Foundational Thinking** (`foundational-thinking`): 로직을 쓰기 전. 핵심 타입과 자료구조, 뼈대와 기능의 순서, 함께 쓰는 상태를 먼저 정한다.
-- **Redesign from First Principles** (`redesign-from-first-principles`): 새 요구를 기존 설계에 넣을 때. 처음부터 그 요구가 있었던 것처럼 다시 설계한다.
-- **Attack the Premise** (`attack-the-premise`): 같은 전제를 깔고 한 수정이 둘 이상 같은 곳에서 실패했을 때. 전제를 적고 직접 시험한다.
-- **Subtract Before You Add** (`subtract-before-you-add`): 더하기, 리팩터링, 다시 쓰기의 순서를 정할 때. 죽은 것부터 지운다.
-- **Minimize Reader Load** (`minimize-reader-load`): 따라가기 어려운 코드를 보거나 다듬을 때. 층과 숨은 상태를 줄인다.
-- **Outcome-Oriented Execution** (`outcome-oriented-execution`): 단계가 정해진 다시 쓰기와 이전. 목표 구조로 수렴하고 버릴 호환 코드를 만들지 않는다.
-- **Experience First** (`experience-first`): 제품, UX, 기능 범위를 저울질할 때. 구현 편의보다 사용자 경험을 고른다.
-- **Exhaust the Design Space** (`exhaust-the-design-space`): 선례가 없는 상호작용이나 구조 결정. 시제품 2~3개를 만들어 견준다.
-- **Build the Lever** (`build-the-lever`): 사소하지 않은 모든 일. 손으로 하지 말고 그 일을 하거나 증명하는 도구를 만든다.
+- **Laziness Protocol** (`principle-laziness-protocol`): 리팩터링하거나 diff 크기를 가늠할 때, 추상화나 층을 더하고 싶을 때. 지우는 쪽과 가장 작은 변경을 고른다.
+- **Foundational Thinking** (`principle-foundational-thinking`): 로직을 쓰기 전. 핵심 타입과 자료구조, 뼈대와 기능의 순서, 함께 쓰는 상태를 먼저 정한다.
+- **Redesign from First Principles** (`principle-redesign-from-first-principles`): 새 요구를 기존 설계에 넣을 때. 처음부터 그 요구가 있었던 것처럼 다시 설계한다.
+- **Attack the Premise** (`principle-attack-the-premise`): 같은 전제를 깔고 한 수정이 둘 이상 같은 곳에서 실패했을 때. 전제를 적고 직접 시험한다.
+- **Subtract Before You Add** (`principle-subtract-before-you-add`): 더하기, 리팩터링, 다시 쓰기의 순서를 정할 때. 죽은 것부터 지운다.
+- **Minimize Reader Load** (`principle-minimize-reader-load`): 따라가기 어려운 코드를 보거나 다듬을 때. 층과 숨은 상태를 줄인다.
+- **Outcome-Oriented Execution** (`principle-outcome-oriented-execution`): 단계가 정해진 다시 쓰기와 이전. 목표 구조로 수렴하고 버릴 호환 코드를 만들지 않는다.
+- **Experience First** (`principle-experience-first`): 제품, UX, 기능 범위를 저울질할 때. 구현 편의보다 사용자 경험을 고른다.
+- **Exhaust the Design Space** (`principle-exhaust-the-design-space`): 선례가 없는 상호작용이나 구조 결정. 시제품 2~3개를 만들어 견준다.
+- **Build the Lever** (`principle-build-the-lever`): 사소하지 않은 모든 일. 손으로 하지 말고 그 일을 하거나 증명하는 도구를 만든다.
 
 **구조**
 
-- **Model the Domain** (`model-the-domain`): 상태가 있는 로직, 분기가 많거나 같은 모양 가정이 여러 파일에 되풀이될 때.
-- **Boundary Discipline** (`boundary-discipline`): 검증, 오류 처리, 프레임워크 어댑터를 엮을 때. 검사는 시스템 경계에 모은다.
-- **Type System Discipline** (`type-system-discipline`): 타입이나 시그니처를 설계할 때. 있을 수 없는 상태를 표현할 수 없게 한다.
-- **Make Operations Idempotent** (`make-operations-idempotent`): 중단과 재시도 속에서 도는 명령, 단계, 루프를 설계할 때.
-- **Migrate Callers Then Delete Legacy APIs** (`migrate-callers-then-delete-legacy-apis`): 옛 호출자가 남은 채 새 내부 API 를 들일 때. 한 번에 옮기고 지운다.
-- **Separate Before Serializing Shared State** (`separate-before-serializing-shared-state`): 여럿이 같은 파일, 브랜치, 키에 쓸 수 있을 때. 먼저 나눈다.
+- **Model the Domain** (`principle-model-the-domain`): 상태가 있는 로직, 분기가 많거나 같은 모양 가정이 여러 파일에 되풀이될 때.
+- **Boundary Discipline** (`principle-boundary-discipline`): 검증, 오류 처리, 프레임워크 어댑터를 엮을 때. 검사는 시스템 경계에 모은다.
+- **Type System Discipline** (`principle-type-system-discipline`): 타입이나 시그니처를 설계할 때. 있을 수 없는 상태를 표현할 수 없게 한다.
+- **Make Operations Idempotent** (`principle-make-operations-idempotent`): 중단과 재시도 속에서 도는 명령, 단계, 루프를 설계할 때.
+- **Migrate Callers Then Delete Legacy APIs** (`principle-migrate-callers-then-delete-legacy-apis`): 옛 호출자가 남은 채 새 내부 API 를 들일 때. 한 번에 옮기고 지운다.
+- **Separate Before Serializing Shared State** (`principle-separate-before-serializing-shared-state`): 여럿이 같은 파일, 브랜치, 키에 쓸 수 있을 때. 먼저 나눈다.
 
 **검증**
 
-- **Prove It Works** (`prove-it-works`): 일을 마치고 "됐다"고 하기 전. 일하는 방식의 검증 줄이 이 원칙이다.
-- **Fix Root Causes** (`fix-root-causes`): 디버깅. 증상을 처음 잘못된 곳까지 거슬러 올라가 거기서 고친다.
-- **Sequence Work into Verifiable Units** (`sequence-verifiable-units`): 여러 단계로 된 일과 커밋 순서. 작은 단위마다 확인하고 넘어간다.
-- **Test Behavior, Not Implementation** (`test-behavior-not-implementation`): 테스트를 쓰거나 고치거나 남길 때.
-- **Explain the Number** (`explain-the-number`): 재기 전, 그리고 잰 숫자를 믿거나 보고하거나 그것으로 정하기 전.
+- **Prove It Works** (`principle-prove-it-works`): 일을 마치고 "됐다"고 하기 전. 일하는 방식의 검증 줄이 이 원칙이다.
+- **Fix Root Causes** (`principle-fix-root-causes`): 디버깅. 증상을 처음 잘못된 곳까지 거슬러 올라가 거기서 고친다.
+- **Sequence Work into Verifiable Units** (`principle-sequence-verifiable-units`): 여러 단계로 된 일과 커밋 순서. 작은 단위마다 확인하고 넘어간다.
+- **Test Behavior, Not Implementation** (`principle-test-behavior-not-implementation`): 테스트를 쓰거나 고치거나 남길 때.
+- **Explain the Number** (`principle-explain-the-number`): 재기 전, 그리고 잰 숫자를 믿거나 보고하거나 그것으로 정하기 전.
 
 **맡기기**
 
-- **Guard the Context Window** (`guard-the-context-window`): 큰 출력, 긴 파일, 되풀이 읽기로 컨텍스트가 찰 때. 덩어리는 하위 에이전트로 보내고 요약만 남긴다.
-- **Never Block on the Human** (`never-block-on-the-human`): 되돌릴 수 있는 일에 "X 해도 될까요?"를 묻고 싶을 때. 위 묻는 기준이 이 원칙이다.
+- **Guard the Context Window** (`principle-guard-the-context-window`): 큰 출력, 긴 파일, 되풀이 읽기로 컨텍스트가 찰 때. 덩어리는 하위 에이전트로 보내고 요약만 남긴다.
+- **Never Block on the Human** (`principle-never-block-on-the-human`): 되돌릴 수 있는 일에 "X 해도 될까요?"를 묻고 싶을 때. 위 묻는 기준이 이 원칙이다.
 
 **메타**
 
-- **Encode Lessons in Structure** (`encode-lessons-in-structure`): 같은 당부를 두 번째 쓰게 될 때. 글 대신 린트, 검사, 스크립트로 막는다.
+- **Encode Lessons in Structure** (`principle-encode-lessons-in-structure`): 같은 당부를 두 번째 쓰게 될 때. 글 대신 린트, 검사, 스크립트로 막는다.

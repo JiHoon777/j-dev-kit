@@ -92,7 +92,7 @@ claude plugin install server@j-dev-kit --scope project
 - **/start:** 기준선 검증 → 스택 점검 → 목표 되짚기와 플레이북 고르기 → 착수 전 질문(있을 때만 한 번) → 구현 → 정리(deslop) → 검증 → AC 판정 → 리뷰(`code-review`, 필요하면 `security-review`와 스택 리뷰어) → 판정 에이전트가 타당하다고 본 🔴·🟡 는 묻지 않고 고침 → 마지막 메시지 하나 → 머지. 이미 있는 작업 브랜치에서 부르면 남은 단계부터 이어 간다.
 - **마지막 메시지:** 남은 결정을 한 번에 묻는다. 사람이 정할 지적, "나중" 후보, 머지 방식. 결정마다 추천, 근거, 위험이 붙는다. 기준 브랜치 푸시는 요청할 때만 한다.
 - **판정:** Acceptance Criteria 는 명령 출력이나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다. 같은 AC 가 세 번 고쳐도 실패하면 멈추고 넘긴다. 고친 코드 없이도 통과하는 새 테스트는 🟡 로 지적한다.
-- **원칙, 스킬, 플레이북:** `start` 스킬에 "언제 → 무엇" 색인이 있고, 본문은 파일로 따로 있어 쓸 때 읽는다. 원칙 24개, 스킬 14개(architect, blast-radius, how, why, 검증 스킬 만들기, control-ui, deslop 등), 플레이북 5개(bug-fix, refactoring, prototype, perf-issue, hillclimb)다. [pstack](https://github.com/cursor/plugins/tree/main/pstack)과 [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit)에서 가져왔다.
+- **원칙, 스킬, 플레이북:** `start` 스킬에 "언제 → 무엇" 색인이 있고, 본문은 스킬마다 따로 있어 쓸 때 읽는다. 스스로 뜨지는 않고, `/architect`, `/how`, `/deslop`처럼 직접 부를 수 있다. 원칙 24개, 스킬 14개(architect, blast-radius, how, why, 검증 스킬 만들기, control-ui, deslop 등), 플레이북 5개(bug-fix, refactoring, prototype, perf-issue, hillclimb)다. [pstack](https://github.com/cursor/plugins/tree/main/pstack)과 [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit)에서 가져왔다.
 - **리뷰 원칙:** 그대로 두기로 한 지적과 사용자가 바로잡은 것은 `docs/review-principles.md`에 한 줄 원칙으로 모여 다음 리뷰에 쓰인다.
 
 </details>
@@ -151,7 +151,9 @@ claude plugin update <플러그인>@j-dev-kit --scope project
 
 ```
 plugins/workflow/skills/backlog/    SKILL.md + references/survey.md
-plugins/workflow/skills/start/      SKILL.md(묻는 기준, 색인) + references/procedure.md, principles/, skills/, playbooks/ + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/start/      SKILL.md(묻는 기준, 색인) + references/procedure.md + playbooks/(5개) + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/<스킬>/     색인이 가리키는 스킬 14개(architect, how, why, deslop 등). 직접 부를 수도 있다(`/architect`)
+plugins/workflow/skills/principle-*/  원칙 24개
 plugins/workflow/THIRD_PARTY_NOTICES.md  가져온 글의 저작권 고지(pstack, cursor-team-kit)
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
 plugins/frontend/                   skills/frontend-{start,end}-check(scripts/dev-server.sh, diff-check.sh), ui-design, agents/frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md

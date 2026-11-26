@@ -6,6 +6,8 @@ Plan, implement, review, and wrap up **one** backlog item. Stop and ask only at 
 
 Requested item: the arguments.
 
+Below, "follow the `<name>` skill" means: read that skill's body file (`<this skill's folder>/../<name>/SKILL.md`) with the Read tool, as the index in `SKILL.md` says, and follow it. A playbook is at `<this skill's folder>/playbooks/<name>.md`.
+
 Run every command from the repository root (`git rev-parse --show-toplevel`). When working in a worktree, that is the worktree's root. If the project CLAUDE.md has PR/push rules, follow them.
 
 ## 1. Can we start
@@ -51,7 +53,7 @@ Do not get the plan approved. Do not enter plan mode.
    - Large item (several modules, new structure): launch `Explore` agents on different areas in one message. Have them return the files that must be read, then read those files directly.
 3. **Playbook:** from the index in `SKILL.md`, pick the playbook that fits the nature of the item and move its steps into the to-do list. If none fits, step 5 of this procedure is the default flow.
 4. **Tools and steps:** decide which field this item's work belongs to, and what tools (names, commands) and steps the best practitioners in that field use for it. Do not assume a role; write down the tools and steps. If you do not know, look it up in docs or on the web. Keep the tools the stack checks gave and add only what is missing.
-5. **Design:** decide it yourself. For a change that crosses a function boundary, follow `skills/architect.md`. Settle a fork that running something would settle with `playbooks/prototype.md`, and write down the result and the evidence.
+5. **Design:** decide it yourself. For a change that crosses a function boundary, follow the `architect` skill. Settle a fork that running something would settle with `playbooks/prototype.md`, and write down the result and the evidence.
 6. **Gaps in the ACs:** if, while reading the item, you find ACs that contradict each other or a missing decision that only a person can make, put it in the pre-start questions.
 7. **Pre-start questions:** only when something falls under the asking criteria, all at once. Combine the stack checks' "Ask" and what is asked once per project (installing official skills, creating a verification skill) into them. Attach a recommendation and its reason to the options. If there is nothing to ask, do not stop.
 8. **Write the plan.** Step 4 writes it into the item file. What goes in:
@@ -78,7 +80,7 @@ If the user says "let me see the plan", show the plan and wait.
 ## 5. Implement
 
 - Follow the chosen playbook's steps, the plan's tools and steps, and the stack checks' Follow.
-- **Tests:** if there is a cheap, clear way to test, write a failing test first, and before fixing, run it to see that it fails for the intended reason. If there is no such way (it needs a broad harness, the mocks break easily, there is only a slow e2e, or only docs or config change), do not force one. Use the closest run check (command, script, browser) and write down why. No test is better than a bad test. Tests assert observable behavior (`principles/test-behavior-not-implementation.md`).
+- **Tests:** if there is a cheap, clear way to test, write a failing test first, and before fixing, run it to see that it fails for the intended reason. If there is no such way (it needs a broad harness, the mocks break easily, there is only a slow e2e, or only docs or config change), do not force one. Use the closest run check (command, script, browser) and write down why. No test is better than a bad test. Tests assert observable behavior (the `principle-test-behavior-not-implementation` skill).
 - Do not delete or weaken existing tests to make them pass (deleting, skipping, raising time limits, updating snapshots). If you think a test is wrong, stop and ask.
 - Do only what is in the Acceptance Criteria. Do not polish surrounding code. If other work seems needed, note it and raise it as a "later" candidate in step 10.
 - **Stop when the scope grows.** If one of the four below applies, stop and ask. Decide anything else that changed, and write it down.
@@ -88,18 +90,18 @@ If the user says "let me see the plan", show the plan and wait.
   - CLAUDE.md or settings have to change
 - When one AC is done, check it off right away only if there is outside evidence (command output). ACs that need a judge are judged together in step 6.
 - Write what you decide without asking under `### 정한 것` as you go. Write what changed from the plan in `Implementation Notes` too.
-- Commit to the work branch at each meaningful step. Before committing, follow `skills/deslop.md`. Do not commit to the base branch.
+- Commit to the work branch at each meaningful step. Before committing, follow the `deslop` skill. Do not commit to the base branch.
 
 ## 6. Wrap-up check
 
-1. **Clean up:** follow `skills/deslop.md` on the diff against the base branch. Fix without asking, and do not change behavior. Write one line on what was fixed.
+1. **Clean up:** follow the `deslop` skill on the diff against the base branch. Fix without asking, and do not change behavior. Write one line on what was fixed.
 2. **Verify:** Run the verify command fresh and show the result. If there are failures not in the baseline, fix them. Do not let the memory of an earlier pass stand in for it.
 3. **Screen check:** Do it if the stack checks' Follow includes a browser check and the UI changed. If the project has a `verify-*` skill, follow that skill and its feature map. Write what was done and seen in `Implementation Notes`. If there is no tool for it, do not stop. Write it as "could not verify" and continue, and collect it in the step 10 message.
 4. **AC judgment:** the implementing session does not judge and check off ACs by itself. Check off only those that have one of these:
    - Outside evidence: the command that shows the result (test, grep, CLI) and its output are written in `Implementation Notes`.
    - A judge other than the implementing session: for UI, the screen check from 3; otherwise a new general-purpose judge agent said pass. Give the judge agent only the item file path and the `git diff <base>...HEAD` range, not how it was implemented. Brief: "Do not edit files. For each AC write pass / fail / could not verify with evidence (`file:line`, command output). When unsure, do not leave it as pass."
 
-   Fix "fail" and get judged again. If the same AC still fails after three fixes, stop fixing and tell the user which AC failed and what you tried. The premise may be wrong (`principles/attack-the-premise.md`). Do not check off "could not verify"; raise it in the step 10 message. Check off Definition of Done the same way, and commit. Leave no uncommitted changes.
+   Fix "fail" and get judged again. If the same AC still fails after three fixes, stop fixing and tell the user which AC failed and what you tried. The premise may be wrong (the `principle-attack-the-premise` skill). Do not check off "could not verify"; raise it in the step 10 message. Check off Definition of Done the same way, and commit. Leave no uncommitted changes.
 
 Go on to step 7 without asking.
 
@@ -115,7 +117,7 @@ Go on to step 7 without asking.
    - Put each `기준에서도 통과: <file>` (also passes on base) line of the output into the findings list as 🟡 "does not prove the fix. It passes without the fixed code", without going through the judge.
    - If the output is `바뀐 테스트 없음.` (no changed tests, exit value 2), add the test files outside the naming rules and run again; if there are none, raise "could not verify. No tests found on this branch" in the step 10 message.
    - If the command cannot be settled or the exit value is 2 for another reason, write "could not verify" and the reason in `Implementation Notes`; for each `HEAD 에서 실패: <file>` (fails on HEAD) line, whatever the exit value, write that test as "could not verify"; then move on.
-3. If the change is small but reaches wide, follow `skills/blast-radius.md` and put what it finds into the findings list.
+3. If the change is small but reaches wide, follow the `blast-radius` skill and put what it finds into the findings list.
 
 ## 8. Review (agents, in parallel in one message)
 
@@ -183,7 +185,7 @@ When the answer comes:
 
 1. Run the verify command fresh once. If there are failures not in `### Baseline`, stop and say so.
 2. Write the item's `Final Summary`: what changed, what was fixed in review, what was deferred (new item numbers), findings left as is and why, what the user corrected (one line each).
-3. **Principles:** if a reason for leaving a finding as is, or something the user corrected, holds for other items too, add it to `docs/review-principles.md` as one line (`- principle — reason (item number)`). Do not add a principle that is already there. If a check can block it instead of prose, that is better (`principles/encode-lessons-in-structure.md`).
+3. **Principles:** if a reason for leaving a finding as is, or something the user corrected, holds for other items too, add it to `docs/review-principles.md` as one line (`- principle — reason (item number)`). Do not add a principle that is already there. If a check can block it instead of prose, that is better (the `principle-encode-lessons-in-structure` skill).
 4. Close only when everything is in place. If anything is missing, stop and say so.
    - [ ] All Acceptance Criteria checked
    - [ ] All Definition of Done checked
@@ -205,7 +207,7 @@ Do it the way the user chose in step 10.
 - **Local merge:**
   - If the work was done in a worktree, the base branch is in the base folder (the first line of `git worktree list`). Run the merge there, like `git -C <base folder> merge …`. Before merging, check that the base folder is on the base branch (`git -C <base folder> branch --show-current`) and clean (`status --short`); if not, stop and say so.
   - If the base branch has an upstream, bring it up to date with `git pull` first. If it has none, skip that.
-  - If there is a conflict, follow `skills/fix-merge-conflicts.md`.
+  - If there is a conflict, follow the `fix-merge-conflicts` skill.
   - After merging, run the verify command again on the base branch. If it fails, do not push; say so.
   - If the session is inside a worktree, do not remove the worktree or the branch from this session. Say that archiving the session lets the app clean up the worktree, and otherwise running `git worktree remove <worktree path>` and `git branch -d w/<name>` in the base folder does it. If no worktree was used, delete the branch with `git branch -d w/<name>`.
 - **PR:** push the work branch and open a PR. If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so. Leave the worktree.

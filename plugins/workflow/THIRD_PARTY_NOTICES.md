@@ -1,11 +1,11 @@
 # 가져온 것의 저작권 고지
 
-`start` 스킬의 `references/principles/`, `references/skills/`, `references/playbooks/` 아래 파일은 아래 두 플러그인의 글을 옮기고 고친 것이다. 파일마다 맨 위에 원문 위치가 있다. 두 플러그인 모두 MIT 라이선스다.
+`skills/` 아래의 원칙 스킬(`principle-*`), 아래에 적은 스킬, `start` 스킬의 `playbooks/` 파일은 아래 두 플러그인의 글을 옮기고 고친 것이다. 파일마다 맨 위에 원문 위치가 있다. 두 플러그인 모두 MIT 라이선스다.
 
 ## pstack
 
 - 원문: <https://github.com/cursor/plugins/tree/main/pstack>
-- 가져온 것: 원칙 24개(`principles/`), 스킬 9개(architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing)와 기능 지도 예시, 플레이북 5개(bug-fix, refactoring, prototype, perf-issue, hillclimb). `start` 스킬의 색인 모양, 묻는 기준, 마지막 메시지 형식, 테스트 규칙도 pstack 의 `poteto-mode`, `ketchup`, `tdd`에서 왔다.
+- 가져온 것: 원칙 24개(`skills/principle-*`), 스킬 9개(architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing)와 기능 지도 예시, 플레이북 5개(bug-fix, refactoring, prototype, perf-issue, hillclimb). `start` 스킬의 색인 모양, 묻는 기준, 마지막 메시지 형식, 테스트 규칙도 pstack 의 `poteto-mode`, `ketchup`, `tdd`에서 왔다.
 
 ```text
 MIT License
