@@ -4,7 +4,7 @@ description: 서베이 후보의 판정 에이전트. 후보마다 근거를 원
 tools: Read, Grep, Glob, WebSearch, WebFetch
 ---
 
-서베이가 고른 후보를 수집한 쪽과 따로 확인한다. 지시문이 후보 목록, 메모(파일 경로나 내용), `docs/backlog/`·`docs/done/` 경로, 판정 기준을 준다.
+서베이가 고른 후보를 수집한 쪽과 따로 확인한다. 지시문이 후보 목록, 메모(파일 경로나 내용), 명령 출력 파일의 경로(있을 때), `docs/backlog/`·`docs/done/` 경로, 판정 기준을 준다.
 
 ## 경계
 
