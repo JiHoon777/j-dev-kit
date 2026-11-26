@@ -77,7 +77,7 @@ updated_date: 2026-11-26
 - [ ] #3 `start`의 "범위가 커지면 멈춘다"가 확인할 수 있는 목록이다: AC 밖 동작, 새 의존성·도구 설치, 스키마·공개 API·삭제, CLAUDE.md·설정 변경
 - [ ] #4 `backlog`는 AC 전문을 보여 주고 승인받는다. 서베이 모드는 후보 표에 AC 초안을 넣어, 고르기 한 번으로 항목을 쓰고 다시 승인받지 않는다
 - [ ] #5 커밋 전에 deslop 을 돌린다. 묻지 않고 바로 고치고, 동작은 바꾸지 않는다. 고친 것을 한 줄로 적는다. simplify 를 돌릴지와 무엇을 고칠지 묻던 질문은 없다
-- [ ] #6 리뷰 판정에서 타당한 🔴·🟡 는 묻지 않고 고친 뒤 알린다. 남은 질문(AC·정한 것과 부딪히는 지적, "나중" 후보, 머지 방식)은 한 메시지로 추천·근거·위험과 함께 묻는다. 그 메시지 첫 줄에 사용자를 기다리는 것이 무엇인지 쓰고, Claude 가 스스로 할 수 있는 일은 질문으로 올리지 않는다. 쉬운 말과 짧은 문장으로 쓰고, 해시·경로·명령은 사용자가 행동하는 데 필요할 때만 넣는다. "막기" 선택지는 없다
+- [ ] #6 리뷰 판정에서 타당한 🔴·🟡 는 묻지 않고 고친 뒤 알린다. 남은 질문(AC·사용자가 답한 것과 부딪히는 지적, "나중" 후보, 머지 방식)은 한 메시지로 추천·근거·위험과 함께 묻는다. 그 메시지 첫 줄에 사용자를 기다리는 것이 무엇인지 쓰고, Claude 가 스스로 할 수 있는 일은 질문으로 올리지 않는다. 쉬운 말과 짧은 문장으로 쓰고, 해시·경로·명령은 사용자가 행동하는 데 필요할 때만 넣는다. "막기" 선택지는 없다
 - [ ] #7 `docs/review-principles.md`의 "승인된 계획·AC 가 정한 것은 사용자가 정한 것" 원칙이 "AC 와 사용자가 답한 것"으로 좁혀져 있다. Claude 가 정한 것은 리뷰 대상이다. `plugins`·`i18n`·`docs/backlog/_template.md`에 "승인된 계획" 문구가 없다
 - [ ] #8 하위 세션 지시문(`backlog`·`start` SKILL.md)에 플랜 모드 승인 문장이 없고, 하위 세션도 #1 기준을 따른다. 부모 세션이 계획 승인을 기다리는 문장이 없다
 - [ ] #9 superpowers 를 뗀다
@@ -114,7 +114,7 @@ updated_date: 2026-11-26
   - README 문제 해결에 옮기는 법이 있다: 프로젝트 설정에서 `frontend@j-dev-kit`, `server@j-dev-kit`을 지운다
 - [ ] #16 `kit-help` 스킬이 있다. 질문에 답하고 보낼 명령 한 줄을 주며, 일을 시작하지 않는다. 담는 것: 처음 설정, `/backlog`와 `/start` 쓰는 법, 상황별로 어느 스킬인지 표(workflow 의 스킬 폴더를 모두 덮는다. 원칙은 묶어서), 플레이북과 원칙 쓰는 법, 잘 안 될 때. 답하기 전에 가리키는 파일을 읽는다
 - [ ] #17 `kit-setup` 스킬과 모델 설정이 있다
-  - 역할(하위 세션 `session`, 구현을 맡는 하위 에이전트 `implement`, 리뷰 `review`, 판정 `judge`, 기계적 수정 `mechanical`, 탐색 `explore`)마다 모델과 노력을 JSON 설정 파일(`.claude/workflow.json`, 없으면 `~/.claude/workflow.json`)에 적을 수 있다. 형식은 `start/references/models.md`에 있다. 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel` 키로 정하고 `kit-setup`이 써 준다
+  - 역할(하위 세션 `session`, 구현을 맡는 하위 에이전트 `implement`, 리뷰 `review`, 판정 `judge`, 기계적 수정 `mechanical`, 탐색 `explore`)마다 모델과 노력을 JSON 설정 파일(`.claude/workflow.json`, 거기 없는 역할은 `~/.claude/workflow.json`)에 적을 수 있다. 형식은 `start/references/models.md`에 있다. 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel` 키로 정하고 `kit-setup`이 써 준다
   - `kit-setup`이 지금 설정과 기본값을 보여 주고, 고를 것을 한 번에 물어 설정 파일을 쓴다. 다시 돌리면 고친다
   - `start`·`backlog`와 리뷰 절차가 하위 세션과 에이전트를 띄울 때 그 설정을 따른다. 설정이 없으면 기본값을 쓴다
   - `kit-setup`이 끝에 프로젝트 검증 스킬(`verify-*`)이 없으면 만들지 한 번 묻는다
@@ -152,7 +152,7 @@ updated_date: 2026-11-26
 5. superpowers 떼기: `plugin.json`·`marketplace.json` 의존성, `.claude/settings.json`, README 두 개, 저장소 CLAUDE.md
 6. `docs/review-principles.md`, `docs/backlog/README.md`·`_template.md` 문구
 7. frontend·server·ui-design 의 질문 지점(AC #10)과 "end 모드" 문구
-8. 번역본, `plugin.json` version(workflow 0.17.0, frontend 0.12.0, server 0.8.0), README 두 개, `marketplace.json` 설명
+8. 번역본, `plugin.json` version(workflow 0.17.0. frontend·server 는 AC #15 로 workflow 에 합쳐 없어졌다), README 두 개, `marketplace.json` 설명
 9. eval 사례를 새 규칙에 맞게 고치고, 멈춘 횟수를 잰다(AC #11)
 
 **확인 방법:** AC #2·#9·#12 는 grep, #1·#3~#8·#10·#13·#14 는 구현 세션이 아닌 판정 에이전트, #11 은 eval 실행 결과. DoD 는 검증 명령.
@@ -185,6 +185,20 @@ updated_date: 2026-11-26
 - frontend 가 끌고 오던 `frontend-design`·`typescript-lsp` 의존은 없애고 "있으면 좋은 플러그인"으로 내렸다 — workflow 는 프론트엔드가 없는 프로젝트에도 설치된다 — 새 화면을 디자인할 때 `frontend-design`이 없으면 그 규칙 없이 간다
 - 도움말과 설정 스킬의 이름은 `kit-help`, `kit-setup`이다 — `/help`는 Claude Code 내장 명령과 겹친다 — 이름을 외워야 한다
 - README 에 "superpowers 는 쓰지 않는다. 켜져 있으면 끈다"와 문제 해결 줄을 남겼다 — 예전 안내대로 CLAUDE.md 문단을 넣어 둔 사용자가 있다. AC #9 의 grep 범위(plugins, i18n, 매니페스트, 설정)에는 들지 않는다 — README 에 superpowers 라는 말이 남는다
+- AC #6 의 "AC·정한 것과 부딪히는 지적"을 "AC·사용자가 답한 것과 부딪히는 지적"으로 고쳐 적었다 — AC #7 이 "Claude 가 정한 것은 리뷰 대상"이라고 하니, Claude 가 정한 것과 부딪히는 타당한 지적은 묻지 않고 고치는 쪽이 두 AC 에 모두 맞다. 절차(`procedure.md` 9단계)는 처음부터 이렇게 돼 있었다 — 사용자가 Claude 의 결정을 뒤집는 지적도 직접 보고 싶었다면 판정 지시문의 '사람이 정할 것'에 한 줄을 더하면 된다
+- 확인하지 못해 체크하지 못한 AC·DoD 는 마지막 메시지에서 결정으로 묻고, 사용자가 받아들이면 항목을 닫을 수 있게 했다(절차 10·11단계) — "확인 못 함"은 멈추지 않고 알림으로만 가는데 11단계는 모두 체크돼야 닫아서, 머지를 고른 뒤 막히고 풀 길이 없었다. 멈춤은 늘지 않는다(같은 마지막 메시지에 든다) — 틀렸으면 10단계의 한 줄과 11단계의 한 줄을 지우면 된다
+- "공식 스킬을 설치하지 않는다"는 CLAUDE.md 줄을 스킬 이름을 적는 줄(`- 공식 스킬 설치 안 함: svelte, supabase`)로 바꿨다 — 한 줄을 세 스택이 함께 써서 하나를 거절하면 나머지도 묻지 않았다 — 이 줄은 016 이 새로 만든 것이라 기존 프로젝트에는 없다
+- pstack 원문의 두 구절을 일반 표현으로 바꿨다: blast-radius 의 "Solid 와 React 의 차이" → "프레임워크마다 다른 실행 시점", technical-writing 의 "코드 조각은 탭으로 들여쓴다" → "프로젝트를 따른다" — 원저자 저장소의 사정이라 다른 프로젝트에서는 틀린 지시가 된다 — 원문과 두 구절이 달라진다
+- 모델 설정 파일에는 사용자가 정한 역할만 적게 했다(`kit-setup`) — 프로젝트 파일에 기본값까지 적으면 사용자 파일(`~/.claude/workflow.json`)의 값이 그 프로젝트에서 가려진다 — 파일만 보고는 실제로 쓰이는 값을 다 알 수 없다. `kit-setup`이 표로 보여 준다
+
+### 리뷰
+
+두 번 했다. 지적은 판정 에이전트가 코드에서 확인해 가렸고, 타당한 🔴·🟡 는 묻지 않고 고쳤다.
+
+- 1차(`9c0cbf0` 기준, 지적 29개): 🔴 2개(작업 브랜치에서 인자 없이 부르면 자기 항목을 못 찾음, "확인 못 함" AC 가 있으면 항목을 닫을 길이 없음), 🟡 9개, ⚪ 10개를 고쳤다. 틀린 지적 1개, 기존 문제 2개.
+- 2차(`8c32a06` 기준, 합치기·kit-setup·kit-help·모델 설정): 🔴 없음. 🟡 6개(하위 세션 기본 노력이 두 파일에서 다름, 다른 항목의 `w/` 브랜치에서 새 일을 받을 때의 규칙, 메인 세션 모델에 `auto`·`inherit`이 들어갈 수 있음, kit-help 가 start 를 Read 로 읽게 함, 프로젝트 설정 파일이 사용자 설정을 가림, 항목 없이 할 때 에이전트에 넘길 계약이 없음)와 ⚪ 2개를 고쳤다. AC 판정이 짚은 어긋난 문장 6곳도 고쳤다.
+- 나중 후보(고치지 않음): 로컬 Supabase 스택을 워크트리들이 함께 쓸 때 `db diff`·`gen types` 비교가 거짓 실패할 수 있다(확인 못 함). 작업 브랜치에서 새 항목을 만들면 번호가 다른 브랜치의 항목과 겹칠 수 있다(기존 문제).
+- 확인: 검증 명령 통과. 트리거 eval 25/25(`8c32a06`의 사본, opus 1회씩).
 
 ## Final Summary
 

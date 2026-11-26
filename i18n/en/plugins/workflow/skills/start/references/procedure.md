@@ -16,11 +16,13 @@ If the user wrote the task directly instead of a backlog item, do not create an 
 
 - **The contract is the user's words.** In the first message, restate the goal, the smallest change that meets it, and the condition for calling it done (a command to run or a screen to check), then go straight on. Do not wait for approval. If the words are ambiguous enough that what to build forks, ask just that, once.
 - **What is skipped:** finding the item in step 1, the item file record and the start commit in step 4, and step 11 (closing the item).
-- **Branch:** if you are on the base branch, create `w/<short-english-name>` and work there. If you are somewhere other than the base branch, work on that branch as is.
+- **Branch:** if you are on the base branch, create `w/<short-english-name>` and work there. If you are somewhere other than the base branch, work on that branch as is. But if that is a `w/` branch with an item file and the task has nothing to do with that item, ask once whether to put it on this branch (it would mix with another item's work).
 - **Record:** there is no item file, so write the plan and the decisions (`decision — reason — cost if wrong`) in the last message, and write what changed and why in the commit messages.
 - **Judgment:** treat the restated done condition like Acceptance Criteria. Call done only what outside evidence (command output) or a judge other than the implementing session confirmed. The verify Stop hook runs only when there is an item file, so be sure to run step 6's verification yourself.
+- **When handing to agents:** where a brief says to pass the item file path, put in the restated goal and done condition and the user's words as they are. What a skill says to write in the item file (for example, the chosen mockup) goes in the last message.
 - **Match the review to the size.** For a change of a few lines, launch only one `code-review` agent. Call the stack checks (`-start-check`, `-end-check`) as usual.
-- **Last message:** the same as step 10. If the work was done somewhere other than the base branch, do not ask about the merge; report only what was committed and the remaining decisions.
+- **Last message:** the same as step 10. If the work was done on a newly created `w/` branch, ask how to merge. If you were somewhere other than the base branch from the start and worked on that branch as is, do not ask about the merge; report only what was committed and the remaining decisions.
+- **Continuing:** if you are on a `w/` branch and there is no item file with that name in `docs/backlog/` or in `docs/done/`, it is work that was being done without an item. Read what was done from `git log <base>..HEAD` and the diff, take the task left in the arguments and the conversation as the contract, and go on from the remaining steps. If you cannot tell what the task is, ask only that.
 
 If the work is large or no playbook fits, follow the `figure-it-out` skill. If a place to keep the plan and the decisions is then needed, invoke the `backlog` skill with `<task> --here` to make an item and continue with that item.
 
@@ -37,7 +39,7 @@ Check the state with `git branch --show-current`, `git status --short`, `git bra
 | This item's `w/` branch already exists and you are not on it | If the session that worked on that branch still exists, tell the user to continue there. If it does not, continue here: if the branch is in another worktree (`git worktree list`), move there by giving that path to `EnterWorktree` (if the tool is missing or refuses, run later commands in that folder); otherwise `git switch w/<name>` |
 | You are not in the just-made worktree above, and you are on neither the base branch nor this item's branch | It may belong to another item or another session. Leave it alone and ask what to do |
 
-Finding the item: if there is no argument and the current branch is `w/<name>`, the item is `docs/backlog/<name>.md`, then `docs/done/<name>.md`. If there is an argument, look it up in `docs/backlog/`, then `docs/done/` (`README.md` and files starting with `_` are not items). If there is no argument and this is not a work branch, or there are several matches, show the `To Do` items by number and title and let the user pick. Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
+Finding the item: if there is no argument and the current branch is `w/<name>`, the item is `docs/backlog/<name>.md`, then `docs/done/<name>.md`. If there is an argument, look it up in `docs/backlog/`, then `docs/done/` (`README.md` and files starting with `_` are not items). If there is no argument and this is not a work branch, or there are several matches, show the `To Do` items by number and title and let the user pick. If the current branch is `w/<name>` and that file is in neither place, it is work that was being done without an item ("Continuing" in step 0). Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
 
 **Continuing:** read the item file's `Implementation Plan`, its checked Acceptance Criteria, and `Implementation Notes`, and resume from the step that remains.
 
@@ -187,9 +189,10 @@ How to write it:
 - Attach a recommendation, the evidence, and the risk to each decision. Write it so that the user can decide from the reply alone.
   - Findings for a person to decide: the finding, the options, the recommendation
   - "Later" candidates: whether to make them new items. Attach a title and draft ACs to each candidate
+  - ACs and DoD lines left unchecked because they could not be verified: the user verifies and checks them / close with them left as not verified / leave the item open
   - How to merge: local merge / PR / leave as is. Whether to push the base branch goes with it
   - Any suggested change to permissions or settings
-- Write decisions with a high cost if wrong, and what could not be verified, as notices, not as decisions to make.
+- Write decisions with a high cost if wrong, and what could not be verified, as notices, not as decisions to make. Raise it as the decision above only when an AC or DoD line could not be checked because it could not be verified.
 - Do not raise as a question what Claude can do by itself.
 - Write in plain words and short sentences. Include hashes, paths, and commands only when the user needs them to act.
 
@@ -209,6 +212,7 @@ When the answer comes:
 4. Close only when everything is in place. If anything is missing, stop and say so.
    - [ ] All Acceptance Criteria checked
    - [ ] All Definition of Done checked
+   - For a line where the user chose "close with them left as not verified" in step 10, do not check it; write `(확인 못 함, 사용자가 받아들임)` (not verified, accepted by the user) at the end of the line. That line counts as in place. If the user chose "leave the item open", do not close the item and do not do step 12.
    - [ ] `Final Summary` written
 5. On the work branch:
 

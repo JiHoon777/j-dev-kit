@@ -1,20 +1,22 @@
 # 모델 설정
 
-하위 세션이나 하위 에이전트를 띄울 때 쓸 모델과 노력(effort)을 역할마다 정한다. 값은 JSON 설정 파일에 있고, `kit-setup` 스킬이 써 준다. `start`, `backlog`, 그리고 에이전트를 띄우는 다른 스킬이 이 파일을 따른다.
+하위 세션이나 하위 에이전트를 띄울 때 쓸 모델과 노력(effort)을 역할마다 정한다. 값은 JSON 설정 파일에 있고, `kit-setup` 스킬이 써 준다. `start`와 `backlog`가 이 파일을 따른다. 다른 스킬을 직접 부르면(`/how` 등) 이 설정은 쓰이지 않는다.
 
 ## 설정 파일
 
 - 프로젝트: `<저장소 루트>/.claude/workflow.json`. 커밋하면 워크트리와 하위 세션에서도 보인다.
 - 사용자: `~/.claude/workflow.json`. 모든 프로젝트의 기본값이다.
 
-세션이나 에이전트를 띄우기 전에 프로젝트 파일을 Read 도구로 읽는다. 없으면 사용자 파일을 읽는다. 역할마다 프로젝트 값이 있으면 그것을, 없으면 사용자 값을, 그것도 없으면 아래 기본값을 쓴다. 파일이 없거나 읽을 수 없으면 묻지 않고 기본값으로 간다. 한 번 읽은 값은 그 세션 동안 다시 읽지 않아도 된다.
+세션이나 에이전트를 띄우기 전에 두 파일을 Read 도구로 읽는다(없는 파일은 건너뛴다). 역할마다 프로젝트 값이 있으면 그것을, 없으면 사용자 값을, 그것도 없으면 아래 기본값을 쓴다. 두 파일이 모두 없거나 읽을 수 없으면 묻지 않고 기본값으로 간다. 한 번 읽은 값은 그 세션 동안 다시 읽지 않아도 된다.
+
+기본값을 그대로 적으면 이렇다. 역할은 바꿀 것만 적어도 된다.
 
 ```json
 {
   "models": {
-    "session": { "model": "opus", "effort": "high" },
+    "session": { "model": "auto", "effort": "high" },
     "implement": { "model": "inherit" },
-    "review": { "model": "opus" },
+    "review": { "model": "auto" },
     "judge": { "model": "inherit" },
     "mechanical": { "model": "sonnet", "effort": "high" },
     "explore": { "model": "inherit" }
@@ -31,13 +33,13 @@
 | `review` | 리뷰 에이전트: `code-review`, `security-review`, 스택 리뷰어 | `auto` |
 | `judge` | 판정 에이전트: AC 판정, 리뷰 지적 판정, 서베이 판정, `frontend-evaluator` | `inherit` |
 | `mechanical` | 판단이 남지 않는 기계적 수정을 맡는 에이전트 | `sonnet`, 노력 `high` |
-| `explore` | 읽기만 하는 탐색과 조사: `Explore`, `how`, 서베이 수집 | `inherit` |
+| `explore` | 읽기만 하는 탐색과 조사: `start`와 `backlog`가 띄우는 `Explore`, 서베이 수집 | `inherit` |
 
 ## 값
 
 - `model`: `fable`, `opus`, `sonnet`, `haiku`, `inherit`, `auto` 중 하나다.
   - `inherit`: 모델을 주지 않는다. 이 세션의 모델을 이어받는다.
-  - `auto`: 이 세션이 Fable 이면 한 단계 낮은 최신 모델(지금은 `opus`)로, 아니면 `inherit`으로 한다.
+  - `auto`: 이 세션이 Fable 이면 한 단계 낮은 최신 모델(지금은 `opus`)로, 아니면 `inherit`으로 한다. `inherit`으로 풀리면 그 역할의 `effort`도 주지 않는다(모델과 노력을 모두 이어받는다).
 - `effort`: `low`, `medium`, `high`, `xhigh` 중 하나다. 적지 않으면 이어받는다.
 
 ## 넘기는 법

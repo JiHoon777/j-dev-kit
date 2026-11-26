@@ -10,7 +10,7 @@ disable-model-invocation: true
 
 workflow 플러그인에 대한 질문에 답하고, 사용자가 그대로 보낼 수 있는 명령 한 줄을 주고, 답이 나온 파일을 알려 준다. 도움말 질문에는 일을 시작하지 않는다. 사용자는 방법을 물은 것이니, 명령은 사용자가 보내게 둔다.
 
-"이 버그 고쳐 줘"처럼 일을 시키는 말은 도움말 질문이 아니다. `start` 스킬(`${CLAUDE_SKILL_DIR}/../start/SKILL.md`)을 읽고 그 절차로 한다.
+"이 버그 고쳐 줘"처럼 일을 시키는 말은 도움말 질문이 아니다. Skill 도구로 `start` 스킬을 불러 그 절차로 한다.
 
 이 파일은 질문을 스킬과 문서로 이어 주는 지도다. 자세한 내용은 그 파일들에 있다. 답하기 전에 가리키는 파일을 Read 도구로 읽고, 이 지도와 다르면 그 파일을 믿는다. 스킬 파일은 `${CLAUDE_SKILL_DIR}/../<이름>/SKILL.md`에 있다. 사용자에게는 공개 사본을 알려 준다: `https://github.com/JiHoon777/j-dev-kit/blob/main/plugins/workflow/` 뒤에 경로를 붙인다.
 

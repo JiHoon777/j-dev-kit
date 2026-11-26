@@ -14,5 +14,5 @@ Read by `frontend-start-check` when package.json has `svelte`. Add the following
 
 ## To ask
 
-- If the official Svelte plugin is not installed, ask whether to install it (the command under "Used when installed" in the README). Ask only once per project: if the answer is not to install, suggest writing `- 공식 스킬: 설치 안 함` (official skills: not installed) under `## 작업 설정` (work settings) in CLAUDE.md, and do not ask when that line is there.
+- If the official Svelte plugin is not installed, ask whether to install it (the command under "Nice-to-have plugins" in the README). Ask only once per project: if the answer is not to install, suggest writing `- 공식 스킬 설치 안 함: svelte` (official skills not installed: svelte) under `## 작업 설정` (work settings) in CLAUDE.md, and do not ask when that line has `svelte`. If the line already exists, add the name after a comma.
 - If the installed `svelte` is 4 or lower, say that the rules above do not apply and ask how to proceed.

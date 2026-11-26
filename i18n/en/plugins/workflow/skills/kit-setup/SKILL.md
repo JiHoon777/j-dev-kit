@@ -25,11 +25,11 @@ The only asking is the one time in step 2 below. Attach a recommendation and its
 
 ## 2. Show, then ask everything at once
 
-Show the current value and the default for each role in a table. Then ask everything at once.
+Show, for each role, the value in use, where it comes from (project file, user file, default), and the default in a table. Then ask everything at once.
 
 1. **Where to save:** project (`.claude/workflow.json`, committed. Visible from worktrees and sub-sessions too) / user (`~/.claude/workflow.json`, the default for every project). If the arguments have `--user`, do not ask; it is user. The recommendation is project.
 2. **Model and effort per role:** have the user pick one of three.
-   - Keep the defaults
+   - Leave as is (do not write the model settings file)
    - Save: lower `session` and `review` to `sonnet`, `judge` to `sonnet`, and `explore` to `haiku`
    - Pick roles to change: have the user say which roles and which values
 3. **Main session:** leave as is (recommended) / pick a model and effort and write them to the settings. If written, say that they apply from a new session.
@@ -40,8 +40,8 @@ Do not ask about what is already settled.
 
 ## 3. Check and write
 
-- Check the values. `model` is one of `fable`, `opus`, `sonnet`, `haiku`, `inherit`, `auto`, and `effort` is one of `low`, `medium`, `high`, `xhigh`. If not, ask again for that role only.
-- Rewrite the settings file whole. Running it again must give the same result. Write down roles that equal the default too (so the file alone shows what is in use).
+- Check the values. `model` is one of `fable`, `opus`, `sonnet`, `haiku`, `inherit`, `auto`, and `effort` is one of `low`, `medium`, `high`, `xhigh`. If not, ask again for that role only. The main session's `model` takes only `fable`, `opus`, `sonnet`, or `haiku` (`inherit` and `auto` are for roles only).
+- Rewrite the settings file whole. Running it again must give the same result. Write only the roles the user set. Roles left out follow the next source (the user file, then the default). Writing defaults into the project file would hide the user file's values in that project.
 - If the main session is to change, edit only the `model` and `effortLevel` keys in `.claude/settings.local.json`. If the file does not exist, create one with only those two keys. Do not touch other keys. Do not edit permission, hook, or plugin keys.
 - If CLAUDE.md is to be added to, add only the `## 작업 설정` (work settings) section.
 - If a project file was written, commit with `chore: workflow 설정` (workflow settings). Do not push. If this is not the base branch, say that the commit goes onto this branch.

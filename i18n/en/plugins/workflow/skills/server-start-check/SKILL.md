@@ -44,7 +44,7 @@ Return only what applies to this item.
 - If the item changes the schema: create a migration with the owning tool's generate command, regenerate types if needed.
 - If the item changes the API request or response format: whether the consumers of that API (frontend, other services) also change.
 - If there are two migration owners or the monorepo service is unclear, put it under questions.
-- If Supabase is used and the official Supabase skills the reviewers invoke (`supabase`, `supabase-postgres-best-practices`) are not installed, put whether to install them under questions ("Used when installed" in the README). Ask only once per project: if the answer is not to install, suggest writing `- 공식 스킬: 설치 안 함` (official skills: not installed) under `## 작업 설정` (work settings) in CLAUDE.md, and do not ask when that line is there.
+- If Supabase is used and the official Supabase skills the reviewers invoke (`supabase`, `supabase-postgres-best-practices`) are not installed, put whether to install them under questions ("Nice-to-have plugins" in the README). Ask only once per project: if the answer is not to install, suggest writing `- 공식 스킬 설치 안 함: supabase` (official skills not installed: supabase) under `## 작업 설정` (work settings) in CLAUDE.md, and do not ask when that line has `supabase`. If the line already exists, add the name after a comma.
 
 ## Return format
 

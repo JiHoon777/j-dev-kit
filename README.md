@@ -168,7 +168,7 @@ plugins/workflow/skills/frontend-{start,end}-check/(scripts/dev-server.sh, diff-
 plugins/workflow/skills/server-{start,end}-check/(scripts/config-check.sh)   서버·Supabase 점검
 plugins/workflow/agents/            frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md, api-reviewer.md, supabase-reviewer.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
-plugins/workflow/evals/             eval 사례(frontend/, server/ 포함)
+plugins/workflow/evals/             eval 사례(프론트엔드·서버 리뷰어 사례 포함)
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)
 scripts/check-repo-rules.sh         저장소 규칙 검사
 scripts/test-*.sh                   검사 스크립트·검증 훅·플러그인 스크립트의 시나리오 테스트

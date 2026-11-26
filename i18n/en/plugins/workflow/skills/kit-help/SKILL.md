@@ -12,7 +12,7 @@ disable-model-invocation: true
 
 Answer questions about the workflow plugin, give one command line the user can send as is, and point to the file the answer came from. Do not start work on a help question. The user asked how, so leave the command for the user to send.
 
-A request to do work, like "fix this bug", is not a help question. Read the `start` skill (`${CLAUDE_SKILL_DIR}/../start/SKILL.md`) and follow its procedure.
+A request to do work, like "fix this bug", is not a help question. Invoke the `start` skill with the Skill tool and follow its procedure.
 
 This file is a map from questions to skills and docs. The details are in those files. Before answering, read the file it points to with the Read tool, and if it differs from this map, trust that file. Skill files are at `${CLAUDE_SKILL_DIR}/../<name>/SKILL.md`. Give the user the public copy: append the path to `https://github.com/JiHoon777/j-dev-kit/blob/main/plugins/workflow/`.
 

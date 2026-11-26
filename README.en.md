@@ -170,7 +170,7 @@ plugins/workflow/skills/frontend-{start,end}-check/ (scripts/dev-server.sh, diff
 plugins/workflow/skills/server-{start,end}-check/ (scripts/config-check.sh)   server and Supabase checks
 plugins/workflow/agents/            frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md, api-reviewer.md, supabase-reviewer.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)
-plugins/workflow/evals/             eval cases (including frontend/ and server/)
+plugins/workflow/evals/             eval cases (including the frontend and server reviewer cases)
 i18n/en/                            English translations (Claude does not read them)
 scripts/check-repo-rules.sh         repository rule check
 scripts/test-*.sh                   scenario tests for the check script, the verify hook and the plugin scripts

@@ -79,7 +79,7 @@ for readme in README.md README.en.md; do
   done
 done
 
-# 7. 두 벌인 port_open (플러그인은 따로 설치되니 한 파일로 합칠 수 없다)
+# 7. 두 벌인 port_open (스킬 폴더마다 스크립트를 따로 둔다)
 port_files=(plugins/workflow/skills/start/scripts/pick-port.sh plugins/workflow/skills/frontend-start-check/scripts/dev-server.sh)
 bodies=()
 for f in "${port_files[@]}"; do
