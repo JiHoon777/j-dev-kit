@@ -1,12 +1,12 @@
 ---
 id: '017'
 title: 항목 번호를 셀 때 다른 브랜치의 항목도 본다
-status: To Do
+status: In Progress
 labels: [fix]
 priority: low
 dependencies: ['016']
 created_date: 2026-11-26
-updated_date: 2026-11-26
+updated_date: 2026-11-27
 ---
 
 ## Description
@@ -21,9 +21,9 @@ updated_date: 2026-11-26
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 번호를 셀 때 지금 폴더뿐 아니라 기준 브랜치와 다른 `w/` 브랜치의 `docs/backlog/`·`docs/done/`도 본다(로컬 브랜치와 이미 가져온 원격 브랜치. `git ls-tree`로 읽고 체크아웃하지 않는다). 그 가운데 가장 큰 번호 + 1 을 쓴다
-- [ ] #2 다른 브랜치를 읽을 수 없으면(저장소가 아님, 브랜치 없음) 지금처럼 지금 폴더만 보고 센다. 멈추거나 묻지 않는다
-- [ ] #3 파일을 쓰기 직전에 번호를 다시 세는 규칙도 같은 범위를 본다
+- [x] #1 번호를 셀 때 지금 폴더뿐 아니라 기준 브랜치와 다른 `w/` 브랜치의 `docs/backlog/`·`docs/done/`도 본다(로컬 브랜치와 이미 가져온 원격 브랜치. `git ls-tree`로 읽고 체크아웃하지 않는다). 그 가운데 가장 큰 번호 + 1 을 쓴다
+- [x] #2 다른 브랜치를 읽을 수 없으면(저장소가 아님, 브랜치 없음) 지금처럼 지금 폴더만 보고 센다. 멈추거나 묻지 않는다
+- [x] #3 파일을 쓰기 직전에 번호를 다시 세는 규칙도 같은 범위를 본다
 
 <!-- AC:END -->
 
@@ -31,9 +31,9 @@ updated_date: 2026-11-26
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 번역본(`i18n/en/`)을 원문과 같이 고쳤다
-- [ ] #3 `plugin.json` `version`을 올렸다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 번역본(`i18n/en/`)을 원문과 같이 고쳤다
+- [x] #3 `plugin.json` `version`을 올렸다
 
 <!-- DOD:END -->
 
@@ -43,7 +43,18 @@ updated_date: 2026-11-26
 
 ## Implementation Notes
 
-작업하며 알게 된 것, 계획에서 바뀐 것.
+016 뒤의 pstack 점검 수정과 같은 브랜치(`w/pstack-fidelity`)에서 항목 014 와 함께 했다. 계획은 따로 적지 않았다.
+
+### 정한 것
+
+- 번호 세기를 스킬의 글이 아니라 스크립트(`plugins/workflow/skills/backlog/scripts/next-number.sh`)로 했다 — 여러 브랜치를 읽는 명령을 글로 적으면 세션마다 다르게 돌린다. 스크립트는 테스트할 수 있다(`principle-build-the-lever`, `principle-encode-lessons-in-structure`) — 스크립트를 돌릴 수 없는 환경에서는 스킬이 "지금 폴더에서 직접 센다"로 돌아간다
+- 저장소 안이면 어느 폴더에서 돌려도 저장소 루트 기준으로 센다 — 리뷰가 하위 폴더에서 `001`이 나오는 것을 찾았다 — 없음
+
+### 확인
+
+- `bash scripts/test-next-number.sh`: 7개 중 7개 맞음(저장소 아님, 다른 로컬 브랜치, 하위 폴더, 원격 추적 브랜치, 한글 이름, 커밋하지 않은 항목).
+- 이 테스트는 main 의 소스에서는 실패한다(`base-tests.sh main 'bash {}'` → `기준에서 실패: scripts/test-next-number.sh`). 스크립트가 없기 때문이다.
+- 이 저장소에서 돌리면 `018`이 나온다(가장 큰 번호 017).
 
 ## Final Summary
 

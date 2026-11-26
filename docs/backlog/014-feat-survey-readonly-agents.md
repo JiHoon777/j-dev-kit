@@ -1,12 +1,12 @@
 ---
 id: '014'
 title: 서베이 수집·판정 에이전트를 읽기·웹 도구만 가진 에이전트로 띄운다
-status: To Do
+status: In Progress
 labels: [feat]
 priority: medium
 dependencies: ['013']
 created_date: 2026-11-25
-updated_date: 2026-11-26
+updated_date: 2026-11-27
 ---
 
 ## Description
@@ -23,10 +23,10 @@ updated_date: 2026-11-26
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 workflow 플러그인에 서베이 수집용 에이전트가 있고, `tools:`가 읽기·웹 도구(Read, Grep, Glob, WebSearch, WebFetch. 메모를 직접 쓰면 Write)로 제한돼 있다
-- [ ] #2 서베이 판정 에이전트는 근거 원문(웹 포함)을 열어 대조할 수 있게 읽기·웹 도구(Read, Grep, Glob, WebSearch, WebFetch)만 가지고, 파일을 고치거나 명령을 돌리는 도구는 없다
-- [ ] #3 `backlog` 스킬의 `references/survey.md`(원문·번역본, 016 전의 `create.md` 서베이 절)가 수집과 판정에 그 에이전트를 부르고, 경계 문장은 그대로 있다
-- [ ] #4 survey-outside eval 을 013 판과 견주어 점수가 낮지 않다(판정 규칙). 결과와 다시 돌리는 명령이 Implementation Notes 에 있다
+- [x] #1 workflow 플러그인에 서베이 수집용 에이전트가 있고, `tools:`가 읽기·웹 도구(Read, Grep, Glob, WebSearch, WebFetch. 메모를 직접 쓰면 Write)로 제한돼 있다
+- [x] #2 서베이 판정 에이전트는 근거 원문(웹 포함)을 열어 대조할 수 있게 읽기·웹 도구(Read, Grep, Glob, WebSearch, WebFetch)만 가지고, 파일을 고치거나 명령을 돌리는 도구는 없다
+- [x] #3 `backlog` 스킬의 `references/survey.md`(원문·번역본, 016 전의 `create.md` 서베이 절)가 수집과 판정에 그 에이전트를 부르고, 경계 문장은 그대로 있다
+- [x] #4 survey-outside eval 을 013 판과 견주어 점수가 낮지 않다(판정 규칙). 결과와 다시 돌리는 명령이 Implementation Notes 에 있다
 
 <!-- AC:END -->
 
@@ -34,9 +34,9 @@ updated_date: 2026-11-26
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 번역본을 같이 고쳤다
-- [ ] #3 workflow `plugin.json` `version`을 올리고 README 두 개와 `marketplace.json` 설명을 맞췄다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 번역본을 같이 고쳤다
+- [x] #3 workflow `plugin.json` `version`을 올리고 README 두 개와 `marketplace.json` 설명을 맞췄다
 
 <!-- DOD:END -->
 
