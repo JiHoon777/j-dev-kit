@@ -129,7 +129,7 @@ The principles are 24 skills of one rule each (`principle-<name>`). `/start` rea
 | --- | --- |
 | It asks too often | If the question is outside the five asking criteria, say "don't ask, decide and write it down". If it keeps happening, the asking criteria in the `start` SKILL.md need fixing |
 | It asks how to merge every time | Set how to merge in `/kit-setup`: local merge then push, or a PR |
-| You want it to keep going while you are away | Say "run it to the end". It asks only about the merge, work that cannot be undone, states that could lose work, and new installs, decides the rest by its recommendation, and collects it in the last message |
+| You want it to keep going while you are away | Say "run it to the end". It asks only about the merge, work that cannot be undone and states that could lose work, decides the rest by its recommendation, and collects it in the last message |
 | You want to see the plan | Say "let me see the plan" and it shows the plan and waits |
 | The model was changed but nothing changed | Per-role settings apply from the next session or agent launched, and main session settings from a new session |
 | It costs a lot | See the cost paragraph in "First-time setup" |

@@ -53,7 +53,7 @@ Rules in the project CLAUDE.md take precedence over this skill.
 Ask only these five. Every question point in the `backlog` skill and in the procedure follows these criteria.
 
 1. Work that cannot be undone or that goes outside: merging, pushing to the base branch or a deploy branch, deleting, a remote DB, deploying. Other branches (work branches) are pushed without asking.
-2. Work that changes something outside the project or shared settings: installing plugins or skills, CLAUDE.md.
+2. Work that changes shared settings: CLAUDE.md.
 3. Product or taste decisions that code or a run cannot settle.
 4. Choosing what to do: which items to create, how far to go.
 5. States that could lose work: uncommitted changes, a branch whose owner is unknown.
@@ -61,11 +61,12 @@ Ask only these five. Every question point in the `backlog` skill and in the proc
 Do not ask anything else. Decide, and go on while writing down what was decided and why (full text: the `principle-never-block-on-the-human` skill).
 
 - Do not ask about a fork that running something would settle (structure, library, approach). Run it, decide, and write down the result and the evidence (`playbooks/prototype.md`).
+- Do not ask about installs. When a new dependency, tool or official skill is needed, use the one the item or the plan names. If none is named, pick a proven one (widely used and maintained), write what you installed and why in the decision lines, and report it in the last message.
 - Do not ask questions like "Shall I go on to the next step?"
 - If `git revert` or removing a worktree can undo it, it can be undone.
 - If the user says "let me see the plan" or "stop here", do so.
 - A multi-hour run gets one checkpoint before it starts (the `figure-it-out` skill). It decides how far to go, so it is criterion 4, and it goes in the pre-start questions.
-- If the user says "run it to the end", "don't stop", "I'm stepping away" or "I'm going to bed", do not stop. Three things are still asked: criterion 1 (work that cannot be undone or that goes outside, which includes the merge), criterion 5 (uncommitted changes, a branch whose owner is unknown), and installing a new package, tool, plugin or skill. An install script runs the moment it is installed and cannot be undone. Decide the other questions (pre-start questions, the rest of the scope list, product or taste decisions) by your recommendation, write them down as decisions, and collect them in the last message. At a dead end, do not spin. Say so.
+- If the user says "run it to the end", "don't stop", "I'm stepping away" or "I'm going to bed", do not stop. Two things are still asked: criterion 1 (work that cannot be undone or that goes outside, which includes the merge) and criterion 5 (uncommitted changes, a branch whose owner is unknown). Decide the other questions (pre-start questions, the ones on the scope list, product or taste decisions) by your recommendation, write them down as decisions, and collect them in the last message. At a dead end, do not spin. Say so.
 
 ### Writing down decisions
 

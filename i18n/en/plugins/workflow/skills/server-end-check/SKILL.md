@@ -19,7 +19,7 @@ Called by the `start` skill's review step. Runs commands and returns only the re
 
 ## 1. Checks (only when applicable)
 
-Run database commands only against a local or development DB. If it looks like production, do not run them and tell the user. If a needed check tool is missing, install and use it: pin the version, and use a way that does not change project files or global installs. You may install only the tools this document names (Supabase CLI: `npx -y supabase@<version>`) and tools the project already lists as dependencies. For any other tool, show the user its name and source and ask before installing. If it cannot be installed, write "tool not installed".
+Run database commands only against a local or development DB. If it looks like production, do not run them and tell the user. If a needed check tool is missing, install and use it: pin the version, and use a way that does not change project files or global installs. First use the tools this document names (Supabase CLI: `npx -y supabase@<version>`) and tools the project already lists as dependencies. If another tool is needed, do not ask: use a proven one (widely used and maintained) the same way, and write its name and source in the result. If it cannot be installed, write "tool not installed".
 
 ### Missing migrations and order
 
