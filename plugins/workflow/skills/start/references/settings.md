@@ -16,7 +16,7 @@ workflow 플러그인의 설정 파일이다. 두 가지를 정한다: 하위 �
   "models": {
     "session": { "model": "opus", "effort": "xhigh" },
     "implement": { "model": "opus", "effort": "xhigh" },
-    "review": { "model": "opus", "effort": "high" },
+    "review": { "model": "opus", "effort": "xhigh" },
     "judge": { "model": "opus", "effort": "xhigh" },
     "mechanical": { "model": "opus", "effort": "high" },
     "explore": { "model": "opus", "effort": "high" }
@@ -30,14 +30,14 @@ workflow 플러그인의 설정 파일이다. 두 가지를 정한다: 하위 �
 | --- | --- | --- |
 | `session` | `start`와 `backlog`가 띄우는 하위 세션 | `opus`, 노력 `xhigh` |
 | `implement` | 구현을 맡는 하위 에이전트(플레이북이 "맡긴다"고 하는 곳) | `opus`, 노력 `xhigh` |
-| `review` | 리뷰 에이전트: `code-review`, `security-review`, 스택 리뷰어 | `opus`, 노력 `high` |
+| `review` | 리뷰 에이전트: `code-review`, `security-review`, 스택 리뷰어 | `opus`, 노력 `xhigh` |
 | `judge` | 판정 에이전트: AC 판정, 리뷰 지적 판정, 서베이 판정, `frontend-evaluator` | `opus`, 노력 `xhigh` |
 | `mechanical` | 판단이 남지 않는 기계적 수정을 맡는 에이전트 | `opus`, 노력 `high` |
 | `explore` | 읽기만 하는 탐색과 조사: `start`와 `backlog`가 띄우는 `Explore`, 서베이 수집 | `opus`, 노력 `high` |
 
 ## 기본값의 기준
 
-기본값은 pstack 의 역할별 기본값을 따른다(`cursor/plugins`의 `pstack/skills/setup-pstack/SKILL.md`와 `poteto-mode/SKILL.md`의 Subagents 절). 코드, 글, 판단은 Opus 에 노력 `xhigh`이고, 기계적인 수정은 Opus 에 `high`다. pstack 의 리뷰 패널은 회사가 다른 모델을 한 자리씩 섞는다. 여기서는 리뷰어마다 맡은 일이 달라 한 모델로 두고, 패널 자리의 수준(`high`)을 쓴다. `explore`는 pstack 에 없는 역할이라 `high`로 정했다.
+기본값은 pstack 의 역할별 기본값을 따른다(`cursor/plugins`의 `pstack/skills/setup-pstack/SKILL.md`와 `poteto-mode/SKILL.md`의 Subagents 절). 코드, 글, 판단은 Opus 에 노력 `xhigh`이고, 기계적인 수정은 Opus 에 `high`다. pstack 의 리뷰 패널은 회사가 다른 모델을 한 자리씩 섞는다. 여기서는 리뷰어마다 맡은 일이 달라 한 모델로 두고, 판단하는 일의 수준(`xhigh`)을 쓴다. `explore`는 pstack 에 없는 역할이라 `high`로 정했다.
 
 - 어떤 역할도 `xhigh`를 넘지 않는다.
 - 일에 맞춘다. 역할의 값에서 시작해, 가장 어렵거나 미묘한 일은 한 단계 올리고(`xhigh`까지), 판단만 하는 일은 한 단계, 반복적인 일은 두 단계 이상 내린다.

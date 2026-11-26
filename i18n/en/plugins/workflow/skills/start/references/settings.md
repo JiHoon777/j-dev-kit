@@ -18,7 +18,7 @@ With the defaults written out, it looks like this. You may write only the roles 
   "models": {
     "session": { "model": "opus", "effort": "xhigh" },
     "implement": { "model": "opus", "effort": "xhigh" },
-    "review": { "model": "opus", "effort": "high" },
+    "review": { "model": "opus", "effort": "xhigh" },
     "judge": { "model": "opus", "effort": "xhigh" },
     "mechanical": { "model": "opus", "effort": "high" },
     "explore": { "model": "opus", "effort": "high" }
@@ -32,14 +32,14 @@ With the defaults written out, it looks like this. You may write only the roles 
 | --- | --- | --- |
 | `session` | The sub-sessions `start` and `backlog` open | `opus`, effort `xhigh` |
 | `implement` | Subagents handed the implementation (where a playbook says to "delegate") | `opus`, effort `xhigh` |
-| `review` | Review agents: `code-review`, `security-review`, stack reviewers | `opus`, effort `high` |
+| `review` | Review agents: `code-review`, `security-review`, stack reviewers | `opus`, effort `xhigh` |
 | `judge` | Judge agents: AC judgment, judging review findings, judging the survey, `frontend-evaluator` | `opus`, effort `xhigh` |
 | `mechanical` | Agents handed mechanical fixes where no judgment is left | `opus`, effort `high` |
 | `explore` | Read-only exploration and research: the `Explore` agents `start` and `backlog` launch, survey gathering | `opus`, effort `high` |
 
 ## What the defaults follow
 
-The defaults follow pstack's per-role defaults (`pstack/skills/setup-pstack/SKILL.md` and the Subagents section of `poteto-mode/SKILL.md` in `cursor/plugins`). Code, prose, and judgment run on Opus at effort `xhigh`, and mechanical fixes on Opus at `high`. pstack's review panel mixes one model per seat from different vendors. Here each reviewer has a different job, so they share one model at the panel seat's level (`high`). `explore` is a role pstack does not have, so it is set to `high`.
+The defaults follow pstack's per-role defaults (`pstack/skills/setup-pstack/SKILL.md` and the Subagents section of `poteto-mode/SKILL.md` in `cursor/plugins`). Code, prose, and judgment run on Opus at effort `xhigh`, and mechanical fixes on Opus at `high`. pstack's review panel mixes one model per seat from different vendors. Here each reviewer has a different job, so they share one model at the level for judgment (`xhigh`). `explore` is a role pstack does not have, so it is set to `high`.
 
 - No role runs above `xhigh`.
 - Match the model to the job. Start from the role's value, raise it one step (up to `xhigh`) for the hardest or subtlest work, lower it one step for judgment-only work, and two or more steps for routine work.
