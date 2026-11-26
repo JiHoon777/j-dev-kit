@@ -108,7 +108,7 @@ updated_date: YYYY-MM-DD
 | Implementation Plan | 비워 둔다 |
 | 글 | `${CLAUDE_SKILL_DIR}/../unslop/SKILL.md`와 `${CLAUDE_SKILL_DIR}/../technical-writing/SKILL.md`를 따른다 |
 
-- 번호: `bash ${CLAUDE_SKILL_DIR}/scripts/next-number.sh`가 찍는 번호를 쓴다. 저장소 루트의 작업 트리와 모든 브랜치(로컬과 이미 가져온 원격)의 `docs/backlog/`·`docs/done/`을 통틀어 가장 큰 번호 + 1, 세 자리다. 브랜치는 체크아웃하지 않고 읽는다. 작업 브랜치에서 만든 항목이 기준 브랜치나 다른 작업 브랜치의 항목과 번호가 겹치지 않게 하려는 것이다. git 저장소가 아니거나 브랜치를 읽을 수 없으면 스크립트가 지금 폴더만 보고 센다. `README.md`와 `_`로 시작하는 파일은 항목이 아니다.
+- 번호: `bash ${CLAUDE_SKILL_DIR}/scripts/next-number.sh`가 찍는 번호를 쓴다. 저장소 루트의 작업 트리와 모든 브랜치(로컬과 이미 가져온 원격)의 `docs/backlog/`·`docs/done/`을 통틀어 가장 큰 번호 + 1, 세 자리다. 브랜치는 체크아웃하지 않고 읽는다. 작업 브랜치에서 만든 항목이 기준 브랜치나 다른 작업 브랜치의 항목과 번호가 겹치지 않게 하려는 것이다. git 저장소가 아니면 스크립트가 지금 폴더만, 브랜치를 읽을 수 없으면 저장소 루트의 작업 트리만 보고 센다. `README.md`와 `_`로 시작하는 파일은 항목이 아니다.
 - 파일 이름: `<번호>-<라벨>-<짧은-영어-이름>.md`. `status: To Do`, 날짜는 오늘.
 - 다른 세션이 동시에 항목을 만들 수 있다. 4단계에서 파일을 쓰기 직전에 같은 스크립트로 번호를 다시 세고, 그새 같은 번호가 생겼으면 다음 번호로 바꿔 알린다.
 - 메모에서 온 요청이면 만든 뒤 `docs/backlog/README.md`의 그 줄을 지운다.

@@ -45,7 +45,6 @@ Finding the item: if there is no argument and the current branch is `w/<name>`, 
 
 **Continuing:** read the item file's `Implementation Plan`, its checked Acceptance Criteria, and `Implementation Notes`, and resume from the step that remains.
 
-- `Implementation Notes` has `### 조사 결과` (investigation result) or `### 시제품 결과` (prototype result) → step 10. Send the last message again
 - `Implementation Plan` is empty → step 2
 - There are unchecked Acceptance Criteria → step 5
 - Every AC is checked but Definition of Done is not → step 6
@@ -74,7 +73,7 @@ Do not get the plan approved. Do not enter plan mode.
    - Small item (a few files, no new structure): read the relevant code directly, without agents.
    - Large item (several modules, new structure): launch `Explore` agents on different areas in one message. Have them return the files that must be read, then read those files directly.
 3. **Playbook:** from the index in `SKILL.md`, pick the playbook that fits the nature of the item and move its steps into the to-do list. If none fits, or the work is large and cross-cutting, design the steps for that work with the `figure-it-out` skill. The playbook's research and design steps (tracing, reproducing, narrowing down the cause, measuring, `architect`) are done here in step 3, and the plan is written from their results. The remaining steps run inside step 5 (implementation). The playbook's verification step is 2–4 of step 6. Do not do it twice. The playbook's last step continues into step 6. If there is reproducing or measuring that needs a running server, do 1 of step 4 (the work branch and the item ports) first and come back. `prototype.md` is for settling the fork in 5. Where a playbook says to delegate the implementation, follow "When delegating" in step 5.
-   - **Investigation and prototype:** if you picked `investigation.md`, the answer is the deliverable. Skip 4–8 of this step 3 and steps 5–9. If the item itself is a prototype, the code is throwaway, so skip steps 6–9. Neither merges code, so step 10 does not ask about the merge. If it was done as a backlog item, in step 4 write the question and where the answer will go into `Implementation Plan`, in one or two lines (if it is left empty, continuing starts over from the beginning). Write the result under `### 조사 결과` or `### 시제품 결과` in the item file's `Implementation Notes` and commit it (for an investigation the answer, for a prototype the result and the recommendation). Judge the Acceptance Criteria by the method in 4 of step 6 (outside evidence or a judge agent) and check them off. In step 10 ask what to do with the item: close it, keeping only the result / continue it as a code-change item / leave it as is. If there is no `merge` setting, also ask how to merge when closing. If the answer is to close it, close it with step 11 and merge only the item file with step 12. If it was done without an item, give the answer as the last message and end.
+   - **Investigation and prototype:** for an investigation done without an item (`investigation.md`), the answer is the deliverable. Skip 4–8 of this step 3 and steps 4–12, give the answer as the last message, and finish. When a backlog item is itself an investigation or a prototype, the deliverable is the text written in the item file. Write the result (the answer for an investigation, the result and a recommendation for a prototype) in `Implementation Notes`, and the rest goes like any other item (AC and DoD judgment, review, step 10, steps 11–12). Prototype code is throwaway, so do not commit it to the work branch (keep it in a temp folder or `.claude/.local/`). If the investigation or prototype should lead to a code change, raise it as a "later" candidate in the step 10 message.
 4. **Tools and steps:** decide which field this item's work belongs to, and what tools (names, commands) and steps the best practitioners in that field use for it. Do not assume a role; write down the tools and steps. If you do not know, look it up in docs or on the web. Keep the tools the stack checks gave and add only what is missing.
 5. **Design:** decide it yourself. For a change that crosses a function boundary, follow the `architect` skill. Settle a fork that running something would settle with `playbooks/prototype.md`, and write down the result and the evidence.
 6. **Gaps in the ACs:** if, while reading the item, you find ACs that contradict each other or a missing decision that only a person can make, put it in the pre-start questions.
@@ -142,7 +141,7 @@ Go on to step 7 without asking.
    - A test written to pin the current behavior (the refactoring playbook's pinning test, hillclimb's regression gate) is right to pass on base. A pinning test named in the plan from step 4, and an existing test rewritten to assert behavior and written under `### 정한 것`, are left out of the findings; say so in `Implementation Notes`. One that was not in the plan goes into the findings list marked "claimed to be a pinning test", and the judge decides.
    - If the output is `바뀐 테스트 없음.` (no changed tests, exit value 2), add the test files outside the naming rules and run again; if there are none, raise "could not verify. No tests found on this branch" in the step 10 message.
    - If the command cannot be settled or the exit value is 2 for another reason, write "could not verify" and the reason in `Implementation Notes`; for each `HEAD 에서 실패: <file>` (fails on HEAD) line, whatever the exit value, write that test as "could not verify"; then move on.
-3. If the change is small but reaches wide, follow the `blast-radius` skill and put what it finds into the findings list.
+3. If the change is small but reaches wide, follow the `blast-radius` skill, put what it finds into the findings list, and leave it to the judge.
 
 ## 8. Review (agents, in parallel in one message)
 
@@ -186,7 +185,7 @@ How to fix:
 
 ## 10. Last message (once)
 
-Stop here once. Always ask about the merge (for an investigation or a prototype, ask instead what to do with the item, by the rule in 3 of step 3). Put every remaining decision into this one message. If the verify command line changed in `git diff <base>...HEAD -- CLAUDE.md`, also include "This branch changed the verify command (old → new). Until the merge, the verify Stop hook judges with the base branch's command".
+Stop here once. Always ask about the merge. Put every remaining decision into this one message. If the verify command line changed in `git diff <base>...HEAD -- CLAUDE.md`, also include "This branch changed the verify command (old → new). Until the merge, the verify Stop hook judges with the base branch's command".
 
 How to write it:
 
