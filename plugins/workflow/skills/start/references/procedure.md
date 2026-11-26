@@ -41,7 +41,7 @@
 
 항목 찾기: 인자가 없고 지금 브랜치가 `w/<이름>`이면 `docs/backlog/<이름>.md`, 그다음 `docs/done/<이름>.md`가 항목이다. 인자가 있으면 `docs/backlog/`, 그다음 `docs/done/`에서 찾는다(`README.md`와 `_`로 시작하는 파일은 항목이 아니다). 인자가 없고 작업 브랜치도 아니거나, 맞는 것이 여럿이면 `To Do` 항목을 번호와 제목으로 보여 주고 고르게 한다. 지금 브랜치가 `w/<이름>`인데 두 곳 모두에 그 파일이 없으면 항목 없이 하던 일이다(0단계의 "이어 가기"). 항목 파일을 끝까지 읽고, `dependencies`가 모두 `docs/done/`에 있는지 확인한다.
 
-**이어 가기:** 항목 파일의 `Implementation Plan`, 체크된 Acceptance Criteria, `Implementation Notes`를 읽고 남은 단계부터 한다. 아래에서 위부터 보고 처음 맞는 줄을 따른다.
+**이어 가기:** 항목 파일의 `Implementation Plan`, 체크된 Acceptance Criteria, `Implementation Notes`를 읽고 남은 단계부터 한다. 아래 목록을 위에서부터 보고 처음 맞는 줄을 따른다.
 
 - 항목이 이미 `docs/done/`에 있다 → 12단계. 머지 방식은 `Implementation Notes`의 `### 머지`에 적힌 답을 쓴다. 없으면 머지 방식만 다시 묻는다
 - `Implementation Plan`이 비어 있다 → 2단계
