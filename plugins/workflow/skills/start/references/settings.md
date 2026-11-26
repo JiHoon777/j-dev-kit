@@ -14,12 +14,12 @@ workflow 플러그인의 설정 파일이다. 두 가지를 정한다: 하위 �
 ```json
 {
   "models": {
-    "session": { "model": "auto", "effort": "high" },
-    "implement": { "model": "inherit" },
-    "review": { "model": "auto" },
-    "judge": { "model": "inherit" },
-    "mechanical": { "model": "sonnet", "effort": "high" },
-    "explore": { "model": "inherit" }
+    "session": { "model": "opus", "effort": "xhigh" },
+    "implement": { "model": "opus", "effort": "xhigh" },
+    "review": { "model": "opus", "effort": "high" },
+    "judge": { "model": "opus", "effort": "xhigh" },
+    "mechanical": { "model": "opus", "effort": "high" },
+    "explore": { "model": "opus", "effort": "high" }
   }
 }
 ```
@@ -28,12 +28,20 @@ workflow 플러그인의 설정 파일이다. 두 가지를 정한다: 하위 �
 
 | 역할 | 누구 | 기본값 |
 | --- | --- | --- |
-| `session` | `start`와 `backlog`가 띄우는 하위 세션 | `auto`, 노력 `high` |
-| `implement` | 구현을 맡는 하위 에이전트(플레이북이 "맡긴다"고 하는 곳) | `inherit` |
-| `review` | 리뷰 에이전트: `code-review`, `security-review`, 스택 리뷰어 | `auto` |
-| `judge` | 판정 에이전트: AC 판정, 리뷰 지적 판정, 서베이 판정, `frontend-evaluator` | `inherit` |
-| `mechanical` | 판단이 남지 않는 기계적 수정을 맡는 에이전트 | `sonnet`, 노력 `high` |
-| `explore` | 읽기만 하는 탐색과 조사: `start`와 `backlog`가 띄우는 `Explore`, 서베이 수집 | `inherit` |
+| `session` | `start`와 `backlog`가 띄우는 하위 세션 | `opus`, 노력 `xhigh` |
+| `implement` | 구현을 맡는 하위 에이전트(플레이북이 "맡긴다"고 하는 곳) | `opus`, 노력 `xhigh` |
+| `review` | 리뷰 에이전트: `code-review`, `security-review`, 스택 리뷰어 | `opus`, 노력 `high` |
+| `judge` | 판정 에이전트: AC 판정, 리뷰 지적 판정, 서베이 판정, `frontend-evaluator` | `opus`, 노력 `xhigh` |
+| `mechanical` | 판단이 남지 않는 기계적 수정을 맡는 에이전트 | `opus`, 노력 `high` |
+| `explore` | 읽기만 하는 탐색과 조사: `start`와 `backlog`가 띄우는 `Explore`, 서베이 수집 | `opus`, 노력 `high` |
+
+## 기본값의 기준
+
+기본값은 pstack 의 역할별 기본값을 따른다(`cursor/plugins`의 `pstack/skills/setup-pstack/SKILL.md`와 `poteto-mode/SKILL.md`의 Subagents 절). 코드, 글, 판단은 Opus 에 노력 `xhigh`이고, 기계적인 수정은 Opus 에 `high`다. pstack 의 리뷰 패널은 회사가 다른 모델을 한 자리씩 섞는다. 여기서는 리뷰어마다 맡은 일이 달라 한 모델로 두고, 패널 자리의 수준(`high`)을 쓴다. `explore`는 pstack 에 없는 역할이라 `high`로 정했다.
+
+- 어떤 역할도 `xhigh`를 넘지 않는다.
+- 일에 맞춘다. 역할의 값에서 시작해, 가장 어렵거나 미묘한 일은 한 단계 올리고(`xhigh`까지), 판단만 하는 일은 한 단계, 반복적인 일은 두 단계 이상 내린다.
+- Fable 은 예외로만 쓴다. 사용자가 그 일에 Fable 을 지목했거나, 같은 지시문으로 Opus `xhigh`가 두 번 실패했을 때다. 어느 쪽인지 말한다. 어렵다는 이유만으로는 쓰지 않는다. 사용자가 설정 파일에 `fable`이나 `inherit`을 적어 둔 역할은 그 설정을 따른다.
 
 ## 값
 
@@ -45,7 +53,7 @@ workflow 플러그인의 설정 파일이다. 두 가지를 정한다: 하위 �
 ## 넘기는 법
 
 - **하위 에이전트:** Agent 도구의 `model`과 `effort`로 넘긴다. `model`은 별칭(`fable`, `opus`, `sonnet`, `haiku`)만 받는다. `inherit`이면 `model`을 주지 않는다. 이 값은 에이전트 정의 파일에 적힌 모델보다 우선한다.
-- **하위 세션:** 세션을 띄우는 도구의 `model`과 `effort`로 넘긴다. `model`에는 그 별칭의 최신 모델 ID 를 준다(예: `opus`는 지금 `claude-opus-5-5`). 도구는 이 세션보다 높은 모델과 노력을 받지 않는다. 설정이 더 높으면 주지 않고(이어받는다) 그렇다고 한 줄 알린다.
+- **하위 세션:** 세션을 띄우는 도구의 `model`과 `effort`로 넘긴다. `model`에는 그 별칭의 최신 모델 ID 를 준다(예: `opus`는 지금 `claude-opus-5-5`). 도구는 이 세션보다 높은 모델과 노력을 받지 않는다. 값마다 따로 본다. 설정이 더 높은 값만 주지 않고(그 값은 이어받는다) 그렇다고 한 줄 알린다.
 - 도구가 값을 거부하면 그 값을 빼고 띄운 뒤 그렇다고 알린다.
 
 ## 머지 방식

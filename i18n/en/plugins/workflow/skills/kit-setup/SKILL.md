@@ -31,7 +31,7 @@ Show, for each role, the value in use, where it comes from (project file, user f
 1. **Where to save:** project (`.claude/workflow.json`, committed. Visible from worktrees and sub-sessions too) / user (`~/.claude/workflow.json`, the default for every project). If the arguments have `--user`, do not ask; it is user. The recommendation is project.
 2. **Model and effort per role:** have the user pick one of three.
    - Leave as is (do not change `models`)
-   - Save: lower `session` and `review` to `sonnet`, `judge` to `sonnet`, and `explore` to `haiku`
+   - Save: lower `session`, `implement`, `review`, `judge`, and `mechanical` to `sonnet`, and `explore` to `haiku`
    - Pick roles to change: have the user say which roles and which values
 3. **How to merge:** how to bring the work in when `/start` finishes. Merge into the base branch locally and push (`local`) / open a PR that targets the base branch (`pr`) / do not set it (ask each time). Recommend the way the past merges were done. Say that whichever is picked, `/start` still asks at the end whether to merge.
 4. **Main session:** leave as is (recommended) / pick a model and effort and write them to the settings. If written, say that they apply from a new session.

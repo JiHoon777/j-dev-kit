@@ -16,12 +16,12 @@ With the defaults written out, it looks like this. You may write only the roles 
 ```json
 {
   "models": {
-    "session": { "model": "auto", "effort": "high" },
-    "implement": { "model": "inherit" },
-    "review": { "model": "auto" },
-    "judge": { "model": "inherit" },
-    "mechanical": { "model": "sonnet", "effort": "high" },
-    "explore": { "model": "inherit" }
+    "session": { "model": "opus", "effort": "xhigh" },
+    "implement": { "model": "opus", "effort": "xhigh" },
+    "review": { "model": "opus", "effort": "high" },
+    "judge": { "model": "opus", "effort": "xhigh" },
+    "mechanical": { "model": "opus", "effort": "high" },
+    "explore": { "model": "opus", "effort": "high" }
   }
 }
 ```
@@ -30,12 +30,20 @@ With the defaults written out, it looks like this. You may write only the roles 
 
 | Role | Who | Default |
 | --- | --- | --- |
-| `session` | The sub-sessions `start` and `backlog` open | `auto`, effort `high` |
-| `implement` | Subagents handed the implementation (where a playbook says to "delegate") | `inherit` |
-| `review` | Review agents: `code-review`, `security-review`, stack reviewers | `auto` |
-| `judge` | Judge agents: AC judgment, judging review findings, judging the survey, `frontend-evaluator` | `inherit` |
-| `mechanical` | Agents handed mechanical fixes where no judgment is left | `sonnet`, effort `high` |
-| `explore` | Read-only exploration and research: the `Explore` agents `start` and `backlog` launch, survey gathering | `inherit` |
+| `session` | The sub-sessions `start` and `backlog` open | `opus`, effort `xhigh` |
+| `implement` | Subagents handed the implementation (where a playbook says to "delegate") | `opus`, effort `xhigh` |
+| `review` | Review agents: `code-review`, `security-review`, stack reviewers | `opus`, effort `high` |
+| `judge` | Judge agents: AC judgment, judging review findings, judging the survey, `frontend-evaluator` | `opus`, effort `xhigh` |
+| `mechanical` | Agents handed mechanical fixes where no judgment is left | `opus`, effort `high` |
+| `explore` | Read-only exploration and research: the `Explore` agents `start` and `backlog` launch, survey gathering | `opus`, effort `high` |
+
+## What the defaults follow
+
+The defaults follow pstack's per-role defaults (`pstack/skills/setup-pstack/SKILL.md` and the Subagents section of `poteto-mode/SKILL.md` in `cursor/plugins`). Code, prose, and judgment run on Opus at effort `xhigh`, and mechanical fixes on Opus at `high`. pstack's review panel mixes one model per seat from different vendors. Here each reviewer has a different job, so they share one model at the panel seat's level (`high`). `explore` is a role pstack does not have, so it is set to `high`.
+
+- No role runs above `xhigh`.
+- Match the model to the job. Start from the role's value, raise it one step (up to `xhigh`) for the hardest or subtlest work, lower it one step for judgment-only work, and two or more steps for routine work.
+- Fable is an exception. It runs only when the user named it for this task or two Opus `xhigh` runs of the same brief failed. Say which. Difficulty alone never qualifies. A role the user set to `fable` or `inherit` in the settings file follows that setting.
 
 ## Values
 
@@ -47,7 +55,7 @@ With the defaults written out, it looks like this. You may write only the roles 
 ## How to pass them
 
 - **Subagents:** pass them as the Agent tool's `model` and `effort`. `model` takes only the aliases (`fable`, `opus`, `sonnet`, `haiku`). For `inherit`, do not pass `model`. This value takes precedence over the model written in the agent definition file.
-- **Sub-sessions:** pass them as the `model` and `effort` of the tool that opens the session. Give `model` the latest model ID for that alias (for example, `opus` is `claude-opus-5-5` for now). The tool does not take a model or effort above this session's. If the setting is higher, leave it out (it inherits) and say so in one line.
+- **Sub-sessions:** pass them as the `model` and `effort` of the tool that opens the session. Give `model` the latest model ID for that alias (for example, `opus` is `claude-opus-5-5` for now). The tool does not take a model or effort above this session's. Check each value on its own. Leave out only the value where the setting is higher (that value inherits) and say so in one line.
 - If the tool rejects a value, launch without that value and then say so.
 
 ## How to merge
