@@ -6,8 +6,10 @@ disable-model-invocation: true
 
 # Architect
 
-> 원문: `cursor/plugins`의 `pstack/skills/architect/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꾸고 가져오지 않은 스킬을 가리키는 줄을 뺐다.
+> 원문: `cursor/plugins`의 `pstack/skills/architect/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꿨다. 원문이 크거나 의견이 갈리는 설계를 `arena` 스킬(여러 모델이 겨룬다)로 넘기던 자리는 시제품 견주기로 바꿨다.
 
 **언제:** 사소하지 않은 일이라 바로 코드를 쓰면 잘못된 모양이 굳을 때, 또는 변경이 함수 경계를 넘을 때 쓴다. 코드보다 먼저 타입, 시그니처, 모듈 구조를 그리고, 구현이 채워지는 동안 계속 지켜본다.
 
 코드를 쓰기 전에 변경이 닿는 시스템을 모두 따라가 본다. 그다음 서로 다른 모양 두 가지를 타입, 시그니처, 모듈 경계로 그린다. 상태마다 주인이 하나이고, 일마다 하는 방법이 하나이고, 호출하는 쪽이 알아야 할 것이 가장 적은 모양을 고른다. 임시방편이 되풀이되면 덧대지 말고 다시 설계한다.
+
+크거나 의견이 갈리는 설계면 혼자 그려서 정하지 않는다. `principle-exhaust-the-design-space` 스킬과 `start` 스킬의 `playbooks/prototype.md`로 후보 2~3개를 따로 만들어 견준다.

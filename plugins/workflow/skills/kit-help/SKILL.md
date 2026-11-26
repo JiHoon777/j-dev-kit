@@ -75,6 +75,7 @@ workflow 플러그인에 대한 질문에 답하고, 사용자가 그대로 보�
 | 앱을 몰아 확인하는 프로젝트 스킬과 기능 지도 만들기 | `/create-verification-skill` |
 | 그 스킬과 기능 지도를 앱에 다시 맞추기 | `/maintain-verification-skill` |
 | 커밋 전에 AI 가 넣은 코드 군더더기 지우기 | `/deslop` |
+| 리뷰 전에 필요 없는 주석과 임시방편 코드 짚기 | `/no-comments` |
 | 글에서 AI 티 지우기 | `/unslop` |
 | 문서, README, 커밋 메시지를 기준에 맞게 쓰기 | `/technical-writing` |
 | 머지 충돌 풀기 | `/fix-merge-conflicts` |
@@ -87,6 +88,7 @@ workflow 플러그인에 대한 질문에 답하고, 사용자가 그대로 보�
 
 - `frontend-start-check`, `frontend-end-check`, `server-start-check`, `server-end-check`: `/start`가 구현 전과 리뷰 전에 부르는 스택 점검이다. CLAUDE.md 의 `stack:` 줄이나 코드를 보고, 해당하지 않으면 "해당 없음"으로 빠진다.
 - 리뷰어와 판정 에이전트(`frontend-reviewer`, `design-reviewer`, `frontend-evaluator`, `api-reviewer`, `supabase-reviewer`): `/start`의 리뷰 단계가 띄운다.
+- `survey-collector`, `survey-judge`: `/backlog --survey`가 띄운다. 읽기·웹 도구만 가진다. `comment-sicko`: `/no-comments`가 띄운다.
 
 헷갈리는 것:
 
@@ -104,6 +106,7 @@ workflow 플러그인에 대한 질문에 답하고, 사용자가 그대로 보�
 
 플레이북은 `/start` 안의 단계 목록이다. 스킬이 아니라 슬래시 명령이 없다. 일을 설명하면 `/start`가 고른다.
 
+- 코드는 고치지 않고 알아보기만 한다 → investigation
 - 새 동작을 더한다 → feature
 - 버그를 고친다 → bug-fix
 - 동작은 그대로 두고 구조만 바꾼다 → refactoring
@@ -122,6 +125,7 @@ workflow 플러그인에 대한 질문에 답하고, 사용자가 그대로 보�
 | --- | --- |
 | 너무 자주 묻는다 | 묻는 기준 다섯 밖의 질문이면 "묻지 말고 정해서 적어"라고 한다. 되풀이되면 `start` SKILL.md 의 묻는 기준을 고칠 일이다 |
 | 머지 방식을 매번 묻는다 | `/kit-setup`에서 머지 방식을 정한다. 로컬 머지 후 푸시나 PR 가운데 하나다 |
+| 자리를 비우는 동안 멈추지 않게 하고 싶다 | "끝까지 해"라고 한다. 머지와 되돌릴 수 없는 일만 묻고, 나머지는 추천안으로 정해 마지막 메시지에 모은다 |
 | 계획을 보고 싶다 | "계획 보자"고 하면 보여 주고 기다린다 |
 | 모델을 바꿨는데 그대로다 | 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정은 새 세션부터 적용된다 |
 | 비용이 많이 든다 | "처음 설정하기"의 비용 문단을 본다 |

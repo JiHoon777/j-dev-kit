@@ -1,6 +1,6 @@
 ---
 name: principle-test-behavior-not-implementation
-description: "Test Behavior, Not Implementation 원칙. 테스트를 쓰거나, 바꾸거나, 남겨 둘 때. 코드를 쓰는 쪽이 관찰할 수 있는 것을 단언해서, 그 동작이 깨지면 테스트가 실패하고 내부만 바뀌면 계속 통과하게 한다."
+description: "Test Behavior, Not Implementation 원칙. 테스트를 쓰거나, 바꾸거나, 남겨 둘 때. 코드를 사용하는 쪽이 관찰할 수 있는 것을 단언해서, 그 동작이 깨지면 테스트가 실패하고 내부만 바뀌면 계속 통과하게 한다."
 disable-model-invocation: true
 ---
 
@@ -8,9 +8,9 @@ disable-model-invocation: true
 
 > 원문: `cursor/plugins`의 `pstack/skills/principle-test-behavior-not-implementation/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꾸고 가져오지 않은 스킬을 가리키는 줄을 뺐다.
 
-**언제:** 테스트를 쓰거나, 바꾸거나, 남겨 둘 때. 코드를 쓰는 쪽이 관찰할 수 있는 것을 단언해서, 그 동작이 깨지면 테스트가 실패하고 내부만 바뀌면 계속 통과하게 한다.
+**언제:** 테스트를 쓰거나, 바꾸거나, 남겨 둘 때. 코드를 사용하는 쪽이 관찰할 수 있는 것을 단언해서, 그 동작이 깨지면 테스트가 실패하고 내부만 바뀌면 계속 통과하게 한다.
 
-테스트는 코드를 쓰는 쪽이 인터페이스를 통해 관찰할 수 있는 것에 대한 주장이다. 반환값, 오류, 다시 읽어 볼 수 있는 상태, 바깥 시스템에 미치는 효과가 그것이다. 비공개 헬퍼, 내부 호출 순서, 중간 데이터는 구현이다.
+테스트는 코드를 사용하는 쪽이 인터페이스를 통해 관찰할 수 있는 것에 대한 주장이다. 반환값, 오류, 다시 읽어 볼 수 있는 상태, 바깥 시스템에 미치는 효과가 그것이다. 비공개 헬퍼, 내부 호출 순서, 중간 데이터는 구현이다.
 
 테스트마다 머릿속으로 두 가지 수정을 해 보고 판단한다.
 

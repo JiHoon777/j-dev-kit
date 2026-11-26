@@ -93,11 +93,13 @@ claude plugin install workflow@j-dev-kit --scope project
 - **하위 세션:** `/backlog`와 `/start`는 세션을 하나 띄우고 링크만 알린다. `/start`는 기준 브랜치에서 딴 새 워크트리(`w/<항목>` 브랜치)에서 돈다. 하위 세션의 질문은 띄운 세션에서 보여 주고 답을 전하며, 끝나면 결과를 확인해 먼저 보고한다. 세션을 띄울 수 없는 곳(데스크톱 앱 밖)에서는 이 세션에서 한다. 여러 항목을 함께 하려면 `/start`를 여러 번 부른다.
 - **/start <할 일>:** 백로그 항목이 아닌 말을 주면 항목을 만들지 않고 이 세션에서 바로 한다. 첫 메시지에서 목표, 가장 작은 변경, 끝났다고 볼 조건을 되짚고 진행한다. 검증과 마지막 메시지는 같고, 리뷰는 크기에 맞춘다.
 - **/backlog:** 항목 초안의 Acceptance Criteria 전문을 보여 주고 승인받는다. 구현 전에 사람이 확인하는 유일한 계약이다.
-- **/backlog --survey:** 목표를 조사 질문으로 쪼개 저장소와 바깥(공식 문서, 이슈, 선례, 실무자의 글)을 하위 에이전트로 함께 조사한다. 판정 에이전트가 거른 후보를 AC 초안과 함께 보여 주고, 고른 것만 항목으로 쓴다. 보고서는 `docs/backlog/references/`에 커밋한다. 바깥 조사를 빼려면 `--internal`.
+- **/backlog --survey:** 목표를 조사 질문으로 쪼개 저장소와 바깥(공식 문서, 이슈, 선례, 실무자의 글)을 하위 에이전트로 함께 조사한다. 수집과 판정 에이전트는 읽기·웹 도구만 가진다. 판정 에이전트가 거른 후보를 AC 초안과 함께 보여 주고, 고른 것만 항목으로 쓴다. 보고서는 `docs/backlog/references/`에 커밋한다. 바깥 조사를 빼려면 `--internal`.
 - **/start:** 기준선 검증 → 스택 점검 → 목표 되짚기와 플레이북 고르기 → 착수 전 질문(있을 때만 한 번) → 구현 → 정리(deslop) → 검증 → AC 판정 → 리뷰(`code-review`, 필요하면 `security-review`와 스택 리뷰어) → 판정 에이전트가 타당하다고 본 🔴·🟡 는 묻지 않고 고침 → 마지막 메시지 하나 → 머지. 이미 있는 작업 브랜치에서 부르면 남은 단계부터 이어 간다.
 - **마지막 메시지:** 남은 결정을 한 번에 묻는다. 사람이 정할 지적, "나중" 후보, 머지 방식. 결정마다 추천, 근거, 위험이 붙는다. 기준 브랜치 푸시는 요청할 때만 한다.
 - **판정:** Acceptance Criteria 는 명령 출력이나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다. 같은 AC 가 세 번 고쳐도 실패하면 멈추고 넘긴다. 고친 코드 없이도 통과하는 새 테스트는 🟡 로 지적한다.
-- **원칙, 스킬, 플레이북:** `start` 스킬에 "언제 → 무엇" 색인이 있고, 본문은 스킬마다 따로 있어 쓸 때 읽는다. 스스로 뜨지는 않고, `/architect`, `/how`, `/deslop`처럼 직접 부를 수 있다. 원칙 24개, 스킬 15개(architect, figure-it-out, blast-radius, how, why, 검증 스킬 만들기, control-ui, deslop 등), 플레이북 6개(feature, bug-fix, refactoring, prototype, perf-issue, hillclimb)다. 맞는 플레이북이 없는 항목은 figure-it-out 이 그 일에 맞는 단계를 짠다. [pstack](https://github.com/cursor/plugins/tree/main/pstack)과 [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit)에서 가져왔다.
+- **끝까지 하기:** "끝까지 해", "자리 비운다"고 하면 멈추지 않는다. 머지와 되돌릴 수 없는 일만 묻고, 나머지 질문은 추천안으로 정해 마지막 메시지에 모은다.
+- **하위 에이전트 규칙:** 에이전트를 띄울 때마다 지시문 첫 줄에서 규칙 파일(`start/references/worker.md`)을 읽게 한다. 지시문의 기준이 전부이고, 사람에게 묻지 않고, 고른 것과 이유를 보고한다.
+- **원칙, 스킬, 플레이북:** `start` 스킬에 "언제 → 무엇" 색인이 있고, 본문은 스킬마다 따로 있어 쓸 때 읽는다. 스스로 뜨지는 않고, `/architect`, `/how`, `/deslop`처럼 직접 부를 수 있다. 원칙 24개, 스킬 16개(architect, figure-it-out, blast-radius, how, why, 검증 스킬 만들기, control-ui, deslop, no-comments 등), 플레이북 7개(investigation, feature, bug-fix, refactoring, prototype, perf-issue, hillclimb)다. 맞는 플레이북이 없는 항목은 figure-it-out 이 그 일에 맞는 단계를 짠다. [pstack](https://github.com/cursor/plugins/tree/main/pstack)과 [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit)에서 가져왔다.
 - **머지 방식 설정:** `.claude/workflow.json`(프로젝트)이나 `~/.claude/workflow.json`(사용자)의 `merge`에 적는다. `local`은 로컬에서 기준 브랜치에 머지하고 푸시한다. `pr`은 기준 브랜치를 대상으로 PR 을 만든다. `/kit-setup`이 물어서 써 준다. 정해 두면 `/start`는 마지막에 방식을 묻지 않고 그 방식으로 머지할지만 묻는다. 없으면 방식을 묻는다.
 - **모델 설정:** 하위 세션과 하위 에이전트가 쓸 모델과 노력을 역할(`session`, `implement`, `review`, `judge`, `mechanical`, `explore`)마다 `.claude/workflow.json`(프로젝트)이나 `~/.claude/workflow.json`(사용자)에 적는다. `/kit-setup`이 물어서 써 준다. 없으면 기본값이다(메인이 Fable 이면 하위 세션과 리뷰는 한 단계 낮은 모델). 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel`이 정하고, `/kit-setup`이 그 키도 써 줄 수 있다.
 - **/kit-help:** 무엇을 언제 쓰는지 묻는다. 답과 보낼 명령 한 줄을 주고, 일은 시작하지 않는다.
@@ -159,15 +161,15 @@ claude plugin update workflow@j-dev-kit --scope project
 그다음 세션을 새로 연다. 플러그인의 `version`이 같으면 업데이트되지 않는다.
 
 ```
-plugins/workflow/skills/backlog/    SKILL.md + references/survey.md
-plugins/workflow/skills/start/      SKILL.md(묻는 기준, 색인) + references/procedure.md + playbooks/(6개) + scripts/pick-port.sh, base-tests.sh
-plugins/workflow/skills/<스킬>/     색인이 가리키는 스킬 15개(architect, how, why, deslop 등). 직접 부를 수도 있다(`/architect`)
+plugins/workflow/skills/backlog/    SKILL.md + references/survey.md + scripts/next-number.sh
+plugins/workflow/skills/start/      SKILL.md(묻는 기준, 색인) + references/procedure.md, worker.md + playbooks/(7개) + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/<스킬>/     색인이 가리키는 스킬 16개(architect, how, why, deslop 등). 직접 부를 수도 있다(`/architect`)
 plugins/workflow/skills/principle-*/  원칙 24개
 plugins/workflow/THIRD_PARTY_NOTICES.md  가져온 글의 저작권 고지(pstack, cursor-team-kit)
 plugins/workflow/skills/kit-setup/, kit-help/   설정과 도움말
 plugins/workflow/skills/frontend-{start,end}-check/(scripts/dev-server.sh, diff-check.sh), ui-design/   프론트엔드 점검과 시안
 plugins/workflow/skills/server-{start,end}-check/(scripts/config-check.sh)   서버·Supabase 점검
-plugins/workflow/agents/            frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md, api-reviewer.md, supabase-reviewer.md
+plugins/workflow/agents/            frontend-reviewer.md, design-reviewer.md, frontend-evaluator.md, api-reviewer.md, supabase-reviewer.md, survey-collector.md, survey-judge.md, comment-sicko.md
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop 훅)
 plugins/workflow/evals/             eval 사례(프론트엔드·서버 리뷰어 사례 포함)
 i18n/en/                            영어 번역본 (Claude 는 읽지 않음)

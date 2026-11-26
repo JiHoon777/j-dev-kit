@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Figure it out
 
-> 원문: `cursor/plugins`의 `pstack/skills/figure-it-out/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꾸고 가져오지 않은 스킬을 가리키는 줄을 뺐다.
+> 원문: `cursor/plugins`의 `pstack/skills/figure-it-out/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꾸고 가져오지 않은 스킬을 가리키는 줄을 뺐다. D 단계의 기록 규칙은 원문이 가리키는 `show-me-your-work` 스킬에서 왔다.
 
 **언제:** 맞는 플레이북이 없을 때, 또는 큰 이전이나 여러 갈래에 걸친 변경처럼 사람이 자리를 비운 뒤 검토할 일.
 
@@ -24,14 +24,14 @@ disable-model-invocation: true
 - 범위를 수로: 대략의 단위 수와 품, 그리고 살펴보다 드러난 막는 것들.
 - 엄밀함의 수준. 높은 쪽으로 기운다. 되돌릴 수 없는 결정과 영향이 넓은 일에는 더 준다. 되돌릴 수 있고 위험이 낮은 단계에는 덜 준다. 엄밀함은 관문과 산출물이지 "더 열심히"가 아니다.
 
-긴 실행에 들어가기 전에 틀과 맞바꾸는 것을 보여 주고 진행한다. 승인을 기다리지 않는다(`principle-never-block-on-the-human` 스킬). 어디까지 할지를 사람만 정할 수 있으면 그것만 `start` 절차의 착수 전 질문에 넣는다(묻는 기준 4번).
+긴 실행에 들어가기 전에 틀과 맞바꾸는 것을 보여 준다. 되돌릴 수 있는 일은 진행한다(`principle-never-block-on-the-human` 스킬). 다만 몇 시간짜리 실행은 시작 전에 한 번 확인받는다. 사용자가 끝까지 하라고 해 둔 실행이면 이 확인도 하지 않는다(`start` 스킬의 묻는 기준).
 
 ## B 단계: 일하는 순서 짜기
 
 따로 내보낼 수 있는 가장 작은 단위로 나눈다. 가장 위험한 모르는 것부터 순서를 잡는다. 뼈대와 검증이 기능보다 먼저다(`principle-foundational-thinking` 스킬).
 
 - 일보다 검증 수단을 먼저 만든다. 바꾸기 전 상태에서 기준값을 잡아, 확인이 "옛 값 대 새 값"으로 읽히게 한다.
-- 되돌리기 어려운 설계 결정에는 `architect` 스킬을 쓴다. 모양이 이미 정해진 기계적인 일에는 건너뛴다. 굳은 설계를 다시 겨루게 하는 것은 과한 일이다(`principle-laziness-protocol` 스킬).
+- 되돌리기 어려운 설계 결정에는 `architect` 스킬을 쓴다. 모양이 이미 정해진 기계적인 일에는 건너뛴다. 굳은 설계에 `architect`를 다시 돌리는 것은 과한 일이다(`principle-laziness-protocol` 스킬).
 - 무엇을 나눠 맡길지 정한다. 이음매를 따라서만 함께 돌리고, 일꾼마다 자기 워크트리나 브랜치를 준다(`principle-separate-before-serializing-shared-state` 스킬). 너무 잘게 나누지 않는다.
 - 짠 단계 목록을 적는다. 사람이 검토하는 것이 이 목록이다. 항목 파일의 `Implementation Plan`에 적는다.
 
@@ -48,6 +48,9 @@ disable-model-invocation: true
 ## D 단계: 따져 볼 기록 남기기
 
 정한 것은 항목 파일 `Implementation Notes`의 `### 정한 것`에 `정한 것 — 이유 — 틀렸을 때 비용`으로 남긴다. 단위마다 근거(커밋, `file:line`, 명령 출력)와 결과도 한 줄로 적는다. 이 기록과 diff 가 있어야 사람이 돌아와서 일을 믿을 수 있다.
+
+- 기록은 덧붙이기만 한다. 틀린 결정은 지우거나 고치지 말고, 그것을 덮는 새 줄을 쓴다.
+- 넘기기 전에 기록을 실제로 한 일과 대조한다. 줄마다 실제 결정이나 행동인지, 근거가 열리고 그 줄이 말하는 것을 보여 주는지 본다. 일을 바꾼 갈림길이나 버린 접근이 빠져 있으면 더한다. 틀린 줄도 지우지 않고 새 줄로 덮는다.
 
 ## E 단계: 검증하고 넘기기
 

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Blast radius
 
-> 원문: `cursor/plugins`의 `pstack/skills/blast-radius/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꾸고 가져오지 않은 스킬을 가리키는 줄을 뺐다.
+> 원문: `cursor/plugins`의 `pstack/skills/blast-radius/SKILL.md` (MIT, Lauren Tan). Cursor 이름을 Claude Code 것으로 바꿨다. 원문 6단계는 여러 회사의 모델에 같은 질문을 주는 `arena`다. 여기서는 같은 모델의 에이전트 여럿으로 하니, 모델이 달라서 얻는 효과는 줄어든다.
 
 **언제:** 변경을 내보내기 전에 diff 바깥에서 무엇이 깨질 수 있는지 찾을 때 쓴다. "X 의 blast radius", "이게 뭘 깨뜨릴 수 있나" 같은 요청이나, 작지만 믿기지 않는 diff 를 리뷰할 때다.
 
@@ -39,6 +39,7 @@ disable-model-invocation: true
 3. grep 이 멈추는 곳을 본다. 부르는 라이브러리의 소스를 읽고, 고정된 버전과 로컬 패치를 확인한다. 언제 도는지 따진다: microtask, unmount 와 teardown, 프레임워크마다 다른 실행 시점. 심볼 검색이 놓치는 것을 따라간다: API 가 돌려주는 JSON, DB 컬럼, wire format, 같은 바이트를 읽는 다른 언어, feature flag, 세 단계 아래에 있는 코드.
 4. 위험마다 정직하게 적는다. 실제로 일어날 가능성과 일어났을 때의 비용을 적는다. 확인한 위험은 남긴다. 확인하고 걷어낸 위험은 따로 적는다. 실제 `file:line`을 댄다. 검색해서 아무것도 나오지 않은 것도 답이다. 호출하는 곳이나 API 를 지어내지 않는다.
 5. 그 사실 하나를 증명한다. 실제 코드를 돌리는 스크립트나 테스트를 쓰고, 돌리고, 일어난 일을 붙여 넣는다.
+6. 크거나 넓은 변경이면 하위 에이전트 둘 이상에게 같은 질문을 따로 주고 답을 합친다. 서로의 답은 보여 주지 않는다.
 
 ## 돌려줄 것
 
