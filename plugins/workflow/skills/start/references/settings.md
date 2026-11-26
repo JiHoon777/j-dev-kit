@@ -40,7 +40,7 @@ workflow 플러그인의 설정 파일이다. 두 가지를 정한다: 하위 �
 기본값은 pstack 의 역할별 기본값을 따른다(`cursor/plugins`의 `pstack/skills/setup-pstack/SKILL.md`와 `poteto-mode/SKILL.md`의 Subagents 절). 코드, 글, 판단은 Opus 에 노력 `xhigh`이고, 기계적인 수정은 Opus 에 `high`다. pstack 의 리뷰 패널은 회사가 다른 모델을 한 자리씩 섞는다. 여기서는 리뷰어마다 맡은 일이 달라 한 모델로 두고, 판단하는 일의 수준(`xhigh`)을 쓴다. `explore`는 pstack 에 없는 역할이라 `high`로 정했다.
 
 - 어떤 역할도 `xhigh`를 넘지 않는다.
-- 일에 맞춘다. 역할의 값에서 시작해, 가장 어렵거나 미묘한 일은 한 단계 올리고(`xhigh`까지), 판단만 하는 일은 한 단계, 반복적인 일은 두 단계 이상 내린다.
+- 일에 맞춘다. 역할의 값에서 시작해, 가장 어렵거나 미묘한 일은 한 단계 올리고(`xhigh`까지), 반복적인 일은 두 단계 이상 내린다. pstack 은 판단만 하는 일을 한 단계 내리고 검증을 `high`로 돌린다. 여기서는 판정이 Acceptance Criteria 와 리뷰 지적을 가르는 마지막 관문이라 `judge`를 `xhigh`로 두고 내리지 않는다.
 - Fable 은 예외로만 쓴다. 사용자가 그 일에 Fable 을 지목했거나, 같은 지시문으로 Opus `xhigh`가 두 번 실패했을 때다. 어느 쪽인지 말한다. 어렵다는 이유만으로는 쓰지 않는다. 사용자가 설정 파일에 `fable`이나 `inherit`을 적어 둔 역할은 그 설정을 따른다.
 
 ## 값

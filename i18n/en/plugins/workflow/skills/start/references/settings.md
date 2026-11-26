@@ -42,7 +42,7 @@ With the defaults written out, it looks like this. You may write only the roles 
 The defaults follow pstack's per-role defaults (`pstack/skills/setup-pstack/SKILL.md` and the Subagents section of `poteto-mode/SKILL.md` in `cursor/plugins`). Code, prose, and judgment run on Opus at effort `xhigh`, and mechanical fixes on Opus at `high`. pstack's review panel mixes one model per seat from different vendors. Here each reviewer has a different job, so they share one model at the level for judgment (`xhigh`). `explore` is a role pstack does not have, so it is set to `high`.
 
 - No role runs above `xhigh`.
-- Match the model to the job. Start from the role's value, raise it one step (up to `xhigh`) for the hardest or subtlest work, lower it one step for judgment-only work, and two or more steps for routine work.
+- Match the model to the job. Start from the role's value, raise it one step (up to `xhigh`) for the hardest or subtlest work, and lower it two or more steps for routine work. pstack lowers judgment-only work one step and runs verification at `high`. Here the judge is the last gate that decides Acceptance Criteria and review findings, so `judge` stays at `xhigh` and is not lowered.
 - Fable is an exception. It runs only when the user named it for this task or two Opus `xhigh` runs of the same brief failed. Say which. Difficulty alone never qualifies. A role the user set to `fable` or `inherit` in the settings file follows that setting.
 
 ## Values
