@@ -1,7 +1,7 @@
 ---
 id: '014'
 title: 서베이 수집·판정 에이전트를 읽기·웹 도구만 가진 에이전트로 띄운다
-status: In Progress
+status: Done
 labels: [feat]
 priority: medium
 dependencies: ['013']
@@ -70,6 +70,34 @@ updated_date: 2026-11-27
 claude plugin eval <사본>/workflow --ablation none --scaffold --trust-plugin --model opus --judge-model sonnet --runs 5 --tag survey --no-publish --threshold 0 -j 3 --allow-tools WebSearch WebFetch Write --json <사본>.json
 ```
 
+### 머지
+
+- 로컬에서 main 에 머지하고 푸시한다 (사용자, 2026-11-27).
+
 ## Final Summary
 
-`/start`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.
+**바뀐 것**
+
+- 서베이 수집 에이전트 `workflow:survey-collector`(Read, Grep, Glob, WebSearch, WebFetch, Write)와 판정 에이전트 `workflow:survey-judge`(Read, Grep, Glob, WebSearch, WebFetch)를 더했다. `/backlog --survey`가 general-purpose 대신 이 둘을 띄운다.
+- 명령에서 오는 자료(`gh issue list` 등)는 메인 세션이 돌려 출력을 파일로 넘긴다. 두 에이전트에 Bash 가 없기 때문이다.
+- eval(`survey-outside`)은 main 판과 5회씩 0.95 ± 0.11 로 같다.
+- workflow 0.18.0.
+
+**리뷰에서 고친 것**
+
+- 판정 에이전트가 명령 출력 파일을 받지 못했다 → 경로를 넘긴다.
+- 수집·판정 에이전트의 지시문이 `worker.md`를 읽게 하지 않았다 → 첫 줄에 넣는다.
+- 판정이 애매한 후보를 탈락시켰다 → 근거 약함으로 둔다.
+- README 와 플러그인 설명이 수집 에이전트의 Write 를 빠뜨렸다 → 적었다.
+
+**미룬 것**
+
+- 수집 에이전트의 Write 에 경로 제한이 없다 → 018.
+
+**그대로 둔 지적과 이유**
+
+- 이 항목에만 걸린 것은 없다. 브랜치 전체의 리뷰 결과(고친 것, 틀린 지적, ⚪)는 `w/pstack-fidelity`의 커밋 메시지에 있다.
+
+**사용자가 바로잡은 것**
+
+- 없다.
