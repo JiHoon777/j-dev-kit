@@ -39,7 +39,7 @@ updated_date: 2026-11-26
 - **start 와 end 를 합친다.** `/task start` 하나가 구현, 검증, 리뷰, 지적 고치기, 머지 질문까지 한다. `end` 모드는 없다. 그래서 "end 를 진행할까요?"도, 사용자가 `/task end`를 치는 일도 없다.
 - **AC 승인은 남긴다.** 계획 승인이 없어지면 구현 전에 사람이 확인하는 유일한 계약이다.
 - **superpowers 를 쓰지 않는다.** 플러그인 의존성에서 빼고, `/task`가 부르던 다섯 스킬(brainstorming, test-driven-development, verification-before-completion, receiving-code-review, finishing-a-development-branch)에서 필요한 규칙만 `/task` 절차에 직접 적는다.
-- **pstack 에서 가져올 것은 다 가져온다.** 원칙 24개(`pstack/skills/principle-*`, MIT, Lauren Tan)를 `task` 스킬에 넣는다. 일하는 방식 세 줄(아니라고 말해도 된다, 스스로 돌릴 수 있는 확인을 사람에게 넘기지 않는다, 주장마다 근거나 표시)과 테스트 규칙(억지 테스트를 쓰지 않는다)도 가져온다.
+- **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 5개(architect, blast-radius, how, why, benchmark-checklist), 플레이북 5개(Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다.
 - **simplify 는 묻지 않고 늘 돈다.** 찾기만 하고 고치지 않는다. 찾은 것은 마지막 메시지에 함께 보이고, 고칠지는 그때 고른다. 11-25 에 정한 "항상 확인한다"(`fa91c89`)는 이렇게 지킨다.
 
 ### 근거
@@ -53,7 +53,9 @@ updated_date: 2026-11-26
 ### 이번에 빼는 것
 
 - 진입 모드 스킬(`/poteto-mode` 같은 것). 004 의 `/until-done`이 같은 일을 하다가 한 번도 쓰이지 않고 006 에서 지워졌다. 이 항목을 써 본 뒤 따로 정한다. 만든다면 이 항목과 같은 기준을 따른다: 꼭 필요한 것만 묻고, 나머지는 정한 것과 이유를 적으면서 알아서 한다.
-- pstack 의 플레이북 22개와 도구 스킬(architect, arena, swarm, interrogate, 검증 스킬 만들기, blast-radius 등). 플레이북은 진입 모드 스킬을 정할 때 함께 본다. 도구 스킬은 다른 회사 모델이나 Cursor 기능에 기댄다
+- pstack 의 나머지. 이유는 추가 조사 보고서의 "가져오지 않는 것" 표에 있다
+  - PR·Cursor 클라우드 중심 플레이북(Opening a PR, Babysit, Shipping, Autopilot 둘)과 `/task` 밖의 일을 다루는 플레이북(Investigation, Autonomous run, Session pickup, Pause safely 등). 뒤의 것은 진입 모드 스킬을 정할 때 함께 본다
+  - 다른 회사 모델 패널이 핵심인 스킬(arena, swarm, interrogate), 프로젝트 검증 스킬 만들기, 글쓰기 스킬, Cursor 전용 스킬
 - 다른 플러그인의 리뷰어 에이전트 본문
 - 사용자 컴퓨터에서 superpowers 플러그인을 지우는 일(사용자가 한다)
 
@@ -84,12 +86,15 @@ updated_date: 2026-11-26
   - 브라우저 도구가 없으면 멈추지 않고 "확인 못 함"으로 적고 계속한다
 - [ ] #11 멈춘 횟수가 기준선보다 적다. 기준선은 기록에서 센 평균 7.8번이다(`research_notes/2026-11-26-016-추가-조사/stop-count.md`). 바꾼 판을 같은 실제 사례로 돌려 같은 방법으로 센다. 멈춘 횟수와 함께 사용자가 나중에 바로잡은 횟수도 센다. 기존 eval 사례(`start-plan` 등)는 새 규칙에 맞게 고쳤다. 결과와 다시 돌리는 명령이 Implementation Notes 에 있다
 - [ ] #12 `start`와 `end`가 한 모드다. `/task start` 하나가 구현 → 검증 → 리뷰 → 지적 고치기 → 마지막 메시지(머지 방식 등)까지 멈추지 않고 간다. `end` 모드와 `references/end.md`는 없고, 그 절차는 `start.md`에 들어 있다. `grep -rn 'task end' plugins i18n README.md README.en.md docs/backlog/README.md docs/backlog/_template.md` 결과가 없다
-- [ ] #13 pstack 의 원칙 24개가 `task` 스킬에 들어 있다
-  - `references/principles.md`에 원칙마다 이름, 언제 쓰는지, 본문이 있다. 파일에 원문 위치(`cursor/plugins`의 `pstack/skills/principle-*`)와 MIT 저작권·허가 고지가 있다
-  - SKILL.md "일하는 원칙"에 원칙 이름과 "언제 쓰는지" 한 줄 색인이 있고, 적용할 때 본문을 읽으라고 적혀 있다
+- [ ] #13 pstack 에서 가져온 것이 pstack 과 같은 모양으로 들어 있다: 색인 하나와 본문 파일들
+  - `task` SKILL.md 에 색인이 한 곳에 있다. 모양은 pstack `poteto-mode/SKILL.md`의 Non-negotiables·Principles·Playbooks 를 따른다: 한 줄에 "언제 → 무엇"
+  - 본문은 workflow 플러그인 안에 원칙·스킬·플레이북마다 파일 하나씩 있고, 색인이 가리킬 때 읽고 따른다. 절차 파일(`create.md`·`start.md`)에 본문을 옮겨 적지 않는다
+  - 원칙 24개: 이름, 언제 쓰는지, 본문
+  - 스킬 5개: architect(함수 경계를 넘는 변경이면 구조안 두 개를 그려 고른다), blast-radius(믿기 어려운 diff 는 머지 전에 diff 밖 영향을 실행으로 확인한다), how·why(고치기 전에 코드가 어떻게, 왜 그렇게 됐는지 읽는다), benchmark-checklist(잰 숫자를 보고하기 전에 점검한다)
+  - 플레이북 5개: Bug fix(재현 먼저, 원인을 증거로 좁힌다), Refactoring(동작을 먼저 고정하고 구조만 바꾼다), Prototype(갈림길은 버릴 시제품으로 정한다), Perf issue(먼저 잰다), Hillclimb(한 번에 하나 바꾸고 잰다). `start`는 항목의 성격에 맞는 플레이북을 골라 그 단계를 할 일 목록에 옮긴다. 맞는 것이 없으면 기본 흐름으로 간다
   - 이미 있는 같은 규칙은 한 곳에만 둔다: Never Block on the Human 은 #1 의 묻는 기준과, Prove It Works 는 "검증을 새로 돌리고 결과를 보여 준다"와, Laziness Protocol 은 "항목이 요구하는 것만 한다"와 합친다
-  - 정한 것 줄의 이유에 적용한 원칙 이름을 적는다
-  - 우리에게 없는 스킬을 가리키는 줄(benchmark-checklist, typescript-best-practices)은 빼거나 풀어 쓴다
+  - 정한 것 줄의 이유에 적용한 원칙·스킬 이름을 적는다
+  - Cursor 이름(Task, AskQuestion, control-ui, `/loop`, 모델 슬러그, 다른 회사 모델)은 Claude Code 의 것으로 바꾸거나 뺀다. 가져온 파일마다 원문 위치를 적고, MIT 저작권·허가 고지를 플러그인에 둔다
   - README 두 개의 출처에 pstack 을 적는다
 - [ ] #14 SKILL.md "일하는 원칙"에 세 줄이 있다: 아니라고 말해도 된다(범위를 넓히자는 제안이 값을 못 하면 그렇게 말한다), 스스로 돌릴 수 있는 확인을 사람에게 넘기지 않는다, 주장마다 근거를 달거나 확인함·추론·추측 중 무엇인지 표시한다
 
