@@ -13,6 +13,6 @@ Investigation requests are read-only. They produce a cited explanation or a reco
 3. Produce the output (Overview / Key Concepts / How It Works / Where Things Live / Gotchas), or a recommendation with a tradeoffs table if the request is a decision between alternatives.
 4. Apply the `unslop` skill to the reply.
 
-No branch, no commit, no review, no merge (steps 4–12 of the `start` procedure). No `architect` either. If the investigation leads to a code change, hand back to the user and re-route to `bug-fix.md` or `feature.md`.
+An investigation done without an item has no branch, no commit, no review, no merge. An investigation done as a backlog item follows "Investigation and prototype" under 3 in step 3 of the `start` procedure and leaves the result in the item file. No `architect`. If the investigation leads to a code change, hand back to the user and re-route to `bug-fix.md` or `feature.md`.
 
 **Reply:** the investigation output. For "are we sure?" answers, include your real judgment with reasons. Push back if the premise is wrong (see "You may say no" in the `start` skill).

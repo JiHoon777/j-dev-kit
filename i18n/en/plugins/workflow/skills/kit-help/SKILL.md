@@ -90,7 +90,7 @@ Not invoked by you:
 
 - `frontend-start-check`, `frontend-end-check`, `server-start-check`, `server-end-check`: the stack checks `/start` calls before implementing and before the review. They look at the `stack:` line in CLAUDE.md or at the code, and drop out as "not applicable" if they do not apply.
 - Reviewers and judge agents (`frontend-reviewer`, `design-reviewer`, `frontend-evaluator`, `api-reviewer`, `supabase-reviewer`): launched by the review step of `/start`.
-- `survey-collector`, `survey-judge`: launched by `/backlog --survey`. They have only read and web tools. `comment-sicko`: launched by `/no-comments`.
+- `survey-collector`, `survey-judge`: launched by `/backlog --survey`. The collector has only read and web tools and note writing; the judge has only read and web tools. `comment-sicko`: launched by `/no-comments`.
 
 Easy to mix up:
 

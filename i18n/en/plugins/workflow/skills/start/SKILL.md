@@ -64,6 +64,7 @@ Do not ask anything else. Decide, and go on while writing down what was decided 
 - Do not ask questions like "Shall I go on to the next step?"
 - If `git revert` or removing a worktree can undo it, it can be undone.
 - If the user says "let me see the plan" or "stop here", do so.
+- A multi-hour run gets one checkpoint before it starts (the `figure-it-out` skill). It decides how far to go, so it is criterion 4, and it goes in the pre-start questions.
 - If the user says "run it to the end", "don't stop", "I'm stepping away" or "I'm going to bed", do not stop. Only criterion 1 (work that cannot be undone or that goes outside) remains, and the merge is still asked. Decide the other questions (pre-start questions, the ones on the scope list, product or taste decisions) by your recommendation, write them down as decisions, and collect them in the last message. At a dead end, do not spin. Say so.
 
 ### Writing down decisions

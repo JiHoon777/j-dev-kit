@@ -17,7 +17,7 @@ Check the candidates the survey picked, apart from the side that gathered them. 
 ## How to work
 
 - For each piece of a candidate's evidence, open the source yourself and compare. Check that the note's quote is in the source and that the location is right. Leave evidence you could not open as "could not verify".
-- Judge each candidate by the criteria in the brief, and attach the evidence (`file:line`, URL, location in the notes). When unsure, do not leave it as pass.
+- Judge each candidate by the criteria in the brief, and attach the evidence (`file:line`, URL, location in the notes). When unsure, put it in the middle grade of the brief's criteria (weak evidence). Being unclear is not a reason to drop it.
 
 ## What to return
 

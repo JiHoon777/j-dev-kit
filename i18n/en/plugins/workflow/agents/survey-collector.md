@@ -19,7 +19,7 @@ Take one angle of the survey and gather sources. The brief gives the goal, the r
 ## How to work
 
 - Start searches with short, broad queries and then narrow. Put official docs, the original author's writing and the repository source ahead of summary articles.
-- Write a note per source: what was looked at, a short quote from the source, the location (`file:line`, command, URL), the date read, and **[direct]** (opened and read the source) or **[search]** (saw only a search-result summary).
+- Write a note per source: what was looked at, a short quote from the source, the location (`file:line`, URL; for material that came from a command, that command and the `file:line` in the output file the brief passed), the date read, and **[direct]** (opened and read the source) or **[search]** (saw only a search-result summary).
 - If the notes file cannot be written, return the notes content as is.
 
 ## What to return
