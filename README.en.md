@@ -60,7 +60,7 @@ claude plugin install workflow@j-dev-kit --scope project
 /kit-setup
 ```
 
-It asks which model and effort each role uses and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself.
+It asks which model and effort each role uses and how to merge, and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself.
 
 ```markdown
 ## Work settings
@@ -100,6 +100,7 @@ For `stack:`, see [Stacks](#stacks) above. The superpowers plugin is not used. I
 - **Last message:** asks every remaining decision at once: the findings for a person to decide, the "later" candidates, and how to merge. Each decision comes with a recommendation, the evidence, and the risk. The base branch is pushed only on request.
 - **Judgment:** Acceptance Criteria are checked off only with command output or a judge agent other than the implementing session. If the same AC still fails after three fixes, it stops and hands over. A new test that passes without the fixed code is flagged as 🟡.
 - **Principles, skills, playbooks:** the `start` skill has a "when → what" index, and each body is its own skill, read when it is used. They do not fire on their own, and you can invoke them directly, as in `/architect`, `/how` or `/deslop`. There are 24 principles, 15 skills (architect, figure-it-out, blast-radius, how, why, creating a verification skill, control-ui, deslop and others), and 6 playbooks (feature, bug-fix, refactoring, prototype, perf-issue, hillclimb). For an item no playbook fits, figure-it-out designs the steps for that work. They were brought in from [pstack](https://github.com/cursor/plugins/tree/main/pstack) and [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit).
+- **Merge setting:** written as `merge` in `.claude/workflow.json` (project) or `~/.claude/workflow.json` (user). `local` merges into the base branch locally and pushes. `pr` opens a PR that targets the base branch. `/kit-setup` asks and writes it. Once set, `/start` does not ask how to merge at the end; it asks only whether to merge that way. Without it, `/start` asks how.
 - **Model settings:** the model and effort that sub-sessions and subagents use are written per role (`session`, `implement`, `review`, `judge`, `mechanical`, `explore`) in `.claude/workflow.json` (project) or `~/.claude/workflow.json` (user). `/kit-setup` asks and writes them. Without a file, the defaults apply (if the main session is Fable, sub-sessions and reviews use the model one step lower). The main session's model is set by `model` and `effortLevel` in the Claude Code settings, and `/kit-setup` can write those keys too.
 - **/kit-help:** ask what to use when. It gives the answer and one command line to send, and does not start work.
 - **Review principles:** findings left as is and what the user corrected are collected as one-line principles in `docs/review-principles.md` and used in later reviews.

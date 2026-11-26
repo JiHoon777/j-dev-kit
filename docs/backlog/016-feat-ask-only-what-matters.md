@@ -43,6 +43,9 @@ updated_date: 2026-11-26
 - **help 스킬을 둔다.** pstack 의 `poteto-help`처럼 무엇을 언제 쓰는지 안내하고, 일은 시작하지 않는다.
 - **setup 스킬과 모델 설정을 둔다.** 메인 세션, 하위 세션, 하위 에이전트가 쓸 모델과 노력을 설정 파일에 적고, 처음에 setup 스킬이 물어서 써 준다(pstack 의 `setup-pstack`).
 - **`/start`는 할 일을 바로 받아도 된다.** 백로그 번호나 이름이 아니라 작업 내용을 적으면, 작은 일이어도 항목 없이 바로 한다.
+- **머지 방식은 설정에 따른다.** 사용자의 말: "사용자 설정에 따라 다르게. 로컬에서 메인에 바로 머지 후 푸시 or main 타겟으로 pr". 설정 파일의 `merge`가 `local`이면 로컬에서 기준 브랜치에 머지한 뒤 푸시하고, `pr`이면 기준 브랜치 대상 PR 을 만든다.
+- **AC #11(멈춘 횟수 실측)은 지금 하지 않는다.** 사용자의 말: "1번은 지금 할 게 아니야." 확인 못 함으로 남기고 닫는다. 실제 항목을 몇 개 돌린 뒤 같은 방법으로 센다.
+- **"나중" 후보:** 항목 번호 겹침은 새 항목(017)으로 만든다. 로컬 Supabase 거짓 실패는 만들지 않는다(확인하지 못한 추정이다).
 - **superpowers 를 쓰지 않는다.** 플러그인 의존성에서 빼고, `/task`가 부르던 다섯 스킬(brainstorming, test-driven-development, verification-before-completion, receiving-code-review, finishing-a-development-branch)에서 필요한 규칙만 `/task` 절차에 직접 적는다.
 - **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 10개(architect, figure-it-out, blast-radius, how, why, benchmark-checklist, 검증 스킬 만들기·유지하기, unslop, technical-writing), 플레이북 6개(Feature, Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다. pstack 이 기대어 쓰는 cursor-team-kit(`cursor/plugins`의 `cursor-team-kit/`, MIT, Cursor)에서도 가져온다: control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 앞의 셋은 pstack 이 직접 부르는 것이다.
 - **정리는 pstack 처럼 deslop 으로 한다.** 커밋 전에 deslop 을 돌려 이 브랜치가 넣은 군더더기를 묻지 않고 바로 고친다. 동작은 바꾸지 않는다. simplify 를 돌릴지, 무엇을 고칠지 묻던 두 질문(11-25, `fa91c89`)은 없앤다.
@@ -69,30 +72,30 @@ updated_date: 2026-11-26
 
 <!-- AC:BEGIN -->
 
-- [ ] #1 묻는 기준 다섯 가지가 `start` SKILL.md "일하는 원칙" 한 곳에 있고, `backlog` 스킬과 각 절차의 질문 지점은 이 기준을 가리킨다. 기준 밖의 것은 정하고 항목 파일에 `정한 것 — 이유 — 틀렸을 때 비용`으로 적는다. 돌려 보면 정해지는 갈림길(구조, 라이브러리, 접근)은 묻지 않고 돌려 보고 정한 뒤 결과와 근거를 적는다. "다음 단계로 갈까요?" 같은 질문은 하지 않는다
-- [ ] #2 `start`에 플랜 모드와 계획 승인 대기가 없다(`grep -rn 'EnterPlanMode\|ExitPlanMode' plugins i18n` 결과 없음). 대신 이렇게 한다
+- [x] #1 묻는 기준 다섯 가지가 `start` SKILL.md "일하는 원칙" 한 곳에 있고, `backlog` 스킬과 각 절차의 질문 지점은 이 기준을 가리킨다. 기준 밖의 것은 정하고 항목 파일에 `정한 것 — 이유 — 틀렸을 때 비용`으로 적는다. 돌려 보면 정해지는 갈림길(구조, 라이브러리, 접근)은 묻지 않고 돌려 보고 정한 뒤 결과와 근거를 적는다. "다음 단계로 갈까요?" 같은 질문은 하지 않는다
+- [x] #2 `start`에 플랜 모드와 계획 승인 대기가 없다(`grep -rn 'EnterPlanMode\|ExitPlanMode' plugins i18n` 결과 없음). 대신 이렇게 한다
   - 첫 메시지에서 목표와 가장 작은 변경을 되짚고 진행한다. 항목을 읽다가 AC 끼리 모순되거나 사람만 정할 결정이 빠져 있으면 착수 전 질문에 넣는다
   - 착수 전 질문은 있을 때만 한 번에 묻는다
   - 계획과 정한 것은 항목 파일에 적고 기다리지 않는다. 사용자가 "계획을 보자"고 하면 보여 주고 기다린다
-- [ ] #3 `start`의 "범위가 커지면 멈춘다"가 확인할 수 있는 목록이다: AC 밖 동작, 새 의존성·도구 설치, 스키마·공개 API·삭제, CLAUDE.md·설정 변경
-- [ ] #4 `backlog`는 AC 전문을 보여 주고 승인받는다. 서베이 모드는 후보 표에 AC 초안을 넣어, 고르기 한 번으로 항목을 쓰고 다시 승인받지 않는다
-- [ ] #5 커밋 전에 deslop 을 돌린다. 묻지 않고 바로 고치고, 동작은 바꾸지 않는다. 고친 것을 한 줄로 적는다. simplify 를 돌릴지와 무엇을 고칠지 묻던 질문은 없다
-- [ ] #6 리뷰 판정에서 타당한 🔴·🟡 는 묻지 않고 고친 뒤 알린다. 남은 질문(AC·사용자가 답한 것과 부딪히는 지적, "나중" 후보, 머지 방식)은 한 메시지로 추천·근거·위험과 함께 묻는다. 그 메시지 첫 줄에 사용자를 기다리는 것이 무엇인지 쓰고, Claude 가 스스로 할 수 있는 일은 질문으로 올리지 않는다. 쉬운 말과 짧은 문장으로 쓰고, 해시·경로·명령은 사용자가 행동하는 데 필요할 때만 넣는다. "막기" 선택지는 없다
-- [ ] #7 `docs/review-principles.md`의 "승인된 계획·AC 가 정한 것은 사용자가 정한 것" 원칙이 "AC 와 사용자가 답한 것"으로 좁혀져 있다. Claude 가 정한 것은 리뷰 대상이다. `plugins`·`i18n`·`docs/backlog/_template.md`에 "승인된 계획" 문구가 없다
-- [ ] #8 하위 세션 지시문(`backlog`·`start` SKILL.md)에 플랜 모드 승인 문장이 없고, 하위 세션도 #1 기준을 따른다. 부모 세션이 계획 승인을 기다리는 문장이 없다
-- [ ] #9 superpowers 를 뗀다
+- [x] #3 `start`의 "범위가 커지면 멈춘다"가 확인할 수 있는 목록이다: AC 밖 동작, 새 의존성·도구 설치, 스키마·공개 API·삭제, CLAUDE.md·설정 변경
+- [x] #4 `backlog`는 AC 전문을 보여 주고 승인받는다. 서베이 모드는 후보 표에 AC 초안을 넣어, 고르기 한 번으로 항목을 쓰고 다시 승인받지 않는다
+- [x] #5 커밋 전에 deslop 을 돌린다. 묻지 않고 바로 고치고, 동작은 바꾸지 않는다. 고친 것을 한 줄로 적는다. simplify 를 돌릴지와 무엇을 고칠지 묻던 질문은 없다
+- [x] #6 리뷰 판정에서 타당한 🔴·🟡 는 묻지 않고 고친 뒤 알린다. 남은 질문(AC·사용자가 답한 것과 부딪히는 지적, "나중" 후보, 머지 방식)은 한 메시지로 추천·근거·위험과 함께 묻는다. 그 메시지 첫 줄에 사용자를 기다리는 것이 무엇인지 쓰고, Claude 가 스스로 할 수 있는 일은 질문으로 올리지 않는다. 쉬운 말과 짧은 문장으로 쓰고, 해시·경로·명령은 사용자가 행동하는 데 필요할 때만 넣는다. "막기" 선택지는 없다
+- [x] #7 `docs/review-principles.md`의 "승인된 계획·AC 가 정한 것은 사용자가 정한 것" 원칙이 "AC 와 사용자가 답한 것"으로 좁혀져 있다. Claude 가 정한 것은 리뷰 대상이다. `plugins`·`i18n`·`docs/backlog/_template.md`에 "승인된 계획" 문구가 없다
+- [x] #8 하위 세션 지시문(`backlog`·`start` SKILL.md)에 플랜 모드 승인 문장이 없고, 하위 세션도 #1 기준을 따른다. 부모 세션이 계획 승인을 기다리는 문장이 없다
+- [x] #9 superpowers 를 뗀다
   - `grep -rn superpowers plugins i18n .claude-plugin .claude/settings.json` 결과가 없다(`plugin.json`·`marketplace.json` 의존성 포함)
   - 부르던 다섯 스킬에서 필요한 규칙을 절차에 직접 적었다: 테스트 규칙(싸고 분명한 테스트 길이 있으면 실패하는 테스트를 먼저 쓴다. 없으면 억지로 쓰지 않고 가장 가까운 실행 확인을 쓰고 그 이유를 적는다. 나쁜 테스트보다 테스트 없음이 낫다 — pstack `tdd`), 끝났다고 말하기 전에 검증 명령을 다시 돌려 출력 보이기, 리뷰 지적은 코드에서 확인하고 틀린 지적은 이유를 대고 고치지 않기, 질문 규칙(이유 먼저, 절차 질문 안 함, 선택지에 추천, 한 번에 최대 3개), 머지한 뒤 검증 명령 다시 돌리기, 기준 브랜치·배포 브랜치에는 강제 푸시하지 않기
   - README 두 개의 superpowers 안내와 저장소 CLAUDE.md 의 superpowers 절을 정리했다
-- [ ] #10 frontend·server 점검과 ui-design 의 질문이 #1 기준을 따른다
+- [x] #10 frontend·server 점검과 ui-design 의 질문이 #1 기준을 따른다
   - 시안 수는 기본 3개이고 방향 표는 보여 주기만 한다. 캔버스에서 고르기는 남긴다
   - ui-design 의 쓰기·커밋 승인은 한 번으로 줄이고, `@DESIGN.md` 줄 추가는 묻는다
   - 로컬 Supabase 스택은 켜고 알린다
   - 공식 스킬 설치는 프로젝트당 한 번, 착수 전 질문에 합친다
   - 브라우저 도구가 없으면 멈추지 않고 "확인 못 함"으로 적고 계속한다
-- [ ] #11 멈춘 횟수가 기준선보다 적다. 기준선은 기록에서 센 평균 7.8번이다(`research_notes/2026-11-26-016-추가-조사/stop-count.md`). 바꾼 판을 같은 실제 사례로 돌려 같은 방법으로 센다. 멈춘 횟수와 함께 사용자가 나중에 바로잡은 횟수도 센다. 기존 eval 사례(`start-plan` 등)는 새 규칙에 맞게 고쳤다. 결과와 다시 돌리는 명령이 Implementation Notes 에 있다
-- [ ] #12 `task` 스킬이 `backlog`와 `start` 두 스킬로 나뉘어 있다. `backlog`(`/backlog`)는 항목을 만들고 `--survey`도 받는다. `start`(`/start`)는 구현 → 검증 → 리뷰 → 지적 고치기 → 마지막 메시지(머지 방식 등) → 머지까지 멈추지 않고 간다. `task` 스킬, `end` 모드, `references/end.md`는 없다. `grep -rnE '/task |task end|skills/task' plugins i18n scripts README.md README.en.md docs/backlog/README.md docs/backlog/_template.md` 결과가 없다
-- [ ] #13 pstack 에서 가져온 것이 pstack 과 같은 모양으로 들어 있다: 색인 하나와 본문 파일들
+- [ ] #11 멈춘 횟수가 기준선보다 적다. 기준선은 기록에서 센 평균 7.8번이다(`research_notes/2026-11-26-016-추가-조사/stop-count.md`). 바꾼 판을 같은 실제 사례로 돌려 같은 방법으로 센다. 멈춘 횟수와 함께 사용자가 나중에 바로잡은 횟수도 센다. 기존 eval 사례(`start-plan` 등)는 새 규칙에 맞게 고쳤다. 결과와 다시 돌리는 명령이 Implementation Notes 에 있다 (확인 못 함, 사용자가 받아들임)
+- [x] #12 `task` 스킬이 `backlog`와 `start` 두 스킬로 나뉘어 있다. `backlog`(`/backlog`)는 항목을 만들고 `--survey`도 받는다. `start`(`/start`)는 구현 → 검증 → 리뷰 → 지적 고치기 → 마지막 메시지(머지 방식 등) → 머지까지 멈추지 않고 간다. `task` 스킬, `end` 모드, `references/end.md`는 없다. `grep -rnE '/task |task end|skills/task' plugins i18n scripts README.md README.en.md docs/backlog/README.md docs/backlog/_template.md` 결과가 없다
+- [x] #13 pstack 에서 가져온 것이 pstack 과 같은 모양으로 들어 있다: 색인 하나와 본문 파일들
   - `start` SKILL.md 에 색인이 한 곳에 있다. 모양은 pstack `poteto-mode/SKILL.md`의 Non-negotiables·Principles·Playbooks 를 따른다: 한 줄에 "언제 → 무엇"
   - 본문은 pstack 과 같은 자리에 있다: 스킬과 원칙은 각자 스킬 폴더(`skills/<이름>/SKILL.md`, 원칙은 `skills/principle-<이름>/SKILL.md`)이고 `disable-model-invocation: true`라 스스로 뜨지 않는다. 사용자는 `/architect`처럼 직접 부를 수 있다. 플레이북은 `skills/start/playbooks/<이름>.md`다. 색인이 가리킬 때 읽고 따르고, 절차 파일에 본문을 옮겨 적지 않는다
   - 원칙 24개: 이름, 언제 쓰는지, 본문
@@ -105,20 +108,21 @@ updated_date: 2026-11-26
   - 정한 것 줄의 이유에 적용한 원칙·스킬 이름을 적는다
   - Cursor 이름(Task, AskQuestion, control-ui, `/loop`, 모델 슬러그, 다른 회사 모델)은 Claude Code 의 것으로 바꾸거나 뺀다. 가져온 파일마다 원문 위치를 적고, pstack 과 cursor-team-kit 의 MIT 저작권·허가 고지를 플러그인에 둔다
   - README 두 개의 출처에 pstack 과 cursor-team-kit 을 적는다
-- [ ] #14 `start` SKILL.md "일하는 원칙"에 세 줄이 있다: 아니라고 말해도 된다(범위를 넓히자는 제안이 값을 못 하면 그렇게 말한다), 스스로 돌릴 수 있는 확인을 사람에게 넘기지 않는다, 주장마다 근거를 달거나 확인함·추론·추측 중 무엇인지 표시한다
-- [ ] #15 frontend·server 가 workflow 로 합쳐져 있다
+- [x] #14 `start` SKILL.md "일하는 원칙"에 세 줄이 있다: 아니라고 말해도 된다(범위를 넓히자는 제안이 값을 못 하면 그렇게 말한다), 스스로 돌릴 수 있는 확인을 사람에게 넘기지 않는다, 주장마다 근거를 달거나 확인함·추론·추측 중 무엇인지 표시한다
+- [x] #15 frontend·server 가 workflow 로 합쳐져 있다
   - `plugins/frontend`, `plugins/server` 폴더가 없고 `marketplace.json`의 플러그인은 `workflow` 하나다
   - 점검 스킬 넷(`frontend-start-check`, `frontend-end-check`, `server-start-check`, `server-end-check`), `ui-design`, 에이전트 다섯(`frontend-reviewer`, `design-reviewer`, `frontend-evaluator`, `api-reviewer`, `supabase-reviewer`), 스크립트와 eval 이 workflow 에 있다
   - 문서가 이들을 `workflow:` 이름으로 가리킨다. `grep -rnE '(frontend|server):(frontend|server|design|api|supabase|ui)-' plugins i18n README.md README.en.md` 결과가 없다
   - workflow 에 의존 플러그인이 없다. `frontend-design`과 `typescript-lsp`는 README "있으면 좋은 플러그인"에 있고, 점검은 있을 때만 쓴다
   - README 문제 해결에 옮기는 법이 있다: 프로젝트 설정에서 `frontend@j-dev-kit`, `server@j-dev-kit`을 지운다
-- [ ] #16 `kit-help` 스킬이 있다. 질문에 답하고 보낼 명령 한 줄을 주며, 일을 시작하지 않는다. 담는 것: 처음 설정, `/backlog`와 `/start` 쓰는 법, 상황별로 어느 스킬인지 표(workflow 의 스킬 폴더를 모두 덮는다. 원칙은 묶어서), 플레이북과 원칙 쓰는 법, 잘 안 될 때. 답하기 전에 가리키는 파일을 읽는다
-- [ ] #17 `kit-setup` 스킬과 모델 설정이 있다
-  - 역할(하위 세션 `session`, 구현을 맡는 하위 에이전트 `implement`, 리뷰 `review`, 판정 `judge`, 기계적 수정 `mechanical`, 탐색 `explore`)마다 모델과 노력을 JSON 설정 파일(`.claude/workflow.json`, 거기 없는 역할은 `~/.claude/workflow.json`)에 적을 수 있다. 형식은 `start/references/models.md`에 있다. 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel` 키로 정하고 `kit-setup`이 써 준다
+- [x] #16 `kit-help` 스킬이 있다. 질문에 답하고 보낼 명령 한 줄을 주며, 일을 시작하지 않는다. 담는 것: 처음 설정, `/backlog`와 `/start` 쓰는 법, 상황별로 어느 스킬인지 표(workflow 의 스킬 폴더를 모두 덮는다. 원칙은 묶어서), 플레이북과 원칙 쓰는 법, 잘 안 될 때. 답하기 전에 가리키는 파일을 읽는다
+- [x] #17 `kit-setup` 스킬과 모델 설정이 있다
+  - 역할(하위 세션 `session`, 구현을 맡는 하위 에이전트 `implement`, 리뷰 `review`, 판정 `judge`, 기계적 수정 `mechanical`, 탐색 `explore`)마다 모델과 노력을 JSON 설정 파일(`.claude/workflow.json`, 거기 없는 역할은 `~/.claude/workflow.json`)에 적을 수 있다. 형식은 `start/references/settings.md`에 있다. 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel` 키로 정하고 `kit-setup`이 써 준다
   - `kit-setup`이 지금 설정과 기본값을 보여 주고, 고를 것을 한 번에 물어 설정 파일을 쓴다. 다시 돌리면 고친다
   - `start`·`backlog`와 리뷰 절차가 하위 세션과 에이전트를 띄울 때 그 설정을 따른다. 설정이 없으면 기본값을 쓴다
   - `kit-setup`이 끝에 프로젝트 검증 스킬(`verify-*`)이 없으면 만들지 한 번 묻는다
-- [ ] #18 `/start <할 일>`처럼 백로그 항목이 아닌 작업 내용을 주면 항목을 만들지 않고 이 세션에서 바로 한다. 첫 메시지에서 목표, 가장 작은 변경, 끝났다고 볼 조건을 되짚고 승인 없이 진행한다. 계획과 정한 것은 마지막 메시지와 커밋 메시지에 남긴다. 검증, 스택 점검, 마지막 메시지는 항목이 있을 때와 같고, 리뷰는 크기에 맞춘다
+- [x] #18 `/start <할 일>`처럼 백로그 항목이 아닌 작업 내용을 주면 항목을 만들지 않고 이 세션에서 바로 한다. 첫 메시지에서 목표, 가장 작은 변경, 끝났다고 볼 조건을 되짚고 승인 없이 진행한다. 계획과 정한 것은 마지막 메시지와 커밋 메시지에 남긴다. 검증, 스택 점검, 마지막 메시지는 항목이 있을 때와 같고, 리뷰는 크기에 맞춘다
+- [x] #19 머지 방식을 설정으로 정한다. 설정 파일(`.claude/workflow.json`, 거기 없으면 `~/.claude/workflow.json`)의 `merge`가 `local`이면 로컬에서 기준 브랜치에 머지한 뒤 푸시하고, `pr`이면 기준 브랜치를 대상으로 PR 을 만든다. `kit-setup`이 묻고 써 준다. 설정이 있으면 `/start`의 마지막 메시지는 방식을 묻지 않고 그 방식으로 머지할지만 묻는다. 설정이 없으면 방식을 묻는다
 
 <!-- AC:END -->
 
@@ -126,9 +130,9 @@ updated_date: 2026-11-26
 
 <!-- DOD:BEGIN -->
 
-- [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
-- [ ] #2 번역본(`i18n/en/`)을 원문과 같이 고쳤다
-- [ ] #3 바꾼 플러그인의 `plugin.json` `version`을 올렸고 README 두 개와 `marketplace.json` 설명을 맞췄다
+- [x] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
+- [x] #2 번역본(`i18n/en/`)을 원문과 같이 고쳤다
+- [x] #3 바꾼 플러그인의 `plugin.json` `version`을 올렸고 README 두 개와 `marketplace.json` 설명을 맞췄다
 
 <!-- DOD:END -->
 
@@ -202,4 +206,41 @@ updated_date: 2026-11-26
 
 ## Final Summary
 
-`/start`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.
+**바뀐 것**
+
+- `task` 스킬을 `backlog`(`/backlog`, 항목 만들기)와 `start`(`/start`, 구현부터 머지까지)로 나눴다. start 와 end 를 합쳐 "end 를 진행할까요?"가 없다.
+- 계획 승인(플랜 모드)을 없앴다. 묻는 것은 다섯 가지뿐이고, 나머지는 정하고 `정한 것 — 이유 — 틀렸을 때 비용`으로 적는다. 타당한 리뷰 지적은 묻지 않고 고친다. 남은 결정은 마지막 메시지 하나로 묻는다.
+- superpowers 를 뗐다. 필요한 규칙(테스트 먼저, 검증 다시 돌리기, 지적을 코드에서 확인하기, 질문 규칙)은 스킬에 직접 적었다.
+- pstack 과 cursor-team-kit 에서 원칙 24개, 스킬 15개, 플레이북 6개를 들였다. `start` SKILL.md 의 색인 하나가 "언제 → 무엇"을 가리킨다. 커밋 전 정리는 deslop 이 한다.
+- frontend·server 플러그인을 workflow 하나로 합쳤다. 스택 점검 스킬, 리뷰어 에이전트, 스크립트, eval 사례가 모두 workflow 에 있다.
+- `/kit-setup`(역할별 모델·노력과 머지 방식을 `.claude/workflow.json`에 쓴다), `/kit-help`(쓰는 법 안내), `/start <할 일>`(항목 없이 바로 하기)를 넣었다.
+- workflow 0.17.0.
+
+**리뷰에서 고친 것**
+
+- 작업 브랜치에서 인자 없이 `/start`를 부르면 자기 항목을 찾지 못했다 → 브랜치 이름으로 항목을 정한다.
+- "확인 못 함"인 AC 가 있으면 항목을 닫을 길이 없었다 → 마지막 메시지에서 묻고, 받아들이면 닫는다.
+- 하위 세션의 기본 노력이 두 파일에서 달랐다 → `auto`가 이어받기로 풀리면 노력도 이어받는다.
+- 프로젝트 설정 파일이 사용자 설정을 가렸다 → 사용자가 정한 역할만 적는다.
+- 항목 없이 할 때의 빈틈(머지를 묻는 때, 다시 부를 때, 다른 항목의 브랜치에서 받을 때, 에이전트에 넘길 계약)을 채웠다.
+- "공식 스킬 설치 안 함" 줄 하나를 세 스택이 함께 썼다 → 줄에 스킬 이름을 적는다.
+- 그 밖의 🟡 과 어긋난 문장은 Implementation Notes 의 `### 리뷰`에 있다.
+
+**미룬 것**
+
+- 항목 번호가 브랜치 사이에 겹칠 수 있다 → 017.
+- AC #11(멈춘 횟수 실측)은 재지 않았다. 실제 항목을 몇 개 돌린 뒤 `research_notes/2026-11-26-016-추가-조사/`의 방법으로 센다. 기준선은 7.8번이다.
+
+**그대로 둔 지적과 이유**
+
+- 로컬 Supabase 스택을 워크트리들이 함께 쓸 때의 거짓 실패: 리뷰어가 확인하지 못한 추정이다. 실제로 겪으면 항목으로 만든다.
+- ⚪ 지적 가운데 문체에 관한 것.
+
+**사용자가 바로잡은 것**
+
+- 묻지 않고 규칙을 더하지 않는다(머지 승인 전달 금지, 부모 세션의 착수 전 질문, 답이 오기 전 편집 금지는 뺐다).
+- start 가 끝나면 end 로 이어지는 것이 아니라 둘을 합친다.
+- 가져온 스킬은 pstack 처럼 스킬 폴더 하나씩으로 둔다(`start/references/` 아래에 두지 않는다).
+- 가져올 것은 다 가져온다(Feature 플레이북, figure-it-out, 검증 스킬, unslop, technical-writing 을 뒤에 더했다).
+- 새로 생긴 일은 새 백로그가 아니라 016 안에서 한다(플러그인 합치기, help, setup, `/start <할 일>`, 머지 방식 설정).
+- 머지 방식은 그때마다 고르지 않고 설정에 따른다.

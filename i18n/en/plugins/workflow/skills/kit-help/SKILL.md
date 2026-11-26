@@ -34,7 +34,7 @@ Check only the state that changes the answer, and mention it only when the answe
 ## First-time setup
 
 1. Install: `claude plugin marketplace add JiHoon777/j-dev-kit --scope project`, `claude plugin install workflow@j-dev-kit --scope project`.
-2. Run `/kit-setup`. It asks which model and effort each role uses and writes them to `.claude/workflow.json`. It also asks whether to create the work settings in CLAUDE.md (base branch, verify command, document language, `stack:`) and a verification skill, if they are missing.
+2. Run `/kit-setup`. It asks which model and effort each role uses and how to merge (local merge then push / PR), and writes them to `.claude/workflow.json`. It also asks whether to create the work settings in CLAUDE.md (base branch, verify command, document language, `stack:`) and a verification skill, if they are missing.
 3. Start real work: make an item with `/backlog <task>`, or do it right away with `/start <task>`.
 
 Installing alone changes nothing. Things run when a skill is invoked. The details are in the README (`https://github.com/JiHoon777/j-dev-kit#readme`).
@@ -48,7 +48,7 @@ If cost is a worry, say where the tokens go. They go to sub-sessions, review age
 - `/start <task>`: does the work right away with no item. It runs in this session.
 - Plain words work too. "Put this in the backlog", "start 001", "review this branch and merge it".
 
-`/start` asks only five things (work that cannot be undone, shared settings, product or taste decisions, what to do, and states that could lose work). It decides the rest and writes it down as `decision — reason — cost if wrong`. There is no plan approval. To see the plan, say "let me see the plan". At the end it asks the remaining decisions and how to merge, all at once.
+`/start` asks only five things (work that cannot be undone, shared settings, product or taste decisions, what to do, and states that could lose work). It decides the rest and writes it down as `decision — reason — cost if wrong`. There is no plan approval. To see the plan, say "let me see the plan". At the end it asks the remaining decisions and the merge, all at once. If how to merge is set with `/kit-setup`, it does not ask how; it asks only whether to merge that way.
 
 A good request states the goal and how to know it is done. It does not list skills. The procedure calls the skills it needs in order.
 
@@ -64,7 +64,7 @@ The default answer is `/start`. When the procedure needs one, it reads and uses 
 | --- | --- |
 | Implement work through to the merge | `/start` |
 | Turn a task into a backlog item | `/backlog` |
-| Models and effort, project settings | `/kit-setup` |
+| Models and effort, how to merge, project settings | `/kit-setup` |
 | Design the steps first for large work that no playbook fits | `/figure-it-out` |
 | How the code works now, where new code should go | `/how` |
 | Why the code came to be this way, where a number came from | `/why` |
@@ -123,6 +123,7 @@ The principles are 24 skills of one rule each (`principle-<name>`). `/start` rea
 | Symptom | Fix |
 | --- | --- |
 | It asks too often | If the question is outside the five asking criteria, say "don't ask, decide and write it down". If it keeps happening, the asking criteria in the `start` SKILL.md need fixing |
+| It asks how to merge every time | Set how to merge in `/kit-setup`: local merge then push, or a PR |
 | You want to see the plan | Say "let me see the plan" and it shows the plan and waits |
 | The model was changed but nothing changed | Per-role settings apply from the next session or agent launched, and main session settings from a new session |
 | It costs a lot | See the cost paragraph in "First-time setup" |

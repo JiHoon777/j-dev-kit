@@ -110,7 +110,7 @@ If the user says "let me see the plan", show the plan and wait.
 - When one AC is done, check it off right away only if there is outside evidence (command output). ACs that need a judge are judged together in step 6.
 - Write what you decide without asking under `### 정한 것` as you go. Write what changed from the plan in `Implementation Notes` too.
 - Commit to the work branch at each meaningful step. Before committing, follow the `deslop` skill (with the same limit as 1 in step 6). Do not commit to the base branch.
-- **When delegating:** if you hand implementation or a fix to a subagent, put these in the brief: the scope (files, what to do, success criteria), this step's test rules, do only what is within the Acceptance Criteria, if something on the scope list above comes up do not fix it but come back, and do not commit to the base branch. The model follows the `implement` role in `<ref>/models.md`. Read the diff of the delegated result yourself and check it.
+- **When delegating:** if you hand implementation or a fix to a subagent, put these in the brief: the scope (files, what to do, success criteria), this step's test rules, do only what is within the Acceptance Criteria, if something on the scope list above comes up do not fix it but come back, and do not commit to the base branch. The model follows the `implement` role in `<ref>/settings.md`. Read the diff of the delegated result yourself and check it.
 
 ## 6. Wrap-up check
 
@@ -147,7 +147,7 @@ Go on to step 7 without asking.
 | general-purpose | When authentication/authorization, input handling, secrets, external calls, or file/command execution changed | Calls the `security-review` skill. Before launching, if `git symbolic-ref refs/remotes/origin/HEAD` fails, run `git remote set-head origin -a` |
 | Stack review agents (`workflow:frontend-reviewer`, `workflow:design-reviewer`, `workflow:api-reviewer`, `workflow:supabase-reviewer`) | When step 7 returned them | By that agent's own criteria |
 
-**Model:** every agent above follows the `review` role in `<ref>/models.md`.
+**Model:** every agent above follows the `review` role in `<ref>/settings.md`.
 
 Agents cannot see this conversation, so put these in the instructions:
 
@@ -160,7 +160,7 @@ Agents cannot see this conversation, so put these in the instructions:
 
 ## 9. Judge and fix
 
-After all have returned, this session does not pick findings. Pass all the reports, as written, to one new general-purpose **judge agent**. Its model follows the `judge` role in `<ref>/models.md`. Brief:
+After all have returned, this session does not pick findings. Pass all the reports, as written, to one new general-purpose **judge agent**. Its model follows the `judge` role in `<ref>/settings.md`. Brief:
 
 - Scope: 1 and 4 in step 8, plus `docs/review-principles.md`.
 - "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). A finding that goes against a principle is wrong. Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 (confirmed bugs, security problems, data loss, AC violations, stack check failures) / 🟡 (real problems that do not block the merge) / ⚪ (minor). Among the valid findings, mark as 'for a person to decide' those that clash with the Acceptance Criteria or with what the user answered, and those whose fix depends on a product or taste decision. Mark those beyond this item's scope as 'later candidate'. If the same kind is in the Final Summary `리뷰에서 고친 것` (fixed in review) of an item in `docs/done/`, or it appears in several places across these reports, mark it 🔁 with the evidence (item number or locations)."
@@ -172,7 +172,7 @@ How to fix:
 - Check the finding against the code yourself, then fix it. If a finding turns out to be wrong, write the reason and do not fix it.
 - Fixes that change behavior follow the test rules in step 5.
 - Fixes that need judgment (changing the design, spanning several files, or with no settled way to fix) are made by this session itself.
-- Mechanical fixes, where the finding states exactly where and what to change and no judgment is left, can be collected and handed to one agent (the `mechanical` role in `<ref>/models.md`). If you hand them over, the prompt includes that list of findings, the item file path, what "When delegating" in step 5 lists, and "do not fix anything outside the list and do not commit".
+- Mechanical fixes, where the finding states exactly where and what to change and no judgment is left, can be collected and handed to one agent (the `mechanical` role in `<ref>/settings.md`). If you hand them over, the prompt includes that list of findings, the item file path, what "When delegating" in step 5 lists, and "do not fix anything outside the list and do not commit".
 - Do not judge the fixes by the fixer's report. Run the verify command, and for each fixed finding have a new general-purpose judge agent decide whether it is fixed, given only the item file path, the list of fixed findings, `git diff HEAD` and `git status --short`. Its prompt: "Do not edit files. For each finding, write fixed / not fixed with evidence (`file:line`). If unclear, do not leave it as fixed." For UI, step 7's "To do after fixing" judges.
 - If the same finding is still there after three fixes, stop fixing and tell the user the finding and what you tried.
 - Do step 7's "To do after fixing" for the fixed parts. If a fix touched a stack check's area, call that `*-end-check` again.
@@ -190,7 +190,7 @@ How to write it:
   - Findings for a person to decide: the finding, the options, the recommendation
   - "Later" candidates: whether to make them new items. Attach a title and draft ACs to each candidate
   - ACs and DoD lines left unchecked because they could not be verified: the user verifies and checks them / close with them left as not verified / leave the item open
-  - How to merge: local merge / PR / leave as is. Whether to push the base branch goes with it
+  - The merge: if `<ref>/settings.md` has a `merge` setting, do not ask how; ask only whether to merge that way. For `local` it is "Merge into `<base>` locally and push?", and for `pr` it is "Open a PR that targets `<base>`?". With no setting, ask how: local merge (whether to push the base branch goes with it) / PR / leave as is. Then add one line saying that setting it with `/kit-setup` stops this question from next time
   - Any suggested change to permissions or settings
 - Write decisions with a high cost if wrong, and what could not be verified, as notices, not as decisions to make. Raise it as the decision above only when an AC or DoD line could not be checked because it could not be verified.
 - Do not raise as a question what Claude can do by itself.
@@ -226,7 +226,7 @@ git status --short   # must be empty
 
 ## 12. Merge
 
-Do it the way the user chose in step 10.
+Do it the way the `merge` setting says. With no setting, do it the way the user chose in step 10. If the user said not to merge, it is "leave as is".
 
 - **Local merge:** do it in the order below. `<base folder>` is the folder where the base branch is checked out. If the work was done in a worktree, it is the first line of `git worktree list`; otherwise it is this folder.
   1. If the work was not done in a worktree, switch to the base branch with `git switch <base>`.
@@ -234,10 +234,11 @@ Do it the way the user chose in step 10.
   3. If the base branch has an upstream, bring it up to date with `git -C <base folder> pull`. If it has none, skip that.
   4. `git -C <base folder> merge w/<name>`. If there is a conflict, follow the `fix-merge-conflicts` skill.
   5. Run the verify command again in the base folder. If it fails, do not push; say so.
-  6. Cleanup: if the work was not done in a worktree, `git branch -d w/<name>`. If the session is inside a worktree, do not remove the worktree or the branch from this session. Say that archiving the session lets the app clean up the worktree, and otherwise running `git worktree remove <worktree path>` and `git branch -d w/<name>` in the base folder does it.
-- **PR:** push the work branch and open a PR. If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so. Leave the worktree.
+  6. If the user accepted the push in step 10, `git -C <base folder> push`.
+  7. Cleanup: if the work was not done in a worktree, `git branch -d w/<name>`. If the session is inside a worktree, do not remove the worktree or the branch from this session. Say that archiving the session lets the app clean up the worktree, and otherwise running `git worktree remove <worktree path>` and `git branch -d w/<name>` in the base folder does it.
+- **PR:** push the work branch and open a PR that targets the base branch. If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so. Leave the worktree.
 - **Leave as is:** do nothing. Leave the worktree and the branch.
 
-Push the base branch and deploy branches only when the user asks. Do not force-push.
+Push the base branch and deploy branches only when the user accepted it in step 10 (saying yes to "merge and push?" asked from the `local` setting counts as accepting). Do not force-push.
 
 When done, report: the merged commits, the moved item file, new items, and the remaining `To Do` items (`README.md` and files starting with `_` are not items).

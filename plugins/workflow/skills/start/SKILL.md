@@ -23,7 +23,7 @@ metadata:
   2. 먼저 이 세션에서 항목을 찾는다(절차 1단계의 "항목 찾기"). 이 항목의 `w/` 브랜치가 이미 있으면 띄우지 않고, 그 브랜치에서 일하던 세션에서 이어 가라고 알린다. 그 세션이 없으면 이 세션에서 절차대로 그 브랜치를 이어 간다.
   3. 세션 하나를 띄운다. 사용자가 시킨 일이니 제안으로 올리지 않고 바로 시작한다. 기준 브랜치에서 딴 새 워크트리, 브랜치 이름은 `w/<.md 를 뺀 항목 파일 이름>`이다.
 
-     모델과 노력: `${CLAUDE_SKILL_DIR}/references/models.md`의 `session` 역할을 따른다. 설정이 없으면 기본값이다(이 세션이 Fable 이면 한 단계 낮은 최신 모델과 노력 `high`, 아니면 이어받는다).
+     모델과 노력: `${CLAUDE_SKILL_DIR}/references/settings.md`의 `session` 역할을 따른다. 설정이 없으면 기본값이다(이 세션이 Fable 이면 한 단계 낮은 최신 모델과 노력 `high`, 아니면 이어받는다).
 
   4. 그 세션은 이 대화를 볼 수 없다. 지시문은 "`start` 스킬을 `<항목> --here`로 불러 그 절차를 따른다", "묻는 것은 그 스킬의 묻는 기준에 드는 것뿐이다. 질문은 턴의 마지막 메시지에 빠짐없이 쓰고 멈춘다" 두 줄과, 이 대화에서 사용자가 말한 배경이나 정한 것(있을 때만)이다.
   5. 세션 링크를 알린다. 그 일은 이 세션에서 하지 않고, 이 세션이 지휘한다.
@@ -39,6 +39,8 @@ metadata:
 - 검증 명령 (예: `pnpm verify`. 린트, 타입, 테스트, 빌드)
 - 항목·보고에 쓸 언어 (대화의 언어)
 - 웹 포트, 서버 포트 (없음): 적은 것만 항목마다 `기준 포트 + 항목 번호`로 나눈다
+
+머지 방식은 CLAUDE.md 가 아니라 설정 파일의 `merge`에서 읽는다(`${CLAUDE_SKILL_DIR}/references/settings.md`). 없으면 마지막 메시지에서 묻는다.
 
 프로젝트 CLAUDE.md 의 규칙이 이 스킬보다 우선한다.
 
@@ -82,7 +84,7 @@ metadata:
 
 ## 4. 모델
 
-하위 세션이나 하위 에이전트를 띄울 때는 `${CLAUDE_SKILL_DIR}/references/models.md`를 Read 도구로 읽고, 역할(`session`, `implement`, `review`, `judge`, `mechanical`, `explore`)에 맞는 모델과 노력을 넘긴다. 설정 파일은 `/kit-setup`이 쓴다. 없으면 그 파일의 기본값을 쓴다.
+하위 세션이나 하위 에이전트를 띄울 때는 `${CLAUDE_SKILL_DIR}/references/settings.md`를 Read 도구로 읽고, 역할(`session`, `implement`, `review`, `judge`, `mechanical`, `explore`)에 맞는 모델과 노력을 넘긴다. 설정 파일은 `/kit-setup`이 쓴다. 없으면 그 파일의 기본값을 쓴다.
 
 ## 5. 색인
 

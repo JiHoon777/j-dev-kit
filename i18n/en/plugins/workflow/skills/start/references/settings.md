@@ -1,8 +1,8 @@
-> Translation. Source: [plugins/workflow/skills/start/references/models.md](../../../../../../../plugins/workflow/skills/start/references/models.md). Update this file when the source changes. Claude does not read this file.
+> Translation. Source: [plugins/workflow/skills/start/references/settings.md](../../../../../../../plugins/workflow/skills/start/references/settings.md). Update this file when the source changes. Claude does not read this file.
 
-# Model settings
+# Settings
 
-Set, per role, the model and effort to use when opening a sub-session or launching a subagent. The values are in a JSON settings file, which the `kit-setup` skill writes. `start` and `backlog` follow this file. When another skill is invoked directly (`/how`, for example), these settings are not used.
+The workflow plugin's settings file. It sets two things: the model and effort each role uses when opening a sub-session or launching a subagent, and how to merge when the work is done. The values are in a JSON settings file, which the `kit-setup` skill writes. `start` and `backlog` follow this file. When another skill is invoked directly (`/how`, for example), these settings are not used.
 
 ## Settings files
 
@@ -49,6 +49,21 @@ With the defaults written out, it looks like this. You may write only the roles 
 - **Subagents:** pass them as the Agent tool's `model` and `effort`. `model` takes only the aliases (`fable`, `opus`, `sonnet`, `haiku`). For `inherit`, do not pass `model`. This value takes precedence over the model written in the agent definition file.
 - **Sub-sessions:** pass them as the `model` and `effort` of the tool that opens the session. Give `model` the latest model ID for that alias (for example, `opus` is `claude-opus-5-5` for now). The tool does not take a model or effort above this session's. If the setting is higher, leave it out (it inherits) and say so in one line.
 - If the tool rejects a value, launch without that value and then say so.
+
+## How to merge
+
+The `merge` key in the same file. Write it next to `models`.
+
+```json
+{
+  "merge": "local"
+}
+```
+
+- `local`: merge the work branch into the base branch locally and push the base branch.
+- `pr`: push the work branch and open a PR that targets the base branch.
+- Use the project value if there is one, otherwise the user value. If neither exists, `start` asks how to merge in its last message.
+- This value sets only the way. Whether to merge at all is still asked by `start` in its last message. Merging and pushing the base branch fall under the asking criteria.
 
 ## Main session
 

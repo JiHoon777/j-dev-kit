@@ -1,6 +1,6 @@
 ---
 name: kit-setup
-description: workflow 플러그인을 처음 설정하거나 설정을 바꿀 때 쓴다. 하위 세션과 하위 에이전트가 역할마다 쓸 모델과 노력을 물어 JSON 설정 파일에 쓰고, 메인 세션의 모델도 함께 정한다. 프로젝트 CLAUDE.md 의 작업 설정과 검증 스킬도 없으면 만들지 묻는다. "모델 설정", "setup", "셋업", "어떤 모델로 돌릴지 바꾸자"에 쓴다.
+description: workflow 플러그인을 처음 설정하거나 설정을 바꿀 때 쓴다. 하위 세션과 하위 에이전트가 역할마다 쓸 모델과 노력, 머지 방식(로컬 머지 후 푸시 / PR)을 물어 JSON 설정 파일에 쓰고, 메인 세션의 모델도 함께 정한다. 프로젝트 CLAUDE.md 의 작업 설정과 검증 스킬도 없으면 만들지 묻는다. "모델 설정", "머지 방식 설정", "setup", "셋업", "어떤 모델로 돌릴지 바꾸자"에 쓴다.
 argument-hint: "[--user]"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -10,13 +10,14 @@ metadata:
 
 인자: `$ARGUMENTS`
 
-workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_DIR}/../start/references/models.md`에 있다. 먼저 그 파일을 Read 도구로 읽는다.
+workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_DIR}/../start/references/settings.md`에 있다. 먼저 그 파일을 Read 도구로 읽는다.
 
 묻는 것은 아래 2단계의 한 번이다. 선택지마다 추천과 이유를 붙인다. 묻는 도구(AskUserQuestion)가 있으면 그것으로 묻는다.
 
 ## 1. 지금 상태 읽기
 
-- 모델 설정: `<저장소 루트>/.claude/workflow.json`, `~/.claude/workflow.json`. 없으면 기본값이 쓰이는 중이다.
+- 모델 설정과 머지 방식(`merge`): `<저장소 루트>/.claude/workflow.json`, `~/.claude/workflow.json`. 없으면 모델은 기본값이 쓰이는 중이고, 머지 방식은 `/start`가 그때마다 묻는 중이다.
+- 지난 머지: `git log <기준> --merges --oneline -20`. `Merge pull request`가 많으면 PR 로, `Merge branch`가 많으면 로컬 머지로 해 온 것이다.
 - 메인 세션: 이 세션의 모델, 그리고 `model`·`effortLevel` 키가 적힌 곳(`.claude/settings.local.json`, `.claude/settings.json`, `~/.claude/settings.json`). 이 키들만 본다.
 - 프로젝트 CLAUDE.md 의 `## 작업 설정`: 기준 브랜치, 검증 명령, 문서 언어, `stack:`.
 - 프로젝트 검증 스킬: `.claude/skills/verify-*/`가 있는지, CLAUDE.md 에 `- 검증 스킬: 안 씀`이 있는지.
@@ -27,18 +28,19 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 
 1. **저장할 곳:** 프로젝트(`.claude/workflow.json`, 커밋한다. 워크트리와 하위 세션에서도 보인다) / 사용자(`~/.claude/workflow.json`, 모든 프로젝트의 기본값). 인자에 `--user`가 있으면 묻지 않고 사용자다. 추천은 프로젝트다.
 2. **역할별 모델과 노력:** 셋 중 하나를 고르게 한다.
-   - 지금 그대로 두기(모델 설정 파일을 쓰지 않는다)
+   - 지금 그대로 두기(`models`를 바꾸지 않는다)
    - 아끼기: `session`, `review`를 `sonnet`으로, `judge`를 `sonnet`으로, `explore`를 `haiku`로 낮춘다
    - 역할을 골라 바꾸기: 바꿀 역할과 값을 말하게 한다
-3. **메인 세션:** 그대로 두기(추천) / 모델과 노력을 골라 설정에 쓰기. 쓰면 새 세션부터 적용된다고 알린다.
-4. **CLAUDE.md 작업 설정**(없을 때만): 찾은 값(기준 브랜치는 `git symbolic-ref`나 `main`, 검증 명령은 `package.json` 스크립트나 Makefile 에서)을 보여 주고 넣을지 묻는다. 검증 명령을 찾지 못하면 무엇인지 묻는다.
-5. **검증 스킬**(`verify-*`가 없고 "안 씀" 줄도 없을 때만): 앱을 실제로 몰아 확인할 프로젝트 스킬을 만들지 묻는다.
+3. **머지 방식:** `/start`가 일을 끝냈을 때 어떻게 합칠지. 로컬에서 기준 브랜치에 머지하고 푸시(`local`) / 기준 브랜치 대상으로 PR(`pr`) / 정하지 않기(그때마다 묻는다). 추천은 지난 머지 기록에서 해 온 쪽이다. 어느 쪽을 골라도 머지해도 되는지는 `/start`가 마지막에 묻는다고 알린다.
+4. **메인 세션:** 그대로 두기(추천) / 모델과 노력을 골라 설정에 쓰기. 쓰면 새 세션부터 적용된다고 알린다.
+5. **CLAUDE.md 작업 설정**(없을 때만): 찾은 값(기준 브랜치는 `git symbolic-ref`나 `main`, 검증 명령은 `package.json` 스크립트나 Makefile 에서)을 보여 주고 넣을지 묻는다. 검증 명령을 찾지 못하면 무엇인지 묻는다.
+6. **검증 스킬**(`verify-*`가 없고 "안 씀" 줄도 없을 때만): 앱을 실제로 몰아 확인할 프로젝트 스킬을 만들지 묻는다.
 
 이미 정해져 있는 것은 묻지 않는다.
 
 ## 3. 확인하고 쓰기
 
-- 값을 확인한다. `model`은 `fable`, `opus`, `sonnet`, `haiku`, `inherit`, `auto` 중 하나, `effort`는 `low`, `medium`, `high`, `xhigh` 중 하나다. 아니면 그 역할만 다시 묻는다. 메인 세션의 `model`은 `fable`, `opus`, `sonnet`, `haiku` 중 하나만 받는다(`inherit`과 `auto`는 역할에만 쓴다).
+- 값을 확인한다. `model`은 `fable`, `opus`, `sonnet`, `haiku`, `inherit`, `auto` 중 하나, `effort`는 `low`, `medium`, `high`, `xhigh` 중 하나, `merge`는 `local`, `pr` 중 하나다. 아니면 그 역할만 다시 묻는다. 메인 세션의 `model`은 `fable`, `opus`, `sonnet`, `haiku` 중 하나만 받는다(`inherit`과 `auto`는 역할에만 쓴다).
 - 설정 파일은 통째로 다시 쓴다. 다시 돌려도 결과가 같아야 한다. 사용자가 정한 역할만 적는다. 적지 않은 역할은 다음 순서(사용자 파일, 기본값)를 따른다. 프로젝트 파일에 기본값까지 적으면 사용자 파일의 값이 그 프로젝트에서 가려진다.
 - 메인 세션을 바꾸기로 했으면 `.claude/settings.local.json`의 `model`과 `effortLevel` 키만 고친다. 파일이 없으면 그 두 키만 가진 파일을 만든다. 다른 키는 건드리지 않는다. 권한, 훅, 플러그인 키는 고치지 않는다.
 - CLAUDE.md 를 넣기로 했으면 `## 작업 설정` 절만 더한다.
@@ -50,4 +52,4 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 
 ## 5. 알리기
 
-쓴 파일, 역할마다 정한 값, 언제부터 적용되는지를 알린다. 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정은 새 세션부터다. 다시 바꾸려면 `/kit-setup`을 또 부르면 된다.
+쓴 파일, 역할마다 정한 값, 머지 방식, 언제부터 적용되는지를 알린다. 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정은 새 세션부터다. 다시 바꾸려면 `/kit-setup`을 또 부르면 된다.

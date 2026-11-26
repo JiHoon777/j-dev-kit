@@ -58,7 +58,7 @@ claude plugin install workflow@j-dev-kit --scope project
 /kit-setup
 ```
 
-역할마다 쓸 모델과 노력을 묻고 `.claude/workflow.json`에 쓴다. 프로젝트 CLAUDE.md 에 작업 설정이 없으면 찾아서 넣을지 묻는다. 직접 적어도 된다.
+역할마다 쓸 모델과 노력, 머지 방식을 묻고 `.claude/workflow.json`에 쓴다. 프로젝트 CLAUDE.md 에 작업 설정이 없으면 찾아서 넣을지 묻는다. 직접 적어도 된다.
 
 ```markdown
 ## 작업 설정
@@ -98,6 +98,7 @@ claude plugin install workflow@j-dev-kit --scope project
 - **마지막 메시지:** 남은 결정을 한 번에 묻는다. 사람이 정할 지적, "나중" 후보, 머지 방식. 결정마다 추천, 근거, 위험이 붙는다. 기준 브랜치 푸시는 요청할 때만 한다.
 - **판정:** Acceptance Criteria 는 명령 출력이나 구현 세션이 아닌 판정 에이전트가 확인한 것만 체크한다. 같은 AC 가 세 번 고쳐도 실패하면 멈추고 넘긴다. 고친 코드 없이도 통과하는 새 테스트는 🟡 로 지적한다.
 - **원칙, 스킬, 플레이북:** `start` 스킬에 "언제 → 무엇" 색인이 있고, 본문은 스킬마다 따로 있어 쓸 때 읽는다. 스스로 뜨지는 않고, `/architect`, `/how`, `/deslop`처럼 직접 부를 수 있다. 원칙 24개, 스킬 15개(architect, figure-it-out, blast-radius, how, why, 검증 스킬 만들기, control-ui, deslop 등), 플레이북 6개(feature, bug-fix, refactoring, prototype, perf-issue, hillclimb)다. 맞는 플레이북이 없는 항목은 figure-it-out 이 그 일에 맞는 단계를 짠다. [pstack](https://github.com/cursor/plugins/tree/main/pstack)과 [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit)에서 가져왔다.
+- **머지 방식 설정:** `.claude/workflow.json`(프로젝트)이나 `~/.claude/workflow.json`(사용자)의 `merge`에 적는다. `local`은 로컬에서 기준 브랜치에 머지하고 푸시한다. `pr`은 기준 브랜치를 대상으로 PR 을 만든다. `/kit-setup`이 물어서 써 준다. 정해 두면 `/start`는 마지막에 방식을 묻지 않고 그 방식으로 머지할지만 묻는다. 없으면 방식을 묻는다.
 - **모델 설정:** 하위 세션과 하위 에이전트가 쓸 모델과 노력을 역할(`session`, `implement`, `review`, `judge`, `mechanical`, `explore`)마다 `.claude/workflow.json`(프로젝트)이나 `~/.claude/workflow.json`(사용자)에 적는다. `/kit-setup`이 물어서 써 준다. 없으면 기본값이다(메인이 Fable 이면 하위 세션과 리뷰는 한 단계 낮은 모델). 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel`이 정하고, `/kit-setup`이 그 키도 써 줄 수 있다.
 - **/kit-help:** 무엇을 언제 쓰는지 묻는다. 답과 보낼 명령 한 줄을 주고, 일은 시작하지 않는다.
 - **리뷰 원칙:** 그대로 두기로 한 지적과 사용자가 바로잡은 것은 `docs/review-principles.md`에 한 줄 원칙으로 모여 다음 리뷰에 쓰인다.

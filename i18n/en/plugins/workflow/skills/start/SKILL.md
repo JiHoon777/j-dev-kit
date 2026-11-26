@@ -25,7 +25,7 @@ Implement one backlog item, or one task the user wrote directly, through to the 
   2. First find the item in this session ("Finding the item" in step 1 of the procedure). If this item's `w/` branch already exists, do not open a session; tell the user to continue in the session that worked on that branch. If that session no longer exists, continue the branch in this session as the procedure says.
   3. Open one session. The user asked for this work, so start it right away instead of proposing it. It is a new worktree off the base branch, with the branch name `w/<item file name without .md>`.
 
-     Model and effort: follow the `session` role in `${CLAUDE_SKILL_DIR}/references/models.md`. With no settings, the defaults apply (if this session is Fable, the latest model one step lower and effort `high`; otherwise it inherits).
+     Model and effort: follow the `session` role in `${CLAUDE_SKILL_DIR}/references/settings.md`. With no settings, the defaults apply (if this session is Fable, the latest model one step lower and effort `high`; otherwise it inherits).
 
   4. That session cannot see this conversation. The brief is two lines, "Invoke the `start` skill with `<item> --here` and follow its procedure" and "Ask only what falls under that skill's asking criteria. Write questions completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any).
   5. Report the session link. That work does not happen in this session; this session directs it.
@@ -41,6 +41,8 @@ Read these from the project CLAUDE.md. If missing, use the default in parenthese
 - Verify command (e.g. `pnpm verify` — lint, types, tests, build)
 - Language for items and reports (the language of the conversation)
 - Web port, server port (none): only the ones written down are split per item as `base port + item number`
+
+How to merge is read not from CLAUDE.md but from `merge` in the settings file (`${CLAUDE_SKILL_DIR}/references/settings.md`). If it is not there, ask in the last message.
 
 Rules in the project CLAUDE.md take precedence over this skill.
 
@@ -84,7 +86,7 @@ Raise the ones with a high cost if wrong in the last message. These lines are no
 
 ## 4. Models
 
-When opening a sub-session or launching a subagent, read `${CLAUDE_SKILL_DIR}/references/models.md` with the Read tool and pass the model and effort that fit the role (`session`, `implement`, `review`, `judge`, `mechanical`, `explore`). `/kit-setup` writes the settings file. If there is none, use the defaults in that file.
+When opening a sub-session or launching a subagent, read `${CLAUDE_SKILL_DIR}/references/settings.md` with the Read tool and pass the model and effort that fit the role (`session`, `implement`, `review`, `judge`, `mechanical`, `explore`). `/kit-setup` writes the settings file. If there is none, use the defaults in that file.
 
 ## 5. Index
 
