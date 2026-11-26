@@ -102,8 +102,9 @@ The skills and principles are other skills of this plugin. Their bodies are at `
 
 ### Playbooks
 
-Pick the one that fits the nature of the item, move its steps into the to-do list, and follow them. If none fits, go with the procedure's default flow.
+Pick the one that fits the nature of the item, move its steps into the task list first, and follow them. If none fits, or the work is large and cross-cutting, or a human will review it after stepping away, design the steps for that work with the `figure-it-out` skill.
 
+- Adding new behavior → `playbooks/feature.md`
 - Fixing a bug → `playbooks/bug-fix.md`
 - Changing only the structure and leaving the behavior as it is → `playbooks/refactoring.md`
 - Settling a fork, or a screen or interaction, with a throwaway prototype → `playbooks/prototype.md`

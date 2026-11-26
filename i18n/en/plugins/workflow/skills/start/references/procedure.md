@@ -51,7 +51,7 @@ Do not get the plan approved. Do not enter plan mode.
 2. **Match the reading to the size.**
    - Small item (a few files, no new structure): read the relevant code directly, without agents.
    - Large item (several modules, new structure): launch `Explore` agents on different areas in one message. Have them return the files that must be read, then read those files directly.
-3. **Playbook:** from the index in `SKILL.md`, pick the playbook that fits the nature of the item and move its steps into the to-do list. If none fits, step 5 of this procedure is the default flow.
+3. **Playbook:** from the index in `SKILL.md`, pick the playbook that fits the nature of the item and move its steps into the to-do list. If none fits, or the work is large and cross-cutting, design the steps for that work with the `figure-it-out` skill. The playbook's steps run inside step 5 (implementation), and the playbook's last step continues into step 6.
 4. **Tools and steps:** decide which field this item's work belongs to, and what tools (names, commands) and steps the best practitioners in that field use for it. Do not assume a role; write down the tools and steps. If you do not know, look it up in docs or on the web. Keep the tools the stack checks gave and add only what is missing.
 5. **Design:** decide it yourself. For a change that crosses a function boundary, follow the `architect` skill. Settle a fork that running something would settle with `playbooks/prototype.md`, and write down the result and the evidence.
 6. **Gaps in the ACs:** if, while reading the item, you find ACs that contradict each other or a missing decision that only a person can make, put it in the pre-start questions.

@@ -94,7 +94,7 @@ For `stack:`, see [Stacks](#stacks) above. The superpowers plugin is not used. I
 - **/start:** baseline verification → stack checks → restating the goal and picking a playbook → pre-start questions (once, only when there are any) → implementation → cleanup (deslop) → verification → AC judgment → review (`code-review`, plus `security-review` and stack reviewers when needed) → fixing, without asking, the 🔴 and 🟡 findings the judge agent found valid → one last message → merge. Called on a work branch that already exists, it continues from the step that remains.
 - **Last message:** asks every remaining decision at once: the findings for a person to decide, the "later" candidates, and how to merge. Each decision comes with a recommendation, the evidence, and the risk. The base branch is pushed only on request.
 - **Judgment:** Acceptance Criteria are checked off only with command output or a judge agent other than the implementing session. If the same AC still fails after three fixes, it stops and hands over. A new test that passes without the fixed code is flagged as 🟡.
-- **Principles, skills, playbooks:** the `start` skill has a "when → what" index, and each body is its own skill, read when it is used. They do not fire on their own, and you can invoke them directly, as in `/architect`, `/how` or `/deslop`. There are 24 principles, 14 skills (architect, blast-radius, how, why, creating a verification skill, control-ui, deslop and others), and 5 playbooks (bug-fix, refactoring, prototype, perf-issue, hillclimb). They were brought in from [pstack](https://github.com/cursor/plugins/tree/main/pstack) and [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit).
+- **Principles, skills, playbooks:** the `start` skill has a "when → what" index, and each body is its own skill, read when it is used. They do not fire on their own, and you can invoke them directly, as in `/architect`, `/how` or `/deslop`. There are 24 principles, 15 skills (architect, figure-it-out, blast-radius, how, why, creating a verification skill, control-ui, deslop and others), and 6 playbooks (feature, bug-fix, refactoring, prototype, perf-issue, hillclimb). They were brought in from [pstack](https://github.com/cursor/plugins/tree/main/pstack) and [cursor-team-kit](https://github.com/cursor/plugins/tree/main/cursor-team-kit).
 - **Review principles:** findings left as is and what the user corrected are collected as one-line principles in `docs/review-principles.md` and used in later reviews.
 
 </details>
@@ -153,8 +153,8 @@ Then open a new session. If a plugin's `version` is unchanged, the update is not
 
 ```
 plugins/workflow/skills/backlog/    SKILL.md + references/survey.md
-plugins/workflow/skills/start/      SKILL.md (asking criteria, index) + references/procedure.md + playbooks/ (5) + scripts/pick-port.sh, base-tests.sh
-plugins/workflow/skills/<skill>/    the 14 skills the index points to (architect, how, why, deslop and more). You can also invoke them directly (`/architect`)
+plugins/workflow/skills/start/      SKILL.md (asking criteria, index) + references/procedure.md + playbooks/ (6) + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/<skill>/    the 15 skills the index points to (architect, how, why, deslop and more). You can also invoke them directly (`/architect`)
 plugins/workflow/skills/principle-*/  the 24 principles
 plugins/workflow/THIRD_PARTY_NOTICES.md  copyright notices for the imported texts (pstack, cursor-team-kit)
 plugins/workflow/hooks/             hooks.json, verify-on-stop.sh (Stop hook)

@@ -40,7 +40,7 @@ updated_date: 2026-11-26
 - **`task` 스킬을 둘로 나눈다.** 항목을 만드는 일은 `backlog` 스킬(`/backlog`), 항목을 구현해 머지까지 가는 일은 `start` 스킬(`/start`)이다. `task` 스킬과 `/task create`·`/task start`는 없앤다.
 - **AC 승인은 남긴다.** 계획 승인이 없어지면 구현 전에 사람이 확인하는 유일한 계약이다.
 - **superpowers 를 쓰지 않는다.** 플러그인 의존성에서 빼고, `/task`가 부르던 다섯 스킬(brainstorming, test-driven-development, verification-before-completion, receiving-code-review, finishing-a-development-branch)에서 필요한 규칙만 `/task` 절차에 직접 적는다.
-- **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 9개(architect, blast-radius, how, why, benchmark-checklist, 검증 스킬 만들기·유지하기, unslop, technical-writing), 플레이북 5개(Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다. pstack 이 기대어 쓰는 cursor-team-kit(`cursor/plugins`의 `cursor-team-kit/`, MIT, Cursor)에서도 가져온다: control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 앞의 셋은 pstack 이 직접 부르는 것이다.
+- **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 10개(architect, figure-it-out, blast-radius, how, why, benchmark-checklist, 검증 스킬 만들기·유지하기, unslop, technical-writing), 플레이북 6개(Feature, Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다. pstack 이 기대어 쓰는 cursor-team-kit(`cursor/plugins`의 `cursor-team-kit/`, MIT, Cursor)에서도 가져온다: control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 앞의 셋은 pstack 이 직접 부르는 것이다.
 - **정리는 pstack 처럼 deslop 으로 한다.** 커밋 전에 deslop 을 돌려 이 브랜치가 넣은 군더더기를 묻지 않고 바로 고친다. 동작은 바꾸지 않는다. simplify 를 돌릴지, 무엇을 고칠지 묻던 두 질문(11-25, `fa91c89`)은 없앤다.
 
 ### 근거
@@ -96,7 +96,7 @@ updated_date: 2026-11-26
   - 검증 스킬 2개: create-verification-skill(프로젝트에 앱을 실제로 몰아 확인할 정해진 방법이 없으면, 띄우기·점검·몰기·증거·정리와 기능 지도를 프로젝트 스킬로 만든다. 만들지는 프로젝트당 한 번 착수 전 질문에 넣는다), maintain-verification-skill(기능 지도가 앱과 어긋나면 고친다). 지도가 있으면 화면 확인과 AC 판정이 그것을 따른다
   - cursor-team-kit 5개: control-ui(화면을 몰 때: 스냅샷 → 동작 하나 → 스냅샷 → 확인), control-cli(CLI·TUI 를 tmux·PTY 로 몰 때), verify-this(고쳤다는 주장은 전후를 같은 조건으로 재서 VERIFIED / NOT VERIFIED / INCONCLUSIVE 중 하나로 답한다), fix-merge-conflicts(머지 충돌), deslop(커밋 전에 이 브랜치가 넣은 군더더기를 지운다: 쓸데없는 주석, 믿는 경로의 방어 코드, `any` 캐스트, 깊은 중첩)
   - 글쓰기 2개: unslop(답을 포함한 모든 글에서 AI 티가 나는 표현을 뺀다), technical-writing(문서, 항목 파일, 커밋 메시지는 한 번 읽고 이해되게 쓴다). 영어 낱말 목록 같은 규칙은 한국어에서 같은 구실을 하는 표현으로 옮긴다
-  - 플레이북 5개: Bug fix(재현 먼저, 원인을 증거로 좁힌다), Refactoring(동작을 먼저 고정하고 구조만 바꾼다), Prototype(갈림길은 버릴 시제품으로 정한다), Perf issue(먼저 잰다), Hillclimb(한 번에 하나 바꾸고 잰다). `start`는 항목의 성격에 맞는 플레이북을 골라 그 단계를 할 일 목록에 옮긴다. 맞는 것이 없으면 기본 흐름으로 간다
+  - 플레이북 6개: Feature(새 동작을 더한다. 설계하고, 맡기고, 실제 화면에서 검증한다), Bug fix(재현 먼저, 원인을 증거로 좁힌다), Refactoring(동작을 먼저 고정하고 구조만 바꾼다), Prototype(갈림길은 버릴 시제품으로 정한다), Perf issue(먼저 잰다), Hillclimb(한 번에 하나 바꾸고 잰다). `start`는 항목의 성격에 맞는 플레이북을 골라 그 단계를 할 일 목록에 옮긴다. 맞는 것이 없거나 크고 여러 갈래에 걸친 일이면 figure-it-out 스킬로 그 일에 맞는 단계를 짠다
   - 이미 있는 같은 규칙은 한 곳에만 둔다: Never Block on the Human 은 #1 의 묻는 기준과, Prove It Works 는 "검증을 새로 돌리고 결과를 보여 준다"와, Laziness Protocol 은 "항목이 요구하는 것만 한다"와 합친다
   - 정한 것 줄의 이유에 적용한 원칙·스킬 이름을 적는다
   - Cursor 이름(Task, AskQuestion, control-ui, `/loop`, 모델 슬러그, 다른 회사 모델)은 Claude Code 의 것으로 바꾸거나 뺀다. 가져온 파일마다 원문 위치를 적고, pstack 과 cursor-team-kit 의 MIT 저작권·허가 고지를 플러그인에 둔다
@@ -125,8 +125,8 @@ updated_date: 2026-11-26
 
 1. 본문 파일 가져오기 (하위 에이전트 셋이 나눠 쓴다. 한국어 원문과 `i18n/en/` 번역본을 함께)
    - `plugins/workflow/skills/principle-<이름>/SKILL.md` 24개
-   - `plugins/workflow/skills/<이름>/SKILL.md` 14개: architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing, control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 기능 지도 예시 3개는 `create-verification-skill/references/feature-map-example/`
-   - `plugins/workflow/skills/start/playbooks/<이름>.md` 5개: bug-fix, refactoring, prototype, perf-issue, hillclimb
+   - `plugins/workflow/skills/<이름>/SKILL.md` 15개: figure-it-out, architect, blast-radius, how, why, benchmark-checklist, create-verification-skill, maintain-verification-skill, unslop, technical-writing, control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 기능 지도 예시 3개는 `create-verification-skill/references/feature-map-example/`
+   - `plugins/workflow/skills/start/playbooks/<이름>.md` 6개: feature, bug-fix, refactoring, prototype, perf-issue, hillclimb
    - `plugins/workflow/THIRD_PARTY_NOTICES.md`: pstack 과 cursor-team-kit 의 MIT 고지
    - Cursor 이름은 Claude Code 것으로 바꾸고, 가져오지 않은 스킬을 가리키는 줄은 빼거나 풀어 쓴다
 2. `start` 스킬 만들기(`plugins/workflow/skills/start/`): SKILL.md 에 묻는 기준 다섯, 정한 것 줄 형식, 일하는 방식 세 줄, 색인(꼭 지킬 것, 원칙 24, 플레이북 5), 어디서 하나와 하위 세션 지시문. 절차는 `references/procedure.md`: 플랜 모드 없이 되짚기 → 플레이북 고르기 → 착수 전 질문(있을 때만) → 구현 → deslop → 검증 → AC 판정 → 리뷰 → 타당한 지적 고치기 → 마지막 메시지 하나 → 항목 닫기 → 머지. 스크립트 둘(`base-tests.sh`, `pick-port.sh`)은 `skills/start/scripts/`로 옮기고 `check-repo-rules.sh`와 짝 테스트의 경로를 맞춘다

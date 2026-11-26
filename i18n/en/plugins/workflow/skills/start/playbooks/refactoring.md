@@ -4,9 +4,9 @@
 
 **When:** A backlog item that changes the structure and leaves the behavior as it is. It covers the focused-to-medium change.
 
-**You own the contract. The structure changes. The behavior does not.** Distinct from the default flow of the `start` procedure, which adds behavior, and `playbooks/bug-fix.md`, which corrects it.
+**You own the contract. The structure changes. The behavior does not.** Distinct from `playbooks/feature.md`, which adds behavior, and `playbooks/bug-fix.md`, which corrects it.
 
-If the cleanup reveals a missing feature or a real bug, split it out and ship the structural change first against the pinned contract. A redesign is allowed, but name it and route to the default flow of the `start` procedure. This playbook is the focused-to-medium change.
+If the cleanup reveals a missing feature or a real bug, split it out and ship the structural change first against the pinned contract. A redesign is allowed, but name it and route to `playbooks/feature.md`. This playbook is the focused-to-medium change.
 
 1. Pin the behavior contract first. Trace the affected subsystem to learn the contract, then write a characterization test, snapshot, or equivalence harness that captures current behavior before any structure moves. If the area has no coverage, write the pin before touching structure. Type check and lint are not a pin.
 2. Name the structure the code is missing per the `principle-model-the-domain` skill. Boring code stays when the shape is already clear and local. The reshape must delete branches or invalid states, not add indirection.
