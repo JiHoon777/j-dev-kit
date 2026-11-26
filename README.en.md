@@ -60,7 +60,7 @@ claude plugin install workflow@j-dev-kit --scope project
 /kit-setup
 ```
 
-It asks which model and effort each role uses and how to merge, and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself.
+It asks which model and effort each role uses and how to merge, and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself. It looks at the project's stack and installs the official skills and plugins that fit it ("Nice-to-have plugins"), without asking. To keep one from being installed, write `- 공식 스킬 설치 안 함: <name>` under `## 작업 설정` in CLAUDE.md.
 
 ```markdown
 ## Work settings

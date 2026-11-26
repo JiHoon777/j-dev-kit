@@ -34,7 +34,7 @@ Check only the state that changes the answer, and mention it only when the answe
 ## First-time setup
 
 1. Install: `claude plugin marketplace add JiHoon777/j-dev-kit --scope project`, `claude plugin install workflow@j-dev-kit --scope project`.
-2. Run `/kit-setup`. It asks which model and effort each role uses and how to merge (local merge then push / PR), and writes them to `.claude/workflow.json`. It also asks whether to create the work settings in CLAUDE.md (base branch, verify command, document language, `stack:`) and a verification skill, if they are missing.
+2. Run `/kit-setup`. It asks which model and effort each role uses and how to merge (local merge then push / PR), and writes them to `.claude/workflow.json`. It also asks whether to create the work settings in CLAUDE.md (base branch, verify command, document language, `stack:`) and a verification skill, if they are missing. It looks at the project's stack and installs the official skills and plugins that fit it, without asking.
 3. Start real work: make an item with `/backlog <task>`, or do it right away with `/start <task>`.
 
 Installing alone changes nothing. Things run when a skill is invoked. The details are in the README (`https://github.com/JiHoon777/j-dev-kit#readme`).

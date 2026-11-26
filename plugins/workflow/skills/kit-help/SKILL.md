@@ -32,7 +32,7 @@ workflow 플러그인에 대한 질문에 답하고, 사용자가 그대로 보�
 ## 처음 설정하기
 
 1. 설치: `claude plugin marketplace add JiHoon777/j-dev-kit --scope project`, `claude plugin install workflow@j-dev-kit --scope project`.
-2. `/kit-setup`을 돌린다. 역할마다 쓸 모델과 노력, 머지 방식(로컬 머지 후 푸시 / PR)을 묻고 `.claude/workflow.json`에 쓴다. CLAUDE.md 의 작업 설정(기준 브랜치, 검증 명령, 문서 언어, `stack:`)과 검증 스킬도 없으면 만들지 묻는다.
+2. `/kit-setup`을 돌린다. 역할마다 쓸 모델과 노력, 머지 방식(로컬 머지 후 푸시 / PR)을 묻고 `.claude/workflow.json`에 쓴다. CLAUDE.md 의 작업 설정(기준 브랜치, 검증 명령, 문서 언어, `stack:`)과 검증 스킬도 없으면 만들지 묻는다. 프로젝트의 스택을 보고 맞는 공식 스킬과 플러그인을 묻지 않고 설치한다.
 3. 실제 일을 시작한다: `/backlog <할 일>`로 항목을 만들거나 `/start <할 일>`로 바로 한다.
 
 설치만으로는 아무것도 바뀌지 않는다. 스킬을 부를 때 돈다. 자세한 것은 README(`https://github.com/JiHoon777/j-dev-kit#readme`)에 있다.

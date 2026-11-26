@@ -58,7 +58,7 @@ claude plugin install workflow@j-dev-kit --scope project
 /kit-setup
 ```
 
-역할마다 쓸 모델과 노력, 머지 방식을 묻고 `.claude/workflow.json`에 쓴다. 프로젝트 CLAUDE.md 에 작업 설정이 없으면 찾아서 넣을지 묻는다. 직접 적어도 된다.
+역할마다 쓸 모델과 노력, 머지 방식을 묻고 `.claude/workflow.json`에 쓴다. 프로젝트 CLAUDE.md 에 작업 설정이 없으면 찾아서 넣을지 묻는다. 직접 적어도 된다. 프로젝트의 스택을 보고 맞는 공식 스킬과 플러그인("있으면 좋은 플러그인")을 묻지 않고 설치한다. 깔지 않을 것은 CLAUDE.md `## 작업 설정`에 `- 공식 스킬 설치 안 함: <이름>`으로 적는다.
 
 ```markdown
 ## 작업 설정

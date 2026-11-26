@@ -1,6 +1,6 @@
 ---
 name: kit-setup
-description: workflow 플러그인을 처음 설정하거나 설정을 바꿀 때 쓴다. 하위 세션과 하위 에이전트가 역할마다 쓸 모델과 노력, 머지 방식(로컬 머지 후 푸시 / PR)을 물어 JSON 설정 파일에 쓰고, 메인 세션의 모델도 함께 정한다. 프로젝트 CLAUDE.md 의 작업 설정과 검증 스킬도 없으면 만들지 묻는다. "모델 설정", "머지 방식 설정", "setup", "셋업", "어떤 모델로 돌릴지 바꾸자"에 쓴다.
+description: workflow 플러그인을 처음 설정하거나 설정을 바꿀 때 쓴다. 하위 세션과 하위 에이전트가 역할마다 쓸 모델과 노력, 머지 방식(로컬 머지 후 푸시 / PR)을 물어 JSON 설정 파일에 쓰고, 메인 세션의 모델도 함께 정한다. 프로젝트 CLAUDE.md 의 작업 설정과 검증 스킬도 없으면 만들지 묻는다. 프로젝트의 스택을 보고 맞는 공식 스킬과 플러그인을 묻지 않고 설치한다. "모델 설정", "머지 방식 설정", "setup", "셋업", "어떤 모델로 돌릴지 바꾸자"에 쓴다.
 argument-hint: "[--user]"
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -21,6 +21,7 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 - 메인 세션: 이 세션의 모델, 그리고 `model`·`effortLevel` 키가 적힌 곳(`.claude/settings.local.json`, `.claude/settings.json`, `~/.claude/settings.json`). 이 키들만 본다.
 - 프로젝트 CLAUDE.md 의 `## 작업 설정`: 기준 브랜치, 검증 명령, 문서 언어, `stack:`.
 - 프로젝트 검증 스킬: `.claude/skills/verify-*/`가 있는지, CLAUDE.md 에 `- 검증 스킬: 안 씀`이 있는지.
+- 스택과 설치된 것: 4단계 표의 조건(`package.json`의 의존성, `tsconfig.json`, `supabase/config.toml`)과 이미 설치된 플러그인·스킬(`claude plugin list`, `.claude/skills/`, `~/.claude/skills/`). 모노레포면 앱과 패키지마다 본다.
 
 ## 2. 보여 주고 한 번에 묻기
 
@@ -46,10 +47,35 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 - CLAUDE.md 를 넣기로 했으면 `## 작업 설정` 절만 더한다.
 - 프로젝트 파일을 썼으면 `chore: workflow 설정`으로 커밋한다. 푸시하지 않는다. 기준 브랜치가 아닌 곳이면 그 브랜치에 커밋된다고 알린다.
 
-## 4. 검증 스킬
+## 4. 스택에 맞는 스킬과 플러그인 설치
+
+묻지 않고 설치한다(`start` 스킬의 묻는 기준: 설치는 묻지 않는다). 아래 표에서 프로젝트에 맞는 줄을 모두 고르고, 아직 없는 것만 설치한다. `/start`의 스택 점검도 빠진 것을 설치하지만, 여기서 한 번에 해 두면 첫 항목이 설치로 늦어지지 않는다.
+
+프런트엔드 프레임워크는 `package.json`의 `dependencies`·`devDependencies`에 react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro 가운데 하나가 있는 것이다.
+
+| 조건 | 설치할 것 | 명령 |
+| --- | --- | --- |
+| 프런트엔드 프레임워크가 있다 | frontend-design | `claude plugin install frontend-design@anthropic-plugin-directory --scope project` |
+| 프런트엔드 프레임워크가 있다 | Chrome DevTools | `claude plugin marketplace add ChromeDevTools/chrome-devtools-mcp --scope project`, `claude plugin install chrome-devtools-mcp@chrome-devtools-plugins --scope project` |
+| 프런트엔드 프레임워크가 있다 | modern-web-guidance | `claude plugin marketplace add GoogleChrome/modern-web-guidance --scope project`, `claude plugin install modern-web-guidance@googlechrome --scope project` |
+| `tsconfig.json`이 있거나 `typescript`가 의존성에 있다 | typescript-lsp | `claude plugin install typescript-lsp@anthropic-plugin-directory --scope project` |
+| `svelte`가 있다 | Svelte 공식 | `claude plugin marketplace add sveltejs/ai-tools --scope project`, `claude plugin install svelte@svelte --scope project` |
+| `react`가 있다 | Vercel React 스킬 | `npx -y skills@1.7.5 add vercel-labs/agent-skills --skill vercel-react-best-practices --skill vercel-composition-patterns -a claude-code` |
+| `react-router`가 있다 | React Router 스킬 | `npx -y skills@1.7.5 add https://github.com/remix-run/react-router --skill react-router -a claude-code` |
+| `supabase/config.toml`이 있거나 `@supabase/` 패키지가 있다 | Supabase 공식 | `claude plugin install supabase@anthropic-plugin-directory --scope project` |
+
+- CLAUDE.md `## 작업 설정`의 `- 공식 스킬 설치 안 함:` 줄에 이름이 있는 것은 설치하지 않는다.
+- CLAUDE.md 에 `stack:` 줄이 있으면 거기에 없는 스택의 줄은 건너뛴다.
+- 설치는 위 명령으로만 한다. 설정 파일의 플러그인 키를 손으로 고치지 않는다.
+- 명령이 실패하면 멈추지 않는다. 실패한 것과 이유를 6단계에서 알린다.
+- Supabase 공식 플러그인에는 MCP 가 같이 온다. 끄려면 `/mcp`에서 끈다고 알린다.
+- `next`가 있으면 설치할 것은 없다. 16.3 이상은 `next dev`가 `AGENTS.md`를 만든다. 그보다 낮으면 `npx @next/codemod@canary agents-md`를 돌리면 된다고 알린다.
+- 설치로 프로젝트 파일(`.claude/settings.json`, `.claude/skills/`)이 바뀌었으면 `chore: 스택 스킬과 플러그인 설치`로 커밋한다. 푸시하지 않는다.
+
+## 5. 검증 스킬
 
 만들기로 했으면 `create-verification-skill` 스킬(`${CLAUDE_SKILL_DIR}/../create-verification-skill/SKILL.md`)을 읽고 따른다. 만들지 않기로 했으면 다시 묻지 않게 CLAUDE.md `## 작업 설정`에 `- 검증 스킬: 안 씀`을 적자고 제안한다.
 
-## 5. 알리기
+## 6. 알리기
 
-쓴 파일, 역할마다 정한 값, 머지 방식, 언제부터 적용되는지를 알린다. 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정은 새 세션부터다. 다시 바꾸려면 `/kit-setup`을 또 부르면 된다.
+쓴 파일, 역할마다 정한 값, 머지 방식, 설치한 것과 설치하지 못한 것, 언제부터 적용되는지를 알린다. 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정과 설치한 플러그인은 새 세션부터다. 다시 바꾸려면 `/kit-setup`을 또 부르면 된다.
