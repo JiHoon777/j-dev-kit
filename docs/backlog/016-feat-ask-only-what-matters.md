@@ -1,6 +1,6 @@
 ---
 id: '016'
-title: 사람에게 묻는 곳을 꼭 필요한 것만 남긴다 — 계획 승인과 superpowers 를 떼고, start 와 end 를 합치고, pstack 원칙을 가져온다
+title: 사람에게 묻는 곳을 꼭 필요한 것만 남긴다 — 계획 승인과 superpowers 를 떼고, pstack 처럼 스킬 하나의 색인과 원칙·플레이북으로 일하고, 플러그인을 workflow 하나로 합친다
 status: In Progress
 labels: [feat]
 priority: high
@@ -39,6 +39,9 @@ updated_date: 2026-11-26
 - **start 와 end 를 합친다.** start 하나가 구현, 검증, 리뷰, 지적 고치기, 머지 질문까지 한다. `end` 모드는 없다. 그래서 "end 를 진행할까요?"도, 사용자가 end 명령을 치는 일도 없다.
 - **`task` 스킬을 둘로 나눈다.** 항목을 만드는 일은 `backlog` 스킬(`/backlog`), 항목을 구현해 머지까지 가는 일은 `start` 스킬(`/start`)이다. `task` 스킬과 `/task create`·`/task start`는 없앤다.
 - **AC 승인은 남긴다.** 계획 승인이 없어지면 구현 전에 사람이 확인하는 유일한 계약이다.
+- **frontend·server 플러그인을 workflow 로 합친다.** 점검 스킬, 리뷰어 에이전트, 스크립트, eval 을 workflow 로 옮기고 두 플러그인은 없앤다. 플러그인은 workflow 하나다.
+- **help 스킬을 둔다.** pstack 의 `poteto-help`처럼 무엇을 언제 쓰는지 안내하고, 일은 시작하지 않는다.
+- **setup 스킬과 모델 설정을 둔다.** 메인 세션, 하위 세션, 하위 에이전트가 쓸 모델과 노력을 설정 파일에 적고, 처음에 setup 스킬이 물어서 써 준다(pstack 의 `setup-pstack`).
 - **superpowers 를 쓰지 않는다.** 플러그인 의존성에서 빼고, `/task`가 부르던 다섯 스킬(brainstorming, test-driven-development, verification-before-completion, receiving-code-review, finishing-a-development-branch)에서 필요한 규칙만 `/task` 절차에 직접 적는다.
 - **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 10개(architect, figure-it-out, blast-radius, how, why, benchmark-checklist, 검증 스킬 만들기·유지하기, unslop, technical-writing), 플레이북 6개(Feature, Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다. pstack 이 기대어 쓰는 cursor-team-kit(`cursor/plugins`의 `cursor-team-kit/`, MIT, Cursor)에서도 가져온다: control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 앞의 셋은 pstack 이 직접 부르는 것이다.
 - **정리는 pstack 처럼 deslop 으로 한다.** 커밋 전에 deslop 을 돌려 이 브랜치가 넣은 군더더기를 묻지 않고 바로 고친다. 동작은 바꾸지 않는다. simplify 를 돌릴지, 무엇을 고칠지 묻던 두 질문(11-25, `fa91c89`)은 없앤다.
@@ -102,6 +105,18 @@ updated_date: 2026-11-26
   - Cursor 이름(Task, AskQuestion, control-ui, `/loop`, 모델 슬러그, 다른 회사 모델)은 Claude Code 의 것으로 바꾸거나 뺀다. 가져온 파일마다 원문 위치를 적고, pstack 과 cursor-team-kit 의 MIT 저작권·허가 고지를 플러그인에 둔다
   - README 두 개의 출처에 pstack 과 cursor-team-kit 을 적는다
 - [ ] #14 `start` SKILL.md "일하는 원칙"에 세 줄이 있다: 아니라고 말해도 된다(범위를 넓히자는 제안이 값을 못 하면 그렇게 말한다), 스스로 돌릴 수 있는 확인을 사람에게 넘기지 않는다, 주장마다 근거를 달거나 확인함·추론·추측 중 무엇인지 표시한다
+- [ ] #15 frontend·server 가 workflow 로 합쳐져 있다
+  - `plugins/frontend`, `plugins/server` 폴더가 없고 `marketplace.json`의 플러그인은 `workflow` 하나다
+  - 점검 스킬 넷(`frontend-start-check`, `frontend-end-check`, `server-start-check`, `server-end-check`), `ui-design`, 에이전트 다섯(`frontend-reviewer`, `design-reviewer`, `frontend-evaluator`, `api-reviewer`, `supabase-reviewer`), 스크립트와 eval 이 workflow 에 있다
+  - 문서가 이들을 `workflow:` 이름으로 가리킨다. `grep -rnE '(frontend|server):(frontend|server|design|api|supabase|ui)-' plugins i18n README.md README.en.md` 결과가 없다
+  - workflow 에 의존 플러그인이 없다. `frontend-design`과 `typescript-lsp`는 README "있으면 좋은 플러그인"에 있고, 점검은 있을 때만 쓴다
+  - README 문제 해결에 옮기는 법이 있다: 프로젝트 설정에서 `frontend@j-dev-kit`, `server@j-dev-kit`을 지운다
+- [ ] #16 `kit-help` 스킬이 있다. 질문에 답하고 보낼 명령 한 줄을 주며, 일을 시작하지 않는다. 담는 것: 처음 설정, `/backlog`와 `/start` 쓰는 법, 상황별로 어느 스킬인지 표(workflow 의 스킬 폴더를 모두 덮는다. 원칙은 묶어서), 플레이북과 원칙 쓰는 법, 잘 안 될 때. 답하기 전에 가리키는 파일을 읽는다
+- [ ] #17 `kit-setup` 스킬과 모델 설정이 있다
+  - 역할(메인 세션, 하위 세션, 구현을 맡는 하위 에이전트, 리뷰 에이전트, 판정 에이전트, 기계적 수정, 탐색)마다 모델과 노력을 설정 파일에 적을 수 있다. 형식과 위치는 `Implementation Notes`에 근거와 함께 적는다
+  - `kit-setup`이 지금 설정과 기본값을 보여 주고, 고를 것을 한 번에 물어 설정 파일을 쓴다. 다시 돌리면 고친다
+  - `start`·`backlog`와 리뷰 절차가 하위 세션과 에이전트를 띄울 때 그 설정을 따른다. 설정이 없으면 기본값을 쓴다
+  - `kit-setup`이 끝에 프로젝트 검증 스킬(`verify-*`)이 없으면 만들지 한 번 묻는다
 
 <!-- AC:END -->
 
