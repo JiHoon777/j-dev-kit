@@ -1,7 +1,7 @@
 ---
 id: '016'
 title: 사람에게 묻는 곳을 꼭 필요한 것만 남긴다 — 계획 승인과 superpowers 를 떼고, pstack 처럼 스킬 하나의 색인과 원칙·플레이북으로 일하고, 플러그인을 workflow 하나로 합친다
-status: In Progress
+status: Done
 labels: [feat]
 priority: high
 dependencies: []
@@ -203,6 +203,10 @@ updated_date: 2026-11-26
 - 2차(`8c32a06` 기준, 합치기·kit-setup·kit-help·모델 설정): 🔴 없음. 🟡 6개(하위 세션 기본 노력이 두 파일에서 다름, 다른 항목의 `w/` 브랜치에서 새 일을 받을 때의 규칙, 메인 세션 모델에 `auto`·`inherit`이 들어갈 수 있음, kit-help 가 start 를 Read 로 읽게 함, 프로젝트 설정 파일이 사용자 설정을 가림, 항목 없이 할 때 에이전트에 넘길 계약이 없음)와 ⚪ 2개를 고쳤다. AC 판정이 짚은 어긋난 문장 6곳도 고쳤다.
 - 나중 후보(고치지 않음): 로컬 Supabase 스택을 워크트리들이 함께 쓸 때 `db diff`·`gen types` 비교가 거짓 실패할 수 있다(확인 못 함). 작업 브랜치에서 새 항목을 만들면 번호가 다른 브랜치의 항목과 겹칠 수 있다(기존 문제).
 - 확인: 검증 명령 통과. 트리거 eval 25/25(`8c32a06`의 사본, opus 1회씩).
+
+### 머지
+
+- 로컬에서 main 에 머지한 뒤 main 을 푸시한다. 사용자의 말: "로컬 머지 후 푸시". 같은 값을 사용자 설정(`~/.claude/workflow.json`의 `merge: local`)에 적었다.
 
 ## Final Summary
 
