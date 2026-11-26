@@ -23,7 +23,7 @@ What to create: the arguments. If they start with `--survey`, read `${CLAUDE_SKI
 - **Otherwise:** open a sub-session.
   1. If there is no tool that starts a new session the user can open and talk to directly (for example the desktop app's `start_session`), say in one line that the work happens in this session, and follow the procedure.
   2. Open a session only when this session is in the base folder on the base branch. If it is inside a worktree (the two lines of `git rev-parse --path-format=absolute --git-dir --git-common-dir` differ) or on another branch, work in this session and say that the item commit goes onto the current branch. Two sessions sharing one folder mix their commits and index.
-  3. Open one session in this folder as is (no worktree). The user asked for this work, so start it right away instead of proposing it. Model and effort are the same as in the `start` skill: if this session is Fable, pass `model` as the latest model one step lower (for now Opus, `claude-opus-5-5`) and `effort` as `high`. If this session's effort is below `high`, leave `effort` out. On Opus or lower, pass neither.
+  3. Open one session in this folder as is (no worktree). The user asked for this work, so start it right away instead of proposing it. Model and effort follow the `session` role in `${CLAUDE_SKILL_DIR}/../start/references/models.md`.
   4. That session cannot see this conversation. The brief is two lines, "Invoke the `backlog` skill with `<arguments> --here` and follow its procedure" and "Write questions and approval requests completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any).
   5. Report the session link. That work does not happen in this session; this session directs it. When the sub-session ends a turn, show any question or approval request to the user in full and pass the answer on in the user's own words. Check the result (commits, changed files) yourself and report it. If the user answered in the sub-session directly, accept that.
 
@@ -31,7 +31,7 @@ Read the base branch (`main` if missing) and the language for items (the languag
 
 ## Asking criteria
 
-Follow the "Asking criteria" in `${CLAUDE_SKILL_DIR}/../start/SKILL.md`. This skill asks only four things: the labels the first time, the questions when the request is ambiguous (step 1), item approval (step 3), and picking survey candidates. Decide the rest and write it as assumptions in the Description.
+Follow the "Asking criteria" in `${CLAUDE_SKILL_DIR}/../start/SKILL.md`. This skill asks only four things: whether to create the two files and the labels the first time (step 0), the questions when the request is ambiguous (step 1), item approval (step 3), and picking survey candidates. Decide the rest and write it as assumptions in the Description.
 
 ## 0. The first time
 

@@ -42,6 +42,7 @@ updated_date: 2026-11-26
 - **frontend·server 플러그인을 workflow 로 합친다.** 점검 스킬, 리뷰어 에이전트, 스크립트, eval 을 workflow 로 옮기고 두 플러그인은 없앤다. 플러그인은 workflow 하나다.
 - **help 스킬을 둔다.** pstack 의 `poteto-help`처럼 무엇을 언제 쓰는지 안내하고, 일은 시작하지 않는다.
 - **setup 스킬과 모델 설정을 둔다.** 메인 세션, 하위 세션, 하위 에이전트가 쓸 모델과 노력을 설정 파일에 적고, 처음에 setup 스킬이 물어서 써 준다(pstack 의 `setup-pstack`).
+- **`/start`는 할 일을 바로 받아도 된다.** 백로그 번호나 이름이 아니라 작업 내용을 적으면, 작은 일이어도 항목 없이 바로 한다.
 - **superpowers 를 쓰지 않는다.** 플러그인 의존성에서 빼고, `/task`가 부르던 다섯 스킬(brainstorming, test-driven-development, verification-before-completion, receiving-code-review, finishing-a-development-branch)에서 필요한 규칙만 `/task` 절차에 직접 적는다.
 - **pstack 에서 가져올 것은 다 가져오고, pstack 처럼 자연스럽게 쓰이게 한다.** pstack(`cursor/plugins`의 `pstack/`, MIT, Lauren Tan)은 진입 스킬 하나에 "언제 → 무엇" 색인을 두고, 본문은 파일 하나씩 따로 두었다가 쓸 때 읽는다. 우리도 같은 모양으로 한다. 단계마다 녹여 넣지 않는다. 가져오는 것은 원칙 24개, 스킬 10개(architect, figure-it-out, blast-radius, how, why, benchmark-checklist, 검증 스킬 만들기·유지하기, unslop, technical-writing), 플레이북 6개(Feature, Bug fix, Refactoring, Prototype, Perf issue, Hillclimb), 일하는 방식 세 줄, 테스트 규칙이다. pstack 이 기대어 쓰는 cursor-team-kit(`cursor/plugins`의 `cursor-team-kit/`, MIT, Cursor)에서도 가져온다: control-ui, control-cli, deslop, verify-this, fix-merge-conflicts. 앞의 셋은 pstack 이 직접 부르는 것이다.
 - **정리는 pstack 처럼 deslop 으로 한다.** 커밋 전에 deslop 을 돌려 이 브랜치가 넣은 군더더기를 묻지 않고 바로 고친다. 동작은 바꾸지 않는다. simplify 를 돌릴지, 무엇을 고칠지 묻던 두 질문(11-25, `fa91c89`)은 없앤다.
@@ -113,10 +114,11 @@ updated_date: 2026-11-26
   - README 문제 해결에 옮기는 법이 있다: 프로젝트 설정에서 `frontend@j-dev-kit`, `server@j-dev-kit`을 지운다
 - [ ] #16 `kit-help` 스킬이 있다. 질문에 답하고 보낼 명령 한 줄을 주며, 일을 시작하지 않는다. 담는 것: 처음 설정, `/backlog`와 `/start` 쓰는 법, 상황별로 어느 스킬인지 표(workflow 의 스킬 폴더를 모두 덮는다. 원칙은 묶어서), 플레이북과 원칙 쓰는 법, 잘 안 될 때. 답하기 전에 가리키는 파일을 읽는다
 - [ ] #17 `kit-setup` 스킬과 모델 설정이 있다
-  - 역할(메인 세션, 하위 세션, 구현을 맡는 하위 에이전트, 리뷰 에이전트, 판정 에이전트, 기계적 수정, 탐색)마다 모델과 노력을 설정 파일에 적을 수 있다. 형식과 위치는 `Implementation Notes`에 근거와 함께 적는다
+  - 역할(하위 세션 `session`, 구현을 맡는 하위 에이전트 `implement`, 리뷰 `review`, 판정 `judge`, 기계적 수정 `mechanical`, 탐색 `explore`)마다 모델과 노력을 JSON 설정 파일(`.claude/workflow.json`, 없으면 `~/.claude/workflow.json`)에 적을 수 있다. 형식은 `start/references/models.md`에 있다. 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel` 키로 정하고 `kit-setup`이 써 준다
   - `kit-setup`이 지금 설정과 기본값을 보여 주고, 고를 것을 한 번에 물어 설정 파일을 쓴다. 다시 돌리면 고친다
   - `start`·`backlog`와 리뷰 절차가 하위 세션과 에이전트를 띄울 때 그 설정을 따른다. 설정이 없으면 기본값을 쓴다
   - `kit-setup`이 끝에 프로젝트 검증 스킬(`verify-*`)이 없으면 만들지 한 번 묻는다
+- [ ] #18 `/start <할 일>`처럼 백로그 항목이 아닌 작업 내용을 주면 항목을 만들지 않고 이 세션에서 바로 한다. 첫 메시지에서 목표, 가장 작은 변경, 끝났다고 볼 조건을 되짚고 승인 없이 진행한다. 계획과 정한 것은 마지막 메시지와 커밋 메시지에 남긴다. 검증, 스택 점검, 마지막 메시지는 항목이 있을 때와 같고, 리뷰는 크기에 맞춘다
 
 <!-- AC:END -->
 
@@ -144,7 +146,7 @@ updated_date: 2026-11-26
    - `plugins/workflow/skills/start/playbooks/<이름>.md` 6개: feature, bug-fix, refactoring, prototype, perf-issue, hillclimb
    - `plugins/workflow/THIRD_PARTY_NOTICES.md`: pstack 과 cursor-team-kit 의 MIT 고지
    - Cursor 이름은 Claude Code 것으로 바꾸고, 가져오지 않은 스킬을 가리키는 줄은 빼거나 풀어 쓴다
-2. `start` 스킬 만들기(`plugins/workflow/skills/start/`): SKILL.md 에 묻는 기준 다섯, 정한 것 줄 형식, 일하는 방식 세 줄, 색인(꼭 지킬 것, 원칙 24, 플레이북 5), 어디서 하나와 하위 세션 지시문. 절차는 `references/procedure.md`: 플랜 모드 없이 되짚기 → 플레이북 고르기 → 착수 전 질문(있을 때만) → 구현 → deslop → 검증 → AC 판정 → 리뷰 → 타당한 지적 고치기 → 마지막 메시지 하나 → 항목 닫기 → 머지. 스크립트 둘(`base-tests.sh`, `pick-port.sh`)은 `skills/start/scripts/`로 옮기고 `check-repo-rules.sh`와 짝 테스트의 경로를 맞춘다
+2. `start` 스킬 만들기(`plugins/workflow/skills/start/`): SKILL.md 에 묻는 기준 다섯, 정한 것 줄 형식, 일하는 방식 세 줄, 색인(꼭 지킬 것, 원칙 24, 플레이북 6), 어디서 하나와 하위 세션 지시문. 절차는 `references/procedure.md`: 플랜 모드 없이 되짚기 → 플레이북 고르기 → 착수 전 질문(있을 때만) → 구현 → deslop → 검증 → AC 판정 → 리뷰 → 타당한 지적 고치기 → 마지막 메시지 하나 → 항목 닫기 → 머지. 스크립트 둘(`base-tests.sh`, `pick-port.sh`)은 `skills/start/scripts/`로 옮기고 `check-repo-rules.sh`와 짝 테스트의 경로를 맞춘다
 3. `backlog` 스킬 만들기(`plugins/workflow/skills/backlog/`): 지금의 `create.md`에서 brainstorming 호출을 질문 규칙으로 바꾸고, AC 전문 승인, 서베이 후보 표에 AC 초안
 4. `task` 스킬 폴더(`SKILL.md`, `create.md`, `start.md`, `end.md`)를 지운다
 5. superpowers 떼기: `plugin.json`·`marketplace.json` 의존성, `.claude/settings.json`, README 두 개, 저장소 CLAUDE.md
@@ -174,12 +176,16 @@ updated_date: 2026-11-26
 
 - 스크립트 둘을 `skills/start/scripts/`로 옮기면서 짝 테스트가 검증에 걸렸는데, 이 맥에서는 변경 전(main)에도 실패했다. 테스트와 스크립트를 최소로 고쳤다 — 검증 명령이 통과해야 항목을 닫을 수 있다(Prove It Works) — 016 의 범위 밖 수정 셋이 들어갔다
   - `scripts/test-check-repo-rules.sh`: `sed -i`가 BSD sed(macOS)에서 돌지 않아 두 sed 모두에서 도는 함수로 감쌌다. 44개 중 15개 → 44개 통과
-  - `pick-port.sh`·`dev-server.sh`의 `port_open`: 이 맥에서 bash 로 돌린 `netstat -an`은 TCP 줄을 하나도 보여 주지 않는데 출력에 "tcp"라는 글자는 있어(`com.apple.network.tcp_ccdebug`), 듣는 포트를 "없음"으로 판정했다. TCP 줄이 없으면 다음 방법(`/dev/tcp`)으로 넘어가게 고쳤다(Fix Root Causes). 쓰는 중인 포트를 못 피하던 실제 버그다
+  - `pick-port.sh`·`dev-server.sh`의 `port_open`: 이 맥의 Homebrew bash(`/opt/homebrew/bin/bash` 5.2, 스크립트의 `#!/usr/bin/env bash`가 이것으로 풀린다)로 돌린 `netstat -an`은 TCP 줄을 하나도 보여 주지 않는데(`/bin/bash`와 zsh 에서는 보인다. 왜 그런지는 확인하지 못했다) 출력에 "tcp"라는 글자는 있어(`com.apple.network.tcp_ccdebug`), 듣는 포트를 "없음"으로 판정했다. TCP 줄이 없으면 다음 방법(`/dev/tcp`)으로 넘어가게 고쳤다(Fix Root Causes). 쓰는 중인 포트를 못 피하던 실제 버그다
   - `scripts/test-pick-port.sh`: 이 기계에서 흉내 낼 수 없는 두 경우(netstat 만 쓰기, `nc`가 `git`·`head`와 같은 폴더에 있을 때의 "nc 없음")는 건너뛰고 그렇다고 출력한다
 - 번역본의 `> Source:` 줄 문구를 43개 파일에서 하나로 맞췄다 — 한 가지를 한 이름으로(unslop 11) — 없음
 - eval 트리거 사례의 채점은 어느 스킬을 불렀는지까지 본다(`(:|")start"`, `(:|")backlog"`) — 스킬이 둘로 나뉘어 "불렀다"만으로는 맞는 스킬인지 모른다 — 러너가 Skill 입력을 다른 모양으로 적으면 정규식을 고쳐야 한다
+- 모델 설정은 스킬이 Read 로 읽는 JSON 파일로 둔다 — Claude Code 는 JSON 을 늘 읽어 주지 않고, 플러그인 `userConfig`는 사용자 범위만 문서에 있고 스킬이 값을 써 넣는 방법이 없다(claude-code-guide 가 plugins-reference, sub-agents, settings 문서를 읽고 확인). 프로젝트 파일은 커밋하면 워크트리 하위 세션에서도 보인다 — 스킬이 세션마다 파일을 한 번 읽는다. Agent 도구의 `model`은 별칭만 받아 버전을 고정하지 못한다
+- 메인 세션 모델은 `kit-setup`이 `.claude/settings.local.json`의 `model`·`effortLevel` 키만 고쳐서 정한다 — 메인 모델은 설정 키로만 바뀌고 새 세션부터 적용된다. 개인 선택이라 커밋하지 않는 local 파일에 둔다 — 팀이 같은 모델을 쓰게 하려면 프로젝트 설정에 직접 적어야 한다
+- frontend 가 끌고 오던 `frontend-design`·`typescript-lsp` 의존은 없애고 "있으면 좋은 플러그인"으로 내렸다 — workflow 는 프론트엔드가 없는 프로젝트에도 설치된다 — 새 화면을 디자인할 때 `frontend-design`이 없으면 그 규칙 없이 간다
+- 도움말과 설정 스킬의 이름은 `kit-help`, `kit-setup`이다 — `/help`는 Claude Code 내장 명령과 겹친다 — 이름을 외워야 한다
 - README 에 "superpowers 는 쓰지 않는다. 켜져 있으면 끈다"와 문제 해결 줄을 남겼다 — 예전 안내대로 CLAUDE.md 문단을 넣어 둔 사용자가 있다. AC #9 의 grep 범위(plugins, i18n, 매니페스트, 설정)에는 들지 않는다 — README 에 superpowers 라는 말이 남는다
 
 ## Final Summary
 
-`/task end`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.
+`/start`가 쓴다: 바뀐 것, 리뷰에서 고친 것, 미룬 것, 그대로 둔 지적과 이유, 사용자가 바로잡은 것.

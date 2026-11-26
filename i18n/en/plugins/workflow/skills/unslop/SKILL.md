@@ -22,7 +22,7 @@ Rule numbers are stable ids that other skills cite. A removed rule leaves a gap.
 10. Don't force ideas into threes.
 11. One name per thing. Repeat it.
 12. No "from X to Y" unless X and Y sit on a real scale.
-13. No em dashes, en dashes, or hyphens used as dashes, and no parentheses in their place. Use a period or a comma.
+13. No em dashes, en dashes, or hyphens used as dashes, and no parentheses in their place. Use a period or a comma. The record formats the `start` skill sets (`decision — reason — cost if wrong`, `file:line — problem — how to fix`, principle lines) are the exception.
 14. A colon goes before a list or an example, never mid-sentence as a connector.
 15. Don't bold every proper noun or acronym.
 16. No bold label and colon that restates its line ("**Performance:** Performance improved..."). A bold lead-in that ends in a period and adds new detail is fine.

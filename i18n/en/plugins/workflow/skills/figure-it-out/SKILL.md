@@ -24,7 +24,7 @@ Ground first, then commit. Don't start the run until you can state:
 - Scope, quantified: rough units and effort, plus the blockers grounding surfaced.
 - The rigor level, biased high. One-way doors and high blast radius get more. Reversible low-stakes steps get less. Rigor is gates and artifacts, not "try harder".
 
-Present the framing and tradeoffs before committing to a long run. Reversible work proceeds (the `principle-never-block-on-the-human` skill), but for a multi-hour run, put it once into the pre-start questions of the `start` procedure and get it confirmed.
+Present the framing and tradeoffs before committing to a long run, then proceed. Do not wait for approval (the `principle-never-block-on-the-human` skill). If only a person can decide how far to go, put just that into the pre-start questions of the `start` procedure (asking criterion 4).
 
 ## Phase B: Design the workflow
 
@@ -47,7 +47,7 @@ Each unit is an experiment. State the hypothesis, make the smallest change, meas
 
 ## Phase D: Keep the audit trail
 
-Log decisions as "decision" lines in the item file's `Implementation Notes`. One line gives what, why, the evidence and the result. The trail plus the diff is what lets the human come back and trust the work.
+Log decisions under `### 정한 것` (decisions) in the item file's `Implementation Notes` as `decision — reason — cost if wrong`. For each unit, also write one line with the evidence (commit, `file:line`, command output) and the result. The trail plus the diff is what lets the human come back and trust the work.
 
 ## Phase E: Verify and hand back
 

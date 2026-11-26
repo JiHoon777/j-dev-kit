@@ -1,7 +1,7 @@
 ---
 name: start
-description: Use when implementing a backlog item. Invoke when the user asks to start or implement an item, or to continue a work branch or review, wrap up, or merge it. Goes through planning, implementation, verification, review, fixing findings, and the merge in one run, and asks only what is truly needed. Creating a new item is the backlog skill's job. Not for requests to just fix something with no mention of an item or branch.
-argument-hint: "[backlog number or part of a name] [--here]"
+description: Use when implementing work through to the merge. Invoke when the user asks to start or implement a backlog item, or to continue a work branch or review, wrap up, or merge it. If the user writes a task after /start, do it right away with no item. Goes through planning, implementation, verification, review, fixing findings, and the merge in one run, and asks only what is truly needed. Creating a new item is the backlog skill's job. Do not invoke it on your own for a request to just fix something when the user did not type /start and there is no mention of an item or branch.
+argument-hint: "[backlog number or part of a name | a task in a sentence or two] [--here]"
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git log *), Bash(git diff *), Bash(ls *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -13,17 +13,19 @@ metadata:
 
 Arguments: `$ARGUMENTS`
 
-Implement one backlog item through to the merge. The procedure is in `${CLAUDE_SKILL_DIR}/references/procedure.md`. After deciding below where to work, if the work happens in this session, read that file all the way through with the Read tool and follow it as written. `<scripts>` in the procedure file is `${CLAUDE_SKILL_DIR}/scripts`, and `<ref>` is `${CLAUDE_SKILL_DIR}/references`.
+Implement one backlog item, or one task the user wrote directly, through to the merge. The procedure is in `${CLAUDE_SKILL_DIR}/references/procedure.md`. After deciding below where to work, if the work happens in this session, read that file all the way through with the Read tool and follow it as written. `<scripts>` in the procedure file is `${CLAUDE_SKILL_DIR}/scripts`, and `<ref>` is `${CLAUDE_SKILL_DIR}/references`.
 
 ## 1. Where to work
 
+- **If the current branch starts with `w/`:** this is a session already at work. Do not open a session; follow the procedure in this session. Even with no arguments, or with words like "review and merge it", continue that branch's item ("Continuing" in the procedure).
+- **If the arguments are a task, not a backlog item:** do not create an item; do the work right away in this session ("Without an item" in the procedure). Look up the arguments in `docs/backlog/` and `docs/done/`, and if no item matches by number or name, treat them as a task. If the work spans several modules or would take days, say in one line that making an item with `/backlog` would be better, and go on as is.
 - **If the arguments have `--here`:** remove it and work in this session.
 - **Otherwise:** open a sub-session.
   1. If there is no tool that starts a new session the user can open and talk to directly (for example the desktop app's `start_session`), say in one line that the work happens in this session, and follow the procedure.
   2. First find the item in this session ("Finding the item" in step 1 of the procedure). If this item's `w/` branch already exists, do not open a session; tell the user to continue in the session that worked on that branch. If that session no longer exists, continue the branch in this session as the procedure says.
   3. Open one session. The user asked for this work, so start it right away instead of proposing it. It is a new worktree off the base branch, with the branch name `w/<item file name without .md>`.
 
-     Model and effort: if this session is Fable, pass `model` as the latest model one step lower (for now Opus, `claude-opus-5-5`) and `effort` as `high`. The tool does not take an effort above this session's, so if this session's effort is below `high`, leave `effort` out (it inherits) and say so. On Opus or lower, pass neither (it inherits this session's model and effort).
+     Model and effort: follow the `session` role in `${CLAUDE_SKILL_DIR}/references/models.md`. With no settings, the defaults apply (if this session is Fable, the latest model one step lower and effort `high`; otherwise it inherits).
 
   4. That session cannot see this conversation. The brief is two lines, "Invoke the `start` skill with `<item> --here` and follow its procedure" and "Ask only what falls under that skill's asking criteria. Write questions completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any).
   5. Report the session link. That work does not happen in this session; this session directs it.
@@ -80,19 +82,23 @@ Raise the ones with a high cost if wrong in the last message. These lines are no
 - Do not hand a person a check you can run yourself.
 - Give evidence for each claim, or mark it as confirmed, inferred, or guessed.
 
-## 4. Index
+## 4. Models
+
+When opening a sub-session or launching a subagent, read `${CLAUDE_SKILL_DIR}/references/models.md` with the Read tool and pass the model and effort that fit the role (`session`, `implement`, `review`, `judge`, `mechanical`, `explore`). `/kit-setup` writes the settings file. If there is none, use the defaults in that file.
+
+## 5. Index
 
 The skills and principles are other skills of this plugin. Their bodies are at `${CLAUDE_SKILL_DIR}/../<name>/SKILL.md` from this file. A playbook is at `${CLAUDE_SKILL_DIR}/playbooks/<name>.md`. When a "when" below applies, read that file with the Read tool and follow it. These skills are set not to fire on their own (`disable-model-invocation`), so do not call them with the Skill tool. The user can invoke them directly, as in `/architect` or `/deslop`. Write the name of what you applied in the reason of the decision line. Do not cite a name without reading the body.
 
 ### Must follow
 
 - The first message → restate the goal and the smallest change that meets it, then go on.
-- Before implementing → call every installed stack check skill (names ending in `-start-check`, e.g. `frontend:frontend-start-check`, `server:server-start-check`) with the Skill tool and follow what they return. Before review → call every one ending in `-end-check`. Do not skip them when following a playbook or `figure-it-out`.
+- Before implementing → call every installed stack check skill (names ending in `-start-check`: `workflow:frontend-start-check`, `workflow:server-start-check`, and any that another plugin provides under the same naming rule) with the Skill tool and follow what they return. Before review → call every one ending in `-end-check`. Do not skip them when following a playbook or `figure-it-out`.
 - You do not know how the code to change works → the `how` skill. The question is why it came to be that way → the `why` skill.
 - A fork that running something would settle → do not ask; `playbooks/prototype.md`.
 - Before writing code → settle the shape of the data first. A change that crosses a function boundary → the `architect` skill.
 - Changing a screen or reproducing a UI bug → the `control-ui` skill. For a CLI or TUI → the `control-cli` skill. If the project has a `verify-*` skill, follow that skill and its feature map first. If a stack check has set how to verify (for example, frontend has the `frontend-evaluator` agent judge), that comes first, and these skills are how the screen gets driven.
-- The project has no set way to drive the real app and check it → the `create-verification-skill` skill. Whether to create one goes into the pre-start questions, once per project. The feature map does not match the app → the `maintain-verification-skill` skill.
+- The project has no set way to drive the real app and check it → the `create-verification-skill` skill. Whether to create one goes into the pre-start questions, once per project (do not ask if there is a `verify-*` skill or CLAUDE.md has `- 검증 스킬: 안 씀` (verification skill: not used)). The feature map does not match the app → the `maintain-verification-skill` skill. Inside the `start` flow, fix only the features that are off and commit to the work branch. Do not open a separate PR.
 - A claim of "fixed" or "faster" → the `verify-this` skill.
 - Reporting a measured number, or deciding by it → the `benchmark-checklist` skill.
 - A diff that is small but reaches wide and is hard to trust → the `blast-radius` skill before the review.

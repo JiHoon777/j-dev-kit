@@ -1,7 +1,7 @@
 ---
 name: start
-description: 백로그 항목을 구현할 때 쓴다. 사용자가 항목을 시작하거나 구현하자고 하면, 또는 작업 브랜치를 이어 가거나 리뷰하고 마무리하거나 머지하자고 하면 부른다. 계획, 구현, 검증, 리뷰, 지적 고치기, 머지까지 한 번에 가고, 꼭 필요한 것만 묻는다. 항목을 새로 만드는 일은 backlog 스킬이 한다. 항목·브랜치 이야기 없이 바로 고쳐 달라는 요청에는 쓰지 않는다.
-argument-hint: "[백로그 번호나 이름 일부] [--here]"
+description: 일을 구현해 머지까지 갈 때 쓴다. 사용자가 백로그 항목을 시작하거나 구현하자고 하면, 또는 작업 브랜치를 이어 가거나 리뷰하고 마무리하거나 머지하자고 하면 부른다. 사용자가 /start 뒤에 할 일을 적으면 항목 없이 바로 한다. 계획, 구현, 검증, 리뷰, 지적 고치기, 머지까지 한 번에 가고, 꼭 필요한 것만 묻는다. 항목을 새로 만드는 일은 backlog 스킬이 한다. 사용자가 /start 를 치지 않았고 항목·브랜치 이야기도 없이 바로 고쳐 달라는 요청에는 스스로 부르지 않는다.
+argument-hint: "[백로그 번호나 이름 일부 | 할 일 한두 문장] [--here]"
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git log *), Bash(git diff *), Bash(ls *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -11,17 +11,19 @@ metadata:
 
 인자: `$ARGUMENTS`
 
-백로그 항목 하나를 구현해 머지까지 간다. 절차는 `${CLAUDE_SKILL_DIR}/references/procedure.md`에 있다. 아래에서 어디서 할지 정한 뒤, 이 세션에서 하게 되면 그 파일을 Read 도구로 끝까지 읽고 그대로 따른다. 절차 파일의 `<scripts>`는 `${CLAUDE_SKILL_DIR}/scripts`, `<ref>`는 `${CLAUDE_SKILL_DIR}/references`다.
+백로그 항목 하나, 또는 사용자가 바로 적어 준 일 하나를 구현해 머지까지 간다. 절차는 `${CLAUDE_SKILL_DIR}/references/procedure.md`에 있다. 아래에서 어디서 할지 정한 뒤, 이 세션에서 하게 되면 그 파일을 Read 도구로 끝까지 읽고 그대로 따른다. 절차 파일의 `<scripts>`는 `${CLAUDE_SKILL_DIR}/scripts`, `<ref>`는 `${CLAUDE_SKILL_DIR}/references`다.
 
 ## 1. 어디서 하나
 
+- **지금 브랜치가 `w/`로 시작하면:** 이미 작업 중인 세션이다. 세션을 띄우지 않고 이 세션에서 절차를 따른다. 인자가 없거나 "리뷰하고 머지해" 같은 말이어도 그 브랜치의 항목을 이어 간다(절차의 "이어 가기").
+- **인자가 백로그 항목이 아니라 할 일이면:** 항목을 만들지 않고 이 세션에서 바로 한다(절차의 "항목 없이 할 때"). 인자를 `docs/backlog/`와 `docs/done/`에서 찾아 번호나 이름이 맞는 항목이 없으면 할 일로 본다. 여러 모듈에 걸치거나 며칠 걸릴 일이면 `/backlog`로 항목을 만드는 편이 낫다고 한 줄 말하고, 그대로 진행한다.
 - **인자에 `--here`가 있으면:** 떼어 내고 이 세션에서 한다.
 - **그 밖:** 하위 세션을 띄운다.
   1. 사용자가 열어 보고 직접 대화할 수 있는 세션을 새로 시작하는 도구(예: 데스크톱 앱의 `start_session`)가 없으면, 이 세션에서 한다고 한 줄 알리고 절차를 따른다.
   2. 먼저 이 세션에서 항목을 찾는다(절차 1단계의 "항목 찾기"). 이 항목의 `w/` 브랜치가 이미 있으면 띄우지 않고, 그 브랜치에서 일하던 세션에서 이어 가라고 알린다. 그 세션이 없으면 이 세션에서 절차대로 그 브랜치를 이어 간다.
   3. 세션 하나를 띄운다. 사용자가 시킨 일이니 제안으로 올리지 않고 바로 시작한다. 기준 브랜치에서 딴 새 워크트리, 브랜치 이름은 `w/<.md 를 뺀 항목 파일 이름>`이다.
 
-     모델과 노력: 이 세션이 Fable 이면 `model`을 한 단계 낮은 최신 모델(지금은 Opus, `claude-opus-5-5`)로, `effort`를 `high`로 준다. 도구는 이 세션보다 높은 노력을 받지 않으니, 이 세션의 노력이 `high`보다 낮으면 `effort`는 주지 않고(이어받는다) 그렇다고 알린다. Opus 이하면 둘 다 주지 않는다(이 세션의 모델과 노력을 이어받는다).
+     모델과 노력: `${CLAUDE_SKILL_DIR}/references/models.md`의 `session` 역할을 따른다. 설정이 없으면 기본값이다(이 세션이 Fable 이면 한 단계 낮은 최신 모델과 노력 `high`, 아니면 이어받는다).
 
   4. 그 세션은 이 대화를 볼 수 없다. 지시문은 "`start` 스킬을 `<항목> --here`로 불러 그 절차를 따른다", "묻는 것은 그 스킬의 묻는 기준에 드는 것뿐이다. 질문은 턴의 마지막 메시지에 빠짐없이 쓰고 멈춘다" 두 줄과, 이 대화에서 사용자가 말한 배경이나 정한 것(있을 때만)이다.
   5. 세션 링크를 알린다. 그 일은 이 세션에서 하지 않고, 이 세션이 지휘한다.
@@ -78,19 +80,23 @@ metadata:
 - 스스로 돌릴 수 있는 확인을 사람에게 넘기지 않는다.
 - 주장마다 근거를 달거나 확인함, 추론, 추측 중 무엇인지 표시한다.
 
-## 4. 색인
+## 4. 모델
+
+하위 세션이나 하위 에이전트를 띄울 때는 `${CLAUDE_SKILL_DIR}/references/models.md`를 Read 도구로 읽고, 역할(`session`, `implement`, `review`, `judge`, `mechanical`, `explore`)에 맞는 모델과 노력을 넘긴다. 설정 파일은 `/kit-setup`이 쓴다. 없으면 그 파일의 기본값을 쓴다.
+
+## 5. 색인
 
 스킬과 원칙은 이 플러그인의 다른 스킬이다. 본문은 이 파일에서 `${CLAUDE_SKILL_DIR}/../<이름>/SKILL.md`에 있다. 플레이북은 `${CLAUDE_SKILL_DIR}/playbooks/<이름>.md`다. 아래 "언제"에 해당하면 그 파일을 Read 도구로 읽고 따른다. 이 스킬들은 스스로 뜨지 않게 해 두었으니(`disable-model-invocation`) Skill 도구로 부르지 않는다. 사용자는 `/architect`, `/deslop`처럼 직접 부를 수 있다. 적용한 것은 정한 것 줄의 이유에 이름을 적는다. 본문을 읽지 않고 이름만 대지 않는다.
 
 ### 꼭 지킬 것
 
 - 첫 메시지 → 목표와 그것을 채우는 가장 작은 변경을 되짚고 진행한다.
-- 구현 전 → 설치된 스택 점검 스킬(이름이 `-start-check`로 끝나는 것, 예: `frontend:frontend-start-check`, `server:server-start-check`)을 모두 Skill 도구로 부르고, 돌려준 지킬 것을 따른다. 리뷰 전 → `-end-check`로 끝나는 것을 모두 부른다. 플레이북이나 `figure-it-out`을 따를 때도 건너뛰지 않는다.
+- 구현 전 → 설치된 스택 점검 스킬(이름이 `-start-check`로 끝나는 것: `workflow:frontend-start-check`, `workflow:server-start-check`, 다른 플러그인이 같은 이름 규칙으로 둔 것)을 모두 Skill 도구로 부르고, 돌려준 지킬 것을 따른다. 리뷰 전 → `-end-check`로 끝나는 것을 모두 부른다. 플레이북이나 `figure-it-out`을 따를 때도 건너뛰지 않는다.
 - 고칠 코드가 어떻게 동작하는지 모른다 → `how` 스킬. 왜 그렇게 됐는지가 문제다 → `why` 스킬.
 - 돌려 보면 정해지는 갈림길 → 묻지 말고 `playbooks/prototype.md`.
 - 코드를 쓰기 전 → 데이터 모양을 먼저 정한다. 함수 경계를 넘는 변경 → `architect` 스킬.
 - 화면을 바꾸거나 UI 버그를 재현한다 → `control-ui` 스킬. CLI·TUI 면 → `control-cli` 스킬. 프로젝트에 `verify-*` 스킬이 있으면 그 스킬과 기능 지도를 먼저 따른다. 스택 점검이 확인 방법을 정해 줬으면(예: frontend 의 `frontend-evaluator` 에이전트가 판정한다) 그것이 먼저이고, 이 스킬들은 화면을 모는 방법이다.
-- 프로젝트에 앱을 실제로 몰아 확인할 정해진 방법이 없다 → `create-verification-skill` 스킬. 만들지는 프로젝트당 한 번 착수 전 질문에 넣는다. 기능 지도가 앱과 어긋난다 → `maintain-verification-skill` 스킬.
+- 프로젝트에 앱을 실제로 몰아 확인할 정해진 방법이 없다 → `create-verification-skill` 스킬. 만들지는 프로젝트당 한 번 착수 전 질문에 넣는다(`verify-*` 스킬이 있거나 CLAUDE.md 에 `- 검증 스킬: 안 씀`이 있으면 묻지 않는다). 기능 지도가 앱과 어긋난다 → `maintain-verification-skill` 스킬. `start` 흐름 안에서는 어긋난 기능만 고치고 작업 브랜치에 커밋한다. PR 을 따로 열지 않는다.
 - "고쳤다", "빨라졌다"는 주장 → `verify-this` 스킬.
 - 잰 숫자를 보고하거나 그 숫자로 정한다 → `benchmark-checklist` 스킬.
 - 작은데 넓게 닿아 믿기 어려운 diff → 리뷰 전에 `blast-radius` 스킬.

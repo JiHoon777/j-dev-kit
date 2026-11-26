@@ -1,0 +1,53 @@
+> Translation. Source: [plugins/workflow/skills/start/references/models.md](../../../../../../../plugins/workflow/skills/start/references/models.md). Update this file when the source changes. Claude does not read this file.
+
+# Model settings
+
+Set, per role, the model and effort to use when opening a sub-session or launching a subagent. The values are in a JSON settings file, which the `kit-setup` skill writes. `start`, `backlog`, and the other skills that launch agents follow this file.
+
+## Settings files
+
+- Project: `<repository root>/.claude/workflow.json`. Once committed, it is visible from worktrees and sub-sessions too.
+- User: `~/.claude/workflow.json`. The default for every project.
+
+Before opening a session or launching an agent, read the project file with the Read tool. If it does not exist, read the user file. For each role, use the project value if there is one, otherwise the user value, and otherwise the default below. If a file is missing or cannot be read, go with the defaults without asking. A value read once does not need to be read again during that session.
+
+```json
+{
+  "models": {
+    "session": { "model": "opus", "effort": "high" },
+    "implement": { "model": "inherit" },
+    "review": { "model": "opus" },
+    "judge": { "model": "inherit" },
+    "mechanical": { "model": "sonnet", "effort": "high" },
+    "explore": { "model": "inherit" }
+  }
+}
+```
+
+## Roles
+
+| Role | Who | Default |
+| --- | --- | --- |
+| `session` | The sub-sessions `start` and `backlog` open | `auto`, effort `high` |
+| `implement` | Subagents handed the implementation (where a playbook says to "delegate") | `inherit` |
+| `review` | Review agents: `code-review`, `security-review`, stack reviewers | `auto` |
+| `judge` | Judge agents: AC judgment, judging review findings, judging the survey, `frontend-evaluator` | `inherit` |
+| `mechanical` | Agents handed mechanical fixes where no judgment is left | `sonnet`, effort `high` |
+| `explore` | Read-only exploration and research: `Explore`, `how`, survey gathering | `inherit` |
+
+## Values
+
+- `model`: one of `fable`, `opus`, `sonnet`, `haiku`, `inherit`, `auto`.
+  - `inherit`: do not pass a model. It inherits this session's model.
+  - `auto`: if this session is Fable, use the latest model one step lower (for now `opus`); otherwise treat it as `inherit`.
+- `effort`: one of `low`, `medium`, `high`, `xhigh`. If not written, it is inherited.
+
+## How to pass them
+
+- **Subagents:** pass them as the Agent tool's `model` and `effort`. `model` takes only the aliases (`fable`, `opus`, `sonnet`, `haiku`). For `inherit`, do not pass `model`. This value takes precedence over the model written in the agent definition file.
+- **Sub-sessions:** pass them as the `model` and `effort` of the tool that opens the session. Give `model` the latest model ID for that alias (for example, `opus` is `claude-opus-5-5` for now). The tool does not take a model or effort above this session's. If the setting is higher, leave it out (it inherits) and say so in one line.
+- If the tool rejects a value, launch without that value and then say so.
+
+## Main session
+
+This file cannot change the main session's model. The main session's model and effort are set by the Claude Code settings (`model` and `effortLevel` in `settings.json`) and apply from a new session. `kit-setup` writes the chosen values to those keys. During a session, change it with `/model`.

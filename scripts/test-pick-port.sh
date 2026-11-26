@@ -84,7 +84,7 @@ check "이 항목이 전에 적은 포트는 피하지 않는다" 0 $((base + 9)
 check "작업 트리의 진행 중 항목도 피한다" 0 $((base + 10)) - "item 012 'In Progress' '웹: $((base + 9))'" -- $base 009
 if listen; then
   check "듣고 있는 포트 → 다음 번호" 0 $((base + 10)) - -- $base 009
-  # netstat 이 TCP 소켓을 보여 주지 않는 기계(macOS 에서 bash 로 돌 때)에서는 이 방법만 따로 시험할 수 없다
+  # netstat 이 TCP 소켓을 보여 주지 않는 환경(한 맥의 Homebrew bash 에서 그랬다)에서는 이 방법만 따로 시험할 수 없다
   if netstat -an 2> /dev/null | grep -qE '^[[:space:]]*(TCP|tcp[46]*)[[:space:]]'; then
     PORT_CHECK_METHODS=netstat check "netstat 으로 듣는 포트를 찾는다" 0 $((base + 10)) - -- $base 009
   else

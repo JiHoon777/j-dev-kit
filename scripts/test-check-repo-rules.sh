@@ -30,7 +30,7 @@ EOF
   echo "# $1 en" > "i18n/en/plugins/$1/skills/a.md"
 }
 pick_port=plugins/workflow/skills/start/scripts/pick-port.sh
-dev_server=plugins/frontend/skills/frontend-start-check/scripts/dev-server.sh
+dev_server=plugins/workflow/skills/frontend-start-check/scripts/dev-server.sh
 port_fn() { # 위 주석 줄. 실제처럼 주석은 다르고 본문은 같다
   printf '%s\nport_open() {\n  local p=$1\n  return 2\n}\n\nport_open 1\n' "$1"
 }

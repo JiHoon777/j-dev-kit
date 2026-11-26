@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# plugins/server/skills/server-end-check/scripts/config-check.sh 의 시나리오 테스트. `bash scripts/test-config-check.sh`
+# plugins/workflow/skills/server-end-check/scripts/config-check.sh 의 시나리오 테스트. `bash scripts/test-config-check.sh`
 # 임시 폴더에 가짜 저장소를 만들고, 시나리오마다 복사해 작업 브랜치에 변경을 커밋한 뒤 돌린다.
 # 키 값이 출력에 나오지 않는 것도 본다. 하나라도 틀리면 1로 끝난다.
 
-script="$(cd "$(dirname "$0")/.." && pwd)/plugins/server/skills/server-end-check/scripts/config-check.sh"
+script="$(cd "$(dirname "$0")/.." && pwd)/plugins/workflow/skills/server-end-check/scripts/config-check.sh"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com

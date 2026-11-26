@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
-# plugins/frontend/skills/frontend-end-check/scripts/diff-check.sh 의 시나리오 테스트. `bash scripts/test-diff-check.sh`
+# plugins/workflow/skills/frontend-end-check/scripts/diff-check.sh 의 시나리오 테스트. `bash scripts/test-diff-check.sh`
 # 임시 폴더에 가짜 저장소를 만들고, 시나리오마다 복사해 작업 브랜치에 변경을 커밋한 뒤 돌린다. 하나라도 틀리면 1로 끝난다.
+# sed -i 는 GNU 와 BSD(macOS)가 다르다. 백업 접미사를 붙이면 둘 다 받으니, 그렇게 돌리고 백업을 지운다. 파일은 마지막 인자 하나다.
+sed() { if [ "$1" = -i ]; then shift; command sed -i.bak "$@" && rm -f "${!#}.bak"; else command sed "$@"; fi; }
 
-script="$(cd "$(dirname "$0")/.." && pwd)/plugins/frontend/skills/frontend-end-check/scripts/diff-check.sh"
+script="$(cd "$(dirname "$0")/.." && pwd)/plugins/workflow/skills/frontend-end-check/scripts/diff-check.sh"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 export GIT_AUTHOR_NAME=test GIT_AUTHOR_EMAIL=test@example.com
