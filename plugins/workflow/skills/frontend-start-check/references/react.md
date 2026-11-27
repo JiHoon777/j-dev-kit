@@ -13,4 +13,4 @@ package.json 에 `react`가 있을 때 `frontend-start-check`가 읽는다. 아�
 
 ## 물을 것
 
-- Next 가 16.3 보다 낮고 `.next-docs/`가 없으면 `npx @next/codemod@canary agents-md`로 문서를 받을지 묻는다. 판이 고정되지 않은 명령이라 묻지 않고는 돌리지 않는다. 답을 받을 수 없으면("끝까지 해" 등) 돌리지 않고 명령을 지킬 것에 적어 돌려준다(`start`가 마지막 메시지에 알린다).
+- Next 가 16.3 보다 낮고 `.next-docs/`가 없으면 `npx @next/codemod@canary agents-md`로 문서를 받을지 묻는다.

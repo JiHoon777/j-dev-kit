@@ -15,4 +15,4 @@ Read by `frontend-start-check` when package.json has `react`. Add the following 
 
 ## To ask
 
-- If Next is below 16.3 and there is no `.next-docs/`, ask whether to fetch the docs with `npx @next/codemod@canary agents-md`. The command is not pinned to a version, so do not run it without asking. If no answer can be had ("run it to the end" and the like), do not run it; return the command under what to follow (`start` reports it in the last message).
+- If Next is below 16.3 and there is no `.next-docs/`, ask whether to fetch the docs with `npx @next/codemod@canary agents-md`.

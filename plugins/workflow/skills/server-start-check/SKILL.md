@@ -36,7 +36,6 @@ CLAUDE.md 에 server 가 빠진 `stack:` 줄이 있으면 "해당 없음". 아�
 - 스키마 변경은 담당 도구의 마이그레이션 파일로만. DB 를 손으로 바꾸지 않는다.
 - 비밀번호, 토큰, 키, 연결 문자열을 로그와 오류 응답에 남기지 않는다.
 - 실제(원격) 데이터베이스나 배포 환경을 바꾸는 명령(`supabase db push`, `--linked` 변경 등)은 돌리지 않는다. 필요하면 사용자에게 알린다.
-- Supabase MCP(공식 Supabase 플러그인에 같이 온다)의 쓰기 도구도 같다. SQL 실행, 마이그레이션 적용, Edge Function 배포, 브랜치 병합은 원격을 바꾸니 쓰지 않는다. 필요하면 사용자에게 알린다.
 - Supabase 를 쓰는데 리뷰어가 부르는 공식 Supabase 스킬(`supabase`, `supabase-postgres-best-practices`)을 부를 수 없으면 설치하지 않는다. 지킬 것에 한 줄 적어 돌려준다(`start`가 마지막 메시지에 알린다). 설치돼 있지 않으면 "공식 Supabase 스킬 없음. `/kit-setup`을 돌리면 설치된다", 설치돼 있는데 꺼져 있으면(`claude plugin list`에 꺼짐으로 나온다) "공식 Supabase 플러그인이 꺼져 있다. `/plugin`에서 켠다", 켜져 있는데 이 세션에서 부를 수 없으면 "공식 Supabase 스킬은 새 세션부터 쓰인다"다. CLAUDE.md `## 작업 설정`의 `- 공식 스킬 설치 안 함:` 줄에 `supabase`가 있으면 그 말은 적지 않는다.
 
 ## 2. 플랜에 넣을 것 / 물을 것

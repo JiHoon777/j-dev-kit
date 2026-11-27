@@ -68,7 +68,7 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 - CLAUDE.md 에 `stack:` 줄이 있으면 거기에 없는 스택의 줄은 건너뛴다. 공통은 건너뛰지 않는다. `stack: 없음`이면 모두 건너뛴다.
 - 명령은 저장소 루트(`git rev-parse --show-toplevel`)에서 돌린다. 설치는 위 명령으로만 한다. 표에 없는 명령이나 출처로 대신 깔지 않는다. 설정 파일의 플러그인 키를 손으로 고치지 않는다.
 - 명령이 실패하면 멈추지 않는다. 마켓플레이스만 더해지고 설치가 실패했으면 그 마켓플레이스를 지운다(`claude plugin marketplace remove <이름> --scope project`). 실패한 것과 이유를 6단계에서 알린다.
-- `supabase` 플러그인에는 MCP 가 같이 온다. 로그인하면 계정의 모든 프로젝트에 읽기·쓰기 도구로 붙는다. 그렇다는 것과 끄는 법(`/mcp`)을 6단계에서 알린다.
+- `supabase` 플러그인에는 MCP 가 같이 온다. 끄려면 `/mcp`에서 끈다고 6단계에서 알린다.
 - `typescript-lsp`는 `typescript-language-server`가 PATH 에 있어야 돈다. 없으면 전역 설치하지 않고 명령(`npm install -g typescript-language-server typescript`)을 6단계에서 알린다.
 - `next`만을 위해 따로 깔 것은 없다. 16.3 이상은 `next dev`가 `AGENTS.md`를 만든다. 그보다 낮으면 `npx @next/codemod@canary agents-md`를 돌리면 된다고 알린다.
 - 커밋: 설치 전에 `git status --short`의 출력을 적어 둔다. `.claude/` 아래에 이미 변경이 있었으면 설치는 하되 커밋하지 않고, 커밋하지 않은 변경이 있었다고 알린다. 없었으면 설치 뒤의 `git status --short`에 새로 생긴 경로(예: `.claude/settings.json`, `.claude/skills/`)만 `chore: 스택 스킬과 플러그인 설치`로 커밋한다. 푸시하지 않는다. 기준 브랜치가 아닌 곳이면 그 브랜치에 커밋된다고 알린다.
@@ -79,4 +79,4 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 
 ## 6. 알리기
 
-쓴 파일, 역할마다 정한 값, 머지 방식, 설치한 것과 설치하지 못한 것, 4단계가 알리라고 한 것(Supabase MCP 가 붙는 범위와 끄는 법, `typescript-language-server` 설치 명령, Next 문서 명령, 커밋하지 않았으면 그 이유, 기준 브랜치가 아닌 곳에 커밋한 것), 언제부터 적용되는지를 알린다. 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정과 설치한 플러그인은 새 세션부터다. 다시 바꾸려면 `/kit-setup`을 또 부르면 된다.
+쓴 파일, 역할마다 정한 값, 머지 방식, 설치한 것과 설치하지 못한 것, 4단계가 알리라고 한 것(Supabase MCP 를 끄는 법, `typescript-language-server` 설치 명령, Next 문서 명령, 커밋하지 않았으면 그 이유, 기준 브랜치가 아닌 곳에 커밋한 것), 언제부터 적용되는지를 알린다. 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정과 설치한 플러그인은 새 세션부터다. 다시 바꾸려면 `/kit-setup`을 또 부르면 된다.
