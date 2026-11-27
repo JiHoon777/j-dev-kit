@@ -28,7 +28,7 @@ workflow 플러그인의 설정 파일이다. 두 가지를 정한다: 하위 �
 
 | 역할 | 누구 | 기본값 |
 | --- | --- | --- |
-| `session` | `start`와 `backlog`가 띄우는 하위 세션 | `opus`, 노력 `xhigh` |
+| `session` | `backlog`가 띄우는 하위 세션 | `opus`, 노력 `xhigh` |
 | `implement` | 구현을 맡는 하위 에이전트(플레이북이 "맡긴다"고 하는 곳) | `opus`, 노력 `xhigh` |
 | `review` | 리뷰 에이전트: `code-review`, `security-review`, 스택 리뷰어 | `opus`, 노력 `xhigh` |
 | `judge` | 판정 에이전트: AC 판정, 리뷰 지적 판정, 서베이 판정, `frontend-evaluator` | `opus`, 노력 `xhigh` |

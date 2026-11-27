@@ -44,7 +44,7 @@ If cost is a worry, say where the tokens go. They go to sub-sessions, review age
 ## Working with `/backlog` and `/start`
 
 - `/backlog <a sentence or two>`: makes a backlog item. It shows the full Acceptance Criteria and gets approval. `/backlog --survey <goal>` researches the repository and the outside and produces item candidates.
-- `/start <number or name>`: implements one item through to the merge. It runs in a sub-session on a new worktree. With `--here`, it runs in this session.
+- `/start <number or name>`: implements one item through to the merge. It runs in this session.
 - `/start <task>`: does the work right away with no item. It runs in this session.
 - Plain words work too. "Put this in the backlog", "start 001", "review this branch and merge it".
 

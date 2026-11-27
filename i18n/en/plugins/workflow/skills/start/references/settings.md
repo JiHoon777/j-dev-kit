@@ -30,7 +30,7 @@ With the defaults written out, it looks like this. You may write only the roles 
 
 | Role | Who | Default |
 | --- | --- | --- |
-| `session` | The sub-sessions `start` and `backlog` open | `opus`, effort `xhigh` |
+| `session` | The sub-session `backlog` opens | `opus`, effort `xhigh` |
 | `implement` | Subagents handed the implementation (where a playbook says to "delegate") | `opus`, effort `xhigh` |
 | `review` | Review agents: `code-review`, `security-review`, stack reviewers | `opus`, effort `xhigh` |
 | `judge` | Judge agents: AC judgment, judging review findings, judging the survey, `frontend-evaluator` | `opus`, effort `xhigh` |

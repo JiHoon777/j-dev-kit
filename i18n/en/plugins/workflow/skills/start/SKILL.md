@@ -1,7 +1,7 @@
 ---
 name: start
 description: Use when implementing work through to the merge. Invoke when the user asks to start or implement a backlog item, or to continue a work branch or review, wrap up, or merge it. If the user writes a task after /start, do it right away with no item. Goes through planning, implementation, verification, review, fixing findings, and the merge in one run, and asks only what is truly needed. Creating a new item is the backlog skill's job. Do not invoke it on your own for a request to just fix something when the user did not type /start and there is no mention of an item or branch.
-argument-hint: "[backlog number or part of a name | a task in a sentence or two] [--here]"
+argument-hint: "[backlog number or part of a name | a task in a sentence or two]"
 allowed-tools: Bash(git status *), Bash(git branch --show-current), Bash(git branch --list *), Bash(git log *), Bash(git diff *), Bash(ls *)
 metadata:
   author: JiHoon777 <65200592+JiHoon777@users.noreply.github.com>
@@ -13,25 +13,15 @@ metadata:
 
 Arguments: `$ARGUMENTS`
 
-Implement one backlog item, or one task the user wrote directly, through to the merge. The procedure is in `${CLAUDE_SKILL_DIR}/references/procedure.md`. After deciding below where to work, if the work happens in this session, read that file all the way through with the Read tool and follow it as written. `<scripts>` in the procedure file is `${CLAUDE_SKILL_DIR}/scripts`, and `<ref>` is `${CLAUDE_SKILL_DIR}/references`.
+Implement one backlog item, or one task the user wrote directly, through to the merge. The procedure is in `${CLAUDE_SKILL_DIR}/references/procedure.md`. After deciding below what to do, read that file all the way through with the Read tool and follow it as written. `<scripts>` in the procedure file is `${CLAUDE_SKILL_DIR}/scripts`, and `<ref>` is `${CLAUDE_SKILL_DIR}/references`.
 
-## 1. Where to work
+## 1. What to do
 
-- **If the current branch starts with `w/`:** this is a session already at work. Do not open a session; follow the procedure in this session. Even with no arguments, or with words like "review and merge it", continue that branch's item ("Continuing" in the procedure). If the branch has no item file, continue the work that was being done without an item. If the arguments are a new task that has nothing to do with that item, follow the branch rule under "Without an item" in the procedure.
-- **If the arguments are a task, not a backlog item:** do not create an item; do the work right away in this session ("Without an item" in the procedure). Look up the arguments in `docs/backlog/` and `docs/done/`, and if no item matches by number or name, treat them as a task. If the work spans several modules or would take days, say in one line that making an item with `/backlog` would be better, and go on as is.
-- **If the arguments have `--here`:** remove it and work in this session.
-- **Otherwise:** open a sub-session.
-  1. If there is no tool that starts a new session the user can open and talk to directly (for example the desktop app's `start_session`), say in one line that the work happens in this session, and follow the procedure.
-  2. First find the item in this session ("Finding the item" in step 1 of the procedure). If this item's `w/` branch already exists, do not open a session; tell the user to continue in the session that worked on that branch. If that session no longer exists, continue the branch in this session as the procedure says.
-  3. Open one session. The user asked for this work, so start it right away instead of proposing it. It is a new worktree off the base branch, with the branch name `w/<item file name without .md>`.
+Always work in this session. Do not open a sub-session.
 
-     Model and effort: follow the `session` role in `${CLAUDE_SKILL_DIR}/references/settings.md`. With no settings, the defaults apply (Opus, effort `xhigh`).
-
-  4. That session cannot see this conversation. The brief is two lines, "Invoke the `start` skill with `<item> --here` and follow its procedure" and "Ask only what falls under that skill's asking criteria. Write questions completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any). Do not put the `worker.md` line in this brief. The sub-session has to ask the user, and `worker.md` says not to ask a person.
-  5. Report the session link. That work does not happen in this session; this session directs it.
-     - When the sub-session ends a turn, show any question to the user in full and pass the answer to that session in the user's own words. Check the result (commits, changed files) yourself and report it before the user asks.
-     - The sub-session follows the asking criteria below too. This session does not add questions.
-     - If the user answered in the sub-session directly, accept that.
+- **If the current branch starts with `w/`:** this branch is already at work. Even with no arguments, or with words like "review and merge it", continue that branch's item ("Continuing" in the procedure). If the branch has no item file, continue the work that was being done without an item. If the arguments are a new task that has nothing to do with that item, follow the branch rule under "Without an item" in the procedure.
+- **If the arguments are a task, not a backlog item:** do not create an item; do the work right away ("Without an item" in the procedure). Look up the arguments in `docs/backlog/` and `docs/done/`, and if no item matches by number or name, treat them as a task. If the work spans several modules or would take days, say in one line that making an item with `/backlog` would be better, and go on as is.
+- **Otherwise:** it is a backlog item. Follow the procedure from step 1.
 
 ## 2. Project settings
 
@@ -95,7 +85,7 @@ Raise the ones with a high cost if wrong in the last message. These lines are no
 
 ## 4. Models
 
-When opening a sub-session or launching a subagent, read `${CLAUDE_SKILL_DIR}/references/settings.md` with the Read tool and pass the model and effort that fit the role (`session`, `implement`, `review`, `judge`, `mechanical`, `explore`). `/kit-setup` writes the settings file. If there is none, use the defaults in that file.
+When launching a subagent, read `${CLAUDE_SKILL_DIR}/references/settings.md` with the Read tool and pass the model and effort that fit the role (`implement`, `review`, `judge`, `mechanical`, `explore`). `/kit-setup` writes the settings file. If there is none, use the defaults in that file.
 
 ## 5. Index
 
