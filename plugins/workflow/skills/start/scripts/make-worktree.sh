@@ -3,8 +3,7 @@
 # 어느 폴더에서 불러도 기준 폴더(git worktree list 의 첫 줄)에서 돈다. <이름>은 w/ 를 뺀 브랜치 이름이다(예: 007-feat-x).
 # 1. 기준 브랜치에 upstream 이 있으면 git pull --ff-only 로 최신으로 맞춘다. 없거나 --no-pull 이면 건너뛴다.
 # <이름>이 없으면 여기서 멈추고 첫 줄에 기준 폴더 경로를 쓴다. 있으면 이어서
-# 2. .claude/worktrees/ 가 무시되지 않으면 .git/info/exclude 에 더한다(기준 폴더에 ?? .claude/ 가 남지 않게).
-# 3. git worktree add .claude/worktrees/<이름> -b w/<이름> <기준>. 첫 줄에 워크트리 경로를 쓴다.
+# 2. git worktree add .claude/worktrees/<이름> -b w/<이름> <기준>. 첫 줄에 워크트리 경로를 쓴다.
 # 끝 값: 0 됐다. 1 pull 이 실패해 지금의 로컬 기준 브랜치를 썼다(둘째 줄부터 이유). 2 하지 못했다(이유).
 # 이 스크립트를 고치면 scripts/test-make-worktree.sh 를 돌린다.
 
@@ -39,13 +38,6 @@ if [ -z "$name" ]; then
   echo "$root"
   [ -n "$note" ] && echo "$note"
   exit "$rc"
-fi
-
-if ! git check-ignore -q .claude/worktrees/; then
-  ex="$(git rev-parse --git-common-dir)/info/exclude"
-  mkdir -p "$(dirname "$ex")" || die "$ex 에 쓰지 못했다"
-  [ -s "$ex" ] && [ -n "$(tail -c1 "$ex")" ] && echo >> "$ex" # 줄바꿈 없이 끝나면 앞 줄에 붙지 않게
-  echo '.claude/worktrees/' >> "$ex" || die "$ex 에 쓰지 못했다"
 fi
 
 out=$(git worktree add -q "$dir" -b "w/$name" "$base" 2>&1) || die "git worktree add 실패: $out"
