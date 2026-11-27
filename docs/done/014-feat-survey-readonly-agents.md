@@ -70,6 +70,10 @@ updated_date: 2026-11-27
 claude plugin eval <사본>/workflow --ablation none --scaffold --trust-plugin --model opus --judge-model sonnet --runs 5 --tag survey --no-publish --threshold 0 -j 3 --allow-tools WebSearch WebFetch Write --json <사본>.json
 ```
 
+### 리뷰
+
+016 뒤의 pstack 점검 수정, 항목 017 와 한 브랜치에서 함께 받았다(커밋 `b93dd92..b4f6a01`. 그 브랜치는 머지한 뒤 지웠다). 고친 것은 `7b27285`, `59c09ec`, `b4f6a01`의 커밋 메시지에 있다. 브랜치 전체로 🔴 3개와 🟡 13개를 고쳤고, 틀린 지적 5개와 ⚪ 3개를 두었다. 틀린 지적과 ⚪ 의 목록은 남기지 않았다.
+
 ### 머지
 
 - 로컬에서 main 에 머지하고 푸시한다 (사용자, 2026-11-27).
@@ -96,7 +100,7 @@ claude plugin eval <사본>/workflow --ablation none --scaffold --trust-plugin -
 
 **그대로 둔 지적과 이유**
 
-- 이 항목에만 걸린 것은 없다. 브랜치 전체의 리뷰 결과(고친 것, 틀린 지적, ⚪)는 `w/pstack-fidelity`의 커밋 메시지에 있다.
+- 이 항목에만 걸린 것은 없다. 틀린 지적과 ⚪ 의 목록은 남기지 않았다(Implementation Notes 의 `### 리뷰`).
 
 **사용자가 바로잡은 것**
 

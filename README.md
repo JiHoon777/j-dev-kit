@@ -58,7 +58,7 @@ claude plugin install workflow@j-dev-kit --scope project
 /kit-setup
 ```
 
-역할마다 쓸 모델과 노력, 머지 방식을 묻고 `.claude/workflow.json`에 쓴다. 프로젝트 CLAUDE.md 에 작업 설정이 없으면 찾아서 넣을지 묻는다. 직접 적어도 된다. 프로젝트의 스택을 보고 맞는 공식 스킬과 플러그인("있으면 좋은 플러그인")을 묻지 않고 설치한다. 깔지 않을 것은 CLAUDE.md `## 작업 설정`에 `- 공식 스킬 설치 안 함: <이름>`으로 적는다.
+역할마다 쓸 모델과 노력, 머지 방식을 묻고 `.claude/workflow.json`에 쓴다. 프로젝트 CLAUDE.md 에 작업 설정이 없으면 찾아서 넣을지 묻는다. 직접 적어도 된다. 프로젝트의 스택을 보고 맞는 공식 스킬과 플러그인("있으면 좋은 플러그인")을 묻지 않고 설치한다. 깔지 않을 것은 CLAUDE.md `## 작업 설정`에 `- 공식 스킬 설치 안 함: <이름>`으로 적는다. 이름은 `frontend-design`, `chrome-devtools-mcp`, `modern-web-guidance`, `typescript-lsp`, `svelte`, `react`, `react-router`, `supabase`다. 설치는 여기서만 한다. `/start`는 깔지 않고, 빠진 것이 있으면 알려 준다.
 
 ```markdown
 ## 작업 설정
@@ -89,7 +89,7 @@ claude plugin install workflow@j-dev-kit --scope project
 /backlog --survey 자주 나는 오류 줄이기 logs/  # 저장소와 바깥을 조사해 항목 후보를 보고서로
 ```
 
-- **묻는 것:** 다섯 가지만 묻는다. 되돌릴 수 없거나 밖으로 나가는 일(머지, 기준·배포 브랜치 푸시, 삭제, 원격 DB, 배포), 공유 설정을 바꾸는 일(CLAUDE.md), 코드나 실행으로 정할 수 없는 제품·취향 결정, 무엇을 할지 고르기, 작업을 잃을 수 있는 상태. 나머지는 정하고 항목 파일에 `정한 것 — 이유 — 틀렸을 때 비용`으로 적는다. 계획 승인은 받지 않는다. "계획을 보자"고 하면 보여 주고 기다린다.
+- **묻는 것:** 다섯 가지만 묻는다. 되돌릴 수 없거나 밖으로 나가는 일(머지, 기준·배포 브랜치 푸시, 삭제, 원격 DB, 배포), 프로젝트 밖이나 공유 설정을 바꾸는 일(CLAUDE.md, 권한·훅 설정, 홈 폴더 설정), 코드나 실행으로 정할 수 없는 제품·취향 결정, 무엇을 할지 고르기, 작업을 잃을 수 있는 상태. 나머지는 정하고 항목 파일에 `정한 것 — 이유 — 틀렸을 때 비용`으로 적는다. 계획 승인은 받지 않는다. "계획을 보자"고 하면 보여 주고 기다린다.
 - **하위 세션:** `/backlog`와 `/start`는 세션을 하나 띄우고 링크만 알린다. `/start`는 기준 브랜치에서 딴 새 워크트리(`w/<항목>` 브랜치)에서 돈다. 하위 세션의 질문은 띄운 세션에서 보여 주고 답을 전하며, 끝나면 결과를 확인해 먼저 보고한다. 세션을 띄울 수 없는 곳(데스크톱 앱 밖)에서는 이 세션에서 한다. 여러 항목을 함께 하려면 `/start`를 여러 번 부른다.
 - **/start <할 일>:** 백로그 항목이 아닌 말을 주면 항목을 만들지 않고 이 세션에서 바로 한다. 첫 메시지에서 목표, 가장 작은 변경, 끝났다고 볼 조건을 되짚고 진행한다. 검증과 마지막 메시지는 같고, 리뷰는 크기에 맞춘다.
 - **/backlog:** 항목 초안의 Acceptance Criteria 전문을 보여 주고 승인받는다. 구현 전에 사람이 확인하는 유일한 계약이다.
@@ -162,7 +162,7 @@ claude plugin update workflow@j-dev-kit --scope project
 
 ```
 plugins/workflow/skills/backlog/    SKILL.md + references/survey.md + scripts/next-number.sh
-plugins/workflow/skills/start/      SKILL.md(묻는 기준, 색인) + references/procedure.md, worker.md + playbooks/(8개) + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/start/      SKILL.md(묻는 기준, 색인) + references/procedure.md, settings.md, worker.md + playbooks/(8개) + scripts/pick-port.sh, base-tests.sh
 plugins/workflow/skills/<스킬>/     색인이 가리키는 스킬 16개(architect, how, why, deslop 등). 직접 부를 수도 있다(`/architect`)
 plugins/workflow/skills/principle-*/  원칙 24개
 plugins/workflow/THIRD_PARTY_NOTICES.md  가져온 글의 저작권 고지(pstack, cursor-team-kit)

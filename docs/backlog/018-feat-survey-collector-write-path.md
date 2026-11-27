@@ -37,7 +37,7 @@ Write 에는 경로 제한이 없다. 에이전트 정의의 "지시문이 정�
 
 - [ ] #1 `claude plugin validate . && bash scripts/check-repo-rules.sh` 통과
 - [ ] #2 번역본(`i18n/en/`)을 원문과 같이 고쳤다
-- [ ] #3 `plugin.json` `version`을 올렸다
+- [ ] #3 `plugin.json` `version`을 올리고 README 두 개와 `marketplace.json` 설명을 맞췄다
 
 <!-- DOD:END -->
 

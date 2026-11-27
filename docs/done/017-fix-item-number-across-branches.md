@@ -47,7 +47,7 @@ updated_date: 2026-11-27
 
 ### 정한 것
 
-- 번호 세기를 스킬의 글이 아니라 스크립트(`plugins/workflow/skills/backlog/scripts/next-number.sh`)로 했다 — 여러 브랜치를 읽는 명령을 글로 적으면 세션마다 다르게 돌린다. 스크립트는 테스트할 수 있다(`principle-build-the-lever`, `principle-encode-lessons-in-structure`) — 스크립트를 돌릴 수 없는 환경에서는 스킬이 "지금 폴더에서 직접 센다"로 돌아간다
+- 번호 세기를 스킬의 글이 아니라 스크립트(`plugins/workflow/skills/backlog/scripts/next-number.sh`)로 했다 — 여러 브랜치를 읽는 명령을 글로 적으면 세션마다 다르게 돌린다. 스크립트는 테스트할 수 있다(`principle-build-the-lever`, `principle-encode-lessons-in-structure`) — 스크립트를 돌릴 수 없는 환경은 다루지 않았다. 스킬에 대신 세는 방법이 없다
 - 저장소 안이면 어느 폴더에서 돌려도 저장소 루트 기준으로 센다 — 리뷰가 하위 폴더에서 `001`이 나오는 것을 찾았다 — 없음
 
 ### 확인
@@ -55,6 +55,10 @@ updated_date: 2026-11-27
 - `bash scripts/test-next-number.sh`: 7개 중 7개 맞음(저장소 아님, 다른 로컬 브랜치, 하위 폴더, 원격 추적 브랜치, 한글 이름, 커밋하지 않은 항목).
 - 이 테스트는 main 의 소스에서는 실패한다(`base-tests.sh main 'bash {}'` → `기준에서 실패: scripts/test-next-number.sh`). 스크립트가 없기 때문이다.
 - 이 저장소에서 돌리면 `018`이 나온다(가장 큰 번호 017).
+
+### 리뷰
+
+016 뒤의 pstack 점검 수정, 항목 014 와 한 브랜치에서 함께 받았다(커밋 `b93dd92..b4f6a01`. 그 브랜치는 머지한 뒤 지웠다). 고친 것은 `7b27285`, `59c09ec`, `b4f6a01`의 커밋 메시지에 있다. 브랜치 전체로 🔴 3개와 🟡 13개를 고쳤고, 틀린 지적 5개와 ⚪ 3개를 두었다. 틀린 지적과 ⚪ 의 목록은 남기지 않았다.
 
 ### 머지
 
@@ -66,7 +70,7 @@ updated_date: 2026-11-27
 
 - `plugins/workflow/skills/backlog/scripts/next-number.sh`가 작업 트리와 모든 브랜치(로컬, 이미 가져온 원격)의 `docs/backlog/`·`docs/done/`을 통틀어 가장 큰 번호 + 1 을 찍는다. 브랜치는 체크아웃하지 않고 읽는다.
 - `backlog` 스킬이 번호를 이 스크립트로 센다. 파일을 쓰기 직전에 다시 세는 것도 같은 스크립트다.
-- 짝 테스트 `scripts/test-next-number.sh`(시나리오 7개)를 검증 명령이 돌린다.
+- 짝 테스트 `scripts/test-next-number.sh`(시나리오 7개)가 있다. 검증 명령은 이 스크립트나 테스트가 바뀐 브랜치에서만 이 테스트를 돌린다.
 - workflow 0.18.0.
 
 **리뷰에서 고친 것**
