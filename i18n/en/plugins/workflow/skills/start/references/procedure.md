@@ -165,17 +165,16 @@ Agents cannot see this conversation, so put these in the instructions:
 
 1. Scope: `git diff <base>...HEAD`, the item file path, CLAUDE.md. For stack review agents, also the evidence the check returned with them.
 2. Do not edit files and do not commit. Do not touch remote or production environments. general-purpose agents do not start servers and do not run build/verify commands (the reviewers run at the same time in the same folder). Stack review agents start servers, install tools, or reproduce locally only when that agent's criteria allow it.
-3. Principles: the contents of `docs/review-principles.md` if it exists. Report findings that seem to go against a principle too, and say which principle they clash with.
-4. The user decided only the Acceptance Criteria and what the user answered (`### 사용자가 정한 것` in the item file). `### 정한 것` and `Implementation Plan` in the item file are what Claude decided, so they are under review.
-5. Report: every problem found, split into confirmed and unconfirmed, as `file:line — problem — how to fix`. Do not give scores.
-6. If the skill cannot be called, do not make something up in its place; report that.
+3. The user decided only the Acceptance Criteria and what the user answered (`### 사용자가 정한 것` in the item file). `### 정한 것` and `Implementation Plan` in the item file are what Claude decided, so they are under review.
+4. Report: every problem found, split into confirmed and unconfirmed, as `file:line — problem — how to fix`. Do not give scores.
+5. If the skill cannot be called, do not make something up in its place; report that.
 
 ## 9. Judge and fix
 
 After all have returned, this session does not pick findings. Pass all the reports, as written, together with the findings step 7 left to the judge, to one new general-purpose **judge agent**. Its model follows the `judge` role in `<ref>/settings.md`. Brief:
 
-- Scope: 1 and 4 in step 8, plus `docs/review-principles.md`.
-- "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). A finding that goes against a principle is wrong. Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 (confirmed bugs, security problems, data loss, AC violations, stack check failures) / 🟡 (real problems that do not block the merge) / ⚪ (minor). Among the valid findings, mark as 'for a person to decide' those that clash with the Acceptance Criteria or with what the user answered, those whose fix depends on a product or taste decision, and those that touch money, data, authentication or security. Mark those beyond this item's scope as 'later candidate'. If the same kind is in the Final Summary `리뷰에서 고친 것` (fixed in review) of an item in `docs/done/`, or it appears in several places across these reports, mark it 🔁 with the evidence (item number or locations)."
+- Scope: 1 and 3 in step 8.
+- "Do not edit files. Merge duplicates, check each finding against the code, and judge it valid / wrong with evidence (`file:line`). Count problems that existed before this change separately as pre-existing. Sort the valid ones into 🔴 (confirmed bugs, security problems, data loss, AC violations, stack check failures) / 🟡 (real problems that do not block the merge) / ⚪ (minor). Among the valid findings, mark as 'for a person to decide' those that clash with the Acceptance Criteria or with what the user answered, those whose fix depends on a product or taste decision, and those that touch money, data, authentication or security. Mark those beyond this item's scope as 'later candidate'."
 
 **Fix valid 🔴 and 🟡 without asking.** Do not fix "for a person to decide" and "later candidate"; pass them on to step 10. Findings that went onto the list without the judge (stack check failures from step 7, tests that also pass on the base) are also treated as "for a person to decide" when they touch money, data, auth or security: do not fix them, pass them on. Do not fix ⚪; write only the count. If an agent suggests changing permissions, CLAUDE.md, or `.claude/` settings, do not change them; raise it as a suggestion in step 10.
 
@@ -221,8 +220,7 @@ When the answer comes:
 
 1. Run the verify command fresh once. If there are failures not in `### Baseline`, stop and say so.
 2. Write the item's `Final Summary`: what changed, what was fixed in review, what was deferred (new item numbers), findings left as is and why, what the user corrected (one line each).
-3. **Principles:** if a reason for leaving a finding as is, or something the user corrected, holds for other items too, add it to `docs/review-principles.md` as one line (`- principle — reason (item number)`). Do not add a principle that is already there. If a check can block it instead of prose, that is better (the `principle-encode-lessons-in-structure` skill). Look first, as principle candidates, at findings the judge marked 🔁 (the same kind recurring).
-4. Close only when everything is in place. If anything is missing, stop and say so.
+3. Close only when everything is in place. If anything is missing, stop and say so.
    - [ ] All Acceptance Criteria checked
    - [ ] All Definition of Done checked
    - For a line where the user chose "close with them left as not verified" in step 10, do not check it; write `(확인 못 함, 사용자가 받아들임)` (not verified, accepted by the user) at the end of the line. That line counts as in place. If the user chose "leave the item open", do not close the item and do not do step 12.

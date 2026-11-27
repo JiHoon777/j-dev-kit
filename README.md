@@ -102,7 +102,6 @@ claude plugin install workflow@j-dev-kit --scope project
 - **머지 방식 설정:** `.claude/workflow.json`(프로젝트)이나 `~/.claude/workflow.json`(사용자)의 `merge`에 적는다. `local`은 로컬에서 기준 브랜치에 머지하고 푸시한다. `pr`은 기준 브랜치를 대상으로 PR 을 만든다. `/kit-setup`이 물어서 써 준다. 정해 두면 `/start`는 마지막에 방식을 묻지 않고 그 방식으로 머지할지만 묻는다. 없으면 방식을 묻는다.
 - **모델 설정:** 하위 세션과 하위 에이전트가 쓸 모델과 노력을 역할(`session`, `implement`, `review`, `judge`, `mechanical`, `explore`)마다 `.claude/workflow.json`(프로젝트)이나 `~/.claude/workflow.json`(사용자)에 적는다. `/kit-setup`이 물어서 써 준다. 없으면 pstack 과 같은 기본값이다. 모두 Opus 이고, 하위 세션·구현·리뷰·판정은 노력 `xhigh`, 기계적 수정·탐색은 `high`다. Fable 은 그 일에 지목했거나 Opus 가 같은 지시문으로 두 번 실패했을 때만 쓴다. 메인 세션의 모델은 Claude Code 설정의 `model`·`effortLevel`이 정하고, `/kit-setup`이 그 키도 써 줄 수 있다.
 - **/kit-help:** 무엇을 언제 쓰는지 묻는다. 답과 보낼 명령 한 줄을 주고, 일은 시작하지 않는다.
-- **리뷰 원칙:** 그대로 두기로 한 지적과 사용자가 바로잡은 것은 `docs/review-principles.md`에 한 줄 원칙으로 모여 다음 리뷰에 쓰인다.
 
 </details>
 
@@ -190,7 +189,7 @@ scripts/test-*.sh                   검사 스크립트·검증 훅·플러그�
 
 검증 훅, `frontend-evaluator`, `design-reviewer`: Claude Code [hooks](https://code.claude.com/docs/en/hooks.md)(꼭 지킬 것은 지침이 아니라 훅으로), Anthropic [harness design](https://www.anthropic.com/engineering/harness-design-long-running-apps)(만든 쪽과 따로 둔 평가자가 실행 중인 앱을 직접 써 본다).
 
-실무자의 도구·단계, 바깥 판정, 리뷰 원칙, eval 로 덜어내기, 서베이: Felix Rieseberg 대담([영상](https://youtu.be/D-SVFneJ_Nk)), Lauren Tan([영상](https://www.youtube.com/watch?v=MN9dGgmLyso), 관련 제보 묶기·재현), Satya Nadella([영상](https://www.youtube.com/watch?v=0NE89Nzfk20), eval 을 남겨 모델이 바뀌면 다시 재기). 서베이의 조사 방식: Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system)(각도별 병렬 수집, 1차 출처), Hamel Husain [error analysis](https://hamel.dev/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html)(메모 → 범주 → 세기 → 포화), Teresa Torres [opportunity solution trees](https://www.producttalk.org/ai-opportunity-solution-trees/)(후보는 문제·필요로), Claude Code `/dedupe`(따로 거르기).
+실무자의 도구·단계, 바깥 판정, eval 로 덜어내기, 서베이: Felix Rieseberg 대담([영상](https://youtu.be/D-SVFneJ_Nk)), Lauren Tan([영상](https://www.youtube.com/watch?v=MN9dGgmLyso), 관련 제보 묶기·재현), Satya Nadella([영상](https://www.youtube.com/watch?v=0NE89Nzfk20), eval 을 남겨 모델이 바뀌면 다시 재기). 서베이의 조사 방식: Anthropic [multi-agent research system](https://www.anthropic.com/engineering/multi-agent-research-system)(각도별 병렬 수집, 1차 출처), Hamel Husain [error analysis](https://hamel.dev/blog/posts/evals-faq/why-is-error-analysis-so-important-in-llm-evals-and-how-is-it-performed.html)(메모 → 범주 → 세기 → 포화), Teresa Torres [opportunity solution trees](https://www.producttalk.org/ai-opportunity-solution-trees/)(후보는 문제·필요로), Claude Code `/dedupe`(따로 거르기).
 
 `ui-design`·`design-reviewer`: [Google DESIGN.md](https://github.com/google-labs-code/design.md), WCAG 2.2, Claude Code [artifacts](https://code.claude.com/docs/en/artifacts.md). 아이디어를 빌린 스킬: [emilkowalski/skills](https://github.com/emilkowalski/skills) `prototype`(이름과 축, 3~5개, 고를 때까지 멈춤), [impeccable](https://github.com/pbakaus/impeccable)(축 목록, 정체성 고정), [gstack](https://github.com/garrytan/gstack) `design-shotgun`(헤드라인 바꾸기 테스트), [OneRedOak/claude-code-workflows](https://github.com/OneRedOak/claude-code-workflows) `design-review`(폭별 실제 화면 리뷰).
 
