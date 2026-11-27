@@ -43,9 +43,8 @@
 
 **워크트리 따기:** 기준 브랜치에 있고 이 항목의 `w/` 브랜치가 아직 없으면, 새 워크트리를 따서 이 세션을 그리로 옮긴다. 이후 단계는 모두 그 워크트리에서 한다. `<이름>`은 `.md`를 뺀 항목 파일 이름이다(항목 없이 할 때는 `<짧은-영어-이름>`).
 
-1. `git check-ignore -q .claude/worktrees/`가 실패하면 `"$(git rev-parse --git-common-dir)/info/exclude"`에 `.claude/worktrees/` 한 줄을 더한다. 그러지 않으면 기준 폴더에 `?? .claude/`가 남아 12단계의 "깨끗한지" 확인에 걸린다. 이 파일은 이 저장소에만 있고 커밋되지 않는다.
-2. `git worktree add .claude/worktrees/<이름> -b w/<이름> <기준>`
-3. `EnterWorktree`에 그 경로를 줘서(`path`) 옮긴다. 도구가 없거나 거부하면 이후 명령을 그 폴더에서 돌린다.
+1. 별다른 지시가 없으면 `bash <scripts>/make-worktree.sh <기준> <이름>`을 돌린다. 기준 브랜치를 pull 해 최신으로 맞추고(upstream 이 없으면 건너뛴다), `.claude/worktrees/<이름>`에 `w/<이름>` 브랜치로 딴다. `.claude/worktrees/`가 무시되지 않으면 `.git/info/exclude`에 더한다(기준 폴더에 `?? .claude/`가 남아 12단계의 "깨끗한지" 확인에 걸리지 않게. 이 파일은 커밋되지 않는다). 첫 줄이 워크트리 경로다. 끝 값이 1 이면 pull 이 실패해 지금의 로컬 기준 브랜치에서 땄으니 출력한 이유를 알린다. 2 면 따지 못했으니 이유를 알리고 멈춘다.
+2. `EnterWorktree`에 그 경로를 줘서(`path`) 옮긴다. 도구가 없거나 거부하면 이후 명령을 그 폴더에서 돌린다.
 
 **이어 가기:** 항목 파일의 `Implementation Plan`, 체크된 Acceptance Criteria, `Implementation Notes`를 읽고 남은 단계부터 한다. 아래 목록을 위에서부터 보고 처음 맞는 줄을 따른다.
 

@@ -45,9 +45,8 @@ Finding the item: if there is no argument and the current branch is `w/<name>`, 
 
 **Making the worktree:** if you are on the base branch and this item's `w/` branch does not exist yet, make a new worktree and move this session into it. Do every later step in that worktree. `<name>` is the item file name without `.md` (`<short-english-name>` when working without an item).
 
-1. If `git check-ignore -q .claude/worktrees/` fails, add a `.claude/worktrees/` line to `"$(git rev-parse --git-common-dir)/info/exclude"`. Otherwise `?? .claude/` stays in the base folder and trips the "is it clean" check in step 12. This file exists only in this repository and is not committed.
-2. `git worktree add .claude/worktrees/<name> -b w/<name> <base>`
-3. Move there by giving that path to `EnterWorktree` (`path`). If the tool is missing or refuses, run later commands in that folder.
+1. Unless told otherwise, run `bash <scripts>/make-worktree.sh <base> <name>`. It pulls the base branch up to date (skipped with no upstream) and makes the worktree at `.claude/worktrees/<name>` on a `w/<name>` branch. If `.claude/worktrees/` is not ignored, it adds it to `.git/info/exclude` (so `?? .claude/` does not stay in the base folder and trip the "is it clean" check in step 12; this file is not committed). The first line is the worktree path. Exit code 1 means the pull failed and the worktree was made from the local base branch as it is: say the reason it printed. Exit code 2 means it could not make the worktree: say the reason and stop.
+2. Move there by giving that path to `EnterWorktree` (`path`). If the tool is missing or refuses, run later commands in that folder.
 
 **Continuing:** read the item file's `Implementation Plan`, its checked Acceptance Criteria, and `Implementation Notes`, and resume from the step that remains. Read the list below from the top and follow the first line that matches.
 

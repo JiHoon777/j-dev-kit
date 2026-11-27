@@ -91,7 +91,7 @@ For `stack:`, see [Stacks](#stacks) above. The superpowers plugin is not used. I
 ```
 
 - **What it asks:** only five things. Work that cannot be undone or that goes outside (merging, pushing to the base or a deploy branch, deleting, a remote DB, deploying), work that changes settings outside the project or shared settings (CLAUDE.md), product or taste decisions that code or a run cannot settle, choosing what to do, and states that could lose work. It decides the rest and writes it into the item file as `decision — reason — cost if wrong`. It does not get the plan approved. If you say "let me see the plan", it shows the plan and waits.
-- **Sub-sessions:** `/backlog` opens a session and only reports its link. The sub-session's questions are shown in the starting session, which passes on the answers and, when the sub-session finishes, checks the result and reports first. Where sessions cannot be opened (outside the desktop app), or with `--here`, the work happens in this session. `/start` does not open a sub-session. It always works in this session, after moving into a new worktree off the base branch (on a `w/<item>` branch).
+- **Sub-sessions:** `/backlog` opens a session and only reports its link. The sub-session's questions are shown in the starting session, which passes on the answers and, when the sub-session finishes, checks the result and reports first. Where sessions cannot be opened (outside the desktop app), or with `--here`, the work happens in this session. `/start` does not open a sub-session. It always works in this session, after pulling the base branch up to date and moving into a new worktree off it (on a `w/<item>` branch).
 - **/start <task>:** given words that are not a backlog item, it does not create an item and does the work right away in this session. In the first message it restates the goal, the smallest change, and the condition for calling it done, then goes on. Verification and the last message are the same, and the review is sized to the change.
 - **/backlog:** shows the full Acceptance Criteria of the item draft and gets approval. It is the only contract a person checks before implementation.
 - **/backlog --survey:** splits the goal into research questions and researches the repository and the outside (official docs, issues, precedents, practitioners' writing) with subagents in parallel. The collector agent has only read and web tools and note writing; the judge agent has only read and web tools. It shows the candidates a judge agent filtered, together with draft ACs, and writes only the ones picked. The report is committed to `docs/backlog/references/`. To leave out the outside, `--internal`.
@@ -163,7 +163,7 @@ Then open a new session. If a plugin's `version` is unchanged, the update is not
 
 ```
 plugins/workflow/skills/backlog/    SKILL.md + references/survey.md + scripts/next-number.sh
-plugins/workflow/skills/start/      SKILL.md (asking criteria, index) + references/procedure.md, settings.md, worker.md + playbooks/ (8) + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/start/      SKILL.md (asking criteria, index) + references/procedure.md, settings.md, worker.md + playbooks/ (8) + scripts/make-worktree.sh, pick-port.sh, base-tests.sh
 plugins/workflow/skills/<skill>/    the 16 skills the index points to (architect, how, why, deslop and more). You can also invoke them directly (`/architect`)
 plugins/workflow/skills/principle-*/  the 24 principles
 plugins/workflow/THIRD_PARTY_NOTICES.md  copyright notices for the imported texts (pstack, cursor-team-kit)
