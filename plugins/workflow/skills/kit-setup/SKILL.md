@@ -49,7 +49,7 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 
 ## 4. 스택에 맞는 스킬과 플러그인 설치
 
-묻지 않고 설치한다(`start` 스킬의 묻는 기준: 설치는 묻지 않는다). 아래 표에서 프로젝트에 맞는 줄을 모두 고르고, 아직 없는 것만 설치한다. 공식 스킬과 플러그인을 까는 곳은 여기뿐이다. `/start`의 스택 점검은 깔지 않고, 빠진 것이 있으면 이 스킬을 돌리라고 알린다.
+묻지 않고 설치한다(`start` 스킬의 설치 규칙이 이 표를 예외로 적어 둔다). 아래 표에서 프로젝트에 맞는 줄을 모두 고르고, 아직 없는 것만 설치한다. 공식 스킬과 플러그인을 까는 곳은 여기뿐이다. `/start`의 스택 점검은 깔지 않는다. Svelte, React, React Router, Supabase 의 공식 스킬이 빠졌으면 이 스킬을 돌리라고 알리기만 한다.
 
 조건의 이름은 `package.json`의 `dependencies`·`devDependencies`의 키와 정확히 같아야 한다(`react`는 `react-dom`이나 `@types/react`에 맞지 않는다). 프런트엔드 프레임워크는 react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro 가운데 하나가 있는 것이다. `react-native`나 `expo`가 있고 `react-dom`이 없으면 웹 프로젝트가 아니니 스택이 frontend 인 줄을 모두 건너뛴다.
 
@@ -71,7 +71,7 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 - `supabase` 플러그인에는 MCP 가 같이 온다. 로그인하면 계정의 모든 프로젝트에 읽기·쓰기 도구로 붙는다. 그렇다는 것과 끄는 법(`/mcp`)을 6단계에서 알린다.
 - `typescript-lsp`는 `typescript-language-server`가 PATH 에 있어야 돈다. 없으면 전역 설치하지 않고 명령(`npm install -g typescript-language-server typescript`)을 6단계에서 알린다.
 - `next`만을 위해 따로 깔 것은 없다. 16.3 이상은 `next dev`가 `AGENTS.md`를 만든다. 그보다 낮으면 `npx @next/codemod@canary agents-md`를 돌리면 된다고 알린다.
-- 커밋: 설치 전에 `git status --short -- .claude/`가 비어 있는지 본다. 비어 있지 않으면 설치는 하되 커밋하지 않고, 커밋하지 않은 변경이 있었다고 알린다. 비어 있었으면 설치로 바뀐 경로(`git status --short`로 확인한다. 예: `.claude/settings.json`, `.claude/skills/`)만 `chore: 스택 스킬과 플러그인 설치`로 커밋한다. 푸시하지 않는다. 기준 브랜치가 아닌 곳이면 그 브랜치에 커밋된다고 알린다.
+- 커밋: 설치 전에 `git status --short`의 출력을 적어 둔다. `.claude/` 아래에 이미 변경이 있었으면 설치는 하되 커밋하지 않고, 커밋하지 않은 변경이 있었다고 알린다. 없었으면 설치 뒤의 `git status --short`에 새로 생긴 경로(예: `.claude/settings.json`, `.claude/skills/`)만 `chore: 스택 스킬과 플러그인 설치`로 커밋한다. 푸시하지 않는다. 기준 브랜치가 아닌 곳이면 그 브랜치에 커밋된다고 알린다.
 
 ## 5. 검증 스킬
 
@@ -79,4 +79,4 @@ workflow 플러그인의 설정을 쓴다. 형식과 역할은 `${CLAUDE_SKILL_D
 
 ## 6. 알리기
 
-쓴 파일, 역할마다 정한 값, 머지 방식, 설치한 것과 설치하지 못한 것, 언제부터 적용되는지를 알린다. 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정과 설치한 플러그인은 새 세션부터다. 다시 바꾸려면 `/kit-setup`을 또 부르면 된다.
+쓴 파일, 역할마다 정한 값, 머지 방식, 설치한 것과 설치하지 못한 것, 4단계가 알리라고 한 것(Supabase MCP 가 붙는 범위와 끄는 법, `typescript-language-server` 설치 명령, Next 문서 명령, 커밋하지 않았으면 그 이유, 기준 브랜치가 아닌 곳에 커밋한 것), 언제부터 적용되는지를 알린다. 역할별 설정은 다음에 세션이나 에이전트를 띄울 때부터, 메인 세션 설정과 설치한 플러그인은 새 세션부터다. 다시 바꾸려면 `/kit-setup`을 또 부르면 된다.

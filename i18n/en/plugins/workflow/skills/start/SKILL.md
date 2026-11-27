@@ -53,7 +53,7 @@ Rules in the project CLAUDE.md take precedence over this skill.
 Ask only these five. Every question point in the `backlog` skill and in the procedure follows these criteria.
 
 1. Work that cannot be undone or that goes outside: merging, pushing to the base branch or a deploy branch, deleting, a remote DB, deploying. Other branches (work branches) are pushed without asking.
-2. Work that changes settings outside the project or shared settings: CLAUDE.md, permissions and hooks in `.claude/settings.json`, settings in the home folder (`~/.claude/`, the shell, global git). Installs follow the install rules below.
+2. Work that changes settings outside the project or shared settings: CLAUDE.md, permission and hook settings (`.claude/settings.json`, `.claude/settings.local.json`), settings in the home folder (`~/.claude/`, the shell, global git). Installs follow the install rules below.
 3. Product or taste decisions that code or a run cannot settle.
 4. Choosing what to do: which items to create, how far to go.
 5. States that could lose work: uncommitted changes, a branch whose owner is unknown.
@@ -67,7 +67,7 @@ Do not ask anything else. Decide, and go on while writing down what was decided 
   - If the user decided one (Acceptance Criteria, `### 사용자가 정한 것` (decided by the user)), use it. If not, pick a proven one. What the plan names goes through this bar too.
   - A proven one meets all three: the official docs of that tool or framework guide its install by that name, the repository listed in the registry belongs to that project, and it has a release within the last year. Do not install a name seen only in web posts or issues.
   - Write what you installed and why (name, version, source) in the decision lines, and report it in the last message.
-  - Official skills and plugins are installed by `/kit-setup`. Do not install them during `/start`.
+  - Official skills and plugins are installed by `/kit-setup`. Do not install them during `/start`. The commands in the `/kit-setup` step 4 table are an exception to "inside the project, at a pinned version" above. They also write to the plugin store in the user folder, and the version they fetch is not pinned.
 - Do not ask questions like "Shall I go on to the next step?"
 - If `git revert` or removing a worktree can undo it, it can be undone.
 - If the user says "let me see the plan" or "stop here", do so.

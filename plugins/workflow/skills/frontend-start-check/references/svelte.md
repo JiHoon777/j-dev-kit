@@ -4,7 +4,7 @@ package.json 에 `svelte`가 있을 때 `frontend-start-check`가 읽는다. 아
 
 ## 지킬 것
 
-- `.svelte`, `.svelte.ts`, `.svelte.js`를 만들거나 고칠 때 공식 Svelte 플러그인(`svelte@svelte`)의 `svelte-code-writer`와 `svelte-core-bestpractices` 스킬을 부르고 따른다. 그 플러그인의 `svelte-file-editor` 에이전트는 쓰지 않는다. 플러그인이 설치돼 있지 않으면 설치하지 않는다. 아래 규칙만으로 가고, "공식 Svelte 플러그인 없음. `/kit-setup`을 돌리면 설치된다"를 지킬 것에 적어 돌려준다(`start`가 마지막 메시지에 알린다). CLAUDE.md `## 작업 설정`의 `- 공식 스킬 설치 안 함:` 줄에 `svelte`가 있으면 그 말은 적지 않는다.
+- `.svelte`, `.svelte.ts`, `.svelte.js`를 만들거나 고칠 때 공식 Svelte 플러그인(`svelte@svelte`)의 `svelte-code-writer`와 `svelte-core-bestpractices` 스킬을 부르고 따른다. 그 플러그인의 `svelte-file-editor` 에이전트는 쓰지 않는다. 그 스킬을 부를 수 없으면 설치하지 않고 아래 규칙만으로 간다. 그리고 지킬 것에 한 줄 적어 돌려준다(`start`가 마지막 메시지에 알린다). 설치돼 있지 않으면 "공식 Svelte 플러그인 없음. `/kit-setup`을 돌리면 설치된다", 이 세션을 연 뒤에 설치돼 아직 잡히지 않았으면 "공식 Svelte 플러그인은 새 세션부터 쓰인다"다. CLAUDE.md `## 작업 설정`의 `- 공식 스킬 설치 안 함:` 줄에 `svelte`가 있으면 그 말은 적지 않는다.
 - `svelte-autofixer`가 손대지 않은 기존 코드에서 낸 문제는 고치지 않고 알리기만 한다(항목 범위 밖이다). 이번에 쓴 코드에서 나온 문제는 고친다.
 - 다른 사람이 쓴 값을 `{@html}`로 넣지 않는다.
 - 비밀 값이 필요한 코드는 서버 파일(`+page.server.*`, `+server.*`)에만 둔다(`$env/*/private`는 서버 파일에서만). `load`는 권한을 확인하고 다른 사용자의 데이터를 돌려주지 않는다. form action 실패는 `fail()`.

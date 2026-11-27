@@ -48,7 +48,7 @@ If cost is a worry, say where the tokens go. They go to sub-sessions, review age
 - `/start <task>`: does the work right away with no item. It runs in this session.
 - Plain words work too. "Put this in the backlog", "start 001", "review this branch and merge it".
 
-`/start` asks only five things (work that cannot be undone, shared settings, product or taste decisions, what to do, and states that could lose work). It decides the rest and writes it down as `decision — reason — cost if wrong`. There is no plan approval. To see the plan, say "let me see the plan". At the end it asks the remaining decisions and the merge, all at once. If how to merge is set with `/kit-setup`, it does not ask how; it asks only whether to merge that way.
+`/start` asks only five things (work that cannot be undone, settings outside the project or shared settings, product or taste decisions, what to do, and states that could lose work). It decides the rest and writes it down as `decision — reason — cost if wrong`. There is no plan approval. To see the plan, say "let me see the plan". At the end it asks the remaining decisions and the merge, all at once. If how to merge is set with `/kit-setup`, it does not ask how; it asks only whether to merge that way.
 
 A good request states the goal and how to know it is done. It does not list skills. The procedure calls the skills it needs in order.
 

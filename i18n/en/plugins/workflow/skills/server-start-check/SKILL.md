@@ -39,7 +39,7 @@ Return only what applies to this item.
 - Do not leave passwords, tokens, keys, or connection strings in logs or error responses.
 - Do not run commands that change the real (remote) database or a deployment environment (`supabase db push`, `--linked` changes, and so on). If needed, tell the user.
 - The same goes for the write tools of the Supabase MCP (it comes with the official Supabase plugin). Running SQL, applying migrations, deploying Edge Functions, and merging branches change the remote, so do not use them. If needed, tell the user.
-- If Supabase is used and the official Supabase skills the reviewers invoke (`supabase`, `supabase-postgres-best-practices`) are not installed, do not install them. Return "No official Supabase skills. Running `/kit-setup` installs them" under what to follow (`start` reports it in the last message). Do not write that when the `- 공식 스킬 설치 안 함:` (official skills not installed) line under `## 작업 설정` (work settings) in CLAUDE.md has `supabase`.
+- If Supabase is used and the official Supabase skills the reviewers invoke (`supabase`, `supabase-postgres-best-practices`) cannot be invoked, do not install anything. Return one line under what to follow (`start` reports it in the last message). If they are not installed: "No official Supabase skills. Running `/kit-setup` installs them". If they were installed after this session opened and are not picked up yet: "The official Supabase skills take effect from a new session". Do not write that when the `- 공식 스킬 설치 안 함:` (official skills not installed) line under `## 작업 설정` (work settings) in CLAUDE.md has `supabase`.
 
 ## 2. Put in the plan / ask
 

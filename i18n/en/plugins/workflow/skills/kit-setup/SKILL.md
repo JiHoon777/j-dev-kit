@@ -51,7 +51,7 @@ Do not ask about what is already settled.
 
 ## 4. Install the skills and plugins that fit the stack
 
-Install without asking (the asking criteria in the `start` skill: do not ask about installs). From the table below pick every row that fits the project, and install only what is missing. This is the only place that installs official skills and plugins. The stack checks in `/start` do not install them; if something is missing, they say to run this skill.
+Install without asking (the install rules in the `start` skill list this table as an exception). From the table below pick every row that fits the project, and install only what is missing. This is the only place that installs official skills and plugins. The stack checks in `/start` do not install them. If the official Svelte, React, React Router or Supabase skills are missing, they only say to run this skill.
 
 A name in a condition must match a key in `dependencies` or `devDependencies` of `package.json` exactly (`react` does not match `react-dom` or `@types/react`). A frontend framework means one of react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro. If `react-native` or `expo` is present and `react-dom` is not, it is not a web project, so skip every row whose stack is frontend.
 
@@ -73,7 +73,7 @@ A name in a condition must match a key in `dependencies` or `devDependencies` of
 - The `supabase` plugin comes with an MCP server. Once logged in, it attaches to every project in the account with read and write tools. Report that, and how to turn it off (`/mcp`), in step 6.
 - `typescript-lsp` runs only when `typescript-language-server` is on the PATH. If it is not, do not install it globally; report the command (`npm install -g typescript-language-server typescript`) in step 6.
 - There is nothing to install just for `next`. From 16.3 on, `next dev` creates `AGENTS.md`. Below that, say that `npx @next/codemod@canary agents-md` does it.
-- Commit: before installing, check that `git status --short -- .claude/` is empty. If it is not, install but do not commit, and say that there were uncommitted changes. If it was empty, commit only the paths the installs changed (check with `git status --short`; for example `.claude/settings.json`, `.claude/skills/`) with `chore: 스택 스킬과 플러그인 설치` (install stack skills and plugins). Do not push. If this is not the base branch, say that the commit goes onto that branch.
+- Commit: before installing, note the output of `git status --short`. If there were already changes under `.claude/`, install but do not commit, and say that there were uncommitted changes. If there were none, commit only the paths that are new in `git status --short` after the installs (for example `.claude/settings.json`, `.claude/skills/`) with `chore: 스택 스킬과 플러그인 설치` (install stack skills and plugins). Do not push. If this is not the base branch, say that the commit goes onto that branch.
 
 ## 5. Verification skill
 
@@ -81,4 +81,4 @@ If one is to be created, read the `create-verification-skill` skill (`${CLAUDE_S
 
 ## 6. Report
 
-Report the files written, the value set for each role, how to merge, what was installed and what could not be installed, and when they take effect. Per-role settings apply from the next session or agent launched, and main session settings and installed plugins from a new session. To change them again, invoke `/kit-setup` once more.
+Report the files written, the value set for each role, how to merge, what was installed and what could not be installed, what step 4 said to report (the scope the Supabase MCP attaches with and how to turn it off, the `typescript-language-server` install command, the Next docs command, why nothing was committed if so, a commit made off the base branch), and when they take effect. Per-role settings apply from the next session or agent launched, and main session settings and installed plugins from a new session. To change them again, invoke `/kit-setup` once more.

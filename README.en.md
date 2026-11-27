@@ -60,7 +60,7 @@ claude plugin install workflow@j-dev-kit --scope project
 /kit-setup
 ```
 
-It asks which model and effort each role uses and how to merge, and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself. It looks at the project's stack and installs the official skills and plugins that fit it ("Nice-to-have plugins"), without asking. To keep one from being installed, write `- 공식 스킬 설치 안 함: <name>` (official skills not installed) in the work settings section of CLAUDE.md, the `## Work settings` section shown below. The names are `frontend-design`, `chrome-devtools-mcp`, `modern-web-guidance`, `typescript-lsp`, `svelte`, `react`, `react-router`, `supabase`. Installs happen only here. `/start` does not install them, and says so if one is missing.
+It asks which model and effort each role uses and how to merge, and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself. It looks at the project's stack and installs the official skills and plugins that fit it ("Nice-to-have plugins"), without asking. To keep one from being installed, write `- 공식 스킬 설치 안 함: <name>` (official skills not installed) in the work settings section of CLAUDE.md, the `## Work settings` section shown below. The names are `frontend-design`, `chrome-devtools-mcp`, `modern-web-guidance`, `typescript-lsp`, `svelte`, `react`, `react-router`, `supabase`. Installs happen only here. `/start` does not install them. It only says so when the official Svelte, React, React Router or Supabase skills are missing.
 
 ```markdown
 ## Work settings
