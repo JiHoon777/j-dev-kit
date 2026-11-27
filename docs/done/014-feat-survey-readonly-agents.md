@@ -96,7 +96,7 @@ claude plugin eval <사본>/workflow --ablation none --scaffold --trust-plugin -
 
 **미룬 것**
 
-- 수집 에이전트의 Write 에 경로 제한이 없다 → 018.
+- 수집 에이전트의 Write 에 경로 제한이 없다. 항목(018)으로 만들었다가 지웠다. 일어나기 어렵고 git 으로 되돌릴 수 있어서다. 문제가 느껴지면 그때 한다(사용자, 2026-11-27).
 
 **그대로 둔 지적과 이유**
 
