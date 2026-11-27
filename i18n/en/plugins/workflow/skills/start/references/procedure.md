@@ -190,7 +190,7 @@ Stop here once. Always ask about the merge. Put every remaining decision into th
 How to write it:
 
 - On the first line, write what is waiting for the user.
-- Then what was done, briefly: what changed, the result per AC, what was fixed in review (the 🔴 and 🟡 counts and one line each), N dropped by the judge, N pre-existing problems, N ⚪, what was installed (name, version, source, reason), install commands not run but reported, and official skills the stack checks reported missing.
+- Then what was done, briefly: what changed, the result per AC, what was fixed in review (the 🔴 and 🟡 counts and one line each), N dropped by the judge, N pre-existing problems, N ⚪, what was installed (name, version, source, reason), install commands not run but reported, and official skills the stack checks reported (missing, disabled, from a new session).
 - Attach a recommendation, the evidence, and the risk to each decision. Write it so that the user can decide from the reply alone.
   - Findings for a person to decide: the finding, the options, the recommendation
   - "Later" candidates: whether to make them new items. Attach a title and draft ACs to each candidate
