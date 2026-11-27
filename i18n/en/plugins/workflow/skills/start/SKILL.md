@@ -27,7 +27,7 @@ Implement one backlog item, or one task the user wrote directly, through to the 
 
      Model and effort: follow the `session` role in `${CLAUDE_SKILL_DIR}/references/settings.md`. With no settings, the defaults apply (Opus, effort `xhigh`).
 
-  4. That session cannot see this conversation. The brief is two lines, "Invoke the `start` skill with `<item> --here` and follow its procedure" and "Ask only what falls under that skill's asking criteria. Write questions completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any).
+  4. That session cannot see this conversation. The brief is two lines, "Invoke the `start` skill with `<item> --here` and follow its procedure" and "Ask only what falls under that skill's asking criteria. Write questions completely in the last message of the turn, then stop", plus any background the user gave or decisions made in this conversation (only if there are any). Do not put the `worker.md` line in this brief. The sub-session has to ask the user, and `worker.md` says not to ask a person.
   5. Report the session link. That work does not happen in this session; this session directs it.
      - When the sub-session ends a turn, show any question to the user in full and pass the answer to that session in the user's own words. Check the result (commits, changed files) yourself and report it before the user asks.
      - The sub-session follows the asking criteria below too. This session does not add questions.
@@ -53,7 +53,7 @@ Rules in the project CLAUDE.md take precedence over this skill.
 Ask only these five. Every question point in the `backlog` skill and in the procedure follows these criteria.
 
 1. Work that cannot be undone or that goes outside: merging, pushing to the base branch or a deploy branch, deleting, a remote DB, deploying. Other branches (work branches) are pushed without asking.
-2. Work that changes shared settings: CLAUDE.md.
+2. Work that changes settings outside the project or shared settings: CLAUDE.md, permissions and hooks in `.claude/settings.json`, settings in the home folder (`~/.claude/`, the shell, global git). Installs follow the install rules below.
 3. Product or taste decisions that code or a run cannot settle.
 4. Choosing what to do: which items to create, how far to go.
 5. States that could lose work: uncommitted changes, a branch whose owner is unknown.
@@ -61,7 +61,13 @@ Ask only these five. Every question point in the `backlog` skill and in the proc
 Do not ask anything else. Decide, and go on while writing down what was decided and why (full text: the `principle-never-block-on-the-human` skill).
 
 - Do not ask about a fork that running something would settle (structure, library, approach). Run it, decide, and write down the result and the evidence (`playbooks/prototype.md`).
-- Do not ask about installs. When a new dependency, tool or official skill is needed, use the one the item or the plan names. If none is named, pick a proven one (widely used and maintained), write what you installed and why in the decision lines, and report it in the last message.
+- Do not ask about installs, but only within the install rules below.
+  - Install inside the project, at a pinned version: dependencies written to the lockfile, `npx <package>@<version>`.
+  - Do not run global installs, `sudo`, or a downloaded script run directly (`curl | sh`). If one is needed, report the command in the last message.
+  - If the user decided one (Acceptance Criteria, `### 사용자가 정한 것` (decided by the user)), use it. If not, pick a proven one. What the plan names goes through this bar too.
+  - A proven one meets all three: the official docs of that tool or framework guide its install by that name, the repository listed in the registry belongs to that project, and it has a release within the last year. Do not install a name seen only in web posts or issues.
+  - Write what you installed and why (name, version, source) in the decision lines, and report it in the last message.
+  - Official skills and plugins are installed by `/kit-setup`. Do not install them during `/start`.
 - Do not ask questions like "Shall I go on to the next step?"
 - If `git revert` or removing a worktree can undo it, it can be undone.
 - If the user says "let me see the plan" or "stop here", do so.
@@ -110,7 +116,7 @@ The skills and principles are other skills of this plugin. Their bodies are at `
 - When launching an agent → write `먼저 <이 스킬 폴더의 절대 경로>/references/worker.md 를 읽는다.` (read `<absolute path of this skill's folder>/references/worker.md` first) as the first line of the brief, and open the next line with the goal. Skills do not fire on their own, so this is the only way the rules reach a subagent. Give an agent you delegate implementation to the absolute path of this file as well, so it reads the principles ("When delegating" in step 5 of the procedure).
 - Before committing → the `deslop` skill. Before the review, if code changed → the `no-comments` skill.
 - Opening a PR → `playbooks/opening-a-pr.md`. Step 12 of the procedure calls it when the merge is by PR.
-- Prose (replies, item files, reports) → the `unslop` skill. Docs and commit messages → the `technical-writing` skill.
+- Prose (replies, item files, reports) → the `unslop` skill. Docs, PR bodies and commit messages → the `technical-writing` skill.
 - Merge conflicts → the `fix-merge-conflicts` skill.
 - Review findings → check each one against the code and judge it. The procedure's judge agent does this.
 

@@ -60,7 +60,7 @@ claude plugin install workflow@j-dev-kit --scope project
 /kit-setup
 ```
 
-It asks which model and effort each role uses and how to merge, and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself. It looks at the project's stack and installs the official skills and plugins that fit it ("Nice-to-have plugins"), without asking. To keep one from being installed, write `- 공식 스킬 설치 안 함: <name>` under `## 작업 설정` in CLAUDE.md.
+It asks which model and effort each role uses and how to merge, and writes them to `.claude/workflow.json`. If the project CLAUDE.md has no work settings, it finds them and asks whether to add them. You can also write them yourself. It looks at the project's stack and installs the official skills and plugins that fit it ("Nice-to-have plugins"), without asking. To keep one from being installed, write `- 공식 스킬 설치 안 함: <name>` (official skills not installed) in the work settings section of CLAUDE.md, the `## Work settings` section shown below. The names are `frontend-design`, `chrome-devtools-mcp`, `modern-web-guidance`, `typescript-lsp`, `svelte`, `react`, `react-router`, `supabase`. Installs happen only here. `/start` does not install them, and says so if one is missing.
 
 ```markdown
 ## Work settings
@@ -91,7 +91,7 @@ For `stack:`, see [Stacks](#stacks) above. The superpowers plugin is not used. I
 /backlog --survey Reduce frequent errors logs/  # research the repo and the outside, show item candidates as a report
 ```
 
-- **What it asks:** only five things. Work that cannot be undone or that goes outside (merging, pushing to the base or a deploy branch, deleting, a remote DB, deploying), work that changes shared settings (CLAUDE.md), product or taste decisions that code or a run cannot settle, choosing what to do, and states that could lose work. It decides the rest and writes it into the item file as `decision — reason — cost if wrong`. It does not get the plan approved. If you say "let me see the plan", it shows the plan and waits.
+- **What it asks:** only five things. Work that cannot be undone or that goes outside (merging, pushing to the base or a deploy branch, deleting, a remote DB, deploying), work that changes settings outside the project or shared settings (CLAUDE.md, permission and hook settings, settings in the home folder), product or taste decisions that code or a run cannot settle, choosing what to do, and states that could lose work. It decides the rest and writes it into the item file as `decision — reason — cost if wrong`. It does not get the plan approved. If you say "let me see the plan", it shows the plan and waits.
 - **Sub-sessions:** `/backlog` and `/start` open a session and only report its link. `/start` runs in a new worktree off the base branch (on a `w/<item>` branch). The sub-session's questions are shown in the starting session, which passes on the answers and, when the sub-session finishes, checks the result and reports first. Where sessions cannot be opened (outside the desktop app), the work happens in this session. To run several items together, call `/start` several times.
 - **/start <task>:** given words that are not a backlog item, it does not create an item and does the work right away in this session. In the first message it restates the goal, the smallest change, and the condition for calling it done, then goes on. Verification and the last message are the same, and the review is sized to the change.
 - **/backlog:** shows the full Acceptance Criteria of the item draft and gets approval. It is the only contract a person checks before implementation.
@@ -164,7 +164,7 @@ Then open a new session. If a plugin's `version` is unchanged, the update is not
 
 ```
 plugins/workflow/skills/backlog/    SKILL.md + references/survey.md + scripts/next-number.sh
-plugins/workflow/skills/start/      SKILL.md (asking criteria, index) + references/procedure.md, worker.md + playbooks/ (8) + scripts/pick-port.sh, base-tests.sh
+plugins/workflow/skills/start/      SKILL.md (asking criteria, index) + references/procedure.md, settings.md, worker.md + playbooks/ (8) + scripts/pick-port.sh, base-tests.sh
 plugins/workflow/skills/<skill>/    the 16 skills the index points to (architect, how, why, deslop and more). You can also invoke them directly (`/architect`)
 plugins/workflow/skills/principle-*/  the 24 principles
 plugins/workflow/THIRD_PARTY_NOTICES.md  copyright notices for the imported texts (pstack, cursor-team-kit)

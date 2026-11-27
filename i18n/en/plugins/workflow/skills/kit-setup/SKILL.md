@@ -23,7 +23,7 @@ The only asking is the one time in step 2 below. Attach a recommendation and its
 - Main session: this session's model, and where the `model` and `effortLevel` keys are written (`.claude/settings.local.json`, `.claude/settings.json`, `~/.claude/settings.json`). Look only at these keys.
 - `## 작업 설정` (work settings) in the project CLAUDE.md: base branch, verify command, document language, `stack:`.
 - Project verification skill: whether `.claude/skills/verify-*/` exists, and whether CLAUDE.md has `- 검증 스킬: 안 씀` (verification skill: not used).
-- Stack and what is installed: the conditions in the step 4 table (dependencies in `package.json`, `tsconfig.json`, `supabase/config.toml`) and the plugins and skills already installed (`claude plugin list`, `.claude/skills/`, `~/.claude/skills/`). In a monorepo, look at each app and package.
+- Stack and what is installed: the conditions in the step 4 table (dependencies in `package.json`, `tsconfig.json`, `supabase/config.toml`) and the plugins and skills already installed (`claude plugin list --json`, `.claude/skills/`, `~/.claude/skills/`). Match plugins by the name before the `@`. A plugin from a different marketplace is still the same plugin. Count a plugin as installed only if its scope is user or it belongs to this project. In a monorepo, look at each app and package.
 
 ## 2. Show, then ask everything at once
 
@@ -51,28 +51,29 @@ Do not ask about what is already settled.
 
 ## 4. Install the skills and plugins that fit the stack
 
-Install without asking (the asking criteria in the `start` skill: do not ask about installs). From the table below pick every row that fits the project, and install only what is missing. The stack checks in `/start` also install what is missing, but doing it here in one pass keeps the first item from being slowed by installs.
+Install without asking (the asking criteria in the `start` skill: do not ask about installs). From the table below pick every row that fits the project, and install only what is missing. This is the only place that installs official skills and plugins. The stack checks in `/start` do not install them; if something is missing, they say to run this skill.
 
-A frontend framework means one of react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro in the `dependencies` or `devDependencies` of `package.json`.
+A name in a condition must match a key in `dependencies` or `devDependencies` of `package.json` exactly (`react` does not match `react-dom` or `@types/react`). A frontend framework means one of react, next, vue, nuxt, svelte, @sveltejs/kit, solid-js, @angular/core, astro. If `react-native` or `expo` is present and `react-dom` is not, it is not a web project, so skip every row whose stack is frontend.
 
-| Condition | Install | Command |
-| --- | --- | --- |
-| There is a frontend framework | frontend-design | `claude plugin install frontend-design@anthropic-plugin-directory --scope project` |
-| There is a frontend framework | Chrome DevTools | `claude plugin marketplace add ChromeDevTools/chrome-devtools-mcp --scope project`, `claude plugin install chrome-devtools-mcp@chrome-devtools-plugins --scope project` |
-| There is a frontend framework | modern-web-guidance | `claude plugin marketplace add GoogleChrome/modern-web-guidance --scope project`, `claude plugin install modern-web-guidance@googlechrome --scope project` |
-| There is a `tsconfig.json`, or `typescript` is a dependency | typescript-lsp | `claude plugin install typescript-lsp@anthropic-plugin-directory --scope project` |
-| `svelte` is present | Official Svelte | `claude plugin marketplace add sveltejs/ai-tools --scope project`, `claude plugin install svelte@svelte --scope project` |
-| `react` is present | Vercel React skills | `npx -y skills@1.7.5 add vercel-labs/agent-skills --skill vercel-react-best-practices --skill vercel-composition-patterns -a claude-code` |
-| `react-router` is present | React Router skill | `npx -y skills@1.7.5 add https://github.com/remix-run/react-router --skill react-router -a claude-code` |
-| There is a `supabase/config.toml`, or an `@supabase/` package | Official Supabase | `claude plugin install supabase@anthropic-plugin-directory --scope project` |
+| Name | Stack | Condition | Command |
+| --- | --- | --- | --- |
+| `frontend-design` | frontend | There is a frontend framework | `claude plugin install frontend-design@anthropic-plugin-directory --scope project` |
+| `chrome-devtools-mcp` | frontend | There is a frontend framework | `claude plugin marketplace add ChromeDevTools/chrome-devtools-mcp --scope project`, `claude plugin install chrome-devtools-mcp@chrome-devtools-plugins --scope project` |
+| `modern-web-guidance` | frontend | There is a frontend framework | `claude plugin marketplace add GoogleChrome/modern-web-guidance --scope project`, `claude plugin install modern-web-guidance@googlechrome --scope project` |
+| `typescript-lsp` | common | There is a `tsconfig.json` at the repository root or at an app or package root, or `typescript` is present | `claude plugin install typescript-lsp@anthropic-plugin-directory --scope project` |
+| `svelte` | frontend | `svelte` is present | `claude plugin marketplace add sveltejs/ai-tools --scope project`, `claude plugin install svelte@svelte --scope project` |
+| `react` | frontend | `react` is present | `npx -y skills@1.7.5 add vercel-labs/agent-skills --skill vercel-react-best-practices --skill vercel-composition-patterns -a claude-code` |
+| `react-router` | frontend | `react-router` is present | `npx -y skills@1.7.5 add https://github.com/remix-run/react-router --skill react-router -a claude-code` |
+| `supabase` | server | There is a `supabase/config.toml`, or a package whose name starts with `@supabase/` | `claude plugin install supabase@anthropic-plugin-directory --scope project` |
 
-- Do not install anything named on the `- 공식 스킬 설치 안 함:` (official skills not installed) line under `## 작업 설정` (work settings) in CLAUDE.md.
-- If CLAUDE.md has a `stack:` line, skip the rows of stacks it does not list.
-- Install only with the commands above. Do not edit the plugin keys in settings files by hand.
-- If a command fails, do not stop. Report what failed and why in step 6.
-- The official Supabase plugin comes with an MCP server. Say that it can be turned off in `/mcp`.
-- If `next` is present there is nothing to install. From 16.3 on, `next dev` creates `AGENTS.md`. Below that, say that `npx @next/codemod@canary agents-md` does it.
-- If the installs changed project files (`.claude/settings.json`, `.claude/skills/`), commit with `chore: 스택 스킬과 플러그인 설치` (install stack skills and plugins). Do not push.
+- If a name from the table above is on the `- 공식 스킬 설치 안 함:` (official skills not installed) line under `## 작업 설정` (work settings) in CLAUDE.md, do not install that row (for example `- 공식 스킬 설치 안 함: supabase, chrome-devtools-mcp`).
+- If CLAUDE.md has a `stack:` line, skip the rows of stacks it does not list. Do not skip common rows. With `stack: 없음` (none), skip them all.
+- Run the commands from the repository root (`git rev-parse --show-toplevel`). Install only with the commands above. Do not install with a command or source not in the table instead. Do not edit the plugin keys in settings files by hand.
+- If a command fails, do not stop. If only the marketplace was added and the install failed, remove that marketplace (`claude plugin marketplace remove <name> --scope project`). Report what failed and why in step 6.
+- The `supabase` plugin comes with an MCP server. Once logged in, it attaches to every project in the account with read and write tools. Report that, and how to turn it off (`/mcp`), in step 6.
+- `typescript-lsp` runs only when `typescript-language-server` is on the PATH. If it is not, do not install it globally; report the command (`npm install -g typescript-language-server typescript`) in step 6.
+- There is nothing to install just for `next`. From 16.3 on, `next dev` creates `AGENTS.md`. Below that, say that `npx @next/codemod@canary agents-md` does it.
+- Commit: before installing, check that `git status --short -- .claude/` is empty. If it is not, install but do not commit, and say that there were uncommitted changes. If it was empty, commit only the paths the installs changed (check with `git status --short`; for example `.claude/settings.json`, `.claude/skills/`) with `chore: 스택 스킬과 플러그인 설치` (install stack skills and plugins). Do not push. If this is not the base branch, say that the commit goes onto that branch.
 
 ## 5. Verification skill
 

@@ -46,11 +46,11 @@ Finding the item: if there is no argument and the current branch is `w/<name>`, 
 **Continuing:** read the item file's `Implementation Plan`, its checked Acceptance Criteria, and `Implementation Notes`, and resume from the step that remains. Read the list below from the top and follow the first line that matches.
 
 - The item is already in `docs/done/` → step 12. For how to merge, use the answer written under `### 머지` (merge) in `Implementation Notes`. If there is none, ask again only about how to merge
+- There is a `### 리뷰` → step 10. Send the last message again
 - `Implementation Plan` is empty → step 2
 - There are unchecked Acceptance Criteria → step 5
 - Every AC is checked but Definition of Done is not → step 6
 - DoD is checked too and `Implementation Notes` has no `### 리뷰` (review) → step 7
-- There is a `### 리뷰` → step 10. Send the last message again
 
 ## 2. Baseline and stack checks
 
@@ -77,7 +77,7 @@ Do not get the plan approved. Do not enter plan mode.
 4. **Tools and steps:** decide which field this item's work belongs to, and what tools (names, commands) and steps the best practitioners in that field use for it. Do not assume a role; write down the tools and steps. If you do not know, look it up in docs or on the web. Keep the tools the stack checks gave and add only what is missing.
 5. **Design:** decide it yourself. For a change that crosses a function boundary, follow the `architect` skill. Settle a fork that running something would settle with `playbooks/prototype.md`, and write down the result and the evidence.
 6. **Gaps in the ACs:** if, while reading the item, you find ACs that contradict each other or a missing decision that only a person can make, put it in the pre-start questions.
-7. **Pre-start questions:** only when something falls under the asking criteria, all at once. Combine the stack checks' "Ask" into them. Also put in what is already visible from the plan and is on the step 5 scope list (changing a schema or public API, deleting, changing CLAUDE.md or settings). Do not ask about installs (the asking criteria in `SKILL.md`). What is asked once per project goes here too: creating a verification skill (do not ask if `.claude/skills/verify-*` exists or CLAUDE.md has `- 검증 스킬: 안 씀` (verification skill: not used). If the answer is not to create one, suggest writing that line). Attach a recommendation and its reason to the options. If there is nothing to ask, do not stop.
+7. **Pre-start questions:** only when something falls under the asking criteria, all at once. Combine the stack checks' "Ask" into them. Also put in what is already visible from the plan and is on the step 5 scope list (changing a schema or public API, deleting, changing CLAUDE.md or the settings in asking criterion 2). Do not ask about installs (the asking criteria in `SKILL.md`). What is asked once per project goes here too: creating a verification skill (do not ask if `.claude/skills/verify-*` exists or CLAUDE.md has `- 검증 스킬: 안 씀` (verification skill: not used). If the answer is not to create one, suggest writing that line). Attach a recommendation and its reason to the options. If there is nothing to ask, do not stop.
 8. **Write the plan.** Step 4 writes it into the item file. What goes in:
    - What we do: one or two sentences, what is left out this time
    - The chosen playbook, tools and steps (including what to install)
@@ -108,12 +108,12 @@ If the user says "let me see the plan", show the plan and wait.
 - **Stop when the scope grows.** If one of the three below applies and it was not answered in the pre-start questions, stop and ask. Decide anything else that changed, and write it down.
   - A behavior not in the ACs has to be added
   - A schema or public API has to change, or something has to be deleted
-  - CLAUDE.md or settings have to change (do not ask about `hillclimb.md` adding `.claude/.local/` to `.gitignore`)
-- When a new dependency or tool is needed, do not ask. Use the one the plan names; if none is named, pick a proven one (widely used and maintained). Write what you installed and why under `### 정한 것`.
+  - CLAUDE.md or the settings in asking criterion 2 (permission and hook settings, settings in the home folder) have to change. Do not ask about adding a dependency that changes `package.json` and the lockfile, or about `hillclimb.md` adding `.claude/.local/` to `.gitignore`
+- When a new dependency or tool is needed, do not ask. Follow the install rules in the asking criteria in `SKILL.md` (inside the project, at a pinned version, proven ones only). Write what you installed (name, version, source) and why under `### 정한 것`.
 - When one AC is done, check it off right away only if there is outside evidence (command output). ACs that need a judge are judged together in step 6.
 - Write what you decide without asking under `### 정한 것` as you go. Write what changed from the plan in `Implementation Notes` too.
 - Commit to the work branch at each meaningful step. Before committing, follow the `deslop` skill (with the same limit as 1 in step 6). Do not commit to the base branch.
-- **When delegating:** if you hand implementation or a fix to a subagent, put these in the brief: the scope (files, what to do, success criteria), this step's test rules, do only what is within the Acceptance Criteria, if something on the scope list above comes up do not fix it but come back, do not commit to the base branch, the rules the stack checks returned, and do not do work under ask criterion 1 (merging, pushing to the base or deploy branch, deleting, remote DB, deploying) but come back. Also put the absolute path of `SKILL.md` in the brief and write this: "Read the '일하는 방식' (how to work) and '원칙' (principles) sections of that file. When you apply a principle, read its body (`../<name>/SKILL.md` from the folder that holds that file; `${CLAUDE_SKILL_DIR}` inside the file is that folder), and write the principle name and the choice it changed in your report. The rest of that file (where to run, the ask criteria, the playbooks) is the delegating session's job, so do not follow it." Skills do not fire on their own, so this is the only way the principles reach the delegated agent. The model follows the `implement` role in `<ref>/settings.md`. Read the diff of the delegated result yourself and check it. When the delegated agent reports what it chose and why, move that under `### 정한 것`.
+- **When delegating:** if you hand implementation or a fix to a subagent, put these in the brief: the scope (files, what to do, success criteria), this step's test rules, do only what is within the Acceptance Criteria, if something on the scope list above comes up do not fix it but come back, do not commit to the base branch, the rules the stack checks returned, do not do work under ask criterion 1 (merging, pushing to the base or deploy branch, deleting, remote DB, deploying) but come back, and install only the new dependencies or tools named in the brief, and if anything else is needed do not install it but come back. Also put the absolute path of `SKILL.md` in the brief and write this: "Read only two sections of that file, `### 일하는 방식` (how to work) and `### 원칙` (principles). When you apply a principle, read its body (`../<name>/SKILL.md` from the folder that holds that file; `${CLAUDE_SKILL_DIR}` inside the file is that folder), and write the principle name and the choice it changed in your report. Every other section of that file is the delegating session's job, so do not follow it." Skills do not fire on their own, so this is the only way the principles reach the delegated agent. The model follows the `implement` role in `<ref>/settings.md`. Read the diff of the delegated result yourself and check it. When the delegated agent reports what it chose and why, move that under `### 정한 것`. Hand fixes, follow-up work and retries to a new agent, and put the original brief, the instructions after it, and the earlier agent's report in its brief.
 
 ## 6. Wrap-up check
 
@@ -190,7 +190,7 @@ Stop here once. Always ask about the merge. Put every remaining decision into th
 How to write it:
 
 - On the first line, write what is waiting for the user.
-- Then what was done, briefly: what changed, the result per AC, what was fixed in review (the 🔴 and 🟡 counts and one line each), N dropped by the judge, N pre-existing problems, N ⚪.
+- Then what was done, briefly: what changed, the result per AC, what was fixed in review (the 🔴 and 🟡 counts and one line each), N dropped by the judge, N pre-existing problems, N ⚪, what was installed (name, version, source, reason), install commands not run but reported, and official skills the stack checks reported missing.
 - Attach a recommendation, the evidence, and the risk to each decision. Write it so that the user can decide from the reply alone.
   - Findings for a person to decide: the finding, the options, the recommendation
   - "Later" candidates: whether to make them new items. Attach a title and draft ACs to each candidate
