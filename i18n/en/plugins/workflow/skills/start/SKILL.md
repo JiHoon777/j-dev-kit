@@ -17,7 +17,7 @@ Implement one backlog item, or one task the user wrote directly, through to the 
 
 ## 1. What to do
 
-Always work in this session. Do not open a sub-session.
+Always work in this session. Do not open a sub-session. When called on the base branch, make a new worktree and move this session into it ("Making the worktree" in step 1 of the procedure).
 
 - **If the current branch starts with `w/`:** this branch is already at work. Even with no arguments, or with words like "review and merge it", continue that branch's item ("Continuing" in the procedure). If the branch has no item file, continue the work that was being done without an item. If the arguments are a new task that has nothing to do with that item, follow the branch rule under "Without an item" in the procedure.
 - **If the arguments are a task, not a backlog item:** do not create an item; do the work right away ("Without an item" in the procedure). Look up the arguments in `docs/backlog/` and `docs/done/`, and if no item matches by number or name, treat them as a task. If the work spans several modules or would take days, say in one line that making an item with `/backlog` would be better, and go on as is.

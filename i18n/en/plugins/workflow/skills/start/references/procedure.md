@@ -18,7 +18,7 @@ If the user wrote the task directly instead of a backlog item, do not create an 
 
 - **The contract is the user's words.** In the first message, restate the goal, the smallest change that meets it, and the condition for calling it done (a command to run or a screen to check), then go straight on. Do not wait for approval. If the words are ambiguous enough that what to build forks, ask just that, once.
 - **What is skipped:** finding the item in step 1, the item file record and the start commit in step 4, and step 11 (closing the item).
-- **Branch:** if you are on the base branch, create `w/<short-english-name>` and work there. If you are somewhere other than the base branch, work on that branch as is. But if that is a `w/` branch with an item file and the task has nothing to do with that item, ask once whether to put it on this branch (it would mix with another item's work). For a read-only investigation (`playbooks/investigation.md`), do not create a branch.
+- **Branch:** if you are on the base branch, make a `w/<short-english-name>` worktree as in "Making the worktree" in step 1 and work there. If you are somewhere other than the base branch, work on that branch as is. But if that is a `w/` branch with an item file and the task has nothing to do with that item, ask once whether to put it on this branch (it would mix with another item's work). For a read-only investigation (`playbooks/investigation.md`), do not create a branch.
 - **Record:** there is no item file, so write the plan and the decisions (`decision — reason — cost if wrong`) in the last message, and write what changed and why in the commit messages.
 - **Judgment:** treat the restated done condition like Acceptance Criteria. Call done only what outside evidence (command output) or a judge other than the implementing session confirmed. The verify Stop hook runs only when there is an item file, so be sure to run step 6's verification yourself.
 - **When handing to agents:** where a brief says to pass the item file path, put in the restated goal and done condition and the user's words as they are. What a skill says to write in the item file (for example, the chosen mockup) goes in the last message.
@@ -42,6 +42,12 @@ Check the state with `git branch --show-current`, `git status --short`, `git bra
 | You are not in the just-made worktree above, and you are on neither the base branch nor this item's branch | It may belong to another item or another session. Leave it alone and ask what to do |
 
 Finding the item: if there is no argument and the current branch is `w/<name>`, the item is `docs/backlog/<name>.md`, then `docs/done/<name>.md`. If there is an argument, look it up in `docs/backlog/`, then `docs/done/` (`README.md` and files starting with `_` are not items). If there is no argument and this is not a work branch, or there are several matches, show the `To Do` items by number and title and let the user pick. If the current branch is `w/<name>` and that file is in neither place, it is work that was being done without an item ("Continuing" in step 0). Read the item file all the way through, and check that all of its `dependencies` are in `docs/done/`.
+
+**Making the worktree:** if you are on the base branch and this item's `w/` branch does not exist yet, make a new worktree and move this session into it. Do every later step in that worktree. `<name>` is the item file name without `.md` (`<short-english-name>` when working without an item).
+
+1. If `git check-ignore -q .claude/worktrees/` fails, add a `.claude/worktrees/` line to `"$(git rev-parse --git-common-dir)/info/exclude"`. Otherwise `?? .claude/` stays in the base folder and trips the "is it clean" check in step 12. This file exists only in this repository and is not committed.
+2. `git worktree add .claude/worktrees/<name> -b w/<name> <base>`
+3. Move there by giving that path to `EnterWorktree` (`path`). If the tool is missing or refuses, run later commands in that folder.
 
 **Continuing:** read the item file's `Implementation Plan`, its checked Acceptance Criteria, and `Implementation Notes`, and resume from the step that remains. Read the list below from the top and follow the first line that matches.
 
@@ -91,7 +97,6 @@ If the user says "let me see the plan", show the plan and wait.
 ## 4. Record
 
 1. Set up the work branch `w/<item file name without .md>` (`<name>` below).
-   - If you are on the base branch: `git switch -c w/<name>`.
    - If you are in a worktree made for this item and the branch name differs: `git branch -m w/<name>`. The verify Stop hook runs only on `w/` branches.
    - If a web port or server port is set, set the item's port to `base port + item number` (for example web 5000, item 007 → 5007). Only the ones that are set.
      - For each port, run `bash <scripts>/pick-port.sh <base port> <item number>` and use the port on the first line. If it exits with a non-zero value, tell the user the reason it printed.
@@ -240,7 +245,7 @@ Do it the way the `merge` setting says. With no setting, do it the way the user 
   4. `git -C <base folder> merge w/<name>`. If there is a conflict, follow the `fix-merge-conflicts` skill.
   5. Run the verify command again in the base folder. If it fails, do not push; say so.
   6. If the user accepted the push in step 10, `git -C <base folder> push`.
-  7. Cleanup: if the work was not done in a worktree, `git branch -d w/<name>`. If the session is inside a worktree, do not remove the worktree or the branch from this session. Say that archiving the session lets the app clean up the worktree, and otherwise running `git worktree remove <worktree path>` and `git branch -d w/<name>` in the base folder does it.
+  7. Cleanup: if the work was not done in a worktree, `git branch -d w/<name>`. If the session is inside a worktree, do not remove the worktree or the branch from this session. If the app made the worktree, archiving the session lets the app clean it up. For a worktree this procedure made in step 1, say that running `git worktree remove <worktree path>` and `git branch -d w/<name>` in the base folder does it.
 - **PR:** follow `playbooks/opening-a-pr.md` to push the work branch and open a PR that targets the base branch. If a PR cannot be created (CLAUDE.md says so, or `gh auth status` fails), say so. Leave the worktree.
 - **Leave as is:** do nothing. Leave the worktree and the branch.
 
